@@ -1,0 +1,13 @@
+実行方法
+	1. capture_module_test デザインをコンフィギュレーションする
+	2. pipenv shell
+	3. capture_x8_test.py のあるディレクトリに移動
+	4. python capture_x8_test.py [テスト回数]
+
+結果の確認
+	All tests succeeded. と表示されればテスト成功
+
+テストの内容
+	全 DSP ユニットを無効にして, キャプチャパラメータをランダムに設定し, HW と SW で キャプチャデータが一致するか確認する.
+	キャプチャデータとキャプチャパラメータは result 以下に保存される.
+

@@ -1,0 +1,15 @@
+正弦波を出力してキャプチャするスクリプト (DSP 全部無効)
+	examples/send_recv/send_recv.py 
+
+正弦波を出力してキャプチャするスクリプト (DSP 全部有効)
+	examples/send_recv_dsp/send_recv_dsp.py 
+
+実行方法
+	1. pipenv shell
+	2. サンプルスクリプトのあるディレクトリに移動
+	3. python スクリプト名
+
+実行結果
+	カレントディレクトリ以下に AWG の波形データ (awg_wave_*.txt) とキャプチャデータ (capture_*.txt) が保存される
+
+確認に使用した python のバージョン : 3.9

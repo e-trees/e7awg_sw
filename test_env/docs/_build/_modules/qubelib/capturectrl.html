@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QuBE Python Library - qubelib.capturectrl</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css" integrity="sha256-xOpS+e/dER8z72w+qryCieOGysQI8cELAVt3MHG0phY=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/tooltipster.bundle.min.css" integrity="sha256-Qc4lCfqZWYaHF5hgEOFrYzSIX9Rrxk0NPHRac+08QeQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css" integrity="sha256-Wa1I4jhSXeWd3N6RhfPlkqr1WlT+zS3Vh2YGCg0129E=" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Code+Pro|Source+Sans+Pro|Source+Serif+Pro|Roboto|Roboto+Mono" rel="stylesheet">
+<link href="https://fonts.red-dove.com/iosevka-ss09-regular/webfont.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/sizzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/sizzle.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" integrity="sha256-G7A4JrJjJlFqP0yamznwPjAApIKPkadeHfyIwiaa9e0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/js/tooltipster.bundle.min.js" integrity="sha256-NOU7KrY2aTI4PxDegqYUIknk9qfxVCS0E4JfE9aMwaA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+      $(document).data('sizzle', {on_load: []});
+    </script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+      <script src="../../../../app-data.js"></script>
+<link rel="index" title="索引" href="../../genindex.html" />
+<link rel="search" title="検索" href="../../search.html" />
+
+</head>
+<body class="full-height test">
+<noscript>
+  <div>
+    <div id="noscript-message">JavaScript is not enabled. It is needed for this website to work.</div>
+  </div>
+</noscript>
+<div id="whole-page" class="container-fluid content full-height">
+  <div id="header-row" class="row">
+    <div id="header-container" class="col-md-12">
+      <div id="hdr-left">
+        <i class="fa fa-bars menu-toggle"></i>
+        
+<a href="../../index.html" class="text-logo">QuBE Python Library 1.0.0 ドキュメント</a>
+
+      </div>
+      <div id="hdr-centre" class="text-center stretch">
+        <h3 title="qubelib.capturectrl">qubelib.capturectrl</h3>
+        <h6>qubelib.capturectrl</h6>
+      </div>
+      <div id="hdr-search">
+        
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+      </div>
+
+      <div id="hdr-index">
+        <a href="../../genindex.html" class="btn btn-default" title="Go to the index"><i class="fa fa-list"></i></a>
+      </div>
+
+      <div id="hdr-right">
+        
+  
+      </div>
+      <div id="alt-hdr-right">
+
+
+        <a href="../../index.html"><i class="fa fa-home mr-8"></i></a>
+
+
+        <a href="../../search.html"><i class="fa fa-search mr-8"></i></a>
+
+
+        <a href="../../genindex.html"><i class="fa fa-list mr-8"></i></a>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="content-row" class="row">
+    <div id="page-content" class="col-md-12 flex-col">
+      <div id="content-container">
+        <div id="nav">
+          
+  <div class="navsidebar">
+    <div id="sidebar-search">
+      
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+    </div>
+      <div class="sidebar-block">
+        <div class="sidebar-tocheading">
+          <div class="pull-left">
+            <h2>Table Of Contents</h2>
+          </div>
+          <div class="pull-right" title="Hide this sidebar (hover at left edge to bring it back)"><i class="fa fa-chevron-left hidetoc"></i></div>
+        </div>
+        <div class="sidebar-toc">
+      
+          <div id="toc-filter" title="Type in here to show only matching topics">
+            <input class="form-control" id="toc-filter-query" placeholder="Filter by title ...">
+          </div>
+      
+        
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+        </div>
+      </div>
+  </div>
+        </div>
+        <div id="content" tabindex="0" class="stretch">
+          <div id="mnav">
+            
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+          </div>
+          <div class="body">
+            
+  <h1>qubelib.capturectrl のソースコード</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.captureparam</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="CaptureCtrl"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureCtrl</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="c1"># キャプチャモジュールが波形データを保存するアドレス</span>
+    <span class="n">__CAPTURE_ADDR</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="mh">0x10000000</span><span class="p">,</span>  <span class="mh">0x30000000</span><span class="p">,</span>  <span class="mh">0x50000000</span><span class="p">,</span>  <span class="mh">0x70000000</span><span class="p">,</span>
+        <span class="mh">0x90000000</span><span class="p">,</span>  <span class="mh">0xB0000000</span><span class="p">,</span>  <span class="mh">0xD0000000</span><span class="p">,</span>  <span class="mh">0xF0000000</span><span class="p">]</span>
+    <span class="c1"># キャプチャ RAM のワードサイズ (bytes)</span>
+    <span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">=</span> <span class="mi">32</span> <span class="c1"># bytes</span>
+    <span class="c1"># 1 キャプチャモジュールが保存可能なサンプル数</span>
+    <span class="n">MAX_CAPTURE_SAMPLES</span> <span class="o">=</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">//</span> <span class="n">CAPTURED_SAMPLE_SIZE</span>
+    <span class="c1">#: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)</span>
+    <span class="n">SAMPLING_RATE</span> <span class="o">=</span> <span class="mi">500000000</span>
+
+<div class="viewcode-block" id="CaptureCtrl.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 &#39;10.0.0.16&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid IP Address </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span> <span class="o">=</span> <span class="n">CaptureRegAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">CAPTURE_REG_PORT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span> <span class="o">=</span> <span class="n">WaveRamAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.set_capture_params"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.set_capture_params">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_capture_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットにキャプチャパラメータを設定する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            capture_unit_id (CaptureUnit): キャプチャパラメータを設定するキャプチャユニットの ID </span>
+<span class="sd">            param (CaptureParam): 設定するキャプチャパラメータ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID  </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture param </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__check_capture_size</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_sum_sec_len</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_section_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_num_integ_sectinos</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">num_integ_sections</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__enable_dsp_units</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_capture_delay</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">capture_delay</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set___CAPTURE_ADDR</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_comp_fir_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">complex_fir_coefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_real_fir_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_i_coefs</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_q_coefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_comp_window_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">complex_window_coefs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_sum_range</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">num_words_to_sum</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__set_sum_sec_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">sum_sec_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;総和区間長とポストブランク長の設定&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="n">num_sum_secs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sum_sec_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_SUM_SECTIONS</span><span class="p">,</span> <span class="n">num_sum_secs</span><span class="p">)</span>
+        <span class="n">sum_sec_len_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sum_sec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sum_sec</span> <span class="ow">in</span> <span class="n">sum_sec_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span>
+            <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">sum_section_length</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">sum_sec_len_list</span><span class="p">)</span>
+        <span class="n">post_blank_len_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">sum_sec</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sum_sec</span> <span class="ow">in</span> <span class="n">sum_sec_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span>
+            <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">post_blank_length</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">post_blank_len_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_num_integ_sectinos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_integ_sectinos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;統合区間数の設定&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_INTEG_SECTIONS</span><span class="p">,</span> <span class="n">num_integ_sectinos</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__enable_dsp_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">dsp_units</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DSP ユニットの有効化&quot;&quot;&quot;</span>
+        <span class="n">reg_val</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">dsp_unit</span> <span class="ow">in</span> <span class="n">dsp_units</span><span class="p">:</span>
+            <span class="n">reg_val</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">dsp_unit</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">DSP_MODULE_ENABLE</span><span class="p">,</span> <span class="n">reg_val</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_capture_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">capture_delay</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャディレイの設定&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CAPTURE_DELAY</span><span class="p">,</span> <span class="n">capture_delay</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set___CAPTURE_ADDR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャアドレスの設定&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CAPTURE_ADDR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">]</span> <span class="o">//</span> <span class="mi">32</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_comp_fir_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">comp_fir_coefs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;複素 FIR フィルタの係数を設定する&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="n">coef_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">comp_fir_coefs</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">comp_fir_re_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">coef_list</span><span class="p">)</span>
+        <span class="n">coef_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">comp_fir_coefs</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">comp_fir_im_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">coef_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_real_fir_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">real_fir_i_coefs</span><span class="p">,</span> <span class="n">real_fir_q_coefs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;実数 FIR フィルタの係数を設定する&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span>
+            <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">real_fir_i_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">real_fir_i_coefs</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span>
+            <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">real_fir_q_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="nb">reversed</span><span class="p">(</span><span class="n">real_fir_q_coefs</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_comp_window_coefs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">complex_window_coefs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;複素窓関数の係数を設定する&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="n">coef_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">real</span><span class="p">)</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">complex_window_coefs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">comp_window_re_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">coef_list</span><span class="p">)</span>
+        <span class="n">coef_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">complex_window_coefs</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">comp_window_im_coef</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">coef_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__set_sum_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">sum_start_word_no</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;総和区間内の総和範囲を設定する&quot;&quot;&quot;</span>
+        <span class="n">end_start_word_no</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">sum_start_word_no</span> <span class="o">+</span> <span class="n">num_words_to_sum</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_SECTION_LEN</span><span class="p">)</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">SUM_START_TIME</span><span class="p">,</span> <span class="n">sum_start_word_no</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">SUM_END_TIME</span><span class="p">,</span> <span class="n">end_start_word_no</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CaptureCtrl.initialize"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.initialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;全てのキャプチャユニットを初期化する&quot;&quot;&quot;</span>
+        <span class="n">capture_units</span> <span class="o">=</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_units</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disable_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_units</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cap_unit_id</span> <span class="ow">in</span> <span class="n">capture_units</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_capture_params</span><span class="p">(</span><span class="n">cap_unit_id</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.get_capture_data"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.get_capture_data">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_capture_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットが保存したサンプルデータを取得する.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            capture_unit_id (int): この ID のキャプチャユニットが保存したサンプルデータを取得する</span>
+<span class="sd">            num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="n">num_samples</span> <span class="o">*</span> <span class="n">CAPTURED_SAMPLE_SIZE</span>
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">rd_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">],</span> <span class="n">num_bytes</span><span class="p">)</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">rd_data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">]</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_samples</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.num_captured_samples"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.num_captured_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_captured_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: 保存されたサンプル数</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_CAPTURED_SAMPLES</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.start_capture_units"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.start_capture_units">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">start_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;現在有効になっているキャプチャユニットの処理を開始する&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+            <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+            <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.reset_capture_units"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.reset_capture_units">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">reset_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットをリセットする</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.enable_capture_units"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.enable_capture_units">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">enable_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットを有効化する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *capture_unit_id_list (list of CaptureUnit): 有効化するキャプチャユニットの ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">ENABLE</span><span class="p">,</span> 
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.disable_capture_units"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.disable_capture_units">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">disable_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットを無効化する.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *capture_unit_id_list (list of CaptureUnit): 無効化する キャプチャユニット の ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">ENABLE</span><span class="p">,</span> 
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.select_trigger_awg"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.select_trigger_awg">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">select_trigger_awg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_module_id</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャモジュールをスタートする AWG を選択する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            capture_module_id (CaptureModule): </span>
+<span class="sd">                | この ID のキャプチャモジュールに含まれる全キャプチャユニットが, </span>
+<span class="sd">                | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.</span>
+<span class="sd">            awg_id (AWG): capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">capture_module_id</span> <span class="o">==</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">TRIG_AWG_SEL_0</span>
+        <span class="k">elif</span> <span class="n">capture_module_id</span> <span class="o">==</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">TRIG_AWG_SEL_1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.wait_for_capture_units_to_stop"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.wait_for_capture_units_to_stop">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">wait_for_capture_units_to_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定した全てのキャプチャユニットの波形の送信が終了するのを待つ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.</span>
+<span class="sd">            *capture_unit_id_list (list of CaptureUnit): 波形の保存が終了するのを待つキャプチャユニットの ID</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            CaptureUnitTimeoutError: タイムアウトした場合</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">all_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read_bits</span><span class="p">(</span>
+                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
+                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">DONE_STATUS</span><span class="p">,</span>
+                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">all_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_stopped</span><span class="p">:</span>
+                <span class="k">return</span>
+                
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CaptureUnitTimeoutError</span><span class="p">(</span><span class="s1">&#39;Capture unit stop timeout&#39;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CaptureCtrl.check_err"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.check_err">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">check_err</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットのエラーをチェックする.</span>
+
+<span class="sd">        エラーのあったキャプチャユニットごとにエラーの種類を返す.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *capture_unit_id_list (CaptureUnit): エラーを調べるキャプチャユニットの ID</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            {CaptureUnit -&gt; list of CaptureErr} or None:</span>
+<span class="sd">            | key = Capture Unit ID</span>
+<span class="sd">            | value = 発生したエラーのリスト</span>
+<span class="sd">            | エラーが無かった場合は空の Dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid Capture Unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+
+        <span class="n">capture_unit_to_err</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+            <span class="n">err_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read_bits</span><span class="p">(</span>
+                <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">ERR</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">ERR_OVERFLOW</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">err_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CaptureErr</span><span class="o">.</span><span class="n">OVERFLOW</span><span class="p">)</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read_bits</span><span class="p">(</span>
+                <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">ERR</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">ERR_WRITE</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">err_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CaptureErr</span><span class="o">.</span><span class="n">MEM_WR</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err_list</span><span class="p">:</span>
+                <span class="n">capture_unit_to_err</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">err_list</span>
+        
+        <span class="k">return</span> <span class="n">capture_unit_to_err</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__check_capture_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャデータ量が正常かどうか調べる&quot;&quot;&quot;</span>
+        <span class="n">dsp_units_enabled</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span>
+        <span class="n">num_cap_samples</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">calc_capture_samples</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">INTEGRATION</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="c1"># 積算ユニットが保持できる積算値の数をオーバーしていないかチェック</span>
+            <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+                <span class="c1"># 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, </span>
+                <span class="c1"># 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる</span>
+                <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_cap_samples</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_cap_samples</span> <span class="o">//</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span>
+
+            <span class="k">if</span> <span class="n">num_integ_vec_elems</span> <span class="o">&gt;</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
+        
+        <span class="k">elif</span> <span class="n">num_cap_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sum_sec_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">num_sum_sections</span><span class="p">):</span>
+                <span class="n">num_words_to_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.&#39;</span>
+                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;         If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="n">num_words_in_sum_sec</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_section</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">DECIMATION</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="n">num_words_in_sum_sec</span> <span class="o">=</span> <span class="p">((</span><span class="n">num_words_in_sum_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">)</span> <span class="o">//</span> <span class="mi">32</span>
+
+        <span class="n">sum_end_word_no</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span> <span class="o">+</span> <span class="n">param</span><span class="o">.</span><span class="n">num_words_to_sum</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_words_in_sum_sec</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">num_sum_words</span> <span class="o">=</span> <span class="n">sum_end_word_no</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">num_sum_words</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-row" class="row">
+
+    <div class="col-md-12">
+        <span></span><span class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0 and the
+        <a href="https://pypi.org/project/sphinx-sizzle-theme/"
+
+           title="0.0.9/821a5457 [2020-04-16T19:31:16]"
+
+        >Sizzle</a> theme.</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="tooltips" class="hidden">
+</div>
+
+<script>
+$(document).ready(function() {
+  'use strict';
+  var $search = $('.search-query');
+
+  var $filter = $('#toc-filter-query');
+  var $toclist = $('.sidebar-toc > ul').find('li');
+
+  if ($toclist.length === 0) {
+    $toclist = $('.localtoc > ul').find('li');
+  }
+
+
+  var $nav = $('#nav');
+
+  //$('#whole-page').removeClass('hidden');
+  var nav_width = $nav.width();
+
+
+  var search_url = '../../search.html';
+
+  function perform_search(e) {
+    var $elem;
+
+    if (e.type === 'keypress') {
+      $elem = $(e.target);
+    }
+    else if (e.type === 'click') {
+      $elem = $(e.target).parents('.input-group').find('input');
+    }
+    var q = $elem.val().trim();
+
+    if (q) {
+      var url = search_url + '?q=' + q + '&check_keywords=yes&area=default';
+
+      location.href = url;
+    }
+  }
+
+
+  function apply_filter() {
+    var s = $filter.val().trim().toLowerCase();
+
+    $toclist.find('a').removeClass('hidden');
+    $toclist.each(function() {
+      var $this = $(this);
+      var $link = $this.find('> a');
+      var t = $link.text().toLowerCase();
+      var show = t.indexOf(s) >= 0;
+
+      if (!show) {
+        $link.addClass('hidden');
+      }
+    });
+  }
+
+  $filter.on('keyup', function(e) {
+    apply_filter();
+  });
+
+
+
+  $search.on('keypress', function(e) {
+    if (e.which == 13) {
+      perform_search(e);
+    }
+  });
+  $search.parents('.input-group').find('.input-group-addon').on('click', perform_search);
+  $(document).on('click', '.summary .fa-caret-right', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $next = $elem.next();
+    $elem.addClass('hidden');
+    $next.removeClass('hidden');
+  });
+  $(document).on('click', '.detail .fa-caret-down', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $prev = $elem.prev();
+    $elem.addClass('hidden');
+    $prev.removeClass('hidden');
+  });
+
+  $('#content').on('click', function() {
+    $('#mnav').hide();
+  });
+
+  var counter = 0;
+  var timer = null;
+
+  function show_nav() {
+    $('#content').off('mousemove', track_mouse);
+    if (timer !== null) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    $nav.show();
+  }
+
+  function track_mouse(e) {
+    var x = e.clientX;
+
+    if (x < 15) {
+      ++counter;
+      if (timer === null) {
+        timer = setTimeout(show_nav, 2000);
+      }
+    }
+    else {
+      counter = 0;
+    }
+    if (counter >= 20) {
+      show_nav();
+    }
+  };
+
+  function hide_nav() {
+    $nav.hide();
+    counter = 0;
+    $('#content').on('mousemove', track_mouse);
+  }
+
+  $('.hidetoc').on('click', hide_nav);
+
+  $(document).on('keyup', function(e) {
+    if (e.ctrlKey) {
+      if (e.which == 37) {      // Ctrl+left arrow
+        hide_nav();
+      }
+      else if (e.which == 39) { // Ctrl+right arrow
+        show_nav();
+      }
+    }
+  });
+
+  $('.menu-toggle').on('click', function(e) {
+    $('#mnav').toggle();
+  });
+
+  function scroll_nav(frag) {
+    var sel = '#nav ' + (frag ? 'a[href="' + frag + '"]' : '.toctree-l1 a.current');
+
+    var $link = $(sel);
+
+    if ($link.length > 0) {
+      $link[0].scrollIntoView({block: 'center'});
+    }
+  }
+
+  // If the navigator is long, then the item we clicked on to get here might
+  // not be in view. Try to scroll it into the view - a slight delay is needed
+  // to get it to sync properly with other stuff going on (as the page has just
+  // loaded). Hence the setTimeout with a timeout of 0.
+
+  function do_scroll() {
+    scroll_nav(window.location.hash);
+  }
+
+  setTimeout(do_scroll, 0);
+
+  function adjust_size() {
+    // we need to set the height explicitly so that scrolling regions in the
+    // content area work properly.
+    var h = $('#page-content').height();
+
+    $('#nav, #content').height(h);
+    if ($('#nav').is(':visible')) {
+      $('#mnav').hide();
+    }
+  }
+
+  adjust_size();
+
+  $(window).on('resize', adjust_size);
+
+  function focus_content() {
+    $('#content').focus();  // so that keyboard can be used to scroll, etc.
+  }
+
+  setTimeout(focus_content, 150);
+
+  var sizzle = $(document).data('sizzle');
+
+  function make_tooltip(id, h, b) {
+    var $e = $('<div>').attr('id', id);
+    var $b = $('<div>').addClass('tc-body').html(b);
+
+    if (h) {
+      var $h = $('<div>').addClass('tc-heading').html(h);
+      $e.append($h);
+    }
+    $e.append($b);
+    return $e;
+  }
+
+  var default_tt_options = {
+    theme: ['tooltipster-light', 'tooltipster-light-customized'],
+    interactive: true,
+    maxWidth: 600,
+    contentCloning: true
+  };
+
+  function activate_tooltips() {
+    var $tt = $('.tt');
+
+    //console.log('tt links:', $tt.length);
+    $tt.tooltipster(default_tt_options);
+  }
+
+
+
+  function add_glossary_tooltips() {
+    var links = $('a');  // can qualify with .reference.internal
+    var glinks = {};
+    var pat = /(.*)\.html#(term-.*)$/;
+    var found = false;  // links in this document
+
+    $.each(links, function(i, link) {
+        var $link = $(link);
+        var href = $link.attr('href');
+        var m = href.match(pat);
+
+        if (m) {
+          var s = m[1].replace(/^(\.\.\/)+/, '');
+
+          if (s === sizzle.app_data.glossary.document) {
+            var k = m[2];
+
+            if (k in glinks) {
+              glinks[k].push($link);
+            }
+            else {
+              glinks[k] = [$link];
+            }
+            found = true;
+          }
+        }
+    });
+    if (found) {
+      var $t = $('#tooltips');
+      var data = sizzle.app_data.glossary.terms;
+
+      $.each(glinks, function(k, v) {
+        var d = data[k];
+
+        if (d) {  // as a sanity check
+          var s = 'tc-'+ k;
+          var $e = make_tooltip(s, d.term, d.defn);
+          $t.append($e);
+
+          $.each(v, function(i, link) {
+            link.addClass('tt').attr('data-tooltip-content', '#' + s);
+          });
+        }
+      });
+    }
+  }
+
+  if (sizzle.app_data && sizzle.app_data.glossary &&
+      sizzle.app_data.glossary.document) {
+    add_glossary_tooltips();
+  }
+
+
+
+
+  function add_custom_tooltips() {
+    var info_tips = sizzle.app_data.custom_data['info-tips'] || {};
+
+    if ($.isEmptyObject(info_tips)) {
+      return;
+    }
+
+    var tt_options = $.extend({contentAsHTML: true}, default_tt_options);
+
+    $('.tc-info').each(function() {
+      var $elem = $(this).prev();
+      var classes = $elem.attr('class');
+      var m = /\btci-([\S]+)/.exec(classes);
+
+      if (m !== null) {
+        var key = m[1];
+
+        if (key in info_tips) {
+          var v = info_tips[key];
+          var tt = $elem.tooltipster(tt_options).tooltipster('content', v);
+        }
+      }
+    });
+  }
+
+  add_custom_tooltips();
+
+  setTimeout(activate_tooltips, 1000);
+
+
+  // Clipboard copy for code blocks with captions
+
+  $('.code-block-caption').each(function() {
+    var $cap = $(this);
+    var $btn = $('<span class="clip-copy"><span class="copied hidden">Copied!</span><i class="fa fa-clipboard" title="Copy contents"></i></span>');
+    var $code = $cap.parent().find('.highlight');
+
+    $cap.append($btn);
+    $btn.find('.fa-clipboard').data('clip-text', $code.text());
+  });
+
+  var clipboard = new ClipboardJS('.code-block-caption .fa-clipboard', {
+    'text': function(trigger) {
+      return $(trigger).data('clip-text');
+    }
+  });
+
+  clipboard.on('success', function(e) {
+    var $copied = $(e.trigger).prev();
+
+    $copied.removeClass('hidden');
+
+    setTimeout(function() {$copied.addClass('hidden'); }, 1000);
+  });
+
+  if (sizzle.on_load) {
+    sizzle.on_load.forEach(function(f) {
+      f();
+    });
+  }
+});
+</script>
+</body>
+</html>
