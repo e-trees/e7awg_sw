@@ -116,7 +116,7 @@ class WaveRamAccess(object):
 class UdpRw(object):
 
     BUFSIZE = 16384 # bytes
-    MAX_RW_SIZE = 1440 # bytes
+    MAX_RW_SIZE = 3616 # bytes
 
     def __init__(self, ip_addr, port, min_rw_size, wr_mode_id, rd_mode_id):
         self.__dest_addr = (ip_addr, port)
@@ -173,5 +173,5 @@ class UdpRw(object):
         recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
         recv_packet = UplPacket.deserialize(recv_data)
         if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != addr):
-            raise  ValueError('upl read err : addr {:x}  size {:x}'.format(addr, size))
+            raise  ValueError('upl read err : addr {:x}  size {}'.format(addr, size))
         return recv_packet.payload()[0 : size]
