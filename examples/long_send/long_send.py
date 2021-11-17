@@ -2,7 +2,6 @@
 AWG から 50MHz の余弦波を出力して, 信号処理モジュールを全て無効にしてキャプチャします.
 """
 import sys
-import os
 import pathlib
 import math
 
@@ -17,35 +16,24 @@ def init_modules(awg_ctrl, cap_ctrl):
     awg_ctrl.enable_awgs(*AWG.all())
     cap_ctrl.initialize()
 
-def gen_cos_wave(freq, num_cycles, amp):
-    """
-    freq : MHz
-    """
-    dt = 2.0 * math.pi * (freq * 1e6) / AwgCtrl.SAMPLING_RATE
-    num_samples = int(num_cycles * AwgCtrl.SAMPLING_RATE / (freq * 1e6))
-    i_data =  [int(amp * math.cos(i * dt)) for i in range(num_samples)]
-    q_data =  [int(amp * math.sin(i * dt)) for i in range(num_samples)]
-    return list(zip(i_data, q_data))
-
 def gen_wave_seq():
     wave_seq = WaveSequence(
         num_wait_words = 16,
         num_repeats = 0xFFFFFFFF)
     
     num_chunks = 1
-    for i in range(num_chunks):
-        samples = gen_cos_wave(50, 8, 32760)
-        # 1 波形チャンクのサンプル数は 64 の倍数でなければならない
-        num_samples_in_wblock = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK
-        if len(samples) % num_samples_in_wblock != 0:
-            additional_samples = num_samples_in_wblock - (len(samples) % num_samples_in_wblock)
-            samples.extend([(0, 0)] * additional_samples)
+    for _ in range(num_chunks):
+        i_wave = SinWave(num_cycles = 8, frequency = 5e6, amplitude = 32760, phase = math.pi / 2) # 50 MHz cos
+        q_wave = SinWave(num_cycles = 8, frequency = 5e6, amplitude = 32760) # 50 MHz sin
+        iq_samples = IqWave(i_wave, q_wave).gen_samples(
+            sampling_rate = AwgCtrl.SAMPLING_RATE, 
+            padding_size = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK)
+
         wave_seq.add_chunk(
-            iq_samples = samples, # 50MHz cos x2
+            iq_samples = iq_samples,
             num_blank_words = 0, 
             num_repeats = 0xFFFFFFFF)
     return wave_seq
-
 
 def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
@@ -66,7 +54,7 @@ def main():
     # 波形送信スタート
     awg_ctrl.start_awgs()
     print('end')
+    return
 
-
-if __name__ == "__main__":
+if __name__ == "__main__":    
     main()

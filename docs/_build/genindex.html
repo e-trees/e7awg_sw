@@ -125,6 +125,7 @@
 <li class="toctree-l1"><a class="reference internal" href="qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -149,6 +150,7 @@
 <li class="toctree-l1"><a class="reference internal" href="qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -172,6 +174,7 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -193,6 +196,16 @@
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.__init__">__init__() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
 
       <ul>
+        <li><a href="qubelib.html#qubelib.awgwave.IqWave.__init__">(qubelib.awgwave.IqWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.__init__">(qubelib.awgwave.ParameterizedWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SawtoothWave.__init__">(qubelib.awgwave.SawtoothWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SinWave.__init__">(qubelib.awgwave.SinWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SquareWave.__init__">(qubelib.awgwave.SquareWave のメソッド)</a>
+</li>
         <li><a href="qubelib.html#qubelib.capturectrl.CaptureCtrl.__init__">(qubelib.capturectrl.CaptureCtrl のメソッド)</a>
 </li>
         <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.__init__">(qubelib.captureparam.CaptureParam のメソッド)</a>
@@ -229,6 +242,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qubelib.html#qubelib.wavesequence.WaveSequence.all_samples">all_samples() (qubelib.wavesequence.WaveSequence のメソッド)</a>
+</li>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.amplitude">amplitude (qubelib.awgwave.ParameterizedWave property)</a>
 </li>
       <li><a href="qubelib.html#qubelib.hwdefs.AWG">AWG (qubelib.hwdefs のクラス)</a>
 </li>
@@ -280,6 +295,8 @@
 </li>
       <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.complex_window_coefs">complex_window_coefs (qubelib.captureparam.CaptureParam property)</a>
 </li>
+      <li><a href="qubelib.html#qubelib.awgwave.SawtoothWave.crest_pos">crest_pos (qubelib.awgwave.SawtoothWave property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -300,6 +317,8 @@
 </li>
       <li><a href="qubelib.html#qubelib.hwdefs.DspUnit">DspUnit (qubelib.hwdefs のクラス)</a>
 </li>
+      <li><a href="qubelib.html#qubelib.awgwave.SquareWave.duty_cycle">duty_cycle (qubelib.awgwave.SquareWave property)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -315,15 +334,35 @@
   </ul></td>
 </tr></table>
 
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.frequency">frequency (qubelib.awgwave.ParameterizedWave property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.IqWave.gen_samples">gen_samples() (qubelib.awgwave.IqWave のメソッド)</a>
+
+      <ul>
+        <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.gen_samples">(qubelib.awgwave.ParameterizedWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SawtoothWave.gen_samples">(qubelib.awgwave.SawtoothWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SinWave.gen_samples">(qubelib.awgwave.SinWave のメソッド)</a>
+</li>
+        <li><a href="qubelib.html#qubelib.awgwave.SquareWave.gen_samples">(qubelib.awgwave.SquareWave のメソッド)</a>
+</li>
+      </ul></li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.get_awg_enabled">get_awg_enabled() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
 </li>
       <li><a href="qubelib.html#qubelib.capturectrl.CaptureCtrl.get_capture_data">get_capture_data() (qubelib.capturectrl.CaptureCtrl のメソッド)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qubelib.html#qubelib.hwdefs.CaptureModule.get_units">get_units() (qubelib.hwdefs.CaptureModule のクラスメソッド)</a>
 </li>
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.get_wave_startable_block_timing">get_wave_startable_block_timing() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
@@ -334,6 +373,8 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.IqWave.i_wave">i_wave (qubelib.awgwave.IqWave property)</a>
+</li>
       <li><a href="qubelib.html#qubelib.hwdefs.AWG.includes">includes() (qubelib.hwdefs.AWG のクラスメソッド)</a>
 
       <ul>
@@ -355,6 +396,8 @@
 </li>
       </ul></li>
       <li><a href="qubelib.html#qubelib.hwdefs.DspUnit.INTEGRATION">INTEGRATION (qubelib.hwdefs.DspUnit の属性)</a>
+</li>
+      <li><a href="qubelib.html#qubelib.awgwave.IqWave">IqWave (qubelib.awgwave のクラス)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -424,18 +467,20 @@
 </li>
       <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.NUM_COMPLEXW_WINDOW_COEFS">NUM_COMPLEXW_WINDOW_COEFS (qubelib.captureparam.CaptureParam の属性)</a>
 </li>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.num_cycles">num_cycles (qubelib.awgwave.ParameterizedWave property)</a>
+</li>
       <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.num_integ_sections">num_integ_sections (qubelib.captureparam.CaptureParam property)</a>
 </li>
       <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.NUM_REAL_FIR_COEFS">NUM_REAL_FIR_COEFS (qubelib.captureparam.CaptureParam の属性)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qubelib.html#qubelib.wavesequence.WaveChunk.num_repeats">num_repeats (qubelib.wavesequence.WaveChunk property)</a>
 
       <ul>
         <li><a href="qubelib.html#qubelib.wavesequence.WaveSequence.num_repeats">(qubelib.wavesequence.WaveSequence property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="qubelib.html#qubelib.wavesequence.WaveChunk.num_samples">num_samples (qubelib.wavesequence.WaveChunk property)</a>
 
       <ul>
@@ -474,6 +519,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.offset">offset (qubelib.awgwave.ParameterizedWave property)</a>
+</li>
       <li><a href="qubelib.html#qubelib.hwdefs.CaptureErr.OVERFLOW">OVERFLOW (qubelib.hwdefs.CaptureErr の属性)</a>
 </li>
   </ul></td>
@@ -482,6 +529,12 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave">ParameterizedWave (qubelib.awgwave のクラス)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.ParameterizedWave.phase">phase (qubelib.awgwave.ParameterizedWave property)</a>
+</li>
       <li><a href="qubelib.html#qubelib.utiltool.plot_graph">plot_graph() (qubelib.utiltool モジュール)</a>
 </li>
   </ul></td>
@@ -490,6 +543,8 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="qubelib.html#qubelib.awgwave.IqWave.q_wave">q_wave (qubelib.awgwave.IqWave property)</a>
+</li>
       <li>
     qubelib
 
@@ -505,12 +560,21 @@
 </li>
       </ul></li>
       <li>
+    qubelib.awgwave
+
+      <ul>
+        <li><a href="qubelib.html#module-qubelib.awgwave">モジュール</a>
+</li>
+      </ul></li>
+      <li>
     qubelib.capturectrl
 
       <ul>
         <li><a href="qubelib.html#module-qubelib.capturectrl">モジュール</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     qubelib.captureparam
 
@@ -518,8 +582,6 @@
         <li><a href="qubelib.html#module-qubelib.captureparam">モジュール</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     qubelib.exception
 
@@ -586,6 +648,8 @@
       </ul></li>
       <li><a href="qubelib.html#qubelib.wavesequence.WaveSequence.save_as_text">save_as_text() (qubelib.wavesequence.WaveSequence のメソッド)</a>
 </li>
+      <li><a href="qubelib.html#qubelib.awgwave.SawtoothWave">SawtoothWave (qubelib.awgwave のクラス)</a>
+</li>
       <li><a href="qubelib.html#qubelib.captureparam.CaptureParam.sel_dsp_units_to_enable">sel_dsp_units_to_enable() (qubelib.captureparam.CaptureParam のメソッド)</a>
 </li>
       <li><a href="qubelib.html#qubelib.capturectrl.CaptureCtrl.select_trigger_awg">select_trigger_awg() (qubelib.capturectrl.CaptureCtrl のメソッド)</a>
@@ -599,6 +663,10 @@
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.set_wave_seqeuence">set_wave_seqeuence() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
 </li>
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.set_wave_startable_block_timing">set_wave_startable_block_timing() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
+</li>
+      <li><a href="qubelib.html#qubelib.awgwave.SinWave">SinWave (qubelib.awgwave のクラス)</a>
+</li>
+      <li><a href="qubelib.html#qubelib.awgwave.SquareWave">SquareWave (qubelib.awgwave のクラス)</a>
 </li>
       <li><a href="qubelib.html#qubelib.awgctrl.AwgCtrl.start_awgs">start_awgs() (qubelib.awgctrl.AwgCtrl のメソッド)</a>
 </li>
@@ -729,6 +797,8 @@
         <li><a href="qubelib.html#module-qubelib">qubelib</a>
 </li>
         <li><a href="qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl</a>
+</li>
+        <li><a href="qubelib.html#module-qubelib.awgwave">qubelib.awgwave</a>
 </li>
         <li><a href="qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl</a>
 </li>

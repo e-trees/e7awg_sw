@@ -130,6 +130,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -154,6 +155,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -179,8 +181,8 @@
     <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 
-<div class="viewcode-block" id="plot_graph"><a class="viewcode-back" href="../../qubelib.html#qubelib.utiltool.plot_graph">[ドキュメント]</a><span class="k">def</span> <span class="nf">plot_graph</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">freq</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="viewcode-block" id="plot_graph"><a class="viewcode-back" href="../../qubelib.html#qubelib.utiltool.plot_graph">[ドキュメント]</a><span class="k">def</span> <span class="nf">plot_graph</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#b44c97&#39;</span><span class="p">):</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [us]&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>

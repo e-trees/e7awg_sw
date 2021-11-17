@@ -335,7 +335,7 @@ class AwgCtrl(object):
             *awg_id_list (AWG): エラーを調べる AWG の ID
 
         Returns:
-            {AWG -> list of AwgErr} or None:
+            {AWG -> list of AwgErr}:
             | key = AWG ID
             | value = 発生したエラーのリスト
             | エラーが無かった場合は空の Dict.

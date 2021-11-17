@@ -8,8 +8,8 @@ finally:
     import matplotlib.pyplot as plt
 
 
-def plot_graph(freq, samples, color, title, filepath):
-    time = np.linspace(0, 1000000 * len(samples) / freq, len(samples), endpoint=False)
+def plot_graph(sampling_rate, samples, title, filepath, color = '#b44c97'):
+    time = np.linspace(0, 1000000 * len(samples) / sampling_rate, len(samples), endpoint=False)
     plt.figure(figsize=(8, 6), dpi=300)
     plt.xlabel("Time [us]")
     plt.title(title)

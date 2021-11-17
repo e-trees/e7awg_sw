@@ -14,6 +14,14 @@ qubelib.awgctrl module
    :undoc-members:
    :show-inheritance:
 
+qubelib.awgwave module
+----------------------
+
+.. automodule:: qubelib.awgwave
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 qubelib.capturectrl module
 --------------------------
 

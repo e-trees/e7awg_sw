@@ -103,18 +103,18 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
         plot_graph(
             sampling_rate, 
             i_data, 
-            '#b44c97', 
             '{}_{}_I'.format(prefix, id), 
-            dir + '/{}_{}_I.png'.format(prefix, id))
+            dir + '/{}_{}_I.png'.format(prefix, id),
+            '#b44c97')
 
         # Q データグラフ保存
         q_data = [sample[1] for sample in samples]
         plot_graph(
             sampling_rate,
             q_data, 
-            '#00a497', 
             '{}_{}_Q'.format(prefix, id), 
-            dir + '/{}_{}_Q.png'.format(prefix, id))
+            dir + '/{}_{}_Q.png'.format(prefix, id),
+            '#00a497')
 
 def check_err(awg_ctrl, cap_ctrl):
     awg_to_err = awg_ctrl.check_err(*AWG.all())

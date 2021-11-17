@@ -145,6 +145,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.exception">qubelib.exception module</a></li>
@@ -169,6 +170,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.exception">qubelib.exception module</a></li>
@@ -231,7 +233,7 @@
 </div>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">{AWG -&gt; list of AwgErr} or None</td>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">{AWG -&gt; list of AwgErr}</td>
 </tr>
 </tbody>
 </table>
@@ -406,6 +408,383 @@
 </tr>
 <tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#qubelib.exception.CaptureUnitTimeoutError" title="qubelib.exception.CaptureUnitTimeoutError"><strong>CaptureUnitTimeoutError</strong></a> -- タイムアウトした場合</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-qubelib.awgwave">
+<span id="qubelib-awgwave-module"></span><h2>qubelib.awgwave module<a class="headerlink" href="#module-qubelib.awgwave" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">IqWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">i_wave</span></span></em>, <em><span class="n"><span class="pre">q_wave</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>I/Q 波形クラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">i_wave</span></span></em>, <em><span class="n"><span class="pre">q_wave</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>i_wave</strong> (<a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><em>ParameterizedWave</em></a>) -- I 相の波形オブジェクト</li>
+<li><strong>q_wave</strong> (<a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><em>ParameterizedWave</em></a>) -- Q 相の波形オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave.gen_samples">
+<code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em>, <em><span class="n"><span class="pre">padding_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>I/Q 波形を生成する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>sampling_rate</strong> (<em>int</em><em> or </em><em>float</em>) -- サンプリングレート (単位: サンプル数/秒)</li>
+<li><strong>padding_size</strong> (<em>int</em>) -- 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">I 相と Q 相のサンプルのタプルのリスト.</div>
+<div class="line">タプルの 0 番目に I データが格納され, 1 番目に Q データが格納される.</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body"><p class="first last">list of (int, int)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave.i_wave">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">i_wave</span></code><a class="headerlink" href="#qubelib.awgwave.IqWave.i_wave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>I 相の波形オブジェクト</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">I 相の波形オブジェクト</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">subclass of ParameterizedWave</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave.q_wave">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">q_wave</span></code><a class="headerlink" href="#qubelib.awgwave.IqWave.q_wave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>Q 相の波形オブジェクト</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">Q 相の波形オブジェクト</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">subclass of ParameterizedWave</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">ParameterizedWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="n"><span class="pre">phase</span></span></em>, <em><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#ParameterizedWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>パラメータで表される波形のベースクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="n"><span class="pre">phase</span></span></em>, <em><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#ParameterizedWave.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_cycles</strong> (<em>int</em>) -- サイクル数</li>
+<li><strong>frequency</strong> (<em>int</em><em> or </em><em>float</em>) -- 周波数 (単位: Hz)</li>
+<li><strong>amplitude</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅</li>
+<li><strong>phase</strong> (<em>int</em><em> or </em><em>float</em>) -- 位相 (単位: radian)</li>
+<li><strong>offset</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅オフセット</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.amplitude">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">amplitude</span></code><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.amplitude" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>振幅</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">振幅</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.frequency">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">frequency</span></code><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.frequency" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>Hz)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">周波数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">周波数 (単位</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.gen_samples">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#ParameterizedWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.num_cycles">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_cycles</span></code><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.num_cycles" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>サイクル数</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">サイクル数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.offset">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">offset</span></code><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.offset" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>振幅オフセット</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">振幅オフセット</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.ParameterizedWave.phase">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">phase</span></code><a class="headerlink" href="#qubelib.awgwave.ParameterizedWave.phase" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>radian)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">位相</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">位相 (単位</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.SawtoothWave">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">SawtoothWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">crest_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SawtoothWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SawtoothWave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><code class="xref py py-class docutils literal notranslate"><span class="pre">qubelib.awgwave.ParameterizedWave</span></code></a></p>
+<p>ノコギリ波クラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SawtoothWave.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">crest_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SawtoothWave.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SawtoothWave.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_cycles</strong> (<em>int</em>) -- サイクル数</li>
+<li><strong>frequency</strong> (<em>int</em><em> or </em><em>float</em>) -- 周波数 (単位: Hz)</li>
+<li><strong>amplitude</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅</li>
+<li><strong>phase</strong> (<em>int</em><em> or </em><em>float</em>) -- 位相 (単位: radian)</li>
+<li><strong>offset</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅オフセット</li>
+<li><strong>crest_pos</strong> (<em>int</em><em> or </em><em>float</em>) -- <div class="line-block">
+<div class="line">ノコギリ波の頂点の位置. (0.0 ~ 1.0)</div>
+<div class="line">0 のとき, 各サイクルの先頭に頂点がくるような波となる.</div>
+<div class="line">1 のとき, 各サイクルの末尾に頂点がくるような波となる.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.SawtoothWave.crest_pos">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">crest_pos</span></code><a class="headerlink" href="#qubelib.awgwave.SawtoothWave.crest_pos" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ノコギリ波の頂点の位置</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">ノコギリ波の頂点の位置</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SawtoothWave.gen_samples">
+<code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SawtoothWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SawtoothWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このオブジェクトのパラメータに従うノコギリ波のサンプルリストを生成する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sampling_rate</strong> (<em>int</em><em> or </em><em>float</em>) -- サンプリングレート (単位: サンプル数/秒)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">ノコギリ波のサンプルリスト</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.SinWave">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">SinWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SinWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SinWave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><code class="xref py py-class docutils literal notranslate"><span class="pre">qubelib.awgwave.ParameterizedWave</span></code></a></p>
+<p>正弦波クラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SinWave.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SinWave.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SinWave.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_cycles</strong> (<em>int</em>) -- サイクル数</li>
+<li><strong>frequency</strong> (<em>int</em><em> or </em><em>float</em>) -- 周波数 (単位: Hz)</li>
+<li><strong>amplitude</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅</li>
+<li><strong>phase</strong> (<em>int</em><em> or </em><em>float</em>) -- 位相 (単位: radian)</li>
+<li><strong>offset</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅オフセット</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SinWave.gen_samples">
+<code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SinWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SinWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このオブジェクトのパラメータに従う sin 波のサンプルリストを生成する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sampling_rate</strong> (<em>int</em><em> or </em><em>float</em>) -- サンプリングレート (単位: サンプル数/秒)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">sin 波のサンプルリスト</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.SquareWave">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">SquareWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">duty_cycle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SquareWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SquareWave" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><code class="xref py py-class docutils literal notranslate"><span class="pre">qubelib.awgwave.ParameterizedWave</span></code></a></p>
+<p>方形波クラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SquareWave.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">duty_cycle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SquareWave.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SquareWave.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_cycles</strong> (<em>int</em>) -- サイクル数</li>
+<li><strong>frequency</strong> (<em>int</em><em> or </em><em>float</em>) -- 周波数 (単位: Hz)</li>
+<li><strong>amplitude</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅</li>
+<li><strong>phase</strong> (<em>int</em><em> or </em><em>float</em>) -- 位相 (単位: radian)</li>
+<li><strong>offset</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅オフセット</li>
+<li><strong>duty_cycle</strong> (<em>int</em><em> or </em><em>float</em>) -- デューティ比 (0.0 ~ 1.0)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.SquareWave.duty_cycle">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">duty_cycle</span></code><a class="headerlink" href="#qubelib.awgwave.SquareWave.duty_cycle" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>デューティ比</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">デューティ比</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.SquareWave.gen_samples">
+<code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#SquareWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.SquareWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このオブジェクトのパラメータに従う方形波のサンプルリストを生成する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sampling_rate</strong> (<em>int</em><em> or </em><em>float</em>) -- サンプリングレート (単位: サンプル数/秒)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">方形波のサンプルリスト</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of int</td>
 </tr>
 </tbody>
 </table>
@@ -660,15 +1039,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qubelib.captureparam.CaptureParam.MAX_SUM_RAMGE_LEN">
 <code class="sig-name descname"><span class="pre">MAX_SUM_RAMGE_LEN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1024</span></em><a class="headerlink" href="#qubelib.captureparam.CaptureParam.MAX_SUM_RAMGE_LEN" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>キャプチャワード)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">オーバーフローせずに総和可能な総和範囲の長さ (単位</td>
-</tr>
-</tbody>
-</table>
+<dd><p>オーバーフローせずに総和可能な総和範囲の長さ (単位：キャプチャワード)</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1411,7 +1782,7 @@
 <span id="qubelib-utiltool-module"></span><h2>qubelib.utiltool module<a class="headerlink" href="#module-qubelib.utiltool" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="qubelib.utiltool.plot_graph">
-<code class="sig-prename descclassname"><span class="pre">qubelib.utiltool.</span></code><code class="sig-name descname"><span class="pre">plot_graph</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">freq</span></span></em>, <em><span class="n"><span class="pre">samples</span></span></em>, <em><span class="n"><span class="pre">color</span></span></em>, <em><span class="n"><span class="pre">title</span></span></em>, <em><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/utiltool.html#plot_graph"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.utiltool.plot_graph" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">qubelib.utiltool.</span></code><code class="sig-name descname"><span class="pre">plot_graph</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em>, <em><span class="n"><span class="pre">samples</span></span></em>, <em><span class="n"><span class="pre">title</span></span></em>, <em><span class="n"><span class="pre">filepath</span></span></em>, <em><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#b44c97'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/utiltool.html#plot_graph"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.utiltool.plot_graph" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1681,7 +2052,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
-<li><strong>samples</strong> (<em>list of</em><em> (</em><em>int</em><em>, </em><em>int</em><em>)</em>) -- <div class="line-block">
+<li><strong>iq_samples</strong> (<em>list of</em><em> (</em><em>int</em><em>, </em><em>int</em><em>)</em>) -- <div class="line-block">
 <div class="line">各サンプルの I データと Q データを格納したタプルのリスト.</div>
 <div class="line">タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.</div>
 <div class="line">リストの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.</div>
@@ -1689,7 +2060,7 @@
 </div>
 </li>
 <li><strong>num_blank_words</strong> (<em>int</em>) -- <div class="line-block">
-<div class="line">追加する波形チャンク内で samples に続く 0 データ (ポストブランク) の長さ.</div>
+<div class="line">追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</div>
 <div class="line">単位は AWG ワード数.</div>
 <div class="line">1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 </div>

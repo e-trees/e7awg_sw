@@ -130,6 +130,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -154,6 +155,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../qubelib.html#module-qubelib">qubelib namespace</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgctrl">qubelib.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.awgwave">qubelib.awgwave module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.capturectrl">qubelib.capturectrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
@@ -211,13 +213,13 @@
         <span class="sd">&quot;&quot;&quot;波形チャンクを追加する</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            samples (list of (int, int)):</span>
+<span class="sd">            iq_samples (list of (int, int)):</span>
 <span class="sd">                | 各サンプルの I データと Q データを格納したタプルのリスト.</span>
 <span class="sd">                | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.</span>
 <span class="sd">                | リストの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.</span>
 <span class="sd">                | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)</span>
 <span class="sd">            num_blank_words (int): </span>
-<span class="sd">                | 追加する波形チャンク内で samples に続く 0 データ (ポストブランク) の長さ.</span>
+<span class="sd">                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</span>
 <span class="sd">                | 単位は AWG ワード数.</span>
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">            num_repeats (int): 追加する波形チャンクを繰り返す回数</span>
@@ -230,10 +232,11 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty sample list was set.&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">num_samples</span> <span class="o">%</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The number of samples in a wave chunk must be a multiple of </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The number of samples in a wave chunk must be a multiple of </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span><span class="p">))</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># 4 bytes で表せる数かどうかチェック</span>
+            <span class="c1"># 2 bytes で表せる数かどうかチェック</span>
             <span class="k">for</span> <span class="n">iq_sample</span> <span class="ow">in</span> <span class="n">iq_samples</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span>

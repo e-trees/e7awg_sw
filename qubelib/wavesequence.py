@@ -40,13 +40,13 @@ class WaveSequence(object):
         """波形チャンクを追加する
 
         Args:
-            samples (list of (int, int)):
+            iq_samples (list of (int, int)):
                 | 各サンプルの I データと Q データを格納したタプルのリスト.
                 | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.
                 | リストの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.
                 | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)
             num_blank_words (int): 
-                | 追加する波形チャンク内で samples に続く 0 データ (ポストブランク) の長さ.
+                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.
                 | 単位は AWG ワード数.
                 | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
             num_repeats (int): 追加する波形チャンクを繰り返す回数
@@ -59,10 +59,11 @@ class WaveSequence(object):
             raise ValueError('Empty sample list was set.')
 
         if num_samples % NUM_SAMPLES_IN_WAVE_BLOCK != 0:
-            raise ValueError('The number of samples in a wave chunk must be a multiple of {}.'.format(NUM_SAMPLES_IN_WAVE_BLOCK))
+            raise ValueError(
+                'The number of samples in a wave chunk must be a multiple of {}.'.format(NUM_SAMPLES_IN_WAVE_BLOCK))
 
         try:
-            # 4 bytes で表せる数かどうかチェック
+            # 2 bytes で表せる数かどうかチェック
             for iq_sample in iq_samples:
                 if len(iq_sample) != 2:
                     raise Exception

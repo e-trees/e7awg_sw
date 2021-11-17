@@ -19,7 +19,8 @@ class CaptureParam(object):
 
     MAX_SUM_SECTION_LEN = 0xFFFFFFFE   #: 最大総和区間長
     MAX_POST_BLANK_LEN = 0xFFFFFFFF    #: 最大ポストブランク長
-    MAX_SUM_RAMGE_LEN = 1024           #: オーバーフローせずに総和可能な総和範囲の長さ (単位: キャプチャワード)
+
+    MAX_SUM_RAMGE_LEN = 1024           #: オーバーフローせずに総和可能な総和範囲の長さ (単位：キャプチャワード)
     
     NUM_SAMPLES_IN_ADC_WORD = NUM_SAMPLES_IN_ADC_WORD #: 1 キャプチャワード当たりのサンプル数
 
