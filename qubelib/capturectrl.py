@@ -254,8 +254,8 @@ class CaptureCtrl(object):
         """
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
-        if not AWG.includes(*capture_unit_id_list):
-            raise ValueError('Invalid AWG ID {}'.format(*capture_unit_id_list))
+        if not CaptureUnit.includes(*capture_unit_id_list):
+            raise ValueError('Invalid Capture Unit ID {}'.format(*capture_unit_id_list))
 
         start = time.time()
         while True:
