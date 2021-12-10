@@ -135,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -160,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -179,6 +181,7 @@
 <span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="AwgCtrl"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgctrl.AwgCtrl">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgCtrl</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -195,17 +198,28 @@
     <span class="c1">#: AWG のサンプリングレート (単位=サンプル数/秒)</span>
     <span class="n">SAMPLING_RATE</span> <span class="o">=</span> <span class="mi">500000000</span>
 
-<div class="viewcode-block" id="AwgCtrl.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgctrl.AwgCtrl.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">):</span>
+<div class="viewcode-block" id="AwgCtrl.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgctrl.AwgCtrl.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable_lib_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">get_null_logger</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 &#39;10.0.0.16&#39;)</span>
+<span class="sd">            enable_lib_log (bool):</span>
+<span class="sd">                | True -&gt; ライブラリの標準のログ機能を有効にする.</span>
+<span class="sd">                | False -&gt; ライブラリの標準のログ機能を無効にする.</span>
+<span class="sd">            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="p">[</span><span class="n">logger</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">enable_lib_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_file_logger</span><span class="p">())</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid IP Address </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span> <span class="o">=</span> <span class="n">AwgRegAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">AWG_REG_PORT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span> <span class="o">=</span> <span class="n">WaveRamAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">)</span></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid IP Address </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span> <span class="o">=</span> <span class="n">AwgRegAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">AWG_REG_PORT</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span> <span class="o">=</span> <span class="n">WaveRamAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AwgCtrl.set_wave_seqeuence"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgctrl.AwgCtrl.set_wave_seqeuence">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_wave_seqeuence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">):</span>
@@ -215,10 +229,14 @@
 <span class="sd">            awg_id (AWG): 波形シーケンスを設定する AWG の ID</span>
 <span class="sd">            wave_seq (WaveSequence): 設定する波形シーケンス</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wave_seq</span><span class="p">,</span> <span class="n">WaveSequence</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid wave sequence </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wave_seq</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wave_seq</span><span class="p">,</span> <span class="n">WaveSequence</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid wave sequence </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wave_seq</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="n">chunk_addr_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calc_chunk_addr</span><span class="p">(</span><span class="n">awg_id</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__check_wave_seq_data_size</span><span class="p">(</span><span class="n">awg_id</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">,</span> <span class="n">chunk_addr_list</span><span class="p">)</span>
@@ -262,9 +280,10 @@
         <span class="n">end_addr</span> <span class="o">=</span> <span class="n">chunk_addr_list</span><span class="p">[</span><span class="n">last_chunk_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="n">last_chunk_idx</span><span class="p">)</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">num_bytes</span>
         <span class="k">if</span> <span class="n">end_addr</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AWG_WAVE_SRC_ADDR</span><span class="p">[</span><span class="n">awg_id</span><span class="p">]:</span>
             <span class="n">ram_size</span> <span class="o">=</span> <span class="n">end_addr</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__AWG_WAVE_SRC_ADDR</span><span class="p">[</span><span class="n">awg_id</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Too much RAM space is required for the wave sequence for AWG </span><span class="si">{}</span><span class="s2">.  (</span><span class="si">{}</span><span class="s2"> bytes)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id</span><span class="p">,</span> <span class="n">ram_size</span><span class="p">)</span> <span class="o">+</span> 
-                <span class="s2">&quot;The maximum RAM size for a wave sequence is </span><span class="si">{}</span><span class="s2"> bytes.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Too much RAM space is required for the wave sequence for AWG </span><span class="si">{}</span><span class="s2">.  (</span><span class="si">{}</span><span class="s2"> bytes)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id</span><span class="p">,</span> <span class="n">ram_size</span><span class="p">)</span> <span class="o">+</span>
+                   <span class="s2">&quot;The maximum RAM size for a wave sequence is </span><span class="si">{}</span><span class="s2"> bytes.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE</span><span class="p">))</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="AwgCtrl.initialize"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgctrl.AwgCtrl.initialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -289,7 +308,9 @@
 <span class="sd">            *awg_id_list (list of AWG): 有効化する AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
@@ -305,7 +326,9 @@
 <span class="sd">            *awg_id_list (list of AWG): 無効化する AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
@@ -345,7 +368,9 @@
 <span class="sd">            *awg_id_list (list of AWG): 強制終了する AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
@@ -362,7 +387,9 @@
 <span class="sd">            *awg_id_list (list of AWG): リセットする AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
@@ -380,12 +407,16 @@
 <span class="sd">            *awg_id_list (list of AWG): 波形の送信が終了するのを待つ AWG の ID</span>
 <span class="sd">        </span>
 <span class="sd">        Raises:</span>
-<span class="sd">            CaptureUnitTimeoutError: タイムアウトした場合</span>
+<span class="sd">            AwgTimeoutError: タイムアウトした場合</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -401,16 +432,22 @@
 
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="s1">&#39;AWG stop timeout&#39;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;AWG stop timeout&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">__wait_for_awgs_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
-        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">all_ready</span> <span class="o">=</span> <span class="kc">True</span>
@@ -425,16 +462,22 @@
 
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="s2">&quot;AWG ready timed out&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;AWG ready timed out&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">__wait_for_awgs_idle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
-        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">all_idle</span> <span class="o">=</span> <span class="kc">True</span>
@@ -449,7 +492,9 @@
 
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="s2">&quot;AWG idle timed out&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;AWG idle timed out&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">AwgTimeoutError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
 
 
@@ -466,11 +511,15 @@
 <span class="sd">                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)</span>
 <span class="sd">            *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">interval</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid interval </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
-        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">interval</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid interval </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">interval</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                 <span class="n">WaveParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="n">WaveParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">WAVE_STARTABLE_BLOCK_INTERVAL</span><span class="p">,</span> <span class="n">interval</span><span class="p">)</span></div>
@@ -480,7 +529,7 @@
         <span class="sd">&quot;&quot;&quot;引数で指定した AWG から波形を送信可能なタイミングを取得する.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            awg_id_list (list of AWG): 波形を送信可能なタイミングを取得する AWG の ID</span>
+<span class="sd">            *awg_id_list (list of AWG): 波形を送信可能なタイミングを取得する AWG の ID</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            {awg_id -&gt; int}: </span>
@@ -489,7 +538,9 @@
 <span class="sd">                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">awg_id_to_timimg</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
@@ -514,7 +565,9 @@
 <span class="sd">            | エラーが無かった場合は空の Dict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">awg_to_err</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>

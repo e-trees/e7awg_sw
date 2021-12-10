@@ -135,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -160,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -174,6 +176,7 @@
 <span></span><span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="WaveSequence"><a class="viewcode-back" href="../../qubelib.html#qubelib.wavesequence.WaveSequence">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveSequence</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; 波形シーケンスの情報を保持するクラス&quot;&quot;&quot;</span>
@@ -185,25 +188,37 @@
     <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="c1">#: 1 波形ブロック当たりのサンプル数</span>
     <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="c1">#: 1 AWG ワード当たりのサンプル数</span>
 
-<div class="viewcode-block" id="WaveSequence.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.wavesequence.WaveSequence.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_wait_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">):</span>
+<div class="viewcode-block" id="WaveSequence.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.wavesequence.WaveSequence.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_wait_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable_lib_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">get_null_logger</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            num_wait_words (int): </span>
 <span class="sd">                | 波形シーケンスの先頭に付く 0 データの長さ.  </span>
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">            num_repeats (int): 波形シーケンスを繰り返す回数</span>
+<span class="sd">            enable_lib_log (bool):</span>
+<span class="sd">                | True -&gt; ライブラリの標準のログ機能を有効にする.</span>
+<span class="sd">                | False -&gt; ライブラリの標準のログ機能を無効にする.</span>
+<span class="sd">            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_wait_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_wait_words</span> <span class="ow">and</span> <span class="n">num_wait_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_WAIT_WORDS</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The number of wait words must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_WAIT_WORDS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="p">[</span><span class="n">logger</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">enable_lib_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_file_logger</span><span class="p">())</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_SEQUENCE_REPEATS</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The number of times to repeat a wave sequence must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_SEQUENCE_REPEATS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_wait_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
+                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_wait_words</span> <span class="ow">and</span> <span class="n">num_wait_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_WAIT_WORDS</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The number of wait words must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_WAIT_WORDS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_SEQUENCE_REPEATS</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The number of times to repeat a wave sequence must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_SEQUENCE_REPEATS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">=</span> <span class="n">num_wait_words</span>
@@ -224,41 +239,45 @@
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">            num_repeats (int): 追加する波形チャンクを繰り返す回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid sample list  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">))</span>
-        
-        <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">num_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty sample list was set.&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">num_samples</span> <span class="o">%</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;The number of samples in a wave chunk must be a multiple of </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span><span class="p">))</span>
-
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># 2 bytes で表せる数かどうかチェック</span>
-            <span class="k">for</span> <span class="n">iq_sample</span> <span class="ow">in</span> <span class="n">iq_samples</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span>
-                <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">iq_sample</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_in_range</span><span class="p">(</span><span class="o">-</span><span class="mi">32768</span><span class="p">,</span> <span class="mh">0xFFFF</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid sample list  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">))</span>
+            
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty sample list was set.&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">num_samples</span> <span class="o">%</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;The number of samples in a wave chunk must be a multiple of </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span><span class="p">))</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># 2 bytes で表せる数かどうかチェック</span>
+                <span class="k">for</span> <span class="n">iq_sample</span> <span class="ow">in</span> <span class="n">iq_samples</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">Exception</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;An AWG sample value must be a pair of integers that can be expressed in 2 bytes.  (err val = &#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">iq_sample</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_in_range</span><span class="p">(</span><span class="o">-</span><span class="mi">32768</span><span class="p">,</span> <span class="mh">0xFFFF</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="ne">Exception</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;An AWG sample value must be a pair of integers that can be expressed in 2 bytes.  (err val = &#39;</span><span class="si">{}</span><span class="s2">&#39;)&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_blank_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_blank_words</span> <span class="ow">and</span> <span class="n">num_blank_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_POST_BLANK_LEN</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Post blank length must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_POST_BLANK_LEN</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_blank_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
+                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_blank_words</span> <span class="ow">and</span> <span class="n">num_blank_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_POST_BLANK_LEN</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Post blank length must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_POST_BLANK_LEN</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNK_REPEATS</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The number of times to repeat a wave chunk must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNK_REPEATS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNK_REPEATS</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The number of times to repeat a wave chunk must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNK_REPEATS</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WaveChunk</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span></div>
 
@@ -354,8 +373,8 @@
 <span class="sd">            list of (int, int): 波形サンプルデータのリスト.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_wait_words</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WaveSequence.all_samples"><a class="viewcode-back" href="../../qubelib.html#qubelib.wavesequence.WaveSequence.all_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
@@ -390,25 +409,28 @@
 <span class="sd">                | True -&gt; 16進数として保存</span>
 <span class="sd">                | False -&gt; 10進数として保存</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">txt_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-        <span class="n">first_zeros</span> <span class="o">=</span> <span class="s1">&#39;0</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
-        <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">first_zeros</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
-                            <span class="n">i_data</span> <span class="o">=</span> <span class="n">i_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">WAVE_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                            <span class="n">q_data</span> <span class="o">=</span> <span class="n">q_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">WAVE_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                            <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:7d}</span><span class="s1">, </span><span class="si">{:7d}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
-                        <span class="n">post_chunk_zeros</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">post_chunk_zeros</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:7d}</span><span class="s1">, </span><span class="si">{:7d}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
-                    <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">post_chunk_zeros</span><span class="p">)</span>
-        <span class="n">txt_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">txt_file</span><span class="p">:</span>
+                <span class="n">first_zeros</span> <span class="o">=</span> <span class="s1">&#39;0</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
+                <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">first_zeros</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
+                                    <span class="n">i_data</span> <span class="o">=</span> <span class="n">i_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">WAVE_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                                    <span class="n">q_data</span> <span class="o">=</span> <span class="n">q_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">WAVE_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                                    <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:7d}</span><span class="s1">, </span><span class="si">{:7d}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
+                                <span class="n">post_chunk_zeros</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">post_chunk_zeros</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:7d}</span><span class="s1">, </span><span class="si">{:7d}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">)</span>
+                            <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">post_chunk_zeros</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;num wait words : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span><span class="p">)</span> <span class="o">+</span>
@@ -430,7 +452,7 @@
 
     <span class="k">class</span> <span class="nc">__WaveSampleList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="n">loggers</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">chunk_list</span>
             <span class="k">if</span> <span class="n">include_wait_words</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_wait_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
@@ -439,6 +461,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_all_samples</span> <span class="o">-</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_wait_samples</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_repeats</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="n">loggers</span>
             
 
         <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -461,7 +484,9 @@
                 <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">key</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
-                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;The index [</span><span class="si">{}</span><span class="s2">: is out of range.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;The index [</span><span class="si">{}</span><span class="s1">] is out of range.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -481,7 +506,9 @@
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
                 <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Invalid argument type.&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid argument type.&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>

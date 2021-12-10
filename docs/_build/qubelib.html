@@ -150,6 +150,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -175,6 +176,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -194,7 +196,7 @@
 <span id="qubelib-awgctrl-module"></span><h2>qubelib.awgctrl module<a class="headerlink" href="#module-qubelib.awgctrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="qubelib.awgctrl.AwgCtrl">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgctrl.</span></code><code class="sig-name descname"><span class="pre">AwgCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgctrl.html#AwgCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgctrl.AwgCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgctrl.</span></code><code class="sig-name descname"><span class="pre">AwgCtrl</span></code><span class="sig-paren">(</span><em><span class="pre">ip_addr</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgctrl.html#AwgCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgctrl.AwgCtrl" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qubelib.awgctrl.AwgCtrl.SAMPLING_RATE">
@@ -204,12 +206,21 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qubelib.awgctrl.AwgCtrl.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgctrl.html#AwgCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgctrl.AwgCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="pre">ip_addr</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgctrl.html#AwgCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgctrl.AwgCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>ip_addr</strong> (<em>string</em>) -- AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</td>
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ip_addr</strong> (<em>string</em>) -- AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -291,7 +302,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>awg_id_list</strong> (<em>list of AWG</em>) -- 波形を送信可能なタイミングを取得する AWG の ID</td>
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*awg_id_list</strong> (<em>list of AWG</em>) -- 波形を送信可能なタイミングを取得する AWG の ID</td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
 <div class="line">key = AWG ID</div>
@@ -406,7 +417,7 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#qubelib.exception.CaptureUnitTimeoutError" title="qubelib.exception.CaptureUnitTimeoutError"><strong>CaptureUnitTimeoutError</strong></a> -- タイムアウトした場合</p>
+<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#qubelib.exception.AwgTimeoutError" title="qubelib.exception.AwgTimeoutError"><strong>AwgTimeoutError</strong></a> -- タイムアウトした場合</p>
 </td>
 </tr>
 </tbody>
@@ -797,7 +808,7 @@
 <span id="qubelib-capturectrl-module"></span><h2>qubelib.capturectrl module<a class="headerlink" href="#module-qubelib.capturectrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="qubelib.capturectrl.CaptureCtrl">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.capturectrl.</span></code><code class="sig-name descname"><span class="pre">CaptureCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/capturectrl.html#CaptureCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.capturectrl.CaptureCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.capturectrl.</span></code><code class="sig-name descname"><span class="pre">CaptureCtrl</span></code><span class="sig-paren">(</span><em><span class="pre">ip_addr</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/capturectrl.html#CaptureCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.capturectrl.CaptureCtrl" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qubelib.capturectrl.CaptureCtrl.MAX_CAPTURE_SAMPLES">
@@ -812,12 +823,21 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qubelib.capturectrl.CaptureCtrl.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/capturectrl.html#CaptureCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.capturectrl.CaptureCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="pre">ip_addr</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/capturectrl.html#CaptureCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.capturectrl.CaptureCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>ip_addr</strong> (<em>string</em>) -- キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</td>
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ip_addr</strong> (<em>string</em>) -- キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1009,7 +1029,7 @@
 <span id="qubelib-captureparam-module"></span><h2>qubelib.captureparam module<a class="headerlink" href="#module-qubelib.captureparam" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="qubelib.captureparam.CaptureParam">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.captureparam.</span></code><code class="sig-name descname"><span class="pre">CaptureParam</span></code><a class="reference internal" href="_modules/qubelib/captureparam.html#CaptureParam"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.captureparam.CaptureParam" title="この定義へのパーマリンク">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.captureparam.</span></code><code class="sig-name descname"><span class="pre">CaptureParam</span></code><span class="sig-paren">(</span><em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/captureparam.html#CaptureParam"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.captureparam.CaptureParam" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>キャプチャパラメータを保持するクラス</p>
 <dl class="py attribute">
@@ -1098,8 +1118,24 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qubelib.captureparam.CaptureParam.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/captureparam.html#CaptureParam.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.captureparam.CaptureParam.__init__" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/captureparam.html#CaptureParam.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.captureparam.CaptureParam.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qubelib.captureparam.CaptureParam.add_sum_section">
@@ -1778,6 +1814,29 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-qubelib.logger">
+<span id="qubelib-logger-module"></span><h2>qubelib.logger module<a class="headerlink" href="#module-qubelib.logger" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qubelib.logger.get_file_logger">
+<code class="sig-prename descclassname"><span class="pre">qubelib.logger.</span></code><code class="sig-name descname"><span class="pre">get_file_logger</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/logger.html#get_file_logger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.logger.get_file_logger" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qubelib.logger.get_null_logger">
+<code class="sig-prename descclassname"><span class="pre">qubelib.logger.</span></code><code class="sig-name descname"><span class="pre">get_null_logger</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/logger.html#get_null_logger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.logger.get_null_logger" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qubelib.logger.log_error">
+<code class="sig-prename descclassname"><span class="pre">qubelib.logger.</span></code><code class="sig-name descname"><span class="pre">log_error</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">msg</span></span></em>, <em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">loggers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/logger.html#log_error"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.logger.log_error" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qubelib.logger.log_warning">
+<code class="sig-prename descclassname"><span class="pre">qubelib.logger.</span></code><code class="sig-name descname"><span class="pre">log_warning</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">msg</span></span></em>, <em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">loggers</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/logger.html#log_warning"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.logger.log_warning" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-qubelib.utiltool">
 <span id="qubelib-utiltool-module"></span><h2>qubelib.utiltool module<a class="headerlink" href="#module-qubelib.utiltool" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py function">
@@ -1983,7 +2042,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="qubelib.wavesequence.WaveSequence">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.wavesequence.</span></code><code class="sig-name descname"><span class="pre">WaveSequence</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_wait_words</span></span></em>, <em><span class="n"><span class="pre">num_repeats</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/wavesequence.html#WaveSequence"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.wavesequence.WaveSequence" title="この定義へのパーマリンク">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.wavesequence.</span></code><code class="sig-name descname"><span class="pre">WaveSequence</span></code><span class="sig-paren">(</span><em><span class="pre">num_wait_words</span></em>, <em><span class="pre">num_repeats</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/wavesequence.html#WaveSequence"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.wavesequence.WaveSequence" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>波形シーケンスの情報を保持するクラス</p>
 <dl class="py attribute">
@@ -2024,7 +2083,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qubelib.wavesequence.WaveSequence.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_wait_words</span></span></em>, <em><span class="n"><span class="pre">num_repeats</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/wavesequence.html#WaveSequence.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.wavesequence.WaveSequence.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="pre">num_wait_words</span></em>, <em><span class="pre">num_repeats</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/wavesequence.html#WaveSequence.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.wavesequence.WaveSequence.__init__" title="この定義へのパーマリンク">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2036,6 +2095,12 @@
 </div>
 </li>
 <li><strong>num_repeats</strong> (<em>int</em>) -- 波形シーケンスを繰り返す回数</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
 </ul>
 </td>
 </tr>

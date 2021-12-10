@@ -135,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -160,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.captureparam">qubelib.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.exception">qubelib.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.hwdefs">qubelib.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.logger">qubelib.logger module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.utiltool">qubelib.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../qubelib.html#module-qubelib.wavesequence">qubelib.wavesequence module</a></li>
 </ul>
@@ -180,6 +182,7 @@
 <span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.captureparam</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="CaptureCtrl"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureCtrl</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -194,15 +197,26 @@
     <span class="c1">#: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)</span>
     <span class="n">SAMPLING_RATE</span> <span class="o">=</span> <span class="mi">500000000</span>
 
-<div class="viewcode-block" id="CaptureCtrl.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">):</span>
+<div class="viewcode-block" id="CaptureCtrl.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable_lib_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">get_null_logger</span><span class="p">()):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 &#39;10.0.0.16&#39;)</span>
+<span class="sd">            enable_lib_log (bool):</span>
+<span class="sd">                | True -&gt; ライブラリの標準のログ機能を有効にする.</span>
+<span class="sd">                | False -&gt; ライブラリの標準のログ機能を無効にする.</span>
+<span class="sd">            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="p">[</span><span class="n">logger</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">enable_lib_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_file_logger</span><span class="p">())</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid IP Address </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid IP Address </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span> <span class="o">=</span> <span class="n">CaptureRegAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">CAPTURE_REG_PORT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span> <span class="o">=</span> <span class="n">WaveRamAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">)</span></div>
 
@@ -214,17 +228,21 @@
 <span class="sd">            capture_unit_id (CaptureUnit): キャプチャパラメータを設定するキャプチャユニットの ID </span>
 <span class="sd">            param (CaptureParam): 設定するキャプチャパラメータ</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID  </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture param </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID  </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture param </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__check_capture_size</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_sum_sec_len</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_section_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_num_integ_sectinos</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">num_integ_sections</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__enable_dsp_units</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_capture_delay</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">capture_delay</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__set___CAPTURE_ADDR</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_capture_addr</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_comp_fir_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">complex_fir_coefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_real_fir_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_i_coefs</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_q_coefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_comp_window_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">complex_window_coefs</span><span class="p">)</span>
@@ -264,7 +282,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CAPTURE_DELAY</span><span class="p">,</span> <span class="n">capture_delay</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">__set___CAPTURE_ADDR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__set_capture_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;キャプチャアドレスの設定&quot;&quot;&quot;</span>
         <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CAPTURE_ADDR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">]</span> <span class="o">//</span> <span class="mi">32</span><span class="p">)</span>
@@ -363,7 +381,9 @@
 <span class="sd">            *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid capture unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
@@ -425,10 +445,14 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            CaptureUnitTimeoutError: タイムアウトした場合</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">timeout</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid timeout </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timeout</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid Capture Unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -446,7 +470,9 @@
                 
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CaptureUnitTimeoutError</span><span class="p">(</span><span class="s1">&#39;Capture unit stop timeout&#39;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Capture unit stop timeout&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CaptureUnitTimeoutError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span></div>
 
 
@@ -464,7 +490,9 @@
 <span class="sd">            | エラーが無かった場合は空の Dict.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid Capture Unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid Capture Unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="n">capture_unit_to_err</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
@@ -498,23 +526,27 @@
                 <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_cap_samples</span> <span class="o">//</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span>
 
             <span class="k">if</span> <span class="n">num_integ_vec_elems</span> <span class="o">&gt;</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
+                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         
         <span class="k">elif</span> <span class="n">num_cap_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">))</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
+                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">))</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">sum_sec_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">num_sum_sections</span><span class="p">):</span>
                 <span class="n">num_words_to_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.&#39;</span>
-                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;         If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
+                    <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
         <span class="n">num_words_in_sum_sec</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_section</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

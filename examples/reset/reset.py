@@ -1,7 +1,6 @@
 import sys
-import os
 import pathlib
-import math
+import argparse
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
@@ -14,7 +13,6 @@ def init_modules(awg_ctrl, cap_ctrl):
     awg_ctrl.enable_awgs(*AWG.all())
     cap_ctrl.initialize()
     cap_ctrl.enable_capture_units(*CaptureUnit.all())
-
 
 def main(mode):   
     awg_ctrl = AwgCtrl(IP_ADDR)
@@ -32,8 +30,15 @@ def main(mode):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode')
+    parser.add_argument('--ipaddr')
+    args = parser.parse_args()
+    if args.ipaddr is not None:
+        IP_ADDR = args.ipaddr
     try:
-        mode = int(sys.argv[1])
+        mode = int(args.mode)
     except Exception:
         mode = 0
+
     main(mode)

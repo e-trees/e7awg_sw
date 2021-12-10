@@ -1,6 +1,7 @@
 from .hwparam import *
 from .hwdefs import *
 import copy
+from .logger import *
 
 class CaptureParam(object):
     """ キャプチャパラメータを保持するクラス"""
@@ -24,7 +25,14 @@ class CaptureParam(object):
     
     NUM_SAMPLES_IN_ADC_WORD = NUM_SAMPLES_IN_ADC_WORD #: 1 キャプチャワード当たりのサンプル数
 
-    def __init__(self):
+    def __init__(self, *, enable_lib_log = True, logger = get_null_logger()):
+        """
+        Args:
+            enable_lib_log (bool):
+                | True -> ライブラリの標準のログ機能を有効にする.
+                | False -> ライブラリの標準のログ機能を無効にする.
+            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
+        """
         self.__num_integ_sections = 1
         self.__sumsections = []
         self.__dsp_units = []
@@ -35,6 +43,9 @@ class CaptureParam(object):
         self.__comp_window_coefs = [0 + 0j] * self.NUM_COMPLEXW_WINDOW_COEFS
         self.__sum_start_word_no = 0
         self.__num_words_to_sum = self.MAX_SUM_SECTION_LEN
+        self.__loggers = [logger]
+        if enable_lib_log:
+            self.__loggers.append(get_file_logger())
 
     @property
     def num_integ_sections(self):
@@ -50,9 +61,10 @@ class CaptureParam(object):
     @num_integ_sections.setter
     def num_integ_sections(self, val):
         if not (isinstance(val, int) and (1 <= val and val <= self.MAX_INTEG_SECTIONS)):
-            raise ValueError(
-                "The number of integration sections must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(1, self.MAX_INTEG_SECTIONS, val))
+            msg = ("The number of integration sections must be an integer between {} and {} inclusive.  '{}' was set."
+                  .format(1, self.MAX_INTEG_SECTIONS, val))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
         
         self.__num_integ_sections = val
 
@@ -68,20 +80,24 @@ class CaptureParam(object):
                 | ポストブランクの間のサンプルデータはキャプチャ対象にならない.
                 | 1 以上を指定すること.
         """
-        if (len(self.__sumsections) == self.MAX_SUM_SECTIONS):
-            raise ValueError("No more sum sections can be added. (max=" + str(self.MAX_SUM_SECTIONS) + ")")
+        try:
+            if (len(self.__sumsections) == self.MAX_SUM_SECTIONS):
+                raise ValueError("No more sum sections can be added. (max=" + str(self.MAX_SUM_SECTIONS) + ")")
 
-        if not (isinstance(num_words, int) and 
-                (1 <= num_words and num_words <= self.MAX_SUM_SECTION_LEN)):
-            raise ValueError(
-                "Sum sections length must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(1, self.MAX_SUM_SECTION_LEN, num_words))
+            if not (isinstance(num_words, int) and 
+                    (1 <= num_words and num_words <= self.MAX_SUM_SECTION_LEN)):
+                raise ValueError(
+                    "Sum sections length must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(1, self.MAX_SUM_SECTION_LEN, num_words))
 
-        if not (isinstance(num_post_blank_words, int) and 
-                (1 <= num_post_blank_words and num_post_blank_words <= self.MAX_POST_BLANK_LEN)):
-            raise ValueError(
-                "Post blank length must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(1, self.MAX_POST_BLANK_LEN, num_post_blank_words))
+            if not (isinstance(num_post_blank_words, int) and 
+                    (1 <= num_post_blank_words and num_post_blank_words <= self.MAX_POST_BLANK_LEN)):
+                raise ValueError(
+                    "Post blank length must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(1, self.MAX_POST_BLANK_LEN, num_post_blank_words))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         self.__sumsections.append((num_words, num_post_blank_words))
 
@@ -137,7 +153,9 @@ class CaptureParam(object):
             *dsp_units (DspUnit): 有効にする DSP ユニットの ID
         """
         if not DspUnit.includes(*dsp_units):
-            raise ValueError('Invalid DSP Unit  {}'.format(dsp_units))
+            msg = 'Invalid DSP Unit  {}'.format(dsp_units)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
         self.__dsp_units = dsp_units
 
     @property
@@ -173,9 +191,10 @@ class CaptureParam(object):
     @capture_delay.setter
     def capture_delay(self, val):
         if not (isinstance(val, int) and (0 <= val and val <= self.MAX_CAPTURE_DELAY)):
-            raise ValueError(
-                "Capture Delay must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(0, self.MAX_CAPTURE_DELAY, val))
+            msg = ("Capture Delay must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(0, self.MAX_CAPTURE_DELAY, val))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
         self.__capture_delay = val
 
     @property
@@ -194,29 +213,34 @@ class CaptureParam(object):
 
     @complex_fir_coefs.setter
     def complex_fir_coefs(self, val):
-        if not isinstance(val, list):
-            raise ValueError('Invalid coefficient list  ({})'.format(val))
+        try:
+            if not isinstance(val, list):
+                raise ValueError('Invalid coefficient list  ({})'.format(val))
 
-        num_coefs = len(val)
-        if num_coefs == 0:
-            raise ValueError('Empty coefficient list was set.')
+            num_coefs = len(val)
+            if num_coefs == 0:
+                raise ValueError('Empty coefficient list was set.')
 
-        if num_coefs > self.NUM_COMPLEX_FIR_COEFS:
-            raise ValueError(
-                'Complex FIR filter has up to {} coefficients.  {} coefficients were set.'
-                .format(self.NUM_COMPLEX_FIR_COEFS, num_coefs))
-        
-        if not all([isinstance(coef, (float, int, complex)) for coef in val]):
-            raise ValueError("The type of complex FIR coefficients must be 'complex', 'float' or 'int'.")
+            if num_coefs > self.NUM_COMPLEX_FIR_COEFS:
+                raise ValueError(
+                    'Complex FIR filter has up to {} coefficients.  {} coefficients were set.'
+                    .format(self.NUM_COMPLEX_FIR_COEFS, num_coefs))
+            
+            if not all([isinstance(coef, (float, int, complex)) for coef in val]):
+                raise ValueError("The type of complex FIR coefficients must be 'complex', 'float' or 'int'.")
 
-        val = [complex(coef) for coef in val] + [0 + 0j] * (self.NUM_COMPLEX_FIR_COEFS - num_coefs)
-        if not all([coef.real.is_integer() and coef.imag.is_integer() for coef in val]):
-            raise ValueError('Each part of a complex FIR coefficient must be an integer.')
+            val = [complex(coef) for coef in val] + [0 + 0j] * (self.NUM_COMPLEX_FIR_COEFS - num_coefs)
+            if not all([coef.real.is_integer() and coef.imag.is_integer() for coef in val]):
+                raise ValueError('Each part of a complex FIR coefficient must be an integer.')
 
-        if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef.real) and 
-                    self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef.imag)
-                    for coef in val]):
-            raise ValueError('Each part of a complex FIR coefficient must be {} ~ {}.'.format(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL))
+            if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef.real) and 
+                        self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef.imag)
+                        for coef in val]):
+                raise ValueError('Each part of a complex FIR coefficient must be {} ~ {}.'
+                    .format(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         self.__comp_fir_coefs = val
 
@@ -260,26 +284,31 @@ class CaptureParam(object):
 
     def __check_real_fir_coef_set(self, val):
         """実数 FIR の係数が正常かどうかチェック"""
-        if not isinstance(val, list):
-            raise ValueError('Invalid coefficient list  ({})'.format(val))
-        
-        num_coefs = len(val)
-        if num_coefs == 0:
-            raise ValueError('Empty coefficient list was set.')
+        try:
+            if not isinstance(val, list):
+                raise ValueError('Invalid coefficient list  ({})'.format(val))
+            
+            num_coefs = len(val)
+            if num_coefs == 0:
+                raise ValueError('Empty coefficient list was set.')
 
-        if num_coefs > self.NUM_REAL_FIR_COEFS:
-            raise ValueError(
-                'Real FIR filter has up to {} coefficients.  {} coefficients were set.'
-                .format(self.NUM_REAL_FIR_COEFS, num_coefs))
-        
-        if not all([isinstance(coef, (int, float)) for coef in val]):
-            raise ValueError("The type of real FIR coefficients must be 'int' or 'float'.")
+            if num_coefs > self.NUM_REAL_FIR_COEFS:
+                raise ValueError(
+                    'Real FIR filter has up to {} coefficients.  {} coefficients were set.'
+                    .format(self.NUM_REAL_FIR_COEFS, num_coefs))
+            
+            if not all([isinstance(coef, (int, float)) for coef in val]):
+                raise ValueError("The type of real FIR coefficients must be 'int' or 'float'.")
 
-        if not all([float(coef).is_integer() for coef in val]):
-            raise ValueError('Real FIR coefficients must be an integer.')
+            if not all([float(coef).is_integer() for coef in val]):
+                raise ValueError('Real FIR coefficients must be an integer.')
 
-        if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef) for coef in val]):
-            raise ValueError('Real FIR coefficients must be {} ~ {}.'.format(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL))
+            if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef) for coef in val]):
+                raise ValueError('Real FIR coefficients must be {} ~ {}.'
+                    .format(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
     @property
     def complex_window_coefs(self):
@@ -297,32 +326,36 @@ class CaptureParam(object):
 
     @complex_window_coefs.setter
     def complex_window_coefs(self, val):
-        if not isinstance(val, list):
-            raise ValueError('Invalid coefficient list  ({})'.format(val))
+        try:
+            if not isinstance(val, list):
+                raise ValueError('Invalid coefficient list  ({})'.format(val))
 
-        num_coefs = len(val)
-        if num_coefs == 0:
-            raise ValueError('Empty coefficient list was set.')
+            num_coefs = len(val)
+            if num_coefs == 0:
+                raise ValueError('Empty coefficient list was set.')
 
-        if num_coefs > self.NUM_COMPLEXW_WINDOW_COEFS:
-            raise ValueError(
-                'Complex window has up to {} coefficients.  {} coefficients were set.'
-                .format(self.NUM_COMPLEXW_WINDOW_COEFS, num_coefs))
-        
-        if not all([isinstance(coef, (float, int, complex)) for coef in val]):
-            raise ValueError("The type of complex window coefficients must be 'complex', 'float' or 'int'.")
+            if num_coefs > self.NUM_COMPLEXW_WINDOW_COEFS:
+                raise ValueError(
+                    'Complex window has up to {} coefficients.  {} coefficients were set.'
+                    .format(self.NUM_COMPLEXW_WINDOW_COEFS, num_coefs))
+            
+            if not all([isinstance(coef, (float, int, complex)) for coef in val]):
+                raise ValueError("The type of complex window coefficients must be 'complex', 'float' or 'int'.")
 
-        val = [complex(coef) for coef in val] + [0 + 0j] * (self.NUM_COMPLEXW_WINDOW_COEFS - num_coefs)
-        if not all([coef.real.is_integer() and coef.imag.is_integer() for coef in val]):
-            raise ValueError('Each part of a complex window coefficient must be an integer.')
+            val = [complex(coef) for coef in val] + [0 + 0j] * (self.NUM_COMPLEXW_WINDOW_COEFS - num_coefs)
+            if not all([coef.real.is_integer() and coef.imag.is_integer() for coef in val]):
+                raise ValueError('Each part of a complex window coefficient must be an integer.')
 
-        if not all([self.__is_in_range(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL, coef.real) and 
-                    self.__is_in_range(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL, coef.imag)
-                    for coef in val]):
-            raise ValueError(
-                'Each part of a complex window coefficient must be {} ~ {}.'
-                .format(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL))
-        
+            if not all([self.__is_in_range(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL, coef.real) and 
+                        self.__is_in_range(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL, coef.imag)
+                        for coef in val]):
+                raise ValueError(
+                    'Each part of a complex window coefficient must be {} ~ {}.'
+                    .format(self.MIN_WINDOW_COEF_VAL, self.MAX_WINDOW_COEF_VAL))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
+
         self.__comp_window_coefs = val
     
     def calc_capture_samples(self):
@@ -375,9 +408,10 @@ class CaptureParam(object):
     def sum_start_word_no(self, val):
         if not (isinstance(val, int) and 
                 (0 <= val and val <= self.MAX_SUM_SECTION_LEN)):
-            raise ValueError(
-                "Sum start word number must be an integer between {} and {} inclusive.  '{}' was set."
+            msg = ("Sum start word number must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(0, self.MAX_SUM_SECTION_LEN, val))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
         self.__sum_start_word_no = val
 
     @property
@@ -403,9 +437,10 @@ class CaptureParam(object):
     @num_words_to_sum.setter
     def num_words_to_sum(self, val):
         if not (isinstance(val, int) and (1 <= val)):
-            raise ValueError(
-                "The number of capture words to be added up must be greater than or equal to 1.  '{}' was set."
+            msg = ("The number of capture words to be added up must be greater than or equal to 1.  '{}' was set."
                 .format(val))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
         self.__num_words_to_sum = val
 
     def __is_in_range(self, min, max, val):

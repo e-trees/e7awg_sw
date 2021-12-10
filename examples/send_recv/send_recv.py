@@ -5,6 +5,7 @@ import sys
 import os
 import pathlib
 import math
+import argparse
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
@@ -157,6 +158,11 @@ def main():
     save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
     print('end')
 
-
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ipaddr')
+    args = parser.parse_args()
+    if args.ipaddr is not None:
+        IP_ADDR = args.ipaddr
+
     main()

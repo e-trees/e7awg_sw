@@ -7,6 +7,7 @@ from .udpaccess import *
 from .hwdefs import *
 from .captureparam import *
 from .exception import *
+from .logger import *
 
 class CaptureCtrl(object):
 
@@ -21,15 +22,26 @@ class CaptureCtrl(object):
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr):
+    def __init__(self, ip_addr, *, enable_lib_log = True, logger = get_null_logger()):
         """
         Args:
             ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
+            enable_lib_log (bool):
+                | True -> ライブラリの標準のログ機能を有効にする.
+                | False -> ライブラリの標準のログ機能を無効にする.
+            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
+        self.__loggers = [logger]
+        if enable_lib_log:
+            self.__loggers.append(get_file_logger())
+
         try:
             socket.inet_aton(ip_addr)
         except socket.error:
-            raise ValueError('Invalid IP Address {}'.format(ip_addr))
+            msg = 'Invalid IP Address {}'.format(ip_addr)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT)
 
@@ -41,17 +53,21 @@ class CaptureCtrl(object):
             capture_unit_id (CaptureUnit): キャプチャパラメータを設定するキャプチャユニットの ID 
             param (CaptureParam): 設定するキャプチャパラメータ
         """
-        if not CaptureUnit.includes(capture_unit_id):
-            raise ValueError('Invalid capture unit ID  {}'.format(capture_unit_id))
-        if not isinstance(param, CaptureParam):
-            raise ValueError('Invalid capture param {}'.format(param))
+        try:
+            if not CaptureUnit.includes(capture_unit_id):
+                raise ValueError('Invalid capture unit ID  {}'.format(capture_unit_id))
+            if not isinstance(param, CaptureParam):
+                raise ValueError('Invalid capture param {}'.format(param))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         self.__check_capture_size(capture_unit_id, param)
         self.__set_sum_sec_len(capture_unit_id, param.sum_section_list)
         self.__set_num_integ_sectinos(capture_unit_id, param.num_integ_sections)
         self.__enable_dsp_units(capture_unit_id, param.dsp_units_enabled)
         self.__set_capture_delay(capture_unit_id, param.capture_delay)
-        self.__set___CAPTURE_ADDR(capture_unit_id)
+        self.__set_capture_addr(capture_unit_id)
         self.__set_comp_fir_coefs(capture_unit_id, param.complex_fir_coefs)
         self.__set_real_fir_coefs(capture_unit_id, param.real_fir_i_coefs, param.real_fir_q_coefs)
         self.__set_comp_window_coefs(capture_unit_id, param.complex_window_coefs)
@@ -91,7 +107,7 @@ class CaptureCtrl(object):
         self.__reg_access.write(base_addr, CaptureParamRegs.Offset.CAPTURE_DELAY, capture_delay)
 
 
-    def __set___CAPTURE_ADDR(self, capture_unit_id):
+    def __set_capture_addr(self, capture_unit_id):
         """キャプチャアドレスの設定"""
         base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         self.__reg_access.write(base_addr, CaptureParamRegs.Offset.CAPTURE_ADDR, self.__CAPTURE_ADDR[capture_unit_id] // 32)
@@ -190,7 +206,9 @@ class CaptureCtrl(object):
             *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID
         """
         if not CaptureUnit.includes(*capture_unit_id_list):
-            raise ValueError('Invalid capture unit ID {}'.format(capture_unit_id_list))
+            msg = 'Invalid capture unit ID {}'.format(capture_unit_id_list)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
 
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
@@ -252,10 +270,14 @@ class CaptureCtrl(object):
         Raises:
             CaptureUnitTimeoutError: タイムアウトした場合
         """
-        if (not isinstance(timeout, (int, float))) or (timeout < 0):
-            raise ValueError('Invalid timeout {}'.format(timeout))
-        if not CaptureUnit.includes(*capture_unit_id_list):
-            raise ValueError('Invalid Capture Unit ID {}'.format(*capture_unit_id_list))
+        try:
+            if (not isinstance(timeout, (int, float))) or (timeout < 0):
+                raise ValueError('Invalid timeout {}'.format(timeout))
+            if not CaptureUnit.includes(*capture_unit_id_list):
+                raise ValueError('Invalid Capture Unit ID {}'.format(capture_unit_id_list))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         start = time.time()
         while True:
@@ -273,7 +295,9 @@ class CaptureCtrl(object):
                 
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
-                raise CaptureUnitTimeoutError('Capture unit stop timeout')
+                msg = 'Capture unit stop timeout'
+                log_error(msg, *self.__loggers)
+                raise CaptureUnitTimeoutError(msg)
             time.sleep(0.01)
 
 
@@ -291,7 +315,9 @@ class CaptureCtrl(object):
             | エラーが無かった場合は空の Dict.
         """
         if not CaptureUnit.includes(*capture_unit_id_list):
-            raise ValueError('Invalid Capture Unit ID {}'.format(*capture_unit_id_list))
+            msg = 'Invalid Capture Unit ID {}'.format(capture_unit_id_list)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
 
         capture_unit_to_err = {}
         for capture_unit_id in capture_unit_id_list:
@@ -325,23 +351,27 @@ class CaptureCtrl(object):
                 num_integ_vec_elems = num_cap_samples // NUM_SAMPLES_IN_ADC_WORD
 
             if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
-                raise ValueError(
-                    "The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
-                    .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
+                msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
+                       .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
+                log_error(msg, *self.__loggers)
+                raise ValueError(msg)
         
         elif num_cap_samples > self.MAX_CAPTURE_SAMPLES:
-            raise ValueError(
-                'Capture unit {} has too many capture samples.  (max = {}, setting = {})'
-                    .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_cap_samples))
+            msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
+                   .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_cap_samples))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
 
         if DspUnit.SUM in dsp_units_enabled:
             for sum_sec_no in range(param.num_sum_sections):
                 num_words_to_sum = self.__calc_num_words_in_sum_range(sum_sec_no, param)
                 if num_words_to_sum > CaptureParam.MAX_SUM_RAMGE_LEN:
-                    print('WARNING: The size of the sum range in sum section {} on capture unit {} is too large.'
-                          .format(sum_sec_no, capture_unit_id))
-                    print('         If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
-                          .format(CaptureParam.MAX_SUM_RAMGE_LEN, num_words_to_sum))
+                    msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
+                           .format(sum_sec_no, capture_unit_id))
+                    msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
+                            .format(CaptureParam.MAX_SUM_RAMGE_LEN, num_words_to_sum))
+                    log_warning(msg, *self.__loggers)
+                    print('WARNING: ' + msg)
 
     def __calc_num_words_in_sum_range(self, sum_sec_no, param):
         num_words_in_sum_sec = param.sum_section(sum_sec_no)[0]

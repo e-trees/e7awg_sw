@@ -1,6 +1,7 @@
 from .hwparam import *
 import copy
 import struct
+from .logger import *
 
 class WaveSequence(object):
     """ 波形シーケンスの情報を保持するクラス"""
@@ -12,25 +13,37 @@ class WaveSequence(object):
     NUM_SAMPLES_IN_WAVE_BLOCK = NUM_SAMPLES_IN_WAVE_BLOCK #: 1 波形ブロック当たりのサンプル数
     NUM_SAMPLES_IN_AWG_WORD = NUM_SAMPLES_IN_AWG_WORD #: 1 AWG ワード当たりのサンプル数
 
-    def __init__(self, num_wait_words, num_repeats):
+    def __init__(self, num_wait_words, num_repeats, *, enable_lib_log = True, logger = get_null_logger()):
         """
         Args:
             num_wait_words (int): 
                 | 波形シーケンスの先頭に付く 0 データの長さ.  
                 | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
             num_repeats (int): 波形シーケンスを繰り返す回数
+            enable_lib_log (bool):
+                | True -> ライブラリの標準のログ機能を有効にする.
+                | False -> ライブラリの標準のログ機能を無効にする.
+            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        if not (isinstance(num_wait_words, int) and 
-                (0 <= num_wait_words and num_wait_words <= self.MAX_WAIT_WORDS)):
-            raise ValueError(
-                "The number of wait words must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(0, self.MAX_WAIT_WORDS, num_repeats))
+        self.__loggers = [logger]
+        if enable_lib_log:
+            self.__loggers.append(get_file_logger())
 
-        if not (isinstance(num_repeats, int) and 
-                (1 <= num_repeats and num_repeats <= self.MAX_SEQUENCE_REPEATS)):
-            raise ValueError(
-                "The number of times to repeat a wave sequence must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(1, self.MAX_SEQUENCE_REPEATS, num_repeats))
+        try:
+            if not (isinstance(num_wait_words, int) and 
+                    (0 <= num_wait_words and num_wait_words <= self.MAX_WAIT_WORDS)):
+                raise ValueError(
+                    "The number of wait words must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(0, self.MAX_WAIT_WORDS, num_repeats))
+
+            if not (isinstance(num_repeats, int) and 
+                    (1 <= num_repeats and num_repeats <= self.MAX_SEQUENCE_REPEATS)):
+                raise ValueError(
+                    "The number of times to repeat a wave sequence must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(1, self.MAX_SEQUENCE_REPEATS, num_repeats))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         self.__chunks = []
         self.__num_wait_words = num_wait_words
@@ -51,41 +64,45 @@ class WaveSequence(object):
                 | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
             num_repeats (int): 追加する波形チャンクを繰り返す回数
         """
-        if not isinstance(iq_samples, list):
-            raise ValueError('Invalid sample list  ({})'.format(iq_samples))
-        
-        num_samples = len(iq_samples)
-        if num_samples == 0:
-            raise ValueError('Empty sample list was set.')
-
-        if num_samples % NUM_SAMPLES_IN_WAVE_BLOCK != 0:
-            raise ValueError(
-                'The number of samples in a wave chunk must be a multiple of {}.'.format(NUM_SAMPLES_IN_WAVE_BLOCK))
-
         try:
-            # 2 bytes で表せる数かどうかチェック
-            for iq_sample in iq_samples:
-                if len(iq_sample) != 2:
-                    raise Exception
-                for sample in iq_sample:
-                    if not self.__is_in_range(-32768, 0xFFFF, sample):
+            if not isinstance(iq_samples, list):
+                raise ValueError('Invalid sample list  ({})'.format(iq_samples))
+            
+            num_samples = len(iq_samples)
+            if num_samples == 0:
+                raise ValueError('Empty sample list was set.')
+
+            if num_samples % NUM_SAMPLES_IN_WAVE_BLOCK != 0:
+                raise ValueError(
+                    'The number of samples in a wave chunk must be a multiple of {}.'.format(NUM_SAMPLES_IN_WAVE_BLOCK))
+
+            try:
+                # 2 bytes で表せる数かどうかチェック
+                for iq_sample in iq_samples:
+                    if len(iq_sample) != 2:
                         raise Exception
-        except:
-            raise ValueError(
-                "An AWG sample value must be a pair of integers that can be expressed in 2 bytes.  (err val = '{}')"
-                .format(iq_sample))
+                    for sample in iq_sample:
+                        if not self.__is_in_range(-32768, 0xFFFF, sample):
+                            raise Exception
+            except:
+                raise ValueError(
+                    "An AWG sample value must be a pair of integers that can be expressed in 2 bytes.  (err val = '{}')"
+                    .format(iq_sample))
 
-        if not (isinstance(num_blank_words, int) and 
-                (0 <= num_blank_words and num_blank_words <= self.MAX_POST_BLANK_LEN)):
-            raise ValueError(
-                "Post blank length must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(0, self.MAX_POST_BLANK_LEN, num_blank_words))
+            if not (isinstance(num_blank_words, int) and 
+                    (0 <= num_blank_words and num_blank_words <= self.MAX_POST_BLANK_LEN)):
+                raise ValueError(
+                    "Post blank length must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(0, self.MAX_POST_BLANK_LEN, num_blank_words))
 
-        if not (isinstance(num_repeats, int) and 
-                (1 <= num_repeats and num_repeats <= self.MAX_CHUNK_REPEATS)):
-            raise ValueError(
-                "The number of times to repeat a wave chunk must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(1, self.MAX_CHUNK_REPEATS, num_repeats))
+            if not (isinstance(num_repeats, int) and 
+                    (1 <= num_repeats and num_repeats <= self.MAX_CHUNK_REPEATS)):
+                raise ValueError(
+                    "The number of times to repeat a wave chunk must be an integer between {} and {} inclusive.  '{}' was set."
+                    .format(1, self.MAX_CHUNK_REPEATS, num_repeats))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
         self.__chunks.append(WaveChunk(iq_samples, num_blank_words, num_repeats))
 
@@ -181,8 +198,8 @@ class WaveSequence(object):
             list of (int, int): 波形サンプルデータのリスト.
         """
         if not include_wait_words:
-            return self.__WaveSampleList(self, include_wait_words)
-        return self.__WaveSampleList(self, include_wait_words)
+            return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
+        return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
 
     def all_samples(self, include_wait_words = True):
         """この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)
@@ -217,25 +234,28 @@ class WaveSequence(object):
                 | True -> 16進数として保存
                 | False -> 10進数として保存
         """
-        txt_file = open(filepath, 'w')
-        first_zeros = '0\n' * (self.__num_wait_words * NUM_SAMPLES_IN_AWG_WORD)
-        txt_file.write(first_zeros)
-        for _ in range(self.__num_repeats):
-            for chunk in self.__chunks:
-                for _ in range(chunk.num_repeats):
-                    for i_data, q_data in chunk.wave_data.samples:
-                        if to_hex:
-                            i_data = i_data & ((1 << (WAVE_SAMPLE_SIZE // 2 * 8)) - 1)
-                            q_data = q_data & ((1 << (WAVE_SAMPLE_SIZE // 2 * 8)) - 1)
-                            txt_file.write('{:04x}, {:04x}\n'.format(i_data, q_data))
-                        else:
-                            txt_file.write('{:7d}, {:7d}\n'.format(i_data, q_data))
-                    if to_hex:
-                        post_chunk_zeros = '{:04x}, {:04x}\n'.format(0, 0) * (chunk.num_blank_words * NUM_SAMPLES_IN_AWG_WORD)
-                    else:
-                        post_chunk_zeros = '{:7d}, {:7d}\n'.format(0, 0) * (chunk.num_blank_words * NUM_SAMPLES_IN_AWG_WORD)
-                    txt_file.write(post_chunk_zeros)
-        txt_file.close()
+        try:
+            with open(filepath, 'w') as txt_file:
+                first_zeros = '0\n' * (self.__num_wait_words * NUM_SAMPLES_IN_AWG_WORD)
+                txt_file.write(first_zeros)
+                for _ in range(self.__num_repeats):
+                    for chunk in self.__chunks:
+                        for _ in range(chunk.num_repeats):
+                            for i_data, q_data in chunk.wave_data.samples:
+                                if to_hex:
+                                    i_data = i_data & ((1 << (WAVE_SAMPLE_SIZE // 2 * 8)) - 1)
+                                    q_data = q_data & ((1 << (WAVE_SAMPLE_SIZE // 2 * 8)) - 1)
+                                    txt_file.write('{:04x}, {:04x}\n'.format(i_data, q_data))
+                                else:
+                                    txt_file.write('{:7d}, {:7d}\n'.format(i_data, q_data))
+                            if to_hex:
+                                post_chunk_zeros = '{:04x}, {:04x}\n'.format(0, 0) * (chunk.num_blank_words * NUM_SAMPLES_IN_AWG_WORD)
+                            else:
+                                post_chunk_zeros = '{:7d}, {:7d}\n'.format(0, 0) * (chunk.num_blank_words * NUM_SAMPLES_IN_AWG_WORD)
+                            txt_file.write(post_chunk_zeros)
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
     def __str__(self):
         ret = ('num wait words : {}\n'.format(self.__num_wait_words) +
@@ -257,7 +277,7 @@ class WaveSequence(object):
 
     class __WaveSampleList(object):
 
-        def __init__(self, wave_seq, include_wait_words):
+        def __init__(self, wave_seq, include_wait_words, *loggers):
             self.__chunks = wave_seq.chunk_list
             if include_wait_words:
                 self.__num_wait_samples = wave_seq.num_wait_words * NUM_SAMPLES_IN_AWG_WORD
@@ -266,6 +286,7 @@ class WaveSequence(object):
                 self.__num_wait_samples = 0
                 self.__len = wave_seq.num_all_samples - wave_seq.num_wait_samples
             self.__num_repeats = wave_seq.num_repeats
+            self.__loggers = loggers
             
 
         def __repr__(self):
@@ -288,7 +309,9 @@ class WaveSequence(object):
                 if key < 0:
                     key += len(self)
                 if (key < 0) or (key >= len(self)):
-                    raise IndexError("The index [{}: is out of range.".format(key))
+                    msg = 'The index [{}] is out of range.'.format(key)
+                    log_error(msg, *self.__loggers)
+                    raise IndexError(msg)
                 if key < self.__num_wait_samples:
                     return (0, 0)
 
@@ -308,7 +331,9 @@ class WaveSequence(object):
             elif isinstance(key, slice):
                 return [self[i] for i in range(*key.indices(len(self)))]
             else:
-                raise TypeError("Invalid argument type.")
+                msg = 'Invalid argument type.'
+                log_error(msg, *self.__loggers)
+                raise TypeError(msg)
 
         def __len__(self):
             return self.__len

@@ -1,19 +1,22 @@
 import socket
+import select
 from .uplpacket import *
 from .hwdefs import *
+from .logger import *
 
 class RegAccess(object):
     
     REG_SIZE = 4 # bytes
 
-    def __init__(self, ip_addr, port, wr_mode_id, rd_mode_id):
-        self.__udp_rw = UdpRw(ip_addr, port, self.REG_SIZE, wr_mode_id, rd_mode_id)
+    def __init__(self, ip_addr, port, wr_mode_id, rd_mode_id, *loggers):
+        self.__udp_rw = UdpRw(
+            ip_addr, port, self.REG_SIZE, wr_mode_id, rd_mode_id, *loggers)
 
 
     def write(self, addr, offset, val):
         wr_addr = addr + offset
         val = val & ((1 << (self.REG_SIZE * 8)) - 1)
-        wr_data = val.to_bytes(self.REG_SIZE, "little")
+        wr_data = val.to_bytes(self.REG_SIZE, 'little')
         self.__udp_rw.write(wr_addr, wr_data)
 
 
@@ -40,7 +43,7 @@ class RegAccess(object):
         wr_data = bytearray()
         for val in vals:
             val = val & ((1 << (self.REG_SIZE * 8)) - 1)
-            wr_data += val.to_bytes(self.REG_SIZE, "little")
+            wr_data += val.to_bytes(self.REG_SIZE, 'little')
         self.__udp_rw.write(wr_addr, wr_data)
 
 
@@ -58,8 +61,9 @@ class RegAccess(object):
 
 class AwgRegAccess(object):
 
-    def __init__(self, ip_addr, port):
-        self.__reg_access = RegAccess(ip_addr, port, UplPacket.MODE_AWG_REG_WRITE, UplPacket.MODE_AWG_REG_READ)
+    def __init__(self, ip_addr, port, *loggers):
+        self.__reg_access = RegAccess(
+            ip_addr, port, UplPacket.MODE_AWG_REG_WRITE, UplPacket.MODE_AWG_REG_READ, *loggers)
 
     def write(self, addr, offset, val):
         self.__reg_access.write(addr, offset, val)
@@ -76,8 +80,13 @@ class AwgRegAccess(object):
 
 class CaptureRegAccess(object):
 
-    def __init__(self, ip_addr, port):
-        self.__reg_access = RegAccess(ip_addr, port, UplPacket.MODE_CAPTURE_REG_WRITE, UplPacket.MODE_CAPTURE_REG_READ)
+    def __init__(self, ip_addr, port, *loggers):
+        self.__reg_access = RegAccess(
+            ip_addr,
+            port,
+            UplPacket.MODE_CAPTURE_REG_WRITE,
+            UplPacket.MODE_CAPTURE_REG_READ,
+            *loggers)
 
     def write(self, addr, offset, val):
         self.__reg_access.write(addr, offset, val)
@@ -102,9 +111,14 @@ class WaveRamAccess(object):
 
     MIN_RW_SIZE = 32 # bytes
 
-    def __init__(self, ip_addr, port):
+    def __init__(self, ip_addr, port, *loggers):
         self.__udp_rw = UdpRw(
-            ip_addr, port, self.MIN_RW_SIZE, UplPacket.MODE_WAVE_RAM_WRITE, UplPacket.MODE_WAVE_RAM_READ)
+            ip_addr,
+            port,
+            self.MIN_RW_SIZE,
+            UplPacket.MODE_WAVE_RAM_WRITE,
+            UplPacket.MODE_WAVE_RAM_READ,
+            *loggers)
 
     def write(self, addr, data):
         self.__udp_rw.write(addr, data)
@@ -117,13 +131,16 @@ class UdpRw(object):
 
     BUFSIZE = 16384 # bytes
     MAX_RW_SIZE = 3616 # bytes
+    TIMEOUT = 12 # sec
 
-    def __init__(self, ip_addr, port, min_rw_size, wr_mode_id, rd_mode_id):
+    def __init__(self, ip_addr, port, min_rw_size, wr_mode_id, rd_mode_id, *loggers):
         self.__dest_addr = (ip_addr, port)
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.__sock.settimeout(self.TIMEOUT)
         self.__min_rw_size = min_rw_size
         self.__wr_mode_id = wr_mode_id
         self.__rd_mode_id = rd_mode_id
+        self.__loggers = loggers
 
     def write(self, addr, data):
         size_remaining = len(data)
@@ -145,14 +162,20 @@ class UdpRw(object):
             rd_data = self.read(rd_addr, self.__min_rw_size)
             additional_data = rd_data[frac_len : self.__min_rw_size]
             data = data + additional_data
-
-        send_packet = UplPacket(self.__wr_mode_id, addr, len(data), data)
-        self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
-        recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
-        recv_packet = UplPacket.deserialize(recv_data)
-        if (recv_packet.num_bytes() != len(data)) or (recv_packet.addr() != addr):
-            raise  ValueError('upl write err : addr {:x}'.format(addr))
-
+        try:
+            send_packet = UplPacket(self.__wr_mode_id, addr, len(data), data)
+            self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
+            recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
+            recv_packet = UplPacket.deserialize(recv_data)
+            if (recv_packet.num_bytes() != len(data)) or (recv_packet.addr() != addr):
+                raise  ValueError(
+                    'upl write err : addr {:x},  Dest {}'.format(addr, self.__dest_addr))
+        except socket.timeout as e:
+            log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
+            raise
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
 
     def read(self, addr, size):
         size_remaining = size
@@ -168,10 +191,20 @@ class UdpRw(object):
     def __recv_data(self, addr, size):
         # 端数調整
         rd_size = (size + self.__min_rw_size - 1) // self.__min_rw_size * self.__min_rw_size
-        send_packet = UplPacket(self.__rd_mode_id, addr, rd_size)
-        self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
-        recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
-        recv_packet = UplPacket.deserialize(recv_data)
-        if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != addr):
-            raise  ValueError('upl read err : addr {:x}  size {}'.format(addr, size))
+        
+        try:
+            send_packet = UplPacket(self.__rd_mode_id, addr, rd_size)
+            self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
+            recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
+            recv_packet = UplPacket.deserialize(recv_data)
+            if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != addr):
+                raise ValueError(
+                    'upl read err : addr {:x}  size {},   Dest {}'.format(addr, size, self.__dest_addr))
+        except socket.timeout as e:
+            log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
+            raise
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
+
         return recv_packet.payload()[0 : size]

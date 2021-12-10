@@ -54,6 +54,14 @@ qubelib.hwdefs module
    :undoc-members:
    :show-inheritance:
 
+qubelib.logger module
+---------------------
+
+.. automodule:: qubelib.logger
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 qubelib.utiltool module
 -----------------------
 
