@@ -17,15 +17,15 @@ def init_modules(awg_ctrl, cap_ctrl):
     awg_ctrl.enable_awgs(*AWG.all())
     cap_ctrl.initialize()
 
-def gen_wave_seq():
+def gen_wave_seq(freq):
     wave_seq = WaveSequence(
         num_wait_words = 16,
         num_repeats = 0xFFFFFFFF)
     
     num_chunks = 1
     for _ in range(num_chunks):
-        i_wave = SinWave(num_cycles = 8, frequency = 5e6, amplitude = 32760, phase = math.pi / 2) # 50 MHz cos
-        q_wave = SinWave(num_cycles = 8, frequency = 5e6, amplitude = 32760) # 50 MHz sin
+        i_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = 32760, phase = math.pi / 2)
+        q_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = 32760)
         iq_samples = IqWave(i_wave, q_wave).gen_samples(
             sampling_rate = AwgCtrl.SAMPLING_RATE, 
             padding_size = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK)
@@ -39,7 +39,7 @@ def gen_wave_seq():
 def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
     for awg_id in AWG.all():
-        wave_seq = gen_wave_seq()
+        wave_seq = gen_wave_seq(5e6) # 5 MHz
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
     return awg_to_wave_sequence
