@@ -24,6 +24,7 @@ def gen_wave_seq(freq):
     
     num_chunks = 1
     for _ in range(num_chunks):
+        # int(num_cycles * AwgCtrl.SAMPLING_RATE / freq) を 64 の倍数にすると, 切れ間のない波形が出力される.
         i_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = 32760, phase = math.pi / 2)
         q_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = 32760)
         iq_samples = IqWave(i_wave, q_wave).gen_samples(
@@ -39,7 +40,7 @@ def gen_wave_seq(freq):
 def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
     for awg_id in AWG.all():
-        wave_seq = gen_wave_seq(5e6) # 5 MHz
+        wave_seq = gen_wave_seq(5e6) # 5 MHz  この周波数では切れ目ない波形はできない
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
     return awg_to_wave_sequence
