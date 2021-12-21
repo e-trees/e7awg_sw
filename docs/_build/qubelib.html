@@ -430,6 +430,89 @@
 <div class="section" id="module-qubelib.awgwave">
 <span id="qubelib-awgwave-module"></span><h2>qubelib.awgwave module<a class="headerlink" href="#module-qubelib.awgwave" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="qubelib.awgwave.GaussianPulse">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">GaussianPulse</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#GaussianPulse"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.GaussianPulse" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#qubelib.awgwave.ParameterizedWave" title="qubelib.awgwave.ParameterizedWave"><code class="xref py py-class docutils literal notranslate"><span class="pre">qubelib.awgwave.ParameterizedWave</span></code></a></p>
+<p>ガウスパルスクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.GaussianPulse.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">num_cycles</span></span></em>, <em><span class="n"><span class="pre">frequency</span></span></em>, <em><span class="n"><span class="pre">amplitude</span></span></em>, <em><span class="o"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em><span class="n"><span class="pre">variance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#GaussianPulse.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.GaussianPulse.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_cycles</strong> (<em>int</em>) -- サイクル数</li>
+<li><strong>frequency</strong> (<em>int</em><em> or </em><em>float</em>) -- 周波数 (単位: Hz)</li>
+<li><strong>amplitude</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅</li>
+<li><strong>phase</strong> (<em>int</em><em> or </em><em>float</em>) -- 位相 (単位: radian)</li>
+<li><strong>offset</strong> (<em>int</em><em> or </em><em>float</em>) -- 振幅オフセット</li>
+<li><strong>duration</strong> (<em>int</em><em> or </em><em>float</em>) -- <div class="line-block">
+<div class="line">ガウスパルスの長さ.　(0 &lt; duration)</div>
+<div class="line">ガウス関数の中央が (duration / 2) で左右に (duration / 2) ずつ広がる波形が作られる.</div>
+</div>
+</li>
+<li><strong>variance</strong> (<em>int</em><em> or </em><em>float</em>) -- ガウスパルスの広がり具合. (0 &lt; variance)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.GaussianPulse.duration">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">duration</span></code><a class="headerlink" href="#qubelib.awgwave.GaussianPulse.duration" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ガウスパルスの長さ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">ガウスパルスの長さ</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.GaussianPulse.gen_samples">
+<code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#GaussianPulse.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.GaussianPulse.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このオブジェクトのパラメータに従うガウスパルスのサンプルリストを生成する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>sampling_rate</strong> (<em>int</em><em> or </em><em>float</em>) -- サンプリングレート (単位: サンプル数/秒)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">ガウスパルスのサンプルリスト</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qubelib.awgwave.GaussianPulse.variance">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">variance</span></code><a class="headerlink" href="#qubelib.awgwave.GaussianPulse.variance" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ガウスパルスの広がり具合</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">ガウスパルスの広がり具合</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int or float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="qubelib.awgwave.IqWave">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.awgwave.</span></code><code class="sig-name descname"><span class="pre">IqWave</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">i_wave</span></span></em>, <em><span class="n"><span class="pre">q_wave</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>

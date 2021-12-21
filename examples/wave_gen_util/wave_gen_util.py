@@ -86,3 +86,24 @@ if __name__ == "__main__":
         .format(wave.num_cycles, wave.frequency/1e6, wave.amplitude, to_degree(wave.phase), wave.offset, wave.duty_cycle), 
         dir + "006.png", 
         '#b44c97')
+
+
+    # gaussian  duration = 10.0, variance = 2.0
+    wave = GaussianPulse(num_cycles = 2, frequency = 4e6, amplitude = 2000, duration = 10.0, variance = 2.0)
+    plot_graph(
+        AwgCtrl.SAMPLING_RATE,
+        wave.gen_samples(AwgCtrl.SAMPLING_RATE), 
+        "gaussian [cycles:{}, freq:{} [MHz], amp:{}, phase:{}, offset:{}, dur:{}, var:{}]"
+        .format(wave.num_cycles, wave.frequency/1e6, wave.amplitude, to_degree(wave.phase), wave.offset, wave.duration, wave.variance), 
+        dir + "007.png", 
+        '#b44c97')
+
+    # gaussian  duration = 5.0, variance = 0.1
+    wave = GaussianPulse(num_cycles = 3, frequency = 3e6, amplitude = 1000, duration = 5.0, variance = 0.1)
+    plot_graph(
+        AwgCtrl.SAMPLING_RATE,
+        wave.gen_samples(AwgCtrl.SAMPLING_RATE), 
+        "gaussian [cycles:{}, freq:{} [MHz], amp:{}, phase:{}, offset:{}, dur:{}, var:{}]"
+        .format(wave.num_cycles, wave.frequency/1e6, wave.amplitude, to_degree(wave.phase), wave.offset, wave.duration, wave.variance), 
+        dir + "008.png", 
+        '#b44c97')

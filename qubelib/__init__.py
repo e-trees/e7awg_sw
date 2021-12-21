@@ -13,6 +13,7 @@ __all__ = [
     'SinWave',
     'SawtoothWave',
     'SquareWave',
+    'GaussianPulse',
     'IqWave',
     'plot_graph']
 

@@ -275,6 +275,91 @@ class SquareWave(ParameterizedWave):
         return samples
 
 
+class GaussianPulse(ParameterizedWave):
+    """ガウスパルスクラス"""
+
+    def __init__(
+        self,
+        num_cycles,
+        frequency,
+        amplitude,
+        *,
+        phase = 0.0,
+        offset = 0.0,
+        duration = 2.0,
+        variance = 1.0,
+    ):
+        """
+        Args:
+            num_cycles (int): サイクル数
+            frequency (int or float): 周波数 (単位: Hz)
+            amplitude (int or float): 振幅
+            phase (int or float): 位相 (単位: radian)
+            offset (int or float): 振幅オフセット
+            duration (int or float): 
+                | ガウスパルスの長さ.　(0 < duration)
+                | ガウス関数の中央が (duration / 2) で左右に (duration / 2) ずつ広がる波形が作られる.
+            variance (int or float): ガウスパルスの広がり具合. (0 < variance)
+        """
+        if not (isinstance(duration, (int, float)) and (0 < duration)):
+            raise ValueError("The 'duration' must be a number greater than zero.  ({})".format(duration))
+        
+        if not (isinstance(variance, (int, float)) and (0 < variance)):
+            raise ValueError("The 'variance' must be a number greater than zero.  ({})".format(variance))
+
+        self.__duration = duration
+        self.__variance = variance
+        super().__init__(num_cycles, frequency, amplitude, phase, offset)
+
+    @property
+    def duration(self):
+        """ガウスパルスの長さ
+
+        Returns:
+            int or float: ガウスパルスの長さ
+        """
+        return self.__duration
+
+    @property
+    def variance(self):
+        """ガウスパルスの広がり具合
+
+        Returns:
+            int or float: ガウスパルスの広がり具合
+        """
+        return self.__variance
+
+    def gen_samples(self, sampling_rate):
+        """このオブジェクトのパラメータに従うガウスパルスのサンプルリストを生成する
+        
+        Args:
+            sampling_rate (int or float): サンプリングレート (単位: サンプル数/秒)
+
+        Returns:
+            list of int: ガウスパルスのサンプルリスト
+        """
+        if not (isinstance(sampling_rate, (int, float)) and (sampling_rate > 0)):
+            raise ValueError(
+                "The 'sampling_rate' must be a number greater than zero.  ({})".format(sampling_rate))
+
+        num_samples = int(sampling_rate * self.num_cycles / self.frequency)
+        samples = []
+        x_offset = self.duration * self.phase / (2 * math.pi)
+        whole_duration = self.duration * self.num_cycles
+
+        for i in range(num_samples):
+            x_val = i * whole_duration / num_samples + x_offset
+            if x_val >= 0:
+                x_val = x_val - int(x_val / self.duration) * self.duration
+            else:
+                x_val = math.ceil(-x_val / self.duration) * self.duration + x_val
+
+            tmp = x_val - (self.duration / 2)
+            y_val = self.amplitude * math.exp(-0.5 * tmp * tmp / self.variance)
+            samples.append(int(y_val + self.offset))
+
+        return samples
+
 class IqWave(object):
     """I/Q 波形クラス"""
 

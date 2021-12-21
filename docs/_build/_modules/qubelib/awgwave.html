@@ -450,6 +450,91 @@
         <span class="k">return</span> <span class="n">samples</span></div></div>
 
 
+<div class="viewcode-block" id="GaussianPulse"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgwave.GaussianPulse">[ドキュメント]</a><span class="k">class</span> <span class="nc">GaussianPulse</span><span class="p">(</span><span class="n">ParameterizedWave</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ガウスパルスクラス&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GaussianPulse.__init__"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgwave.GaussianPulse.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_cycles</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
+<span class="sd">            amplitude (int or float): 振幅</span>
+<span class="sd">            phase (int or float): 位相 (単位: radian)</span>
+<span class="sd">            offset (int or float): 振幅オフセット</span>
+<span class="sd">            duration (int or float): </span>
+<span class="sd">                | ガウスパルスの長さ.　(0 &lt; duration)</span>
+<span class="sd">                | ガウス関数の中央が (duration / 2) で左右に (duration / 2) ずつ広がる波形が作られる.</span>
+<span class="sd">            variance (int or float): ガウスパルスの広がり具合. (0 &lt; variance)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">duration</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;duration&#39; must be a number greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">duration</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">variance</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">variance</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;variance&#39; must be a number greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variance</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__duration</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__variance</span> <span class="o">=</span> <span class="n">variance</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;ガウスパルスの長さ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int or float: ガウスパルスの長さ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__duration</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">variance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;ガウスパルスの広がり具合</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int or float: ガウスパルスの広がり具合</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__variance</span>
+
+<div class="viewcode-block" id="GaussianPulse.gen_samples"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgwave.GaussianPulse.gen_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;このオブジェクトのパラメータに従うガウスパルスのサンプルリストを生成する</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            sampling_rate (int or float): サンプリングレート (単位: サンプル数/秒)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of int: ガウスパルスのサンプルリスト</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">sampling_rate</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The &#39;sampling_rate&#39; must be a number greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">))</span>
+
+        <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cycles</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">)</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">x_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">whole_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cycles</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+            <span class="n">x_val</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">whole_duration</span> <span class="o">/</span> <span class="n">num_samples</span> <span class="o">+</span> <span class="n">x_offset</span>
+            <span class="k">if</span> <span class="n">x_val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_val</span> <span class="o">=</span> <span class="n">x_val</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">x_val</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">x_val</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="o">-</span><span class="n">x_val</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">+</span> <span class="n">x_val</span>
+
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">x_val</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">y_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">tmp</span> <span class="o">*</span> <span class="n">tmp</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance</span><span class="p">)</span>
+            <span class="n">samples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">y_val</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">samples</span></div></div>
+
 <div class="viewcode-block" id="IqWave"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgwave.IqWave">[ドキュメント]</a><span class="k">class</span> <span class="nc">IqWave</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;I/Q 波形クラス&quot;&quot;&quot;</span>
 
