@@ -185,6 +185,7 @@
     <span class="n">MAX_CHUNK_REPEATS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>     <span class="c1">#: 波形チャンクの最大リピート回数</span>
     <span class="n">MAX_WAIT_WORDS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>        <span class="c1">#: 波形シーケンスの先頭に付く 0 データの最大の長さ</span>
     <span class="n">MAX_SEQUENCE_REPEATS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>  <span class="c1">#: 波形シーケンスの最大リピート回数</span>
+    <span class="n">MAX_CHUNKS</span> <span class="o">=</span> <span class="mi">16</span>                    <span class="c1">#: 波形シーケンスに登録可能な最大チャンク数</span>
     <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="c1">#: 1 波形ブロック当たりのサンプル数</span>
     <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="c1">#: 1 AWG ワード当たりのサンプル数</span>
 
@@ -242,6 +243,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid sample list  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">))</span>
+            
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNKS</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No more wave chunks can be added. (max=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNKS</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
             
             <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">num_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

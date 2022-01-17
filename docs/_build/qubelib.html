@@ -535,6 +535,35 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qubelib.awgwave.IqWave.convert_to_iq_format">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">convert_to_iq_format</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">i_samples</span></span></em>, <em><span class="n"><span class="pre">q_samples</span></span></em>, <em><span class="n"><span class="pre">padding_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave.convert_to_iq_format"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave.convert_to_iq_format" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>I 相と Q 相のサンプルリストをまとめて I/Q データフォーマットに変換する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>i_samples</strong> (<em>int</em>) -- I 相のサンプルリスト</li>
+<li><strong>q_samples</strong> (<em>int</em>) -- Q 相のサンプルリスト</li>
+<li><strong>padding_size</strong> (<em>int</em>) -- 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first"><div class="line-block">
+<div class="line">I 相と Q 相のサンプルのタプルのリスト.</div>
+<div class="line">タプルの 0 番目に I データが格納され, 1 番目に Q データが格納される.</div>
+</div>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body"><p class="first last">list of (int, int)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qubelib.awgwave.IqWave.gen_samples">
 <code class="sig-name descname"><span class="pre">gen_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em>, <em><span class="n"><span class="pre">padding_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/awgwave.html#IqWave.gen_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.awgwave.IqWave.gen_samples" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>I/Q 波形を生成する</p>
@@ -2128,6 +2157,12 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">qubelib.wavesequence.</span></code><code class="sig-name descname"><span class="pre">WaveSequence</span></code><span class="sig-paren">(</span><em><span class="pre">num_wait_words</span></em>, <em><span class="pre">num_repeats</span></em>, <em><span class="pre">*</span></em>, <em><span class="pre">enable_lib_log=True</span></em>, <em><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/wavesequence.html#WaveSequence"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.wavesequence.WaveSequence" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>波形シーケンスの情報を保持するクラス</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="qubelib.wavesequence.WaveSequence.MAX_CHUNKS">
+<code class="sig-name descname"><span class="pre">MAX_CHUNKS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">16</span></em><a class="headerlink" href="#qubelib.wavesequence.WaveSequence.MAX_CHUNKS" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>波形シーケンスに登録可能な最大チャンク数</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="qubelib.wavesequence.WaveSequence.MAX_CHUNK_REPEATS">
 <code class="sig-name descname"><span class="pre">MAX_CHUNK_REPEATS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4294967295</span></em><a class="headerlink" href="#qubelib.wavesequence.WaveSequence.MAX_CHUNK_REPEATS" title="この定義へのパーマリンク">¶</a></dt>

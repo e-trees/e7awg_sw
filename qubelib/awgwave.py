@@ -18,8 +18,8 @@ class ParameterizedWave(object, metaclass = ABCMeta):
             phase (int or float): 位相 (単位: radian)
             offset (int or float): 振幅オフセット
         """
-        if not (isinstance(num_cycles, int) and num_cycles > 0):
-            raise ValueError("The 'num_cycles' must be an integer greater than zero.  ({})".format(num_cycles))
+        if not (isinstance(num_cycles, (int, float)) and num_cycles > 0):
+            raise ValueError("The 'num_cycles' must be a number greater than zero.  ({})".format(num_cycles))
 
         if not (isinstance(frequency, (int, float)) and frequency >= 0):
             raise ValueError("The 'frequency' must be a number greater than zero.  ({})".format(frequency))
@@ -375,6 +375,29 @@ class IqWave(object):
             raise ValueError("The 'q_wave' must be a ParameterizedWave.")
         self.__i_wave = i_wave
         self.__q_wave = q_wave
+
+    @classmethod
+    def convert_to_iq_format(cls, i_samples, q_samples, padding_size):
+        """I 相と Q 相のサンプルリストをまとめて I/Q データフォーマットに変換する
+
+        Args:
+            i_samples (int): I 相のサンプルリスト
+            q_samples (int): Q 相のサンプルリスト
+            padding_size (int): 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.
+
+        Returns:
+            list of (int, int): 
+                | I 相と Q 相のサンプルのタプルのリスト.
+                | タプルの 0 番目に I データが格納され, 1 番目に Q データが格納される.
+        """
+        if not isinstance(padding_size, int):
+            raise ValueError("The 'padding_size' must be an integer.  ({})".format(padding_size))
+
+        iq_samples = list(zip(i_samples, q_samples))
+        if len(iq_samples) % padding_size != 0:
+            num_samples_to_add = padding_size - (len(iq_samples) % padding_size)
+            iq_samples.extend([(0, 0)] * num_samples_to_add)
+        return iq_samples
 
     @property
     def i_wave(self):

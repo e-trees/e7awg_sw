@@ -10,6 +10,7 @@ class WaveSequence(object):
     MAX_CHUNK_REPEATS = 0xFFFFFFFF     #: 波形チャンクの最大リピート回数
     MAX_WAIT_WORDS = 0xFFFFFFFF        #: 波形シーケンスの先頭に付く 0 データの最大の長さ
     MAX_SEQUENCE_REPEATS = 0xFFFFFFFF  #: 波形シーケンスの最大リピート回数
+    MAX_CHUNKS = 16                    #: 波形シーケンスに登録可能な最大チャンク数
     NUM_SAMPLES_IN_WAVE_BLOCK = NUM_SAMPLES_IN_WAVE_BLOCK #: 1 波形ブロック当たりのサンプル数
     NUM_SAMPLES_IN_AWG_WORD = NUM_SAMPLES_IN_AWG_WORD #: 1 AWG ワード当たりのサンプル数
 
@@ -67,6 +68,9 @@ class WaveSequence(object):
         try:
             if not isinstance(iq_samples, list):
                 raise ValueError('Invalid sample list  ({})'.format(iq_samples))
+            
+            if (len(self.__chunks) == self.MAX_CHUNKS):
+                raise ValueError("No more wave chunks can be added. (max=" + str(self.MAX_CHUNKS) + ")")
             
             num_samples = len(iq_samples)
             if num_samples == 0:

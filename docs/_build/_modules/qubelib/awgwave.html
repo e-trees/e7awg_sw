@@ -193,8 +193,8 @@
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
 <span class="sd">            offset (int or float): 振幅オフセット</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">num_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;num_cycles&#39; must be an integer greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">num_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;num_cycles&#39; must be a number greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_cycles</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">frequency</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">frequency</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;frequency&#39; must be a number greater than zero.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">frequency</span><span class="p">))</span>
@@ -550,6 +550,29 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;q_wave&#39; must be a ParameterizedWave.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__i_wave</span> <span class="o">=</span> <span class="n">i_wave</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__q_wave</span> <span class="o">=</span> <span class="n">q_wave</span></div>
+
+<div class="viewcode-block" id="IqWave.convert_to_iq_format"><a class="viewcode-back" href="../../qubelib.html#qubelib.awgwave.IqWave.convert_to_iq_format">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">convert_to_iq_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">i_samples</span><span class="p">,</span> <span class="n">q_samples</span><span class="p">,</span> <span class="n">padding_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;I 相と Q 相のサンプルリストをまとめて I/Q データフォーマットに変換する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i_samples (int): I 相のサンプルリスト</span>
+<span class="sd">            q_samples (int): Q 相のサンプルリスト</span>
+<span class="sd">            padding_size (int): 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of (int, int): </span>
+<span class="sd">                | I 相と Q 相のサンプルのタプルのリスト.</span>
+<span class="sd">                | タプルの 0 番目に I データが格納され, 1 番目に Q データが格納される.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">padding_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The &#39;padding_size&#39; must be an integer.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">padding_size</span><span class="p">))</span>
+
+        <span class="n">iq_samples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">i_samples</span><span class="p">,</span> <span class="n">q_samples</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span> <span class="o">%</span> <span class="n">padding_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">num_samples_to_add</span> <span class="o">=</span> <span class="n">padding_size</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span> <span class="o">%</span> <span class="n">padding_size</span><span class="p">)</span>
+            <span class="n">iq_samples</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="n">num_samples_to_add</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">iq_samples</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">i_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
