@@ -130,7 +130,8 @@ class WaveRamAccess(object):
 class UdpRw(object):
 
     BUFSIZE = 16384 # bytes
-    MAX_RW_SIZE = 3616 # bytes
+    #MAX_RW_SIZE = 3616 # bytes
+    MAX_RW_SIZE = 1440 # bytes
     TIMEOUT = 12 # sec
 
     def __init__(self, ip_addr, port, min_rw_size, wr_mode_id, rd_mode_id, *loggers):
