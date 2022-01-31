@@ -14,6 +14,7 @@ from qubelib import *
 
 SAVE_DIR = "result_send_recv_integ/"
 IP_ADDR = '10.0.0.16'
+CAPTURE_DELAY = 100 # cpature words = cycyles@125MHz 
 
 wave_params = namedtuple(
     'WaveParams',
@@ -160,6 +161,7 @@ def gen_capture_param(wave_seq):
     capture_param.sum_start_word_no = 0
     capture_param.num_words_to_sum = CaptureParam.MAX_SUM_SECTION_LEN
     capture_param.sel_dsp_units_to_enable(DspUnit.INTEGRATION)
+    capture_param.capture_delay = CAPTURE_DELAY
     # readout 波形のサンプル数とキャプチャするサンプル数が一致することを確認
     assert wave_seq.num_all_samples == capture_param.num_samples_to_process
     return capture_param
