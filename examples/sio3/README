@@ -1,0 +1,8 @@
+CTRL 7500 - 8500 MHz
+READOUT 10000 - 10500 MHz
+
+$HOME/adi_api_mod/src/lmx2594_f_w.sh <port> <freq>
+
+
+irb
+format("%x",120)
