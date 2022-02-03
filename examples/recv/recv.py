@@ -75,9 +75,9 @@ def main(num_capture_words):
     cap_ctrl = CaptureCtrl(IP_ADDR)
     # 初期化
     cap_ctrl.initialize()
-    cap_ctrl.enable_capture_units(*CaptureUnit.all())
     # キャプチャパラメータの設定
     set_capture_params(cap_ctrl, num_capture_words)
+    cap_ctrl.enable_capture_units(*CaptureUnit.all())
     # キャプチャスタート
     cap_ctrl.start_capture_units()
     # キャプチャ完了待ち
