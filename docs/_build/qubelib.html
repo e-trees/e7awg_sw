@@ -1081,7 +1081,11 @@
 <div class="line">awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.</div>
 </div>
 </li>
-<li><strong>awg_id</strong> (<a class="reference internal" href="#qubelib.hwdefs.AWG" title="qubelib.hwdefs.AWG"><em>AWG</em></a>) -- capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID</li>
+<li><strong>awg_id</strong> (<a class="reference internal" href="#qubelib.hwdefs.AWG" title="qubelib.hwdefs.AWG"><em>AWG</em></a><em> or </em><em>None</em>) -- <div class="line-block">
+<div class="line">capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.</div>
+<div class="line">None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.</div>
+</div>
+</li>
 </ul>
 </td>
 </tr>
@@ -1789,6 +1793,12 @@
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qubelib.hwdefs.CaptureModule.all">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/hwdefs.html#CaptureModule.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.hwdefs.CaptureModule.all" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>全キャプチャモジュールの ID をリストとして返す</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qubelib.hwdefs.CaptureModule.get_units">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">get_units</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capmod_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/hwdefs.html#CaptureModule.get_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.hwdefs.CaptureModule.get_units" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する</p>
@@ -1805,6 +1815,16 @@
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.hwdefs.CaptureModule.includes">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/hwdefs.html#CaptureModule.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.hwdefs.CaptureModule.includes" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qubelib.hwdefs.CaptureModule.of">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">of</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qubelib/hwdefs.html#CaptureModule.of"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#qubelib.hwdefs.CaptureModule.of" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

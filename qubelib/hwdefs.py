@@ -54,6 +54,22 @@ class CaptureModule(IntEnum):
     U1 = 1
 
     @classmethod
+    def all(cls):
+        """全キャプチャモジュールの ID をリストとして返す"""
+        return [item for item in CaptureModule]
+
+    @classmethod
+    def of(cls, val):
+        if not CaptureModule.includes(val):
+            raise ValueError("Cannot convert {} to CaptureModule".format(val))
+        return CaptureModule.all()[val]
+
+    @classmethod
+    def includes(cls, *vals):
+        mods = cls.all()
+        return all([val in mods for val in vals])
+
+    @classmethod
     def get_units(cls, capmod_id):
         """引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する
 

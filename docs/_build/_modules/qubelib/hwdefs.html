@@ -228,6 +228,22 @@
     <span class="n">U0</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">U1</span> <span class="o">=</span> <span class="mi">1</span>
 
+<div class="viewcode-block" id="CaptureModule.all"><a class="viewcode-back" href="../../qubelib.html#qubelib.hwdefs.CaptureModule.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;全キャプチャモジュールの ID をリストとして返す&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureModule</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CaptureModule.of"><a class="viewcode-back" href="../../qubelib.html#qubelib.hwdefs.CaptureModule.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot convert </span><span class="si">{}</span><span class="s2"> to CaptureModule&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="n">val</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CaptureModule.includes"><a class="viewcode-back" href="../../qubelib.html#qubelib.hwdefs.CaptureModule.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">mods</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">mods</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div>
+
 <div class="viewcode-block" id="CaptureModule.get_units"><a class="viewcode-back" href="../../qubelib.html#qubelib.hwdefs.CaptureModule.get_units">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_units</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">capmod_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する</span>

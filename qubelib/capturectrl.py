@@ -154,12 +154,12 @@ class CaptureCtrl(object):
         self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, 0)
         for capture_unit_id in capture_units:
             self.__reg_access.write(CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
-        self.reset_capture_units(*capture_units)
+        self.select_trigger_awg(CaptureModule.U0, None)
+        self.select_trigger_awg(CaptureModule.U1, None)
         self.disable_capture_units(*capture_units)
         for cap_unit_id in capture_units:
             self.set_capture_params(cap_unit_id, CaptureParam())
-        self.select_trigger_awg(CaptureModule.U0, AWG.U0)
-        self.select_trigger_awg(CaptureModule.U1, AWG.U0)
+        self.reset_capture_units(*capture_units)
 
 
     def get_capture_data(self, capture_unit_id, num_samples):
@@ -251,12 +251,25 @@ class CaptureCtrl(object):
             capture_module_id (CaptureModule): 
                 | この ID のキャプチャモジュールに含まれる全キャプチャユニットが, 
                 | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.
-            awg_id (AWG): capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID
+            awg_id (AWG or None):
+                | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.
+                | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.
         """
+        try:
+            if not CaptureModule.includes(capture_module_id):
+                raise ValueError('Invalid capture module ID {}'.format(capture_module_id))
+            if (not AWG.includes(awg_id)) and (awg_id is not None):
+                raise ValueError('Invalid AWG ID {}'.format(awg_id))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
+
         if capture_module_id == CaptureModule.U0:
             offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
         elif capture_module_id == CaptureModule.U1:
             offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
+        
+        awg_id = 0 if (awg_id is None) else (awg_id + 1)
         self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
 
 

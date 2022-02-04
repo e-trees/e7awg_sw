@@ -329,12 +329,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_units</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disable_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_units</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">cap_unit_id</span> <span class="ow">in</span> <span class="n">capture_units</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_capture_params</span><span class="p">(</span><span class="n">cap_unit_id</span><span class="p">,</span> <span class="n">CaptureParam</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_units</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CaptureCtrl.get_capture_data"><a class="viewcode-back" href="../../qubelib.html#qubelib.capturectrl.CaptureCtrl.get_capture_data">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_capture_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
@@ -426,12 +426,25 @@
 <span class="sd">            capture_module_id (CaptureModule): </span>
 <span class="sd">                | この ID のキャプチャモジュールに含まれる全キャプチャユニットが, </span>
 <span class="sd">                | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.</span>
-<span class="sd">            awg_id (AWG): capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID</span>
+<span class="sd">            awg_id (AWG or None):</span>
+<span class="sd">                | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.</span>
+<span class="sd">                | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_module_id</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture module ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_module_id</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="n">awg_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid AWG ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
         <span class="k">if</span> <span class="n">capture_module_id</span> <span class="o">==</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">TRIG_AWG_SEL_0</span>
         <span class="k">elif</span> <span class="n">capture_module_id</span> <span class="o">==</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">:</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">TRIG_AWG_SEL_1</span>
+        
+        <span class="n">awg_id</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="p">(</span><span class="n">awg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">awg_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">)</span></div>
 
 
