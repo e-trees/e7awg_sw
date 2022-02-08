@@ -93,11 +93,6 @@ def main(num_capture_words):
 
 
 if __name__ == "__main__":
-    try:
-        num_words_to_capture = int(sys.argv[1])
-    except Exception:
-        num_capture_words = 1024
-
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
     parser.add_argument('--words')
