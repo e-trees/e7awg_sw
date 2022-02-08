@@ -172,6 +172,16 @@ class CaptureCtrl(object):
         Returns:
             sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
         """
+        try:
+            if not CaptureUnit.includes(capture_unit_id):
+                raise ValueError('Invalid capture unit ID {}'.format(capture_unit_id))
+            if not isinstance(num_samples, int):
+                raise ValueError(
+                    "The number of samples must be an integer.  '{}' was set.".format(num_samples))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
+
         num_bytes = num_samples * CAPTURED_SAMPLE_SIZE
         num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE * self.__CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
@@ -187,6 +197,13 @@ class CaptureCtrl(object):
         Returns:
             int: 保存されたサンプル数
         """
+        try:
+            if not CaptureUnit.includes(capture_unit_id):
+                raise ValueError('Invalid capture unit ID {}'.format(capture_unit_id))
+        except Exception as e:
+            log_error(e, *self.__loggers)
+            raise
+
         base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         return self.__reg_access.read(base_addr, CaptureParamRegs.Offset.NUM_CAPTURED_SAMPLES)
 
@@ -305,7 +322,7 @@ class CaptureCtrl(object):
                     break
             if all_stopped:
                 return
-                
+
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
                 msg = 'Capture unit stop timeout'

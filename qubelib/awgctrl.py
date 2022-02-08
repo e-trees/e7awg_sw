@@ -1,14 +1,301 @@
-import socket
+from abc import ABCMeta, abstractmethod
 import time
 
-from qubelib.wavesequence import WaveSequence
+from .wavesequence import *
 from .hwparam import *
 from .memorymap import *
 from .udpaccess import *
 from .exception import *
 from .logger import *
 
-class AwgCtrl(object):
+class AwgCtrlBase(object, metaclass = ABCMeta):
+    #: AWG のサンプリングレート (単位=サンプル数/秒)
+    SAMPLING_RATE = 500000000
+
+    def __init__(self, ip_addr, validate_input_params, enable_lib_log, logger):
+        self._validate_input_params = validate_input_params
+        self._loggers = [logger]
+        if enable_lib_log:
+            self._loggers.append(get_file_logger())
+
+        if self._validate_input_params:
+            try:
+                self._validate_ip_addr(ip_addr)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+    
+
+    def set_wave_seqeuence(self, awg_id, wave_seq):
+        """波形シーケンスを AWG に設定する
+
+        Args:
+            awg_id (AWG): 波形シーケンスを設定する AWG の ID
+            wave_seq (WaveSequence): 設定する波形シーケンス
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(awg_id)
+                self._validate_wave_sequence(wave_seq)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._set_wave_seqeuence(awg_id, wave_seq)
+
+
+    def initialize(self):
+        """全ての AWG を初期化する.
+        
+        このクラスの他のメソッドを呼び出す前に呼ぶこと.
+        """
+        self._initialize()
+
+
+    def enable_awgs(self, *awg_id_list):
+        """引数で指定したAWGを有効化する.
+
+        Args:
+            *awg_id_list (list of AWG): 有効化する AWG の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._enable_awgs(*awg_id_list)
+
+
+    def disable_awgs(self, *awg_id_list):
+        """引数で指定したAWGを無効化する.
+
+        Args:
+            *awg_id_list (list of AWG): 無効化する AWG の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._disable_awgs(*awg_id_list)
+
+
+    def get_awg_enabled(self):
+        """現在有効になっている AWG の ID のリストを返す
+
+        Returns:
+            list of AWG: 現在有効になっている AWG の ID のリスト. 全ての AWG が無効になっている場合は空のリストを返す.
+        """
+        return self._get_awg_enabled()
+
+
+    def start_awgs(self):
+        """現在有効になっている AWG の波形送信を開始する"""
+        self._start_awgs()
+
+
+    def terminate_awgs(self, *awg_id_list):
+        """引数で指定した AWG を強制終了する.
+
+        Args:
+            *awg_id_list (list of AWG): 強制終了する AWG の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._terminate_awgs(*awg_id_list)
+
+
+    def reset_awgs(self, *awg_id_list):
+        """引数で指定したAWGをリセットする
+
+        Args:
+            *awg_id_list (list of AWG): リセットする AWG の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._reset_awgs(*awg_id_list)
+
+
+    def wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+        """引数で指定した全ての AWG の波形の送信が終了するのを待つ
+
+        Args:
+            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
+            *awg_id_list (list of AWG): 波形の送信が終了するのを待つ AWG の ID
+        
+        Raises:
+            AwgTimeoutError: タイムアウトした場合
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_timeout(timeout)
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._wait_for_awgs_to_stop(timeout, *awg_id_list)
+
+
+    def set_wave_startable_block_timing(self, interval, *awg_id_list):
+        """引数で指定した AWG に波形を送信可能なタイミングを設定する.
+
+        | AWG は出力した波形ブロックの数をカウントしており, これが interval の倍数となるブロックの先頭から波形の送信を始める.
+        | (※本来このメソッドは, 全 AWG のブロックカウントを同時にリセットする機能と組み合わせて使うものであるが, 
+        | リセット機能が未実装であるため, 全 AWG が同時に特定のタイミングで波形を出力するという目的のためには使えない.)
+
+        Args:
+            interval (int):
+                | この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.
+                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
+            *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_wave_start_interval(interval)
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._set_wave_startable_block_timing(interval, *awg_id_list)
+
+
+    def get_wave_startable_block_timing(self, *awg_id_list):
+        """引数で指定した AWG から波形を送信可能なタイミングを取得する.
+
+        Args:
+            *awg_id_list (list of AWG): 波形を送信可能なタイミングを取得する AWG の ID
+
+        Returns:
+            {awg_id -> int}: 
+                | key = AWG ID
+                | value =  波形を送信可能なタイミング
+                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        return self._get_wave_startable_block_timing(*awg_id_list)
+
+
+    def check_err(self, *awg_id_list):
+        """引数で指定した AWG のエラーをチェックする.
+
+        エラーのあった AWG ごとにエラーの種類を返す.
+
+        Args:
+            *awg_id_list (AWG): エラーを調べる AWG の ID
+
+        Returns:
+            {AWG -> list of AwgErr}:
+            | key = AWG ID
+            | value = 発生したエラーのリスト
+            | エラーが無かった場合は空の Dict.
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        return self._check_err(*awg_id_list)
+
+
+    def _validate_ip_addr(self, ip_addr):
+        try:
+            socket.inet_aton(ip_addr)
+        except socket.error:
+            raise ValueError('Invalid IP Address {}'.format(ip_addr))
+
+
+    def _validate_awg_id(self, *awg_id_list):
+        if not AWG.includes(*awg_id_list):
+            raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
+
+
+    def _validate_wave_sequence(self, wave_seq):
+        if not isinstance(wave_seq, WaveSequence):
+            raise ValueError('Invalid wave sequence {}'.format(wave_seq))
+
+
+    def _validate_timeout(self, timeout):
+        if (not isinstance(timeout, (int, float))) or (timeout < 0):
+            raise ValueError('Invalid timeout {}'.format(timeout))
+
+    def _validate_wave_start_interval(self, interval):
+        if (not isinstance(interval, int)) or (interval < 0):
+            raise ValueError('Invalid interval {}'.format(interval))
+
+    @abstractmethod
+    def _set_wave_seqeuence(self, awg_id, wave_seq):
+        pass
+
+    @abstractmethod
+    def _initialize(self):
+        pass
+
+    @abstractmethod
+    def _enable_awgs(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _disable_awgs(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _get_awg_enabled(self):
+        pass
+
+    @abstractmethod
+    def _start_awgs(self):
+        pass
+
+    @abstractmethod
+    def _terminate_awgs(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _reset_awgs(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _set_wave_startable_block_timing(self, interval, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _get_wave_startable_block_timing(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _check_err(self, *awg_id_list):
+        pass
+
+
+class AwgCtrl(AwgCtrlBase):
 
     # AWG が読み取る波形データの格納先アドレス
     __AWG_WAVE_SRC_ADDR = [
@@ -20,49 +307,31 @@ class AwgCtrl(object):
     __WAVE_RAM_WORD_SIZE = 32
     # 1 波形シーケンスのサンプルデータに割り当てられる最大 RAM サイズ (bytes)
     __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE = 256 * 1024 * 1024
-    #: AWG のサンプリングレート (単位=サンプル数/秒)
-    SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr, *, enable_lib_log = True, logger = get_null_logger()):
+    def __init__(
+        self,
+        ip_addr,
+        *,
+        validate_input_params = True,
+        enable_lib_log = True,
+        logger = get_null_logger()):
         """
         Args:
             ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
+            validate_input_params(bool):
+                | True -> 引数のチェックを行う
+                | False -> 引数のチェックを行わない
             enable_lib_log (bool):
                 | True -> ライブラリの標準のログ機能を有効にする.
                 | False -> ライブラリの標準のログ機能を無効にする.
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        self.__loggers = [logger]
-        if enable_lib_log:
-            self.__loggers.append(get_file_logger())
-
-        try:
-            socket.inet_aton(ip_addr)
-        except socket.error:
-            msg = 'Invalid IP Address {}'.format(ip_addr)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
-        self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self.__loggers)
-        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self.__loggers)
+        super().__init__(ip_addr, validate_input_params, enable_lib_log, logger)
+        self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
+        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
 
 
-    def set_wave_seqeuence(self, awg_id, wave_seq):
-        """波形シーケンスを AWG に設定する
-
-        Args:
-            awg_id (AWG): 波形シーケンスを設定する AWG の ID
-            wave_seq (WaveSequence): 設定する波形シーケンス
-        """
-        try:
-            if not AWG.includes(awg_id):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id))
-            if not isinstance(wave_seq, WaveSequence):
-                raise ValueError('Invalid wave sequence {}'.format(wave_seq))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _set_wave_seqeuence(self, awg_id, wave_seq):
         chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq)
         self.__check_wave_seq_data_size(awg_id, wave_seq, chunk_addr_list)
         self.__set_wave_params(awg_id, wave_seq, chunk_addr_list)
@@ -107,15 +376,11 @@ class AwgCtrl(object):
             ram_size = end_addr - self.__AWG_WAVE_SRC_ADDR[awg_id]
             msg = ("Too much RAM space is required for the wave sequence for AWG {}.  ({} bytes)\n".format(awg_id, ram_size) +
                    "The maximum RAM size for a wave sequence is {} bytes.".format(self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE))
-            log_error(msg, *self.__loggers)
+            log_error(msg, *self._loggers)
             raise ValueError(msg)
 
 
-    def initialize(self):
-        """全ての AWG を初期化する.
-        
-        このクラスの他のメソッドを呼び出す前に呼ぶこと.
-        """
+    def _initialize(self):
         awgs = AWG.all()
         self.__reg_access.write(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, 0)
         for awg_id in awgs:
@@ -126,17 +391,7 @@ class AwgCtrl(object):
         self.disable_awgs(*awgs)
 
 
-    def enable_awgs(self, *awg_id_list):
-        """引数で指定したAWGを有効化する.
-
-        Args:
-            *awg_id_list (list of AWG): 有効化する AWG の ID
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _enable_awgs(self, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgMasterCtrlRegs.ADDR,
@@ -144,17 +399,7 @@ class AwgCtrl(object):
                 AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 1)
 
 
-    def disable_awgs(self, *awg_id_list):
-        """引数で指定したAWGを無効化する.
-
-        Args:
-            *awg_id_list (list of AWG): 無効化する AWG の ID
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _disable_awgs(self, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgMasterCtrlRegs.ADDR,
@@ -162,12 +407,7 @@ class AwgCtrl(object):
                 AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 0)
 
 
-    def get_awg_enabled(self):
-        """現在有効になっている AWG の ID のリストを返す
-
-        Returns:
-            list of AWG: 現在有効になっている AWG の ID のリスト. 全ての AWG が無効になっている場合は空のリストを返す.
-        """
+    def _get_awg_enabled(self):
         awg_id_list = []
         reg_val = self.__reg_access.read(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.ENABLE)
         for awg_id in AWG.all():
@@ -177,8 +417,7 @@ class AwgCtrl(object):
         return awg_id_list
 
 
-    def start_awgs(self):
-        """現在有効になっている AWG の波形送信を開始する"""
+    def _start_awgs(self):
         self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 1)
         self.__wait_for_awgs_ready(5, *self.get_awg_enabled())
         self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
@@ -186,17 +425,7 @@ class AwgCtrl(object):
         self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
 
 
-    def terminate_awgs(self, *awg_id_list):
-        """引数で指定した AWG を強制終了する.
-
-        Args:
-            *awg_id_list (list of AWG): 強制終了する AWG の ID
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _terminate_awgs(self, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_TERMINATE, 1, 1)
@@ -205,17 +434,7 @@ class AwgCtrl(object):
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_TERMINATE, 1, 0)
 
 
-    def reset_awgs(self, *awg_id_list):
-        """引数で指定したAWGをリセットする
-
-        Args:
-            *awg_id_list (list of AWG): リセットする AWG の ID
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _reset_awgs(self, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_START, 1, 1)
@@ -224,25 +443,7 @@ class AwgCtrl(object):
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_START, 1, 0)
 
 
-    def wait_for_awgs_to_stop(self, timeout, *awg_id_list):
-        """引数で指定した全ての AWG の波形の送信が終了するのを待つ
-
-        Args:
-            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
-            *awg_id_list (list of AWG): 波形の送信が終了するのを待つ AWG の ID
-        
-        Raises:
-            AwgTimeoutError: タイムアウトした場合
-        """
-        try:
-            if (not isinstance(timeout, (int, float))) or (timeout < 0):
-                raise ValueError('Invalid timeout {}'.format(timeout))
-            if not AWG.includes(*awg_id_list):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
         start = time.time()
         while True:
             all_stopped = True
@@ -258,19 +459,17 @@ class AwgCtrl(object):
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
                 msg = 'AWG stop timeout'
-                log_error(msg, *self.__loggers)
+                log_error(msg, *self._loggers)
                 raise AwgTimeoutError(msg)
             time.sleep(0.01)
 
 
     def __wait_for_awgs_ready(self, timeout, *awg_id_list):
         try:
-            if (not isinstance(timeout, (int, float))) or (timeout < 0):
-                raise ValueError('Invalid timeout {}'.format(timeout))
-            if not AWG.includes(*awg_id_list):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
+            self._validate_timeout(timeout)
+            self._validate_awg_id(*awg_id_list)
         except Exception as e:
-            log_error(e, *self.__loggers)
+            log_error(e, *self._loggers)
             raise
 
         start = time.time()
@@ -287,20 +486,18 @@ class AwgCtrl(object):
 
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
-                msg = 'AWG ready timed out'
-                log_error(msg, *self.__loggers)
-                raise AwgTimeoutError(msg)
+                err = AwgTimeoutError('AWG ready timed out')
+                log_error(err, *self._loggers)
+                raise err
             time.sleep(0.01)
 
 
     def __wait_for_awgs_idle(self, timeout, *awg_id_list):
         try:
-            if (not isinstance(timeout, (int, float))) or (timeout < 0):
-                raise ValueError('Invalid timeout {}'.format(timeout))
-            if not AWG.includes(*awg_id_list):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
+            self._validate_timeout(timeout)
+            self._validate_awg_id(*awg_id_list)
         except Exception as e:
-            log_error(e, *self.__loggers)
+            log_error(e, *self._loggers)
             raise
 
         start = time.time()
@@ -317,56 +514,19 @@ class AwgCtrl(object):
 
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
-                msg = 'AWG idle timed out'
-                log_error(msg, *self.__loggers)
-                raise AwgTimeoutError(msg)
+                err = AwgTimeoutError('AWG idle timed out')
+                log_error(err, *self._loggers)
+                raise err
             time.sleep(0.01)
 
 
-    def set_wave_startable_block_timing(self, interval, *awg_id_list):
-        """引数で指定した AWG に波形を送信可能なタイミングを設定する.
-
-        | AWG は出力した波形ブロックの数をカウントしており, これが interval の倍数となるブロックの先頭から波形の送信を始める.
-        | (※本来このメソッドは, 全 AWG のブロックカウントを同時にリセットする機能と組み合わせて使うものであるが, 
-        | リセット機能が未実装であるため, 全 AWG が同時に特定のタイミングで波形を出力するという目的のためには使えない.)
-
-        Args:
-            interval (int):
-                | この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.
-                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
-            *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID
-        """
-        try:
-            if not AWG.includes(*awg_id_list):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
-            if (not isinstance(interval, int)) or (interval < 0):
-                raise ValueError('Invalid interval {}'.format(interval))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _set_wave_startable_block_timing(self, interval, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write(
                 WaveParamRegs.Addr.awg(awg_id), WaveParamRegs.Offset.WAVE_STARTABLE_BLOCK_INTERVAL, interval)
 
 
-    def get_wave_startable_block_timing(self, *awg_id_list):
-        """引数で指定した AWG から波形を送信可能なタイミングを取得する.
-
-        Args:
-            *awg_id_list (list of AWG): 波形を送信可能なタイミングを取得する AWG の ID
-
-        Returns:
-            {awg_id -> int}: 
-                | key = AWG ID
-                | value =  波形を送信可能なタイミング
-                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _get_wave_startable_block_timing(self, *awg_id_list):
         awg_id_to_timimg = {}
         for awg_id in awg_id_list:
             timing = self.__reg_access.read(
@@ -375,25 +535,7 @@ class AwgCtrl(object):
         return awg_id_to_timimg
 
 
-    def check_err(self, *awg_id_list):
-        """引数で指定した AWG のエラーをチェックする.
-
-        エラーのあった AWG ごとにエラーの種類を返す.
-
-        Args:
-            *awg_id_list (AWG): エラーを調べる AWG の ID
-
-        Returns:
-            {AWG -> list of AwgErr}:
-            | key = AWG ID
-            | value = 発生したエラーのリスト
-            | エラーが無かった場合は空の Dict.
-        """
-        if not AWG.includes(*awg_id_list):
-            msg = 'Invalid AWG ID {}'.format(awg_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _check_err(self, *awg_id_list):
         awg_to_err = {}
         for awg_id in awg_id_list:
             err_list = []

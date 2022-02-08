@@ -10,6 +10,8 @@ __all__ = [
     'AWG',
     'AwgErr',
     'CaptureErr',
+    'AwgTimeoutError',
+    'CaptureUnitTimeoutError',
     'SinWave',
     'SawtoothWave',
     'SquareWave',
@@ -24,3 +26,4 @@ from .wavesequence import *
 from .captureparam import *
 from .utiltool import *
 from .awgwave import *
+from .exception import *
