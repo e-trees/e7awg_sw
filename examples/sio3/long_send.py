@@ -80,7 +80,7 @@ def set_wave_sequence(awg_ctrl):
         print("{}: freq={}, amp={}".format(awg_id, freqs[awg_id], amps[awg_id]))
         wave_seq = gen_wave_seq(freqs[awg_id], amps[awg_id]) # 5 MHz  5MHz x 8 周期では切れ目のない波形はできない
         awg_to_wave_sequence[awg_id] = wave_seq
-        awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+        awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
 
 

@@ -41,9 +41,9 @@ def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
 
     freqs = [
-        2.5e6, # P8
+        2.5e6, # P8 readout 0
         2.5e6, # P9
-        2.5e6, 2.5e6, 2.5e6, # P12, P8, P8
+        2.5e6, 2.5e6, 2.5e6, # P12, P8, P8  ctrl 0
         2.5e6, 2.5e6, 2.5e6, # P7, P7, P7
         2.51256281e6, 2.51256281e6, 2.51256281e6, # P6
         # 1.953125e6, 1.953125e6, 1.953125e6, # P5
@@ -51,9 +51,9 @@ def set_wave_sequence(awg_ctrl):
         # 2.5e6, 2.5e6, 2.51256281e6, # P5 Photo1
         #2.5e6, 2.5e6, 2.7173913e6, # P5 Photo1
         #2.5e6, 2.5e6, 3.52112676e6, # P5 Photo1
-        2.5e6, 2.5e6, 2.5e6, # P5
+        2.5e6, 2.5e6, 2.5e6, # P5 ctrl 1
         2.5e6, # P4
-        2.5e6, # P0
+        2.5e6, # P0 readout 1
         ]
     amps = [
             5000, # P8
@@ -78,7 +78,7 @@ def set_wave_sequence(awg_ctrl):
         print("{}: freq={}, amp={}".format(awg_id, freqs[awg_id], amps[awg_id]))
         wave_seq = gen_wave_seq(freqs[awg_id], amps[awg_id]) # 5 MHz  5MHz x 8 周期では切れ目のない波形はできない
         awg_to_wave_sequence[awg_id] = wave_seq
-        awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+        awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
 
 

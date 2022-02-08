@@ -123,7 +123,7 @@ class CaptureTestDsp(object):
         for awg_id in self.__awg_to_capture_module.keys():
             wave_seq = self.__gen_wave_seq(max_samples)
             awg_to_wave_sequence[awg_id] = wave_seq
-            awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+            awg_ctrl.set_wave_sequence(awg_id, wave_seq)
         return awg_to_wave_sequence        
 
     def __get_capture_data(self, cap_ctrl):

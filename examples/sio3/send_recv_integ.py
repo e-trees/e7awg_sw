@@ -128,10 +128,10 @@ def set_wave_sequence(awg_ctrl, params):
     # control 波形と readout 波形の長さが一致することを確認
     assert ctrl_wave_seq.num_all_words == ro_wave_seq.num_all_words
 
-    awg_ctrl.set_wave_seqeuence(AWG_LIST.ctrl_awg_0, ctrl_wave_seq)
-    awg_ctrl.set_wave_seqeuence(AWG_LIST.ctrl_awg_1, ctrl_wave_seq)
-    awg_ctrl.set_wave_seqeuence(AWG_LIST.readout_awg_0, ro_wave_seq)
-    awg_ctrl.set_wave_seqeuence(AWG_LIST.readout_awg_1, ro_wave_seq)
+    awg_ctrl.set_wave_sequence(AWG_LIST.ctrl_awg_0, ctrl_wave_seq)
+    awg_ctrl.set_wave_sequence(AWG_LIST.ctrl_awg_1, ctrl_wave_seq)
+    awg_ctrl.set_wave_sequence(AWG_LIST.readout_awg_0, ro_wave_seq)
+    awg_ctrl.set_wave_sequence(AWG_LIST.readout_awg_1, ro_wave_seq)
     return {
         AWG_LIST.ctrl_awg_0 : ctrl_wave_seq,
         AWG_LIST.ctrl_awg_1 : ctrl_wave_seq,

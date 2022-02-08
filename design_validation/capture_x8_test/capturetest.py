@@ -86,7 +86,7 @@ class CaptureTest(object):
         for awg_id in self.__awg_to_capture_module.keys():
             wave_seq = self.__gen_wave_seq()
             awg_to_wave_sequence[awg_id] = wave_seq
-            awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+            awg_ctrl.set_wave_sequence(awg_id, wave_seq)
         return awg_to_wave_sequence
 
     def __set_capture_params(self, cap_ctrl, awg_to_wave_sequence):

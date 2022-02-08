@@ -49,7 +49,7 @@ def gen_wave_seq():
 
 def set_wave_sequence(awg_ctrl, awg_id):
     wave_seq = gen_wave_seq()
-    awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+    awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return wave_seq
 
 

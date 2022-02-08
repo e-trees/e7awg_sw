@@ -72,7 +72,7 @@ def set_wave_sequence(awg_ctrl):
     for awg_id in AWG.all():
         wave_seq = gen_wave_seq()
         awg_to_wave_sequence[awg_id] = wave_seq
-        awg_ctrl.set_wave_seqeuence(awg_id, wave_seq)
+        awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
 
 

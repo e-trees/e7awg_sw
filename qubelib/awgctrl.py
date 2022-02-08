@@ -25,7 +25,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 raise
     
 
-    def set_wave_seqeuence(self, awg_id, wave_seq):
+    def set_wave_sequence(self, awg_id, wave_seq):
         """波形シーケンスを AWG に設定する
 
         Args:
@@ -40,7 +40,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 log_error(e, *self._loggers)
                 raise
 
-        self._set_wave_seqeuence(awg_id, wave_seq)
+        self._set_wave_sequence(awg_id, wave_seq)
 
 
     def initialize(self):
@@ -248,7 +248,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     @abstractmethod
-    def _set_wave_seqeuence(self, awg_id, wave_seq):
+    def _set_wave_sequence(self, awg_id, wave_seq):
         pass
 
     @abstractmethod
@@ -332,7 +332,7 @@ class AwgCtrl(AwgCtrlBase):
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
 
 
-    def _set_wave_seqeuence(self, awg_id, wave_seq):
+    def _set_wave_sequence(self, awg_id, wave_seq):
         chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq)
         self.__check_wave_seq_data_size(awg_id, wave_seq, chunk_addr_list)
         self.__set_wave_params(awg_id, wave_seq, chunk_addr_list)
