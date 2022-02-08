@@ -10,7 +10,7 @@ lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from qubelib import *
 
-IP_ADDR = '10.0.0.16'
+IP_ADDR = '10.1.0.12'
 
 def init_modules(awg_ctrl, cap_ctrl):
     awg_ctrl.initialize()
@@ -41,37 +41,39 @@ def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
 
     freqs = [
-        2.5e6, # P8
-        2.5e6, # P9
-        2.5e6, 2.5e6, 2.5e6, # P12, P8, P8
-        2.5e6, 2.5e6, 2.5e6, # P7, P7, P7
-        2.51256281e6, 2.51256281e6, 2.51256281e6, # P6
+        100e6, # -> P8
+        2.5e6, # -> P11
+        100e6, # -> P13
+        100e6, 100e6, # -> P8
+        2.5e6, 2.5e6, 2.5e6, # P7
+        2.5e6, 2.5e6, 2.5e6, # P6
+        #1.51256281e6, 2.51256281e6, 2.51256281e6, # P6
         # 1.953125e6, 1.953125e6, 1.953125e6, # P5
         # 2.47524752e6, 2.5e6, 2.51256281e6, # P5
         # 2.5e6, 2.5e6, 2.51256281e6, # P5 Photo1
         #2.5e6, 2.5e6, 2.7173913e6, # P5 Photo1
         #2.5e6, 2.5e6, 3.52112676e6, # P5 Photo1
         2.5e6, 2.5e6, 2.5e6, # P5
-        2.5e6, # P4
+        2.5e6, # P2
         2.5e6, # P0
         ]
-    amps = [
-            5000, # P8
-            5000, # P
-            5000, # P13
-            5000, # P8
-            5000, # P8
-            5000, # P7
-            5000, # P7
-            5000, # P7
-            5461, # P6
-            5461, # P6
-            5461, # P6
-            5461, # P5
-            5461, # P5
-            5461, # P5
-            5000, # P
-            5000, # P0
+    amps = [# 0-32768, 10922
+            10922, # U0 -> P8
+            0, # U1 -> P11
+            32768, # U2 -> P13
+            10922, # U3 -> P8
+            10922, # U4 -> P8
+            0, # U5 -> P7
+            0, # U6 -> P7
+            0, # U7 -> P7
+            0, # U8 -> P6
+            0, # U9 -> P6
+            0, # U10 -> P6
+            0, # U11 -> P5
+            0, # U12 -> P5
+            0, # U13 -> P5
+            0, # U14 -> P2 
+            0, # U15 -> P0
             ]
 
     for awg_id in AWG.all():
@@ -100,5 +102,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
+
+    #print([i for i in AWG.all()])
 
     main()
