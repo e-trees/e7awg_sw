@@ -1,6 +1,7 @@
 import socket
 import time
 import struct
+from abc import ABCMeta, abstractmethod
 from .hwparam import *
 from .memorymap import *
 from .udpaccess import *
@@ -9,41 +10,25 @@ from .captureparam import *
 from .exception import *
 from .logger import *
 
-class CaptureCtrl(object):
 
-    # キャプチャモジュールが波形データを保存するアドレス
-    __CAPTURE_ADDR = [
-        0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
-    # キャプチャ RAM のワードサイズ (bytes)
-    __CAPTURE_RAM_WORD_SIZE = 32 # bytes
+class CaptureCtrlBase(object, metaclass = ABCMeta):
     # 1 キャプチャモジュールが保存可能なサンプル数
     MAX_CAPTURE_SAMPLES = MAX_CAPTURE_SIZE // CAPTURED_SAMPLE_SIZE
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr, *, enable_lib_log = True, logger = get_null_logger()):
-        """
-        Args:
-            ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
-            enable_lib_log (bool):
-                | True -> ライブラリの標準のログ機能を有効にする.
-                | False -> ライブラリの標準のログ機能を無効にする.
-            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
-        """
-        self.__loggers = [logger]
+    def __init__(self, ip_addr, validate_input_params, enable_lib_log, logger):
+        self._validate_input_params = validate_input_params
+        self._loggers = [logger]
         if enable_lib_log:
-            self.__loggers.append(get_file_logger())
+            self._loggers.append(get_file_logger())
 
-        try:
-            socket.inet_aton(ip_addr)
-        except socket.error:
-            msg = 'Invalid IP Address {}'.format(ip_addr)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
-        self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT)
-        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT)
+        if self._validate_input_params:
+            try:
+                self._validate_ip_addr(ip_addr)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
 
 
     def set_capture_params(self, capture_unit_id, param):
@@ -53,15 +38,293 @@ class CaptureCtrl(object):
             capture_unit_id (CaptureUnit): キャプチャパラメータを設定するキャプチャユニットの ID 
             param (CaptureParam): 設定するキャプチャパラメータ
         """
-        try:
-            if not CaptureUnit.includes(capture_unit_id):
-                raise ValueError('Invalid capture unit ID  {}'.format(capture_unit_id))
-            if not isinstance(param, CaptureParam):
-                raise ValueError('Invalid capture param {}'.format(param))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(capture_unit_id)
+                self._validate_capture_param(param)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
 
+        self._set_capture_params(capture_unit_id, param)
+
+
+    def initialize(self):
+        """全てのキャプチャユニットを初期化する"""
+        self._initialize()
+
+
+    def get_capture_data(self, capture_unit_id, num_samples):
+        """引数で指定したキャプチャユニットが保存したサンプルデータを取得する.
+        
+        Args:
+            capture_unit_id (int): この ID のキャプチャユニットが保存したサンプルデータを取得する
+            num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)
+
+        Returns:
+            sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(capture_unit_id)
+                self._validate_num_capture_samples(num_samples)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        return self._get_capture_data(capture_unit_id, num_samples)
+
+
+    def num_captured_samples(self, capture_unit_id):
+        """引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)
+
+        Returns:
+            int: 保存されたサンプル数
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(capture_unit_id)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        return self._num_captured_samples(capture_unit_id)
+
+
+    def start_capture_units(self):
+        """現在有効になっているキャプチャユニットの処理を開始する"""
+        self._start_capture_units()
+
+
+    def reset_capture_units(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットをリセットする
+
+        Args:
+            *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._reset_capture_units(*capture_unit_id_list)
+
+
+    def enable_capture_units(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットを有効化する
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): 有効化するキャプチャユニットの ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._enable_capture_units(*capture_unit_id_list)
+
+
+    def disable_capture_units(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットを無効化する.
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): 無効化する キャプチャユニット の ID
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._disable_capture_units(*capture_unit_id_list)
+
+
+    def select_trigger_awg(self, capture_module_id, awg_id):
+        """キャプチャモジュールをスタートする AWG を選択する
+
+        Args:
+            capture_module_id (CaptureModule): 
+                | この ID のキャプチャモジュールに含まれる全キャプチャユニットが, 
+                | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.
+            awg_id (AWG or None):
+                | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.
+                | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_module_id(capture_module_id)
+                if awg_id is not None:
+                    self._validate_awg_id(awg_id)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._select_trigger_awg(capture_module_id, awg_id)
+
+
+    def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
+        """引数で指定した全てのキャプチャユニットの波形の送信が終了するのを待つ
+
+        Args:
+            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
+            *capture_unit_id_list (list of CaptureUnit): 波形の保存が終了するのを待つキャプチャユニットの ID
+        
+        Raises:
+            CaptureUnitTimeoutError: タイムアウトした場合
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_timeout(timeout)
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._wait_for_capture_units_to_stop(timeout, *capture_unit_id_list)
+
+
+    def check_err(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットのエラーをチェックする.
+
+        エラーのあったキャプチャユニットごとにエラーの種類を返す.
+
+        Args:
+            *capture_unit_id_list (CaptureUnit): エラーを調べるキャプチャユニットの ID
+        Returns:
+            {CaptureUnit -> list of CaptureErr} or None:
+            | key = Capture Unit ID
+            | value = 発生したエラーのリスト
+            | エラーが無かった場合は空の Dict.
+        """
+        if self._validate_input_params:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        return self._check_err(*capture_unit_id_list)
+
+
+    def _validate_ip_addr(self, ip_addr):
+        try:
+            socket.inet_aton(ip_addr)
+        except socket.error:
+            raise ValueError('Invalid IP Address {}'.format(ip_addr))
+
+
+    def _validate_capture_unit_id(self, *capture_unit_id):
+        if not CaptureUnit.includes(*capture_unit_id):
+            raise ValueError('Invalid capture unit ID  {}'.format(capture_unit_id))
+
+
+    def _validate_capture_param(self, param):
+        if not isinstance(param, CaptureParam):
+            raise ValueError('Invalid capture param {}'.format(param))
+
+
+    def _validate_num_capture_samples(self, num_samples):
+        if not isinstance(num_samples, int):
+            raise ValueError(
+                "The number of samples must be an integer.  '{}' was set.".format(num_samples))
+
+    def _validate_capture_module_id(self, *capture_module_id):
+        if not CaptureModule.includes(*capture_module_id):
+            raise ValueError('Invalid capture module ID {}'.format(capture_module_id))
+
+
+    def _validate_awg_id(self, *awg_id_list):
+        if not AWG.includes(*awg_id_list):
+            raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
+
+
+    def _validate_timeout(self, timeout):
+        if (not isinstance(timeout, (int, float))) or (timeout < 0):
+            raise ValueError('Invalid timeout {}'.format(timeout))
+
+
+    @abstractmethod
+    def _set_capture_params(self, capture_unit_id, param):
+        pass
+
+    @abstractmethod
+    def _initialize(self):
+        pass
+
+    @abstractmethod
+    def _get_capture_data(self, capture_unit_id, num_samples):
+        pass
+
+    @abstractmethod
+    def _num_captured_samples(self, capture_unit_id):
+        pass
+
+    @abstractmethod
+    def _start_capture_units(self):
+        pass
+
+    @abstractmethod
+    def _reset_capture_units(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _enable_capture_units(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _disable_capture_units(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _select_trigger_awg(self, capture_module_id, awg_id):
+        pass
+    
+    @abstractmethod
+    def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
+        pass
+    
+    @abstractmethod
+    def _check_err(self, *capture_unit_id_list):
+        pass
+
+class CaptureCtrl(CaptureCtrlBase):
+
+    # キャプチャモジュールが波形データを保存するアドレス
+    __CAPTURE_ADDR = [
+        0x10000000,  0x30000000,  0x50000000,  0x70000000,
+        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
+    # キャプチャ RAM のワードサイズ (bytes)
+    __CAPTURE_RAM_WORD_SIZE = 32 # bytes
+
+    def __init__(
+        self,
+        ip_addr,
+        *,
+        validate_input_params = True,
+        enable_lib_log = True,
+        logger = get_null_logger()):
+        """
+        Args:
+            ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
+            validate_input_params(bool):
+                | True -> 引数のチェックを行う
+                | False -> 引数のチェックを行わない
+            enable_lib_log (bool):
+                | True -> ライブラリの標準のログ機能を有効にする.
+                | False -> ライブラリの標準のログ機能を無効にする.
+            logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
+        """
+        super().__init__(ip_addr, validate_input_params, enable_lib_log, logger)
+        self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
+        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+
+
+    def _set_capture_params(self, capture_unit_id, param):
         self.__check_capture_size(capture_unit_id, param)
         self.__set_sum_sec_len(capture_unit_id, param.sum_section_list)
         self.__set_num_integ_sectinos(capture_unit_id, param.num_integ_sections)
@@ -148,8 +411,7 @@ class CaptureCtrl(object):
         self.__reg_access.write(base_addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
 
 
-    def initialize(self):
-        """全てのキャプチャユニットを初期化する"""
+    def _initialize(self):
         capture_units = CaptureUnit.all()
         self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, 0)
         for capture_unit_id in capture_units:
@@ -162,26 +424,7 @@ class CaptureCtrl(object):
         self.reset_capture_units(*capture_units)
 
 
-    def get_capture_data(self, capture_unit_id, num_samples):
-        """引数で指定したキャプチャユニットが保存したサンプルデータを取得する.
-        
-        Args:
-            capture_unit_id (int): この ID のキャプチャユニットが保存したサンプルデータを取得する
-            num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)
-
-        Returns:
-            sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
-        """
-        try:
-            if not CaptureUnit.includes(capture_unit_id):
-                raise ValueError('Invalid capture unit ID {}'.format(capture_unit_id))
-            if not isinstance(num_samples, int):
-                raise ValueError(
-                    "The number of samples must be an integer.  '{}' was set.".format(num_samples))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _get_capture_data(self, capture_unit_id, num_samples):
         num_bytes = num_samples * CAPTURED_SAMPLE_SIZE
         num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE * self.__CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
@@ -191,42 +434,19 @@ class CaptureCtrl(object):
         return list(zip(samples[0::2], samples[1::2]))
 
 
-    def num_captured_samples(self, capture_unit_id):
-        """引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)
-
-        Returns:
-            int: 保存されたサンプル数
-        """
-        try:
-            if not CaptureUnit.includes(capture_unit_id):
-                raise ValueError('Invalid capture unit ID {}'.format(capture_unit_id))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _num_captured_samples(self, capture_unit_id):
         base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         return self.__reg_access.read(base_addr, CaptureParamRegs.Offset.NUM_CAPTURED_SAMPLES)
 
 
-    def start_capture_units(self):
-        """現在有効になっているキャプチャユニットの処理を開始する"""
+    def _start_capture_units(self):
         self.__reg_access.write_bits(
             CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 1)
         self.__reg_access.write_bits(
             CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
 
 
-    def reset_capture_units(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットをリセットする
-
-        Args:
-            *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID
-        """
-        if not CaptureUnit.includes(*capture_unit_id_list):
-            msg = 'Invalid capture unit ID {}'.format(capture_unit_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _reset_capture_units(self, *capture_unit_id_list):
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 1)
@@ -235,12 +455,7 @@ class CaptureCtrl(object):
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 0)
 
 
-    def enable_capture_units(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットを有効化する
-
-        Args:
-            *capture_unit_id_list (list of CaptureUnit): 有効化するキャプチャユニットの ID
-        """
+    def _enable_capture_units(self, *capture_unit_id_list):
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR,
@@ -248,12 +463,7 @@ class CaptureCtrl(object):
                 CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
 
 
-    def disable_capture_units(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットを無効化する.
-
-        Args:
-            *capture_unit_id_list (list of CaptureUnit): 無効化する キャプチャユニット の ID
-        """
+    def _disable_capture_units(self, *capture_unit_id_list):
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR,
@@ -261,26 +471,7 @@ class CaptureCtrl(object):
                 CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
 
 
-    def select_trigger_awg(self, capture_module_id, awg_id):
-        """キャプチャモジュールをスタートする AWG を選択する
-
-        Args:
-            capture_module_id (CaptureModule): 
-                | この ID のキャプチャモジュールに含まれる全キャプチャユニットが, 
-                | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.
-            awg_id (AWG or None):
-                | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.
-                | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.
-        """
-        try:
-            if not CaptureModule.includes(capture_module_id):
-                raise ValueError('Invalid capture module ID {}'.format(capture_module_id))
-            if (not AWG.includes(awg_id)) and (awg_id is not None):
-                raise ValueError('Invalid AWG ID {}'.format(awg_id))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _select_trigger_awg(self, capture_module_id, awg_id):
         if capture_module_id == CaptureModule.U0:
             offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
         elif capture_module_id == CaptureModule.U1:
@@ -290,25 +481,7 @@ class CaptureCtrl(object):
         self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
 
 
-    def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
-        """引数で指定した全てのキャプチャユニットの波形の送信が終了するのを待つ
-
-        Args:
-            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
-            *capture_unit_id_list (list of CaptureUnit): 波形の保存が終了するのを待つキャプチャユニットの ID
-        
-        Raises:
-            CaptureUnitTimeoutError: タイムアウトした場合
-        """
-        try:
-            if (not isinstance(timeout, (int, float))) or (timeout < 0):
-                raise ValueError('Invalid timeout {}'.format(timeout))
-            if not CaptureUnit.includes(*capture_unit_id_list):
-                raise ValueError('Invalid Capture Unit ID {}'.format(capture_unit_id_list))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
+    def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
         start = time.time()
         while True:
             all_stopped = True
@@ -326,29 +499,12 @@ class CaptureCtrl(object):
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
                 msg = 'Capture unit stop timeout'
-                log_error(msg, *self.__loggers)
+                log_error(msg, *self._loggers)
                 raise CaptureUnitTimeoutError(msg)
             time.sleep(0.01)
 
 
-    def check_err(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットのエラーをチェックする.
-
-        エラーのあったキャプチャユニットごとにエラーの種類を返す.
-
-        Args:
-            *capture_unit_id_list (CaptureUnit): エラーを調べるキャプチャユニットの ID
-        Returns:
-            {CaptureUnit -> list of CaptureErr} or None:
-            | key = Capture Unit ID
-            | value = 発生したエラーのリスト
-            | エラーが無かった場合は空の Dict.
-        """
-        if not CaptureUnit.includes(*capture_unit_id_list):
-            msg = 'Invalid Capture Unit ID {}'.format(capture_unit_id_list)
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
+    def _check_err(self, *capture_unit_id_list):
         capture_unit_to_err = {}
         for capture_unit_id in capture_unit_id_list:
             err_list = []
@@ -402,6 +558,7 @@ class CaptureCtrl(object):
                             .format(CaptureParam.MAX_SUM_RAMGE_LEN, num_words_to_sum))
                     log_warning(msg, *self.__loggers)
                     print('WARNING: ' + msg)
+
 
     def __calc_num_words_in_sum_range(self, sum_sec_no, param):
         num_words_in_sum_sec = param.sum_section(sum_sec_no)[0]

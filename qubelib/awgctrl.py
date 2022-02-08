@@ -1,6 +1,5 @@
-from abc import ABCMeta, abstractmethod
 import time
-
+from abc import ABCMeta, abstractmethod
 from .wavesequence import *
 from .hwparam import *
 from .memorymap import *
@@ -242,9 +241,11 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
 
+
     def _validate_wave_start_interval(self, interval):
         if (not isinstance(interval, int)) or (interval < 0):
             raise ValueError('Invalid interval {}'.format(interval))
+
 
     @abstractmethod
     def _set_wave_seqeuence(self, awg_id, wave_seq):
