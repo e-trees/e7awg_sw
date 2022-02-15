@@ -14,9 +14,9 @@ IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 100
 SAVE_DIR = "result_recv/"
 
-def set_capture_params(cap_ctrl, num_capture_words):
+def set_capture_params(cap_ctrl, num_capture_words, capture_units):
     capture_param = gen_capture_param(num_capture_words)
-    for captu_unit_id in CaptureUnit.all():
+    for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
 def gen_capture_param(num_capture_words):
@@ -26,11 +26,12 @@ def gen_capture_param(num_capture_words):
     capture_param.capture_delay = CAPTURE_DELAY
     return capture_param
 
-def get_capture_data(cap_ctrl):
+def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
-    for capture_unit_id in CaptureUnit.all():
+    for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-        capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+        capture_unit_to_capture_data[capture_unit_id] = (
+            cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples))
     return capture_unit_to_capture_data
 
 def save_sample_data(prefix, sampling_rate, id_to_samples):
@@ -63,30 +64,31 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
             dir + '/{}_{}_Q.png'.format(prefix, id),
             '#00a497')
 
-def check_err(cap_ctrl):
-    cap_unit_to_err = cap_ctrl.check_err(*CaptureUnit.all())
+def check_err(cap_ctrl, capture_units):
+    cap_unit_to_err = cap_ctrl.check_err(*capture_units)
     for cap_unit_id, err_list in cap_unit_to_err.items():
         print('{} err'.format(cap_unit_id))
         for err in err_list:
             print('    {}'.format(err))
 
 
-def main(num_capture_words): 
+def main(num_capture_words, capture_modules): 
+    capture_units = CaptureModule.get_units(*capture_modules)
     cap_ctrl = CaptureCtrl(IP_ADDR)
     # 初期化
     cap_ctrl.initialize()
     # キャプチャパラメータの設定
-    set_capture_params(cap_ctrl, num_capture_words)
+    set_capture_params(cap_ctrl, num_capture_words, capture_units)
     # キャプチャモジュール有効化
-    cap_ctrl.enable_capture_units(*CaptureUnit.all())
+    cap_ctrl.enable_capture_units(*capture_units)
     # キャプチャスタート
     cap_ctrl.start_capture_units()
     # キャプチャ完了待ち
-    cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
+    cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
     # エラーチェック
-    check_err(cap_ctrl)
+    check_err(cap_ctrl, capture_units)
     # キャプチャデータ取得
-    capture_unit_to_capture_data = get_capture_data(cap_ctrl)
+    capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
     # 波形保存
     save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
     print('end')
@@ -96,6 +98,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
     parser.add_argument('--words')
+    parser.add_argument('--capture-module')
     args = parser.parse_args()
     
     if args.ipaddr is not None:
@@ -105,7 +108,11 @@ if __name__ == "__main__":
     if args.words is not None:
         num_capture_words = int(args.words)
 
+    capture_modules = CaptureModule.all()
+    if args.capture_module is not None:
+        capture_modules = [CaptureModule.of(int(args.capture_module))]
+
     print("The number of capture words = {} (= {} samples)".format(
         num_capture_words,
         num_capture_words * CaptureParam.NUM_SAMPLES_IN_ADC_WORD))
-    main(num_capture_words)
+    main(num_capture_words, capture_modules)

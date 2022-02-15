@@ -70,20 +70,24 @@ class CaptureModule(IntEnum):
         return all([val in mods for val in vals])
 
     @classmethod
-    def get_units(cls, capmod_id):
+    def get_units(cls, *capmod_id_list):
         """引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する
 
         Args:
-            capmod_id (CaptureModule): キャプチャユニットを取得するキャプチャモジュール ID
+            *capmod_id_list (list of CaptureModule): キャプチャユニットを取得するキャプチャモジュール ID
         
         Returns:
-            list of CaptureUnit: capmod_id に対応するキャプチャモジュールが保持するキャプチャユニットのリスト
+            list of CaptureUnit: capmod_id_list に対応するキャプチャモジュールが保持するキャプチャユニットのリスト
         """
-        if capmod_id == cls.U0:
-            return [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
-        elif capmod_id == cls.U1:
-            return [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
-        raise ValueError('Invalid capture module ID')
+        units = []
+        for capmod_id in set(capmod_id_list):
+            if capmod_id == cls.U0:
+                units += [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
+            elif capmod_id == cls.U1:
+                units += [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
+            else:
+                raise ValueError('Invalid capture module ID {}'.format(capmod_id))
+        return sorted(units)
 
 class AWG(IntEnum):
     """AWG の ID"""

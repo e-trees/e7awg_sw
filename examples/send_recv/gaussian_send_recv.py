@@ -15,16 +15,18 @@ IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 0
 SAVE_DIR = "result_gaussian_send_recv/"
 
-def init_modules(awg_ctrl, cap_ctrl, awg_id):
+def init_modules(awg_ctrl, cap_ctrl, awg_id, capture_units):
     awg_ctrl.initialize()
     awg_ctrl.enable_awgs(awg_id)
     cap_ctrl.initialize()
-    cap_ctrl.enable_capture_units(*CaptureUnit.all())
+    cap_ctrl.enable_capture_units(*capture_units)
 
 
-def set_trigger_awg(cap_ctrl, awg_id):
-    cap_ctrl.select_trigger_awg(CaptureModule.U0, awg_id)
-    cap_ctrl.select_trigger_awg(CaptureModule.U1, awg_id)
+def set_trigger_awg(cap_ctrl, awg_id, capture_modules):
+    if CaptureModule.U0 in capture_modules:
+        cap_ctrl.select_trigger_awg(CaptureModule.U0, awg_id)
+    if CaptureModule.U1 in capture_modules:
+        cap_ctrl.select_trigger_awg(CaptureModule.U1, awg_id)
 
 
 def gen_wave_seq():
@@ -33,7 +35,7 @@ def gen_wave_seq():
         num_repeats = 1)
     
     num_chunks = 1
-    for i in range(num_chunks):
+    for _ in range(num_chunks):
         i_wave = GaussianPulse(num_cycles = 1, frequency = 2e6, amplitude = 20000, duration = 6.0, variance = 0.4)
         q_wave = SquareWave(num_cycles = 1, frequency = 2e6, amplitude = 0, duty_cycle = 0.0)
         iq_samples = IqWave(i_wave, q_wave).gen_samples(
@@ -53,9 +55,9 @@ def set_wave_sequence(awg_ctrl, awg_id):
     return wave_seq
 
 
-def set_capture_params(cap_ctrl, wave_seq):
+def set_capture_params(cap_ctrl, wave_seq, capture_units):
     capture_param = gen_capture_param(wave_seq)
-    for captu_unit_id in CaptureUnit.all():
+    for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
 
@@ -66,9 +68,9 @@ def gen_capture_param(wave_seq):
     capture_param.capture_delay = CAPTURE_DELAY
     return capture_param
 
-def get_capture_data(cap_ctrl):
+def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
-    for capture_unit_id in CaptureUnit.all():
+    for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
         capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
     return capture_unit_to_capture_data
@@ -103,51 +105,54 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
             dir + '/{}_{}_Q.png'.format(prefix, id),
             '#00a497')
 
-def check_err(awg_ctrl, cap_ctrl):
+def check_err(awg_ctrl, cap_ctrl, capture_units):
     awg_to_err = awg_ctrl.check_err(*AWG.all())
     for awg_id, err_list in awg_to_err.items():
         print(awg_id)
         for err in err_list:
             print('    {}'.format(err))
     
-    cap_unit_to_err = cap_ctrl.check_err(*CaptureUnit.all())
+    cap_unit_to_err = cap_ctrl.check_err(*capture_units)
     for cap_unit_id, err_list in cap_unit_to_err.items():
         print('{} err'.format(cap_unit_id))
         for err in err_list:
             print('    {}'.format(err))
 
 
-def main(awg_id):
+def main(awg_id, capture_modules):
     awg_ctrl = AwgCtrl(IP_ADDR)
     cap_ctrl = CaptureCtrl(IP_ADDR)
+    capture_units = CaptureModule.get_units(*capture_modules)
     # 初期化
-    init_modules(awg_ctrl, cap_ctrl, awg_id)
+    init_modules(awg_ctrl, cap_ctrl, awg_id, capture_units)
     # トリガ AWG の設定
-    set_trigger_awg(cap_ctrl, awg_id)
+    set_trigger_awg(cap_ctrl, awg_id, capture_modules)
     # 波形シーケンスの設定
     wave_seq = set_wave_sequence(awg_ctrl, awg_id)
     # キャプチャパラメータの設定
-    set_capture_params(cap_ctrl, wave_seq)
+    set_capture_params(cap_ctrl, wave_seq, capture_units)
     # 波形送信スタート
     awg_ctrl.start_awgs()
     # 波形送信完了待ち
     awg_ctrl.wait_for_awgs_to_stop(5, awg_id)
     # キャプチャ完了待ち
-    cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
+    cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
     # エラーチェック
-    check_err(awg_ctrl, cap_ctrl)
+    check_err(awg_ctrl, cap_ctrl, capture_units)
     # キャプチャデータ取得
-    capture_unit_to_capture_data = get_capture_data(cap_ctrl)
+    capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
     # 波形保存
     awg_to_wave_data = { awg_id: wave_seq.all_samples(False) }
     save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data)
     save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
     print('end')
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
     parser.add_argument('--awg')
+    parser.add_argument('--capture-module')
     args = parser.parse_args()
 
     if args.ipaddr is not None:
@@ -157,4 +162,8 @@ if __name__ == "__main__":
     if args.awg is not None:
         awg_id = AWG.of(int(args.awg))
 
-    main(awg_id)
+    capture_modules = CaptureModule.all()
+    if args.capture_module is not None:
+        capture_modules = [CaptureModule.of(int(args.capture_module))]
+
+    main(awg_id, capture_modules)

@@ -15,16 +15,18 @@ IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 0
 SAVE_DIR = "result_wait_word/"
 
-def init_modules(awg_ctrl, cap_ctrl):
+def init_modules(awg_ctrl, cap_ctrl, capture_units):
     awg_ctrl.initialize()
     awg_ctrl.enable_awgs(*AWG.all())
     cap_ctrl.initialize()
-    cap_ctrl.enable_capture_units(*CaptureUnit.all())
+    cap_ctrl.enable_capture_units(*capture_units)
 
 
-def set_trigger_awg(cap_ctrl):
-    cap_ctrl.select_trigger_awg(CaptureModule.U0, AWG.U0)
-    cap_ctrl.select_trigger_awg(CaptureModule.U1, AWG.U1)
+def set_trigger_awg(cap_ctrl, capture_modules):
+    if CaptureModule.U0 in capture_modules:
+        cap_ctrl.select_trigger_awg(CaptureModule.U0, AWG.U0)
+    if CaptureModule.U1 in capture_modules:
+        cap_ctrl.select_trigger_awg(CaptureModule.U1, AWG.U1)
 
 
 def gen_cos_wave(freq, num_cycles, amp):
@@ -59,9 +61,9 @@ def set_wave_sequence(awg_ctrl):
     return awg_to_wave_sequence
 
 
-def set_capture_params(cap_ctrl, num_capture_words):
+def set_capture_params(cap_ctrl, num_capture_words, capture_units):
     capture_param = gen_capture_param(num_capture_words)
-    for captu_unit_id in CaptureUnit.all():
+    for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
 
@@ -72,9 +74,9 @@ def gen_capture_param(num_capture_words):
     capture_param.capture_delay = CAPTURE_DELAY
     return capture_param
 
-def get_capture_data(cap_ctrl):
+def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
-    for capture_unit_id in CaptureUnit.all():
+    for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
         capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
     return capture_unit_to_capture_data
@@ -109,54 +111,62 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
             dir + '/{}_{}_Q.png'.format(prefix, id),
             '#00a497')
 
-def check_err(awg_ctrl, cap_ctrl):
+def check_err(awg_ctrl, cap_ctrl, capture_units):
     awg_to_err = awg_ctrl.check_err(*AWG.all())
     for awg_id, err_list in awg_to_err.items():
         print(awg_id)
         for err in err_list:
             print('    {}'.format(err))
     
-    cap_unit_to_err = cap_ctrl.check_err(*CaptureUnit.all())
+    cap_unit_to_err = cap_ctrl.check_err(*capture_units)
     for cap_unit_id, err_list in cap_unit_to_err.items():
         print('{} err'.format(cap_unit_id))
         for err in err_list:
             print('    {}'.format(err))
 
 
-def main():
+def main(capture_modules):
     awg_ctrl = AwgCtrl(IP_ADDR)
     cap_ctrl = CaptureCtrl(IP_ADDR)
+    capture_units = CaptureModule.get_units(*capture_modules)
     # 初期化
-    init_modules(awg_ctrl, cap_ctrl)
+    init_modules(awg_ctrl, cap_ctrl, capture_units)
     # トリガ AWG の設定
-    set_trigger_awg(cap_ctrl)
+    set_trigger_awg(cap_ctrl, capture_modules)
     # 波形シーケンスの設定
     awg_to_wave_sequence = set_wave_sequence(awg_ctrl)
     # 最大波形シーケンス長の特定
     max_wave_seq_len = max([wave_seq.num_all_words for awg_id, wave_seq in awg_to_wave_sequence.items()])
     # キャプチャパラメータの設定
-    set_capture_params(cap_ctrl, max_wave_seq_len)
+    set_capture_params(cap_ctrl, max_wave_seq_len, capture_units)
     # 波形送信スタート
     awg_ctrl.start_awgs()
     # 波形送信完了待ち
     awg_ctrl.wait_for_awgs_to_stop(5, *AWG.all())
     # キャプチャ完了待ち
-    cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
+    cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
     # エラーチェック
-    check_err(awg_ctrl, cap_ctrl)
+    check_err(awg_ctrl, cap_ctrl, capture_units)
     # キャプチャデータ取得
-    capture_unit_to_capture_data = get_capture_data(cap_ctrl)
+    capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
     # 波形保存
     awg_to_wave_data = {awg: wave_seq.all_samples(True) for awg, wave_seq in awg_to_wave_sequence.items()}
     save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data)
     save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
     print('end')
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
+    parser.add_argument('--capture-module')
     args = parser.parse_args()
+    
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
+    
+    capture_modules = CaptureModule.all()
+    if args.capture_module is not None:
+        capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    main()
+    main(capture_modules)
