@@ -10,6 +10,7 @@ sphinx = "*"
 sphinx-sizzle-theme = "*"
 numpy = "*"
 matplotlib = "*"
+pylabrad = "*"
 
 [requires]
 python_version = "3.9"

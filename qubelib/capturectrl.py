@@ -17,13 +17,13 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr, validate_input_params, enable_lib_log, logger):
-        self._validate_input_params = validate_input_params
+    def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
+        self._validate_args = validate_args
         self._loggers = [logger]
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_ip_addr(ip_addr)
             except Exception as e:
@@ -38,7 +38,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             capture_unit_id (CaptureUnit): キャプチャパラメータを設定するキャプチャユニットの ID 
             param (CaptureParam): 設定するキャプチャパラメータ
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(capture_unit_id)
                 self._validate_capture_param(param)
@@ -64,7 +64,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Returns:
             sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(capture_unit_id)
                 self._validate_num_capture_samples(num_samples)
@@ -81,7 +81,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Returns:
             int: 保存されたサンプル数
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(capture_unit_id)
             except Exception as e:
@@ -102,7 +102,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Args:
             *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(*capture_unit_id_list)
             except Exception as e:
@@ -118,7 +118,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Args:
             *capture_unit_id_list (list of CaptureUnit): 有効化するキャプチャユニットの ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(*capture_unit_id_list)
             except Exception as e:
@@ -134,7 +134,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Args:
             *capture_unit_id_list (list of CaptureUnit): 無効化する キャプチャユニット の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(*capture_unit_id_list)
             except Exception as e:
@@ -155,7 +155,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.
                 | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_module_id(capture_module_id)
                 if awg_id is not None:
@@ -177,7 +177,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Raises:
             CaptureUnitTimeoutError: タイムアウトした場合
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_timeout(timeout)
                 self._validate_capture_unit_id(*capture_unit_id_list)
@@ -201,7 +201,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             | value = 発生したエラーのリスト
             | エラーが無かった場合は空の Dict.
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_capture_unit_id(*capture_unit_id_list)
             except Exception as e:
@@ -213,9 +213,10 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     def _validate_ip_addr(self, ip_addr):
         try:
-            socket.inet_aton(ip_addr)
+            if ip_addr != 'localhost':
+                socket.inet_aton(ip_addr)
         except socket.error:
-            raise ValueError('Invalid IP Address {}'.format(ip_addr))
+            raise ValueError('Invalid IP address {}'.format(ip_addr))
 
 
     def _validate_capture_unit_id(self, *capture_unit_id):
@@ -305,13 +306,13 @@ class CaptureCtrl(CaptureCtrlBase):
         self,
         ip_addr,
         *,
-        validate_input_params = True,
+        validate_args = True,
         enable_lib_log = True,
         logger = get_null_logger()):
         """
         Args:
             ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
-            validate_input_params(bool):
+            validate_args(bool):
                 | True -> 引数のチェックを行う
                 | False -> 引数のチェックを行わない
             enable_lib_log (bool):
@@ -319,7 +320,7 @@ class CaptureCtrl(CaptureCtrlBase):
                 | False -> ライブラリの標準のログ機能を無効にする.
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        super().__init__(ip_addr, validate_input_params, enable_lib_log, logger)
+        super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
 
@@ -448,12 +449,13 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def _reset_capture_units(self, *capture_unit_id_list):
         for capture_unit_id in capture_unit_id_list:
+            base_addr = CaptureCtrlRegs.Addr.capture(capture_unit_id)
             self.__reg_access.write_bits(
-                CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 1)
+                base_addr, CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 1)
             time.sleep(10e-6)
             self.__reg_access.write_bits(
-                CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 0)
-
+                base_addr, CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 0)
+            time.sleep(10e-6)
 
     def _enable_capture_units(self, *capture_unit_id_list):
         for capture_unit_id in capture_unit_id_list:

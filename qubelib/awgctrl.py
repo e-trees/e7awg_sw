@@ -11,13 +11,13 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr, validate_input_params, enable_lib_log, logger):
-        self._validate_input_params = validate_input_params
+    def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
+        self._validate_args = validate_args
         self._loggers = [logger]
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_ip_addr(ip_addr)
             except Exception as e:
@@ -32,7 +32,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             awg_id (AWG): 波形シーケンスを設定する AWG の ID
             wave_seq (WaveSequence): 設定する波形シーケンス
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(awg_id)
                 self._validate_wave_sequence(wave_seq)
@@ -57,7 +57,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             *awg_id_list (list of AWG): 有効化する AWG の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -73,7 +73,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             *awg_id_list (list of AWG): 無効化する AWG の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -103,7 +103,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             *awg_id_list (list of AWG): 強制終了する AWG の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -119,7 +119,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             *awg_id_list (list of AWG): リセットする AWG の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -139,7 +139,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Raises:
             AwgTimeoutError: タイムアウトした場合
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_timeout(timeout)
                 self._validate_awg_id(*awg_id_list)
@@ -163,7 +163,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
             *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_wave_start_interval(interval)
                 self._validate_awg_id(*awg_id_list)
@@ -186,7 +186,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 | value =  波形を送信可能なタイミング
                 | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -210,7 +210,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             | value = 発生したエラーのリスト
             | エラーが無かった場合は空の Dict.
         """
-        if self._validate_input_params:
+        if self._validate_args:
             try:
                 self._validate_awg_id(*awg_id_list)
             except Exception as e:
@@ -222,9 +222,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
     def _validate_ip_addr(self, ip_addr):
         try:
-            socket.inet_aton(ip_addr)
+            if ip_addr != 'localhost':
+                socket.inet_aton(ip_addr)
         except socket.error:
-            raise ValueError('Invalid IP Address {}'.format(ip_addr))
+            raise ValueError('Invalid IP address {}'.format(ip_addr))
 
 
     def _validate_awg_id(self, *awg_id_list):
@@ -235,6 +236,8 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     def _validate_wave_sequence(self, wave_seq):
         if not isinstance(wave_seq, WaveSequence):
             raise ValueError('Invalid wave sequence {}'.format(wave_seq))
+        if wave_seq.num_chunks <= 0:
+            raise ValueError('A wave sequence must have at least one chunk.')
 
 
     def _validate_timeout(self, timeout):
@@ -243,8 +246,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_wave_start_interval(self, interval):
-        if (not isinstance(interval, int)) or (interval < 0):
-            raise ValueError('Invalid interval {}'.format(interval))
+        if not (isinstance(interval, int) and (0 <= interval and interval <= 0xFFFFFFFF)):
+            raise ValueError(
+                "The interval must be an integer between {} and {} inclusive.  '{}' was set."
+                .format(0, 0xFFFFFFFF, interval))
 
 
     @abstractmethod
@@ -313,13 +318,13 @@ class AwgCtrl(AwgCtrlBase):
         self,
         ip_addr,
         *,
-        validate_input_params = True,
+        validate_args = True,
         enable_lib_log = True,
         logger = get_null_logger()):
         """
         Args:
             ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
-            validate_input_params(bool):
+            validate_args(bool):
                 | True -> 引数のチェックを行う
                 | False -> 引数のチェックを行わない
             enable_lib_log (bool):
@@ -327,7 +332,7 @@ class AwgCtrl(AwgCtrlBase):
                 | False -> ライブラリの標準のログ機能を無効にする.
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        super().__init__(ip_addr, validate_input_params, enable_lib_log, logger)
+        super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
 
@@ -387,8 +392,12 @@ class AwgCtrl(AwgCtrlBase):
         for awg_id in awgs:
             self.__reg_access.write(AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, 0)
         self.reset_awgs(*awgs)
+
+        wave_seq = WaveSequence(0, 1)
+        wave_seq.add_chunk([(0,0)]*64, 0, 1)
         for awg_id in awgs:
             self.set_wave_startable_block_timing(1, awg_id)
+            self.set_wave_sequence(awg_id, wave_seq)
         self.disable_awgs(*awgs)
 
 
@@ -442,6 +451,7 @@ class AwgCtrl(AwgCtrlBase):
             time.sleep(10e-6)
             self.__reg_access.write_bits(
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_START, 1, 0)
+            time.sleep(10e-6)
 
 
     def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):

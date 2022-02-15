@@ -138,6 +138,7 @@ class UdpRw(object):
         self.__dest_addr = (ip_addr, port)
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__sock.settimeout(self.TIMEOUT)
+        self.__sock.bind(('', 0))
         self.__min_rw_size = min_rw_size
         self.__wr_mode_id = wr_mode_id
         self.__rd_mode_id = rd_mode_id
