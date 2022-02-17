@@ -1,6 +1,7 @@
 import socket
 import time
 import struct
+import fcntl
 from abc import ABCMeta, abstractmethod
 from .hwparam import *
 from .memorymap import *
@@ -49,9 +50,20 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._set_capture_params(capture_unit_id, param)
 
 
-    def initialize(self):
-        """全てのキャプチャユニットを初期化する"""
-        self._initialize()
+    def initialize(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットを初期化する
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): 初期化するキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._initialize(*capture_unit_id_list)
 
 
     def get_capture_data(self, capture_unit_id, num_samples):
@@ -91,16 +103,27 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         return self._num_captured_samples(capture_unit_id)
 
 
-    def start_capture_units(self):
-        """現在有効になっているキャプチャユニットの処理を開始する"""
-        self._start_capture_units()
+    def start_capture_units(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットのキャプチャを開始する
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): キャプチャを開始するキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._start_capture_units(*capture_unit_id_list)
 
 
     def reset_capture_units(self, *capture_unit_id_list):
         """引数で指定したキャプチャユニットをリセットする
 
         Args:
-            *capture_unit_id_list (list of AWG): リセットするキャプチャユニットの ID
+            *capture_unit_id_list (list of CaptureUnit): リセットするキャプチャユニットの ID
         """
         if self._validate_args:
             try:
@@ -110,38 +133,6 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 raise
         
         self._reset_capture_units(*capture_unit_id_list)
-
-
-    def enable_capture_units(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットを有効化する
-
-        Args:
-            *capture_unit_id_list (list of CaptureUnit): 有効化するキャプチャユニットの ID
-        """
-        if self._validate_args:
-            try:
-                self._validate_capture_unit_id(*capture_unit_id_list)
-            except Exception as e:
-                log_error(e, *self._loggers)
-                raise
-        
-        self._enable_capture_units(*capture_unit_id_list)
-
-
-    def disable_capture_units(self, *capture_unit_id_list):
-        """引数で指定したキャプチャユニットを無効化する.
-
-        Args:
-            *capture_unit_id_list (list of CaptureUnit): 無効化する キャプチャユニット の ID
-        """
-        if self._validate_args:
-            try:
-                self._validate_capture_unit_id(*capture_unit_id_list)
-            except Exception as e:
-                log_error(e, *self._loggers)
-                raise
-
-        self._disable_capture_units(*capture_unit_id_list)
 
 
     def select_trigger_awg(self, capture_module_id, awg_id):
@@ -165,6 +156,42 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 raise
 
         self._select_trigger_awg(capture_module_id, awg_id)
+
+
+    def enable_start_trigger(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットのスタートトリガを有効化する.
+
+        | 有効化されるスタートトリガは AWG から入力されるものであり, start_capture_units によるキャプチスタートとは無関係である.
+        
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): AWG からのスタートトリガを有効にするキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._enable_start_trigger(*capture_unit_id_list)
+
+
+    def disable_start_trigger(self, *capture_unit_id_list):
+        """引数で指定したキャプチャユニットのスタートトリガを無効化する.
+
+        | 無効化されるスタートトリガは AWG から入力されるものであり, start_capture_units によるキャプチスタートとは無関係である.
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): AWG からのスタートトリガを無効にするキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._disable_start_trigger(*capture_unit_id_list)
 
 
     def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
@@ -194,7 +221,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         エラーのあったキャプチャユニットごとにエラーの種類を返す.
 
         Args:
-            *capture_unit_id_list (CaptureUnit): エラーを調べるキャプチャユニットの ID
+            *capture_unit_id_list (list of CaptureUnit): エラーを調べるキャプチャユニットの ID
         Returns:
             {CaptureUnit -> list of CaptureErr} or None:
             | key = Capture Unit ID
@@ -254,7 +281,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _initialize(self):
+    def _initialize(self, *capture_unit_id_list):
         pass
 
     @abstractmethod
@@ -266,7 +293,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _start_capture_units(self):
+    def _start_capture_units(self, *capture_unit_id_list):
         pass
 
     @abstractmethod
@@ -274,17 +301,17 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _enable_capture_units(self, *capture_unit_id_list):
-        pass
-
-    @abstractmethod
-    def _disable_capture_units(self, *capture_unit_id_list):
-        pass
-
-    @abstractmethod
     def _select_trigger_awg(self, capture_module_id, awg_id):
         pass
     
+    @abstractmethod
+    def _enable_start_trigger(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _disable_start_trigger(self, *capture_unit_id_list):
+        pass
+
     @abstractmethod
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
         pass
@@ -292,6 +319,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     @abstractmethod
     def _check_err(self, *capture_unit_id_list):
         pass
+
 
 class CaptureCtrl(CaptureCtrlBase):
 
@@ -323,6 +351,33 @@ class CaptureCtrl(CaptureCtrlBase):
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        self.__lock_fp = None
+        filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
+        self.__lock_fp = open(filepath, 'w')
+
+
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+
+    def close(self):
+        """このコントローラと関連付けられたすべてのリソースを開放する.
+
+        | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
+        | そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.
+
+        """
+        try:
+            if self.__lock_fp is not None:
+                self.__lock_fp.close()
+        except Exception as e:
+            log_error(e, *self._loggers)
+
+        self.__lock_fp = None
 
 
     def _set_capture_params(self, capture_unit_id, param):
@@ -349,6 +404,7 @@ class CaptureCtrl(CaptureCtrlBase):
         post_blank_len_list = [sum_sec[1] for sum_sec in sum_sec_list]
         self.__reg_access.multi_write(
             base_addr, CaptureParamRegs.Offset.post_blank_length(0), *post_blank_len_list)
+
 
     def __set_num_integ_sectinos(self, capture_unit_id, num_integ_sectinos):
         """統合区間数の設定"""
@@ -412,17 +468,15 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__reg_access.write(base_addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
 
 
-    def _initialize(self):
-        capture_units = CaptureUnit.all()
-        self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, 0)
-        for capture_unit_id in capture_units:
-            self.__reg_access.write(CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
-        self.select_trigger_awg(CaptureModule.U0, None)
-        self.select_trigger_awg(CaptureModule.U1, None)
-        self.disable_capture_units(*capture_units)
-        for cap_unit_id in capture_units:
+    def _initialize(self, *capture_unit_id_list):
+        self._disable_start_trigger(*capture_unit_id_list)
+        self.__deselect_ctrl_target(*capture_unit_id_list)
+        for capture_unit_id in capture_unit_id_list:
+            self.__reg_access.write(
+                CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
+        self.reset_capture_units(*capture_unit_id_list)
+        for cap_unit_id in capture_unit_id_list:
             self.set_capture_params(cap_unit_id, CaptureParam())
-        self.reset_capture_units(*capture_units)
 
 
     def _get_capture_data(self, capture_unit_id, num_samples):
@@ -440,11 +494,19 @@ class CaptureCtrl(CaptureCtrlBase):
         return self.__reg_access.read(base_addr, CaptureParamRegs.Offset.NUM_CAPTURED_SAMPLES)
 
 
-    def _start_capture_units(self):
+    def _start_capture_units(self, *capture_unit_id_list):
+        self.__lock()
+        self.__select_ctrl_target(*capture_unit_id_list)
+
+        self.__reg_access.write_bits(
+            CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
         self.__reg_access.write_bits(
             CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 1)
         self.__reg_access.write_bits(
             CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+        
+        self.__deselect_ctrl_target(*capture_unit_id_list)
+        self.__unlock()
 
 
     def _reset_capture_units(self, *capture_unit_id_list):
@@ -457,23 +519,31 @@ class CaptureCtrl(CaptureCtrlBase):
                 base_addr, CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
 
-    def _enable_capture_units(self, *capture_unit_id_list):
+
+    def __select_ctrl_target(self, *capture_unit_id_list):
+        """一括制御を有効にするキャプチャユニットを選択する"""
+        self.__lock()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.ENABLE, 
+                CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
                 CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
+        self.__unlock()
 
 
-    def _disable_capture_units(self, *capture_unit_id_list):
+    def __deselect_ctrl_target(self, *capture_unit_id_list):
+        """一括制御を無効にするキャプチャユニットを選択する"""
+        self.__lock()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.ENABLE, 
+                CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
                 CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
+        self.__unlock()
 
 
     def _select_trigger_awg(self, capture_module_id, awg_id):
+        self.__lock()
         if capture_module_id == CaptureModule.U0:
             offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
         elif capture_module_id == CaptureModule.U1:
@@ -481,6 +551,27 @@ class CaptureCtrl(CaptureCtrlBase):
         
         awg_id = 0 if (awg_id is None) else (awg_id + 1)
         self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
+        self.__unlock()
+
+
+    def _enable_start_trigger(self, *capture_unit_id_list):
+        self.__lock()
+        for capture_unit_id in capture_unit_id_list:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR,
+                CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
+                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
+        self.__unlock()
+
+
+    def _disable_start_trigger(self, *capture_unit_id_list):
+        self.__lock()
+        for capture_unit_id in capture_unit_id_list:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR,
+                CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
+                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
+        self.__unlock()
 
 
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
@@ -489,9 +580,9 @@ class CaptureCtrl(CaptureCtrlBase):
             all_stopped = True
             for capture_unit_id in capture_unit_id_list:
                 val = self.__reg_access.read_bits(
-                    CaptureMasterCtrlRegs.ADDR,
-                    CaptureMasterCtrlRegs.Offset.DONE_STATUS,
-                    CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1)
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.STATUS,
+                    CaptureCtrlRegs.Bit.STATUS_DONE, 1)
                 if val == 0:
                     all_stopped = False
                     break
@@ -570,3 +661,21 @@ class CaptureCtrl(CaptureCtrlBase):
         sum_end_word_no = min(param.sum_start_word_no + param.num_words_to_sum - 1, num_words_in_sum_sec - 1)
         num_sum_words = sum_end_word_no - max(0, param.sum_start_word_no) + 1
         return max(num_sum_words, 0)
+
+
+    def __lock(self):
+        try:
+            # ロック対象のファイルのディスクリプタが同じだと flock が再入可能になるので, 同じディスクリプタでロックをとる
+            # スレッド間の排他制御には使えない点に注意.
+            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_EX)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def __unlock(self):
+        try:
+            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_UN)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise

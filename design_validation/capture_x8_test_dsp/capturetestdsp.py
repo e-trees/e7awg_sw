@@ -7,13 +7,16 @@ from testutil import *
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
+from e7awgsw.labrad import *
 
 class CaptureTestDsp(object):
 
     IP_ADDR = '10.0.0.16'
 
-    def __init__(self, res_dir):
+    def __init__(self, res_dir, use_labrad, server_ip_addr):
+        self.__server_ip_addr = server_ip_addr
+        self.__use_labrad = use_labrad
         self.__res_dir = res_dir
         os.makedirs(self.__res_dir, exist_ok = True)
         # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
@@ -106,13 +109,13 @@ class CaptureTestDsp(object):
         return capture_param
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
-        awg_ctrl.initialize()
-        awg_ctrl.enable_awgs(*self.__awg_to_capture_module.keys())
-        cap_ctrl.initialize()
-        cap_ctrl.enable_capture_units(*self.__cap_units_to_test)
+        awg_ctrl.initialize(*self.__awg_to_capture_module.keys())
+        cap_ctrl.initialize(*self.__cap_units_to_test)
         # キャプチャモジュールをスタートする AWG の設定
         for awg_id, cap_mod in self.__awg_to_capture_module.items():
             cap_ctrl.select_trigger_awg(cap_mod, awg_id)
+        # スタートトリガの有効化
+        cap_ctrl.enable_start_trigger(*self.__cap_units_to_test)
 
     def __set_wave_sequence(self, awg_ctrl, capture_unit_to_capture_param):
         max_samples = 0
@@ -155,23 +158,42 @@ class CaptureTestDsp(object):
             cap_ctrl.set_capture_params(capture_unit_id, capture_param)
         return capture_unit_to_capture_param
 
+    def __create_awg_ctrl(self):
+        if self.__use_labrad:
+            return RemoteAwgCtrl(self.__server_ip_addr, self.IP_ADDR)
+        else:
+            return AwgCtrl(self.IP_ADDR)
+
+    def __create_cap_ctrl(self):
+        if self.__use_labrad:
+            return RemoteCaptureCtrl(self.__server_ip_addr, self.IP_ADDR)
+        else:
+            return CaptureCtrl(self.IP_ADDR)
+
+
     def run_test(self, test_name, *dsp_units):
+        with (self.__create_awg_ctrl() as awg_ctrl,
+              self.__create_cap_ctrl() as cap_ctrl):
+            capture_unit_to_capture_param = self.__set_capture_params(cap_ctrl, *dsp_units)
+            # 波形シーケンスの設定
+            awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl, capture_unit_to_capture_param)
+            # 波形送信スタート
+            awg_ctrl.start_awgs(*self.__awg_to_capture_module.keys())
+            # 波形送信完了待ち
+            awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
+            # キャプチャ完了待ち
+            cap_ctrl.wait_for_capture_units_to_stop(5, *self.__cap_units_to_test)
+            # キャプチャデータ取得
+            print('get capture data')
+            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
+            # エラーチェック
+            awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
+            cap_errs = cap_ctrl.check_err(*CaptureUnit.all())
+            if awg_errs:
+                print(awg_errs)
+            if cap_errs:
+                print(cap_errs)
 
-        awg_ctrl = AwgCtrl(self.IP_ADDR)
-        cap_ctrl = CaptureCtrl(self.IP_ADDR)
-        capture_unit_to_capture_param = self.__set_capture_params(cap_ctrl, *dsp_units)
-
-        # 波形シーケンスの設定
-        awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl, capture_unit_to_capture_param)
-        # 波形送信スタート
-        awg_ctrl.start_awgs()
-        # 波形送信完了待ち
-        awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
-        # キャプチャ完了待ち
-        cap_ctrl.wait_for_capture_units_to_stop(5, *self.__cap_units_to_test)
-        # キャプチャデータ取得
-        print('get capture data')
-        capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
         # キャプチャデータ期待値取得
         print('calc expected value')
         capture_unit_to_exp_data = self.__calc_exp_data(awg_to_wave_sequence, capture_unit_to_capture_param)
@@ -189,4 +211,7 @@ class CaptureTestDsp(object):
         self.__save_wave_samples(capture_unit_to_exp_data, test_name, 'expected'.format(test_name))
         self.__save_capture_params(capture_unit_to_capture_param, test_name)
         
+        if awg_errs or cap_errs:
+            return False
+
         return all_match

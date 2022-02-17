@@ -1,4 +1,5 @@
 import time
+import fcntl
 from abc import ABCMeta, abstractmethod
 from .wavesequence import *
 from .hwparam import *
@@ -26,7 +27,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     
 
     def set_wave_sequence(self, awg_id, wave_seq):
-        """波形シーケンスを AWG に設定する
+        """波形シーケンスを AWG に設定する.
 
         Args:
             awg_id (AWG): 波形シーケンスを設定する AWG の ID
@@ -43,19 +44,13 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._set_wave_sequence(awg_id, wave_seq)
 
 
-    def initialize(self):
-        """全ての AWG を初期化する.
-        
-        このクラスの他のメソッドを呼び出す前に呼ぶこと.
-        """
-        self._initialize()
+    def initialize(self, *awg_id_list):
+        """引数で指定した AWG を初期化する.
 
-
-    def enable_awgs(self, *awg_id_list):
-        """引数で指定したAWGを有効化する.
+        | このクラスの他のメソッドを呼び出す前に呼ぶこと.
 
         Args:
-            *awg_id_list (list of AWG): 有効化する AWG の ID
+            *awg_id_list (list of AWG): 初期化する AWG の ID
         """
         if self._validate_args:
             try:
@@ -64,14 +59,14 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 log_error(e, *self._loggers)
                 raise
 
-        self._enable_awgs(*awg_id_list)
+        self._initialize(*awg_id_list)
 
 
-    def disable_awgs(self, *awg_id_list):
-        """引数で指定したAWGを無効化する.
+    def start_awgs(self, *awg_id_list):
+        """引数で指定した AWG の波形送信を開始する.
 
         Args:
-            *awg_id_list (list of AWG): 無効化する AWG の ID
+            *awg_id_list (list of AWG): 波形送信を開始する AWG の ID
         """
         if self._validate_args:
             try:
@@ -80,21 +75,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 log_error(e, *self._loggers)
                 raise
 
-        self._disable_awgs(*awg_id_list)
-
-
-    def get_awg_enabled(self):
-        """現在有効になっている AWG の ID のリストを返す
-
-        Returns:
-            list of AWG: 現在有効になっている AWG の ID のリスト. 全ての AWG が無効になっている場合は空のリストを返す.
-        """
-        return self._get_awg_enabled()
-
-
-    def start_awgs(self):
-        """現在有効になっている AWG の波形送信を開始する"""
-        self._start_awgs()
+        self._start_awgs(*awg_id_list)
 
 
     def terminate_awgs(self, *awg_id_list):
@@ -257,23 +238,11 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _initialize(self):
+    def _initialize(self, *awg_id_list):
         pass
 
     @abstractmethod
-    def _enable_awgs(self, *awg_id_list):
-        pass
-
-    @abstractmethod
-    def _disable_awgs(self, *awg_id_list):
-        pass
-
-    @abstractmethod
-    def _get_awg_enabled(self):
-        pass
-
-    @abstractmethod
-    def _start_awgs(self):
+    def _start_awgs(self, *awg_id_list):
         pass
 
     @abstractmethod
@@ -334,7 +303,33 @@ class AwgCtrl(AwgCtrlBase):
         """
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
-        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)        
+        filepath = '/tmp/e7awg_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr)))
+        self.__lock_fp = open(filepath, 'w')
+
+
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+
+    def close(self):
+        """このコントローラと関連付けられたすべてのリソースを開放する.
+
+        | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
+        | そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.
+
+        """
+        try:
+            if self.__lock_fp is not None:
+                self.__lock_fp.close()
+        except Exception as e:
+            log_error(e, *self._loggers)
+
+        self.__lock_fp = None
 
 
     def _set_wave_sequence(self, awg_id, wave_seq):
@@ -358,6 +353,7 @@ class AwgCtrl(AwgCtrlBase):
                 awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_WAVE_PART_WORDS, chunk.num_words - chunk.num_blank_words)
             self.__reg_access.write(awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_BLANK_WORDS, chunk.num_blank_words)
             self.__reg_access.write(awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_CHUNK_REPEATS, chunk.num_repeats)
+
 
     def __send_wave_samples(self, wave_seq, chunk_addr_list):
         for chunk_idx in range(wave_seq.num_chunks):
@@ -386,53 +382,61 @@ class AwgCtrl(AwgCtrlBase):
             raise ValueError(msg)
 
 
-    def _initialize(self):
-        awgs = AWG.all()
-        self.__reg_access.write(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, 0)
-        for awg_id in awgs:
+    def _initialize(self, *awg_id_list):
+        self.__deselect_ctrl_target(*awg_id_list)
+        for awg_id in awg_id_list:
             self.__reg_access.write(AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, 0)
-        self.reset_awgs(*awgs)
-
+        self.reset_awgs(*awg_id_list)
         wave_seq = WaveSequence(0, 1)
-        wave_seq.add_chunk([(0,0)]*64, 0, 1)
-        for awg_id in awgs:
+        wave_seq.add_chunk([(0,0)] * 64, 0, 1)
+        for awg_id in awg_id_list:
             self.set_wave_startable_block_timing(1, awg_id)
             self.set_wave_sequence(awg_id, wave_seq)
-        self.disable_awgs(*awgs)
 
 
-    def _enable_awgs(self, *awg_id_list):
+    def __select_ctrl_target(self, *awg_id_list):
+        """一括制御を有効にする AWG を選択する"""
+        self.__lock()
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgMasterCtrlRegs.ADDR,
-                AwgMasterCtrlRegs.Offset.ENABLE,
+                AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
                 AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 1)
+        self.__unlock()
 
 
-    def _disable_awgs(self, *awg_id_list):
+    def __deselect_ctrl_target(self, *awg_id_list):
+        """一括制御を無効にする AWG を選択する"""
+        self.__lock()
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgMasterCtrlRegs.ADDR,
-                AwgMasterCtrlRegs.Offset.ENABLE,
+                AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
                 AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 0)
+        self.__unlock()
 
 
-    def _get_awg_enabled(self):
-        awg_id_list = []
-        reg_val = self.__reg_access.read(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.ENABLE)
-        for awg_id in AWG.all():
-            if reg_val & (1 << awg_id) != 0:
-                awg_id_list.append(awg_id)
+    def _start_awgs(self, *awg_id_list):
+        self.__lock()
+        self.__select_ctrl_target(*awg_id_list)
         
-        return awg_id_list
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 1)
+        self.__wait_for_awgs_ready(5, *awg_id_list)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
 
-
-    def _start_awgs(self):
-        self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 1)
-        self.__wait_for_awgs_ready(5, *self.get_awg_enabled())
-        self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
-        self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 1)
-        self.__reg_access.write_bits(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 1)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+        
+        self.__deselect_ctrl_target(*awg_id_list)
+        self.__unlock()
 
 
     def _terminate_awgs(self, *awg_id_list):
@@ -460,7 +464,7 @@ class AwgCtrl(AwgCtrlBase):
             all_stopped = True
             for awg_id in awg_id_list:
                 val = self.__reg_access.read_bits(
-                    AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.DONE_STATUS, AwgMasterCtrlRegs.Bit.awg(awg_id), 1)
+                    AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.STATUS, AwgCtrlRegs.Bit.STATUS_DONE, 1)
                 if val == 0:
                     all_stopped = False
                     break
@@ -476,19 +480,14 @@ class AwgCtrl(AwgCtrlBase):
 
 
     def __wait_for_awgs_ready(self, timeout, *awg_id_list):
-        try:
-            self._validate_timeout(timeout)
-            self._validate_awg_id(*awg_id_list)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
         start = time.time()
         while True:
             all_ready = True
             for awg_id in awg_id_list:
                 val = self.__reg_access.read_bits(
-                    AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.READY_STATUS, AwgMasterCtrlRegs.Bit.awg(awg_id), 1)
+                    AwgCtrlRegs.Addr.awg(awg_id),
+                    AwgCtrlRegs.Offset.STATUS,
+                    AwgCtrlRegs.Bit.STATUS_READY, 1)
                 if val == 0:
                     all_ready = False
                     break
@@ -504,13 +503,6 @@ class AwgCtrl(AwgCtrlBase):
 
 
     def __wait_for_awgs_idle(self, timeout, *awg_id_list):
-        try:
-            self._validate_timeout(timeout)
-            self._validate_awg_id(*awg_id_list)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
         start = time.time()
         while True:
             all_idle = True
@@ -563,3 +555,21 @@ class AwgCtrl(AwgCtrlBase):
                 awg_to_err[awg_id] = err_list
         
         return awg_to_err
+
+
+    def __lock(self):
+        try:
+            # ロック対象のファイルのディスクリプタが同じだと flock が再入可能になるので, 同じディスクリプタでロックをとる
+            # スレッド間の排他制御には使えない点に注意.
+            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_EX)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def __unlock(self):
+        try:
+            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_UN)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise

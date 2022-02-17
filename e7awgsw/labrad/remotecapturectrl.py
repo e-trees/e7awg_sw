@@ -5,12 +5,12 @@ import pickle
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
-from qubelib.awgctrl import AwgCaptureBase
-from qubelib.logger import *
+from e7awgsw import *
+from e7awgsw.capturectrl import CaptureCtrlBase
+from e7awgsw.logger import *
 
 
-class RemoteCaptureCtrl(AwgCaptureBase):
+class RemoteCaptureCtrl(CaptureCtrlBase):
     """ QuBE 制御サーバを通してキャプチャユニットを制御するためのクラス """
 
     def __init__(
@@ -36,6 +36,7 @@ class RemoteCaptureCtrl(AwgCaptureBase):
         try:
             self._validate_ip_addr(remote_server_ip_addr)
             self.__client = labrad.connect(remote_server_ip_addr)
+            self.__server = self.__client.awg_capture_server
             self.__handler = self.__get_capture_ctrl_handler(capture_ctrl_ip_addr)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -44,7 +45,7 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def __get_capture_ctrl_handler(self, ip_addr):
         """サーバ上の AWG Controller のハンドラを取得する"""
-        handler = self.__client.qube_server.create_capturectrl(ip_addr)
+        handler = self.__server.create_capturectrl(ip_addr)
         return self.__decode_and_check(handler)
 
 
@@ -59,13 +60,13 @@ class RemoteCaptureCtrl(AwgCaptureBase):
     def disconnect(self):
         """QuBE 制御サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.
 
-        | `with RemoteCaptureCtrl(...) as capturectrl` のように with ステートメント内部でこのクラスのインスタンスを生成する場合, このメソッドを明示的に呼ぶ必要はない.
+        | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
         | そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.
 
         """
         try:
             if self.__handler is not None:
-                result = self.__client.qube_server.discard_capturectrl(self.__handler)
+                result = self.__server.discard_capturectrl(self.__handler)
                 self.__decode_and_check(result)
         except Exception as e:
             # 呼び出し側で後処理の失敗から復帰させる必要はないので再スローはしない
@@ -83,17 +84,19 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _set_capture_params(self, capture_unit_id, param):
         try:
+            capture_unit_id = int(capture_unit_id)
             param = pickle.dumps(param)
-            result = self.__client.qube_server.set_capture_params(self.__handler, capture_unit_id, param)
+            result = self.__server.set_capture_params(self.__handler, capture_unit_id, param)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _initialize(self):
+    def _initialize(self, *capture_unit_id_list):
         try:
-            result = self.__client.qube_server.initialize_capture_units(self.__handler)
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.initialize_capture_units(self.__handler, capture_unit_id_list)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -102,7 +105,9 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _get_capture_data(self, capture_unit_id, num_samples):
         try:
-            result = self.__client.qube_server.get_capture_data(
+            capture_unit_id = int(capture_unit_id)
+            num_samples = pickle.dumps(num_samples)
+            result = self.__server.get_capture_data(
                 self.__handler, capture_unit_id, num_samples)
             return self.__decode_and_check(result)
         except Exception as e:
@@ -112,16 +117,18 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _num_captured_samples(self, capture_unit_id):
         try:
-            result = self.__client.qube_server.num_captured_samples(self.__handler, capture_unit_id)
+            capture_unit_id = int(capture_unit_id)
+            result = self.__server.num_captured_samples(self.__handler, capture_unit_id)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _start_capture_units(self):
+    def _start_capture_units(self, *capture_unit_id_list):
         try:
-            result = self.__client.qube_server.start_capture_units(self.__handler)
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.start_capture_units(self.__handler, capture_unit_id_list)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -130,25 +137,8 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _reset_capture_units(self, *capture_unit_id_list):
         try:
-            result = self.__client.qube_server.reset_capture_units(self.__handler, capture_unit_id_list)
-            self.__decode_and_check(result)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def _enable_capture_units(self, *capture_unit_id_list):
-        try:
-            result = self.__client.qube_server.enable_capture_units(self.__handler, capture_unit_id_list)
-            self.__decode_and_check(result)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def _disable_capture_units(self, *capture_unit_id_list):
-        try:
-            result = self.__client.qube_server.disable_capture_units(self.__handler, capture_unit_id_list)
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.reset_capture_units(self.__handler, capture_unit_id_list)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -157,7 +147,9 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _select_trigger_awg(self, capture_module_id, awg_id):
         try:
-            result = self.__client.qube_server.select_trigger_awg(self.__handler, capture_module_id, awg_id)
+            capture_module_id = int(capture_module_id)
+            awg_id = int(awg_id)
+            result = self.__server.select_trigger_awg(self.__handler, capture_module_id, awg_id)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -167,7 +159,8 @@ class RemoteCaptureCtrl(AwgCaptureBase):
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
         try:
             timeout = pickle.dumps(timeout)
-            result = self.__client.qube_server.wait_for_capture_units_to_stop(
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.wait_for_capture_units_to_stop(
                 self.__handler, timeout, capture_unit_id_list)
             self.__decode_and_check(result)
         except Exception as e:
@@ -177,8 +170,27 @@ class RemoteCaptureCtrl(AwgCaptureBase):
 
     def _check_err(self, *capture_unit_id_list):
         try:
-            result = self.__client.qube_server._check_err(self.__handler, capture_unit_id_list)
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.check_capture_unit_err(self.__handler, capture_unit_id_list)
             return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _enable_start_trigger(self, *capture_unit_id_list):
+        try:
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            self.__server.enable_start_trigger(self.__handler, capture_unit_id_list)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _disable_start_trigger(self, *capture_unit_id_list):
+        try:
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            self.__server.disable_start_trigger(self.__handler, capture_unit_id_list)
         except Exception as e:
             log_error(e, *self._loggers)
             raise

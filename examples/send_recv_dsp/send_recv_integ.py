@@ -10,7 +10,7 @@ from collections import namedtuple
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
 
 SAVE_DIR = "result_send_recv_integ/"
 IP_ADDR = '10.0.0.16'

@@ -8,11 +8,11 @@ from labrad import util
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
 
 class QubeServer(ThreadedServer):
 
-    name = 'Qube Server'
+    name = 'Awg Capture Server'
 
     def __init__(self):
         pool = futures.ThreadPoolExecutor(max_workers=16)
@@ -52,7 +52,8 @@ class QubeServer(ThreadedServer):
     def discard_awgctrl(self, c, handle):
         try:
             with self.__lock:
-                self.__awgctrls.pop(handle)
+                ctrl = self.__awgctrls.pop(handle)
+                ctrl.close()
         except Exception as e:
             return pickle.dumps(e)
         
@@ -71,11 +72,11 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(103, handle='s', returns='y')
-    def initialize_awgs(self, c, handle):
+    @setting(103, handle='s', awg_id_list='*w', returns='y')
+    def initialize_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
-            awgctrl.initialize()
+            awgctrl.initialize(*awg_id_list)
         except Exception as e:
             return pickle.dumps(e)
         
@@ -83,10 +84,10 @@ class QubeServer(ThreadedServer):
 
 
     @setting(104, handle='s', awg_id_list='*w', returns='y')
-    def enable_awgs(self, c, handle, awg_id_list):
+    def start_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
-            awgctrl.enable_awgs(*awg_id_list)
+            awgctrl.start_awgs(*awg_id_list)
         except Exception as e:
             return pickle.dumps(e)
         
@@ -94,39 +95,6 @@ class QubeServer(ThreadedServer):
 
 
     @setting(105, handle='s', awg_id_list='*w', returns='y')
-    def disable_awgs(self, c, handle, awg_id_list):
-        try:
-            awgctrl = self.__get_awgctrl(handle)
-            awgctrl.disable_awgs(*awg_id_list)
-        except Exception as e:
-            return pickle.dumps(e)
-        
-        return pickle.dumps(None)
-
-
-    @setting(106, handle='s', returns='y')
-    def get_awg_enabled(self, c, handle):
-        try:
-            awgctrl = self.__get_awgctrl(handle)
-            awg_id_list = awgctrl.get_awg_enabled()
-        except Exception as e:
-            return pickle.dumps(e)
-        
-        return pickle.dumps(awg_id_list)
-
-
-    @setting(107, handle='s', returns='y')
-    def start_awgs(self, c, handle):
-        try:
-            awgctrl = self.__get_awgctrl(handle)
-            awgctrl.start_awgs()
-        except Exception as e:
-            return pickle.dumps(e)
-        
-        return pickle.dumps(None)
-
-
-    @setting(108, handle='s', awg_id_list='*w', returns='y')
     def terminate_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
@@ -137,7 +105,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(109, handle='s', awg_id_list='*w', returns='y')
+    @setting(106, handle='s', awg_id_list='*w', returns='y')
     def reset_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
@@ -148,7 +116,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(110, handle='s', timeout='y', awg_id_list='*w', returns='y')
+    @setting(107, handle='s', timeout='y', awg_id_list='*w', returns='y')
     def wait_for_awgs_to_stop(self, c, handle, timeout, awg_id_list):
         try:
             timeout = pickle.loads(timeout)
@@ -160,7 +128,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(111, handle='s', interval='y', awg_id_list='*w', returns='y')
+    @setting(108, handle='s', interval='y', awg_id_list='*w', returns='y')
     def set_wave_startable_block_timing(self, c, handle, interval, awg_id_list):
         try:
             interval = pickle.loads(interval)
@@ -172,7 +140,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(112, handle='s', awg_id_list='*w', returns='y')
+    @setting(109, handle='s', awg_id_list='*w', returns='y')
     def get_wave_startable_block_timing(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
@@ -183,7 +151,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(awg_id_to_interval)
 
 
-    @setting(113, handle='s', awg_id_list='*w', returns='y')
+    @setting(110, handle='s', awg_id_list='*w', returns='y')
     def check_awg_err(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
@@ -211,7 +179,8 @@ class QubeServer(ThreadedServer):
     def discard_capturectrl(self, c, handle):
         try:
             with self.__lock:
-                self.__capturectrls.pop(handle)
+                ctrl = self.__capturectrls.pop(handle)
+                ctrl.close()
         except Exception as e:
             return pickle.dumps(e)
 
@@ -230,11 +199,11 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(203, handle='s', returns='y')
-    def initialize_capture_units(self, c, handle):
+    @setting(203, handle='s', capture_unit_id_list='*w', returns='y')
+    def initialize_capture_units(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.initialize()
+            capturectrl.initialize(*capture_unit_id_list)
         except Exception as e:
             return pickle.dumps(e)
 
@@ -264,11 +233,11 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(num_samples)
 
 
-    @setting(206, handle='s', returns='y')
-    def start_capture_units(self, c, handle):
+    @setting(206, handle='s', capture_unit_id_list='*w', returns='y')
+    def start_capture_units(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.start_capture_units()
+            capturectrl.start_capture_units(*capture_unit_id_list)
         except Exception as e:
             return pickle.dumps(e)
 
@@ -276,7 +245,7 @@ class QubeServer(ThreadedServer):
 
 
     @setting(207, handle='s', capture_unit_id_list='*w', returns='y')
-    def reset_capture_units(self, c, handle, capture_unit_id_list):
+    def reset_start_trigger(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.reset_capture_units(*capture_unit_id_list)
@@ -286,11 +255,11 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(None)
 
 
-    @setting(208, handle='s', capture_unit_id_list='*w', returns='y')
-    def enable_capture_units(self, c, handle, capture_unit_id_list):
+    @setting(208, handle='s', capture_module_id='w', awg_id='w', returns='y')
+    def select_trigger_awg(self, c, handle, capture_module_id, awg_id):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.enable_capture_units(*capture_unit_id_list)
+            capturectrl.select_trigger_awg(capture_module_id, awg_id)
         except Exception as e:
             return pickle.dumps(e)
 
@@ -298,21 +267,21 @@ class QubeServer(ThreadedServer):
 
 
     @setting(209, handle='s', capture_unit_id_list='*w', returns='y')
-    def disable_capture_units(self, c, handle, capture_unit_id_list):
+    def enable_start_trigger(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.disable_capture_units(*capture_unit_id_list)
+            capturectrl.enable_start_trigger(*capture_unit_id_list)
         except Exception as e:
             return pickle.dumps(e)
 
         return pickle.dumps(None)
 
 
-    @setting(210, handle='s', capture_module_id='w', awg_id='w', returns='y')
-    def select_trigger_awg(self, c, handle, capture_module_id, awg_id):
+    @setting(210, handle='s', capture_unit_id_list='*w', returns='y')
+    def disable_start_trigger(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.select_trigger_awg(capture_module_id, awg_id)
+            capturectrl.disable_start_trigger(*capture_unit_id_list)
         except Exception as e:
             return pickle.dumps(e)
 

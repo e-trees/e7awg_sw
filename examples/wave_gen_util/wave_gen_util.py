@@ -8,7 +8,7 @@ import math
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
 
 def to_degree(val):
     return 180 * val / math.pi

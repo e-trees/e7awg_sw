@@ -7,8 +7,8 @@ from collections import namedtuple
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-#from qubelib import *
-import qubelib
+#from e7awgsw import *
+import e7awgsw
 
 IP_ADDR = '10.1.0.12'
 
@@ -23,7 +23,7 @@ wave_params = namedtuple(
      'num_chunk_repeats'))
 
 def main(wave_params):
-    awg_ctrl = qubelib.AwgCtrl(IP_ADDR)
+    awg_ctrl = e7awgsw.AwgCtrl(IP_ADDR)
     print(awg_ctrl)
 
 if __name__ == "__main__":
@@ -38,6 +38,6 @@ if __name__ == "__main__":
         num_readout_blank = 0.1, # ms
         num_chunk_repeats = 10000, # num of summation
     )
-    print(int(qubelib.AWG.U13))
+    print(int(e7awgsw.AWG.U13))
 
     main(wparams)

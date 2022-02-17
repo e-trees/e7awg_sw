@@ -8,7 +8,7 @@ import argparse
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
 
 IP_ADDR = '10.1.0.12'
 

@@ -2,7 +2,7 @@
 	1. capture_module_test デザインをコンフィギュレーションする
 	2. pipenv shell
 	3. capture_x8_test_dsp.py のあるディレクトリに移動
-	4. python capture_x8_test_dsp.py [テスト回数]
+	4. python capture_x8_test_dsp.py [--num-tests=テスト回数] [--server-ip-addr=LabRAD サーバのIPアドレス] [--labrad]
 
 結果の確認
 	All tests succeeded. と表示されればテスト成功

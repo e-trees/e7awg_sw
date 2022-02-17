@@ -4,7 +4,7 @@ import struct
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
 
 def dsp(samples, capture_param):
     if len(samples) < capture_param.num_samples_to_process:

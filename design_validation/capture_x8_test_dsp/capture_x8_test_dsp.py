@@ -1,21 +1,16 @@
 import sys
 from capturetestdsp import *
 import random
+import argparse
 
-def main():
-
-    try:
-        num_tests = int(sys.argv[1])
-    except Exception:
-        num_tests = 1
-
+def main(num_tests, use_labrad, server_ip_addr):
     random.seed(10)
 
     failed_tests = []
     for test_id in range(num_tests):
-        print("---- test {:03d} ----".format(test_id))
+        print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
         res_dir = 'result/{:03d}'.format(test_id)
-        test = CaptureTestDsp(res_dir)
+        test = CaptureTestDsp(res_dir, use_labrad, server_ip_addr)
 
         print('-- comp fir --')
         result = test.run_test('comp_fir', DspUnit.COMPLEX_FIR)
@@ -68,4 +63,18 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--num-tests')
+    parser.add_argument('--server-ip-addr')
+    parser.add_argument('--labrad', action='store_true')
+    args = parser.parse_args()
+
+    num_tests = 1
+    if args.num_tests is not None:
+        num_tests = int(args.num_tests)
+
+    server_ip_addr = 'localhost'
+    if args.server_ip_addr is not None:
+        server_ip_addr = args.server_ip_addr
+
+    main(num_tests, args.labrad, server_ip_addr)

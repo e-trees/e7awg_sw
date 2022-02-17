@@ -3,7 +3,7 @@ class AwgMasterCtrlRegs(object):
     ADDR = 0x0
 
     class Offset(object):
-        ENABLE              = 0x4
+        CTRL_TARGET_SEL     = 0x4
         CTRL                = 0x8
         WAKEUP_STATUS       = 0xC
         BUSY_STATUS         = 0x10
@@ -158,28 +158,29 @@ class CaptureMasterCtrlRegs(object):
     ADDR = 0x0
 
     class Offset(object):
-        TRIG_AWG_SEL_0 = 0x4
-        TRIG_AWG_SEL_1 = 0x8
-        ENABLE         = 0xC
-        CTRL           = 0x10
-        WAKEUP_STATUS  = 0x14
-        BUSY_STATUS    = 0x18
-        DONE_STATUS    = 0x1C
-        OVERFLOW_ERR   = 0x20
-        WRITE_ERR      = 0x24
+        TRIG_AWG_SEL_0  = 0x4
+        TRIG_AWG_SEL_1  = 0x8
+        AWG_TRIG_MASK   = 0xC
+        CTRL_TARGET_SEL = 0x10
+        CTRL            = 0x14
+        WAKEUP_STATUS   = 0x18
+        BUSY_STATUS     = 0x1C
+        DONE_STATUS     = 0x20
+        OVERFLOW_ERR    = 0x24
+        WRITE_ERR       = 0x28
 
     class Bit(object):
         CTRL_RESET     = 0
         CTRL_START     = 1
         CTRL_TERMINATE = 2
-        CAPTURE_0  = 0
-        CAPTURE_1  = 1
-        CAPTURE_2  = 2
-        CAPTURE_3  = 3
-        CAPTURE_4  = 4
-        CAPTURE_5  = 5
-        CAPTURE_6  = 6
-        CAPTURE_7  = 7
+        CAPTURE_0      = 0
+        CAPTURE_1      = 1
+        CAPTURE_2      = 2
+        CAPTURE_3      = 3
+        CAPTURE_4      = 4
+        CAPTURE_5      = 5
+        CAPTURE_6      = 6
+        CAPTURE_7      = 7
         
         @classmethod
         def capture(cls, idx):

@@ -6,13 +6,16 @@ from testutil import *
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
+from e7awgsw import *
+from e7awgsw.labrad import *
 
 class CaptureTest(object):
 
     IP_ADDR = '10.0.0.16'
 
-    def __init__(self, res_dir):
+    def __init__(self, res_dir, use_labrad, server_ip_addr):
+        self.__use_labrad = use_labrad
+        self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
         # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
         self.__awg_to_capture_module = {
@@ -73,13 +76,13 @@ class CaptureTest(object):
         return capture_param
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
-        awg_ctrl.initialize()
-        awg_ctrl.enable_awgs(*self.__awg_to_capture_module.keys())
-        cap_ctrl.initialize()
-        cap_ctrl.enable_capture_units(*CaptureUnit.all())
+        awg_ctrl.initialize(*self.__awg_to_capture_module.keys())
+        cap_ctrl.initialize(*CaptureUnit.all())
         # キャプチャモジュールをスタートする AWG の設定
         for awg_id, cap_mod in self.__awg_to_capture_module.items():
             cap_ctrl.select_trigger_awg(cap_mod, awg_id)
+        # スタートトリガの有効化
+        cap_ctrl.enable_start_trigger(*CaptureUnit.all())
 
     def __set_wave_sequence(self, awg_ctrl):
         awg_to_wave_sequence = {}
@@ -100,34 +103,56 @@ class CaptureTest(object):
         capture_unit_to_capture_data = {}
         for capture_unit_id in CaptureUnit.all():
             num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-            capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+            capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(
+                capture_unit_id, num_captured_samples)
         return capture_unit_to_capture_data
 
     def __sort_capture_data_by_awg(self, capture_unit_to_capture_data):
         awg_to_cap_data = {}
         for awg_id, cap_mod in self.__awg_to_capture_module.items():
             cap_units = CaptureModule.get_units(cap_mod)
-            cap_unit_to_cap_data = dict(filter(lambda elem: elem[0] in cap_units, capture_unit_to_capture_data.items()))
+            cap_unit_to_cap_data = (
+                dict(filter(lambda elem: elem[0] in cap_units, capture_unit_to_capture_data.items())))
             awg_to_cap_data[awg_id] = cap_unit_to_cap_data
         return awg_to_cap_data
 
+    def __create_awg_ctrl(self):
+        if self.__use_labrad:
+            return RemoteAwgCtrl(self.__server_ip_addr, self.IP_ADDR)
+        else:
+            return AwgCtrl(self.IP_ADDR)
+
+    def __create_cap_ctrl(self):
+        if self.__use_labrad:
+            return RemoteCaptureCtrl(self.__server_ip_addr, self.IP_ADDR)
+        else:
+            return CaptureCtrl(self.IP_ADDR)
+
+
     def run_test(self):
-        awg_ctrl = AwgCtrl(self.IP_ADDR)
-        cap_ctrl = CaptureCtrl(self.IP_ADDR)
-        # 初期化
-        self.__setup_modules(awg_ctrl, cap_ctrl)        
-        # 波形シーケンスの設定
-        awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl)
-        # キャプチャパラメータの設定
-        self.__set_capture_params(cap_ctrl, awg_to_wave_sequence)
-        # 波形送信スタート
-        awg_ctrl.start_awgs()
-        # 波形送信完了待ち
-        awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
-        # キャプチャ完了待ち
-        cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
-        # キャプチャデータ取得
-        capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
+        with (self.__create_awg_ctrl() as awg_ctrl,
+              self.__create_cap_ctrl() as cap_ctrl):
+            # 初期化
+            self.__setup_modules(awg_ctrl, cap_ctrl)        
+            # 波形シーケンスの設定
+            awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl)
+            # キャプチャパラメータの設定
+            self.__set_capture_params(cap_ctrl, awg_to_wave_sequence)
+            # 波形送信スタート
+            awg_ctrl.start_awgs(*self.__awg_to_capture_module.keys())
+            # 波形送信完了待ち
+            awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
+            # キャプチャ完了待ち
+            cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
+            # キャプチャデータ取得
+            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
+            # エラーチェック
+            awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
+            cap_errs = cap_ctrl.check_err(*CaptureUnit.all())
+            if awg_errs:
+                print(awg_errs)
+            if cap_errs:
+                print(cap_errs)
 
         # 送信波形データをキャプチャしたときの期待値データに変換
         awg_to_expected = {}
@@ -146,4 +171,8 @@ class CaptureTest(object):
         self.__save_wave_samples(awg_to_expected, capture_unit_to_capture_data)
         for awg_id, wave_seq in awg_to_wave_sequence.items():
             self.__save_wave_seq_params(awg_id, wave_seq)
+
+        if awg_errs or cap_errs:
+            return False
+
         return all_match

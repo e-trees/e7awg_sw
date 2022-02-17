@@ -5,10 +5,10 @@ import argparse
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from qubelib import *
-from qubelib.udpaccess import CaptureRegAccess
-from qubelib.hwparam import CAPTURE_REG_PORT
-from qubelib.memorymap import *
+from e7awgsw import *
+from e7awgsw.udpaccess import CaptureRegAccess
+from e7awgsw.hwparam import CAPTURE_REG_PORT
+from e7awgsw.memorymap import *
 
 IP_ADDR = '10.0.0.16'
 
