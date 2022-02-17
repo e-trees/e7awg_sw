@@ -1,0 +1,7 @@
+*.egg-info
+*.jou
+*.log
+*~
+*.bak
+__pycache__
+build/
