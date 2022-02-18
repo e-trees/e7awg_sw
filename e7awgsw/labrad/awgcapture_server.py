@@ -245,7 +245,7 @@ class QubeServer(ThreadedServer):
 
 
     @setting(207, handle='s', capture_unit_id_list='*w', returns='y')
-    def reset_start_trigger(self, c, handle, capture_unit_id_list):
+    def reset_capture_units(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.reset_capture_units(*capture_unit_id_list)

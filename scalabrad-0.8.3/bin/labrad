@@ -139,4 +139,5 @@ exec "$JAVACMD" \
      -cp "${PROG_HOME}/lib/*${CLASSPATH_SUFFIX}" \
      -Dprog.home="${PROG_HOME}" \
      -Dprog.version="${PROG_VERSION}" \
-     org.labrad.manager.Manager "$@"
+     org.labrad.manager.Manager "$@" \
+     --tls-hosts=awg 

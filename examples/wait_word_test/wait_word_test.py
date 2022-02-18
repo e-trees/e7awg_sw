@@ -10,23 +10,16 @@ import argparse
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import *
+from e7awgsw.labrad import *
 
 IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 0
 SAVE_DIR = "result_wait_word/"
 
-def init_modules(awg_ctrl, cap_ctrl, capture_units):
-    awg_ctrl.initialize()
-    awg_ctrl.enable_awgs(*AWG.all())
-    cap_ctrl.initialize()
-    cap_ctrl.enable_capture_units(*capture_units)
-
-
-def set_trigger_awg(cap_ctrl, capture_modules):
-    if CaptureModule.U0 in capture_modules:
-        cap_ctrl.select_trigger_awg(CaptureModule.U0, AWG.U0)
-    if CaptureModule.U1 in capture_modules:
-        cap_ctrl.select_trigger_awg(CaptureModule.U1, AWG.U1)
+def set_trigger_awg(cap_ctrl, awg, capture_modules):
+    for cap_mod_id in capture_modules:
+        cap_ctrl.select_trigger_awg(cap_mod_id, awg)
+        cap_ctrl.enable_start_trigger(*CaptureModule.get_units(cap_mod_id))
 
 
 def gen_cos_wave(freq, num_cycles, amp):
@@ -38,6 +31,7 @@ def gen_cos_wave(freq, num_cycles, amp):
     return IqWave(i_wave, q_wave).gen_samples(
         sampling_rate = AwgCtrl.SAMPLING_RATE, 
         padding_size = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK)
+
 
 def gen_wave_seq(shift):
     samples = gen_cos_wave(4e6, 8, 32760)
@@ -52,9 +46,9 @@ def gen_wave_seq(shift):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl):
+def set_wave_sequence(awg_ctrl, awgs):
     awg_to_wave_sequence = {}
-    for awg_id in AWG.all():
+    for awg_id in awgs:
         wave_seq = gen_wave_seq(awg_id / 8)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
@@ -74,12 +68,14 @@ def gen_capture_param(num_capture_words):
     capture_param.capture_delay = CAPTURE_DELAY
     return capture_param
 
+
 def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
     for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
         capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
     return capture_unit_to_capture_data
+
 
 def save_sample_data(prefix, sampling_rate, id_to_samples):
     for id, samples in id_to_samples.items():
@@ -111,8 +107,9 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
             dir + '/{}_{}_Q.png'.format(prefix, id),
             '#00a497')
 
-def check_err(awg_ctrl, cap_ctrl, capture_units):
-    awg_to_err = awg_ctrl.check_err(*AWG.all())
+
+def check_err(awg_ctrl, cap_ctrl, awg, capture_units):
+    awg_to_err = awg_ctrl.check_err(*awg)
     for awg_id, err_list in awg_to_err.items():
         print(awg_id)
         for err in err_list:
@@ -125,48 +122,74 @@ def check_err(awg_ctrl, cap_ctrl, capture_units):
             print('    {}'.format(err))
 
 
-def main(capture_modules):
-    awg_ctrl = AwgCtrl(IP_ADDR)
-    cap_ctrl = CaptureCtrl(IP_ADDR)
-    capture_units = CaptureModule.get_units(*capture_modules)
-    # 初期化
-    init_modules(awg_ctrl, cap_ctrl, capture_units)
-    # トリガ AWG の設定
-    set_trigger_awg(cap_ctrl, capture_modules)
-    # 波形シーケンスの設定
-    awg_to_wave_sequence = set_wave_sequence(awg_ctrl)
-    # 最大波形シーケンス長の特定
-    max_wave_seq_len = max([wave_seq.num_all_words for awg_id, wave_seq in awg_to_wave_sequence.items()])
-    # キャプチャパラメータの設定
-    set_capture_params(cap_ctrl, max_wave_seq_len, capture_units)
-    # 波形送信スタート
-    awg_ctrl.start_awgs()
-    # 波形送信完了待ち
-    awg_ctrl.wait_for_awgs_to_stop(5, *AWG.all())
-    # キャプチャ完了待ち
-    cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
-    # エラーチェック
-    check_err(awg_ctrl, cap_ctrl, capture_units)
-    # キャプチャデータ取得
-    capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
-    # 波形保存
-    awg_to_wave_data = {awg: wave_seq.all_samples(True) for awg, wave_seq in awg_to_wave_sequence.items()}
-    save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data)
-    save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
-    print('end')
+def create_awg_ctrl(use_labrad, server_ip_addr):
+    if use_labrad:
+        return RemoteAwgCtrl(server_ip_addr, IP_ADDR)
+    else:
+        return AwgCtrl(IP_ADDR)
+
+
+def create_capture_ctrl(use_labrad, server_ip_addr):
+    if use_labrad:
+        return RemoteCaptureCtrl(server_ip_addr, IP_ADDR)
+    else:
+        return CaptureCtrl(IP_ADDR)
+
+
+def main(awgs, capture_modules, use_labrad, server_ip_addr):
+    with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
+          create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
+        capture_units = CaptureModule.get_units(*capture_modules)
+        # 初期化
+        awg_ctrl.initialize(*awgs)
+        cap_ctrl.initialize(*capture_modules)
+        # トリガ AWG の設定
+        set_trigger_awg(cap_ctrl, awgs[0], capture_modules)
+        # 波形シーケンスの設定
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        # 最大波形シーケンス長の特定
+        max_wave_seq_len = max([wave_seq.num_all_words for awg_id, wave_seq in awg_to_wave_sequence.items()])
+        # キャプチャパラメータの設定
+        set_capture_params(cap_ctrl, max_wave_seq_len, capture_units)
+        # 波形送信スタート
+        awg_ctrl.start_awgs(*awgs)
+        # 波形送信完了待ち
+        awg_ctrl.wait_for_awgs_to_stop(5, *awgs)
+        # キャプチャ完了待ち
+        cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
+        # エラーチェック
+        check_err(awg_ctrl, cap_ctrl, awgs, capture_units)
+        # キャプチャデータ取得
+        capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
+        # 波形保存
+        awg_to_wave_data = {awg: wave_seq.all_samples(True) for awg, wave_seq in awg_to_wave_sequence.items()}
+        save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data)
+        save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
+        print('end')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
+    parser.add_argument('--awgs')
     parser.add_argument('--capture-module')
+    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--labrad', action='store_true')
     args = parser.parse_args()
-    
+
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
-    
+
+    awgs = AWG.all()
+    if args.awgs is not None:
+        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+
     capture_modules = CaptureModule.all()
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    main(capture_modules)
+    server_ip_addr = 'localhost'
+    if args.server_ipaddr is not None:
+        server_ip_addr = args.server_ipaddr
+
+    main(awgs, capture_modules, args.labrad, server_ip_addr)

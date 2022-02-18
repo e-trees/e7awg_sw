@@ -5,40 +5,62 @@ import argparse
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import *
+from e7awgsw.labrad import *
 
 IP_ADDR = '10.0.0.16'
 
-def init_modules(awg_ctrl, cap_ctrl):
-    awg_ctrl.initialize()
-    awg_ctrl.enable_awgs(*AWG.all())
-    cap_ctrl.initialize()
-    cap_ctrl.enable_capture_units(*CaptureUnit.all())
-
-def main(mode):   
-    awg_ctrl = AwgCtrl(IP_ADDR)
-    cap_ctrl = CaptureCtrl(IP_ADDR)
-    
-    if mode == 0:
-        # AWG およびキャプチャモジュールのリセット
-        awg_ctrl.reset_awgs(*AWG.all())
-        cap_ctrl.reset_capture_units(*CaptureUnit.all())
+def create_awg_ctrl(use_labrad, server_ip_addr):
+    if use_labrad:
+        return RemoteAwgCtrl(server_ip_addr, IP_ADDR)
     else:
-        # AWG およびキャプチャモジュールのリセット + コントロールレジスタの初期化
-        init_modules(awg_ctrl, cap_ctrl)
+        return AwgCtrl(IP_ADDR)
 
-    print('end')
+
+def create_capture_ctrl(use_labrad, server_ip_addr):
+    if use_labrad:
+        return RemoteCaptureCtrl(server_ip_addr, IP_ADDR)
+    else:
+        return CaptureCtrl(IP_ADDR)
+
+
+def main(do_init, awgs, capture_modules, use_labrad, server_ip_addr):
+    with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
+          create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
+        capture_units = CaptureModule.get_units(*capture_modules)
+        # 初期化 (リセット含む)
+        if do_init:
+            awg_ctrl.initialize(*awgs)
+            cap_ctrl.initialize(*capture_units)
+        # リセットだけ
+        else:
+            awg_ctrl.reset_awgs(*awgs)
+            cap_ctrl.reset_capture_units(*capture_units)
+        print('end')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode')
+    parser.add_argument('--init', action='store_true')
     parser.add_argument('--ipaddr')
+    parser.add_argument('--awgs')
+    parser.add_argument('--capture-module')
+    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--labrad', action='store_true')
     args = parser.parse_args()
+
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
-    try:
-        mode = int(args.mode)
-    except Exception:
-        mode = 0
 
-    main(mode)
+    awgs = AWG.all()
+    if args.awgs is not None:
+        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+
+    capture_modules = CaptureModule.all()
+    if args.capture_module is not None:
+        capture_modules = [CaptureModule.of(int(args.capture_module))]
+
+    server_ip_addr = 'localhost'
+    if args.server_ipaddr is not None:
+        server_ip_addr = args.server_ipaddr
+
+    main(args.init, awgs, capture_modules, args.labrad, server_ip_addr)

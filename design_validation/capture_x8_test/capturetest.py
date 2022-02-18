@@ -13,14 +13,18 @@ class CaptureTest(object):
 
     IP_ADDR = '10.0.0.16'
 
-    def __init__(self, res_dir, use_labrad, server_ip_addr):
+    def __init__(self, res_dir, capture_modules, use_labrad, server_ip_addr):
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
         # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
-        self.__awg_to_capture_module = {
-            AWG.U2  : CaptureModule.U0,
-            AWG.U15 : CaptureModule.U1}
+        self.__awg_to_capture_module = {}
+        if CaptureModule.U0 in capture_modules:
+            self.__awg_to_capture_module[AWG.U2] = CaptureModule.U0
+        if CaptureModule.U1 in capture_modules:
+            self.__awg_to_capture_module[AWG.U15] = CaptureModule.U1
+        self.__capture_units = CaptureModule.get_units(*capture_modules)
+        print(self.__awg_to_capture_module)
         os.makedirs(self.__res_dir, exist_ok = True)
     
     def __save_wave_samples(self, awg_to_expected, capture_unit_to_capture_data):
@@ -77,12 +81,12 @@ class CaptureTest(object):
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
         awg_ctrl.initialize(*self.__awg_to_capture_module.keys())
-        cap_ctrl.initialize(*CaptureUnit.all())
+        cap_ctrl.initialize(*self.__capture_units)
         # キャプチャモジュールをスタートする AWG の設定
         for awg_id, cap_mod in self.__awg_to_capture_module.items():
             cap_ctrl.select_trigger_awg(cap_mod, awg_id)
         # スタートトリガの有効化
-        cap_ctrl.enable_start_trigger(*CaptureUnit.all())
+        cap_ctrl.enable_start_trigger(*self.__capture_units)
 
     def __set_wave_sequence(self, awg_ctrl):
         awg_to_wave_sequence = {}
@@ -101,7 +105,7 @@ class CaptureTest(object):
 
     def __get_capture_data(self, cap_ctrl):
         capture_unit_to_capture_data = {}
-        for capture_unit_id in CaptureUnit.all():
+        for capture_unit_id in self.__capture_units:
             num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
             capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(
                 capture_unit_id, num_captured_samples)
@@ -143,12 +147,12 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(5, *CaptureUnit.all())
+            cap_ctrl.wait_for_capture_units_to_stop(5, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック
             awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
-            cap_errs = cap_ctrl.check_err(*CaptureUnit.all())
+            cap_errs = cap_ctrl.check_err(*self.__capture_units)
             if awg_errs:
                 print(awg_errs)
             if cap_errs:

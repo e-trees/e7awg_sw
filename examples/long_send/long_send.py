@@ -9,13 +9,9 @@ import argparse
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import *
+from e7awgsw.labrad import *
 
 IP_ADDR = '10.0.0.16'
-
-def init_modules(awg_ctrl, cap_ctrl):
-    awg_ctrl.initialize()
-    awg_ctrl.enable_awgs(*AWG.all())
-    cap_ctrl.initialize()
 
 def gen_wave_seq(freq, amp=32760):
     wave_seq = WaveSequence(
@@ -37,7 +33,8 @@ def gen_wave_seq(freq, amp=32760):
             num_repeats = 0xFFFFFFFF)
     return wave_seq
 
-def set_wave_sequence(awg_ctrl):
+
+def set_wave_sequence(awg_ctrl, awgs):
     awg_to_wave_sequence = {}
 
     freqs = [
@@ -74,7 +71,7 @@ def set_wave_sequence(awg_ctrl):
             5000, # P0
             ]
 
-    for awg_id in AWG.all():
+    for awg_id in awgs:
         print("{}: freq={}, amp={}".format(awg_id, freqs[awg_id], amps[awg_id]))
         wave_seq = gen_wave_seq(freqs[awg_id], amps[awg_id]) # 5 MHz  5MHz x 8 周期では切れ目のない波形はできない
         awg_to_wave_sequence[awg_id] = wave_seq
@@ -82,23 +79,42 @@ def set_wave_sequence(awg_ctrl):
     return awg_to_wave_sequence
 
 
-def main():
-    awg_ctrl = AwgCtrl(IP_ADDR)
-    cap_ctrl = CaptureCtrl(IP_ADDR)
-    # 初期化
-    init_modules(awg_ctrl, cap_ctrl)
-    # 波形シーケンスの設定
-    awg_to_wave_sequence = set_wave_sequence(awg_ctrl)
-    # 波形送信スタート
-    awg_ctrl.start_awgs()
-    print('end')
-    return
+def create_awg_ctrl(use_labrad, server_ip_addr):
+    if use_labrad:
+        return RemoteAwgCtrl(server_ip_addr, IP_ADDR)
+    else:
+        return AwgCtrl(IP_ADDR)
+
+
+def main(use_labrad, server_ip_addr, awgs):
+    with create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl:
+        # 初期化
+        awg_ctrl.initialize(*awgs)
+        # 波形シーケンスの設定
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        # 波形送信スタート
+        awg_ctrl.start_awgs(*awgs)
+        print('end')
+        return
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr')
+    parser.add_argument('--awgs')
+    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--labrad', action='store_true')
     args = parser.parse_args()
+
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    main()
+    server_ip_addr = 'localhost'
+    if args.server_ipaddr is not None:
+        server_ip_addr = args.server_ipaddr
+
+    awgs = AWG.all()
+    if args.awgs is not None:
+        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+
+    main(args.labrad, server_ip_addr, awgs)

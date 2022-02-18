@@ -14,18 +14,24 @@ class CaptureTestDsp(object):
 
     IP_ADDR = '10.0.0.16'
 
-    def __init__(self, res_dir, use_labrad, server_ip_addr):
+    def __init__(self, res_dir, capture_modules, use_labrad, server_ip_addr):
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
         os.makedirs(self.__res_dir, exist_ok = True)
         # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
-        self.__awg_to_capture_module = {
-            AWG.U2  : CaptureModule.U0,
-            AWG.U15 : CaptureModule.U1}
-        self.__cap_units_to_test = [CaptureUnit.U0, CaptureUnit.U2, CaptureUnit.U4, CaptureUnit.U7]  # データ転送に時間がかかるのでユニット 0, 2, 4, 7 だけ調べる
+        self.__awg_to_capture_module = {}
+        self.__cap_units_to_test = []
+        if CaptureModule.U0 in capture_modules:
+            self.__awg_to_capture_module[AWG.U2] = CaptureModule.U0
+            self.__cap_units_to_test += [CaptureUnit.U0, CaptureUnit.U2] # データ転送に時間がかかるのでユニット 0, 2 だけ調べる
+        if CaptureModule.U1 in capture_modules:
+            self.__awg_to_capture_module[AWG.U15] = CaptureModule.U1
+            self.__cap_units_to_test += [CaptureUnit.U4, CaptureUnit.U7] # データ転送に時間がかかるのでユニット 4, 7 だけ調べる
         # 初期化
-        self.__setup_modules(AwgCtrl(self.IP_ADDR), CaptureCtrl(self.IP_ADDR))
+        with (self.__create_awg_ctrl() as awg_ctrl,
+              self.__create_cap_ctrl() as cap_ctrl):
+            self.__setup_modules(awg_ctrl, cap_ctrl)
     
     def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
         for cap_unit_id, cap_data in capture_unit_to_capture_data.items():
@@ -188,7 +194,7 @@ class CaptureTestDsp(object):
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック
             awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
-            cap_errs = cap_ctrl.check_err(*CaptureUnit.all())
+            cap_errs = cap_ctrl.check_err(*self.__cap_units_to_test)
             if awg_errs:
                 print(awg_errs)
             if cap_errs:
