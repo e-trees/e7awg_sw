@@ -10,8 +10,7 @@ QuBE Python Library's documentation
    :maxdepth: 2
    :caption: Contents:
    
-   qubelib
-
+   e7awgsw
 
 Indices and tables
 ==================

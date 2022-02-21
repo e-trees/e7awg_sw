@@ -1,79 +1,79 @@
-qubelib namespace
+e7awgsw namespace
 =================
 
-.. py:module:: qubelib
+.. py:module:: e7awgsw
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   e7awgsw.labrad
 
 Submodules
 ----------
 
-qubelib.awgctrl module
+e7awgsw.awgctrl module
 ----------------------
 
-.. automodule:: qubelib.awgctrl
+.. automodule:: e7awgsw.awgctrl
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.awgwave module
+e7awgsw.awgwave module
 ----------------------
 
-.. automodule:: qubelib.awgwave
+.. automodule:: e7awgsw.awgwave
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.capturectrl module
+e7awgsw.capturectrl module
 --------------------------
 
-.. automodule:: qubelib.capturectrl
+.. automodule:: e7awgsw.capturectrl
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.captureparam module
+e7awgsw.captureparam module
 ---------------------------
 
-.. automodule:: qubelib.captureparam
+.. automodule:: e7awgsw.captureparam
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.exception module
+e7awgsw.exception module
 ------------------------
 
-.. automodule:: qubelib.exception
+.. automodule:: e7awgsw.exception
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.hwdefs module
+e7awgsw.hwdefs module
 ---------------------
 
-.. automodule:: qubelib.hwdefs
+.. automodule:: e7awgsw.hwdefs
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.logger module
----------------------
-
-.. automodule:: qubelib.logger
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-qubelib.utiltool module
+e7awgsw.utiltool module
 -----------------------
 
-.. automodule:: qubelib.utiltool
+.. automodule:: e7awgsw.utiltool
    :members:
    :undoc-members:
    :show-inheritance:
 
-qubelib.wavesequence module
+e7awgsw.wavesequence module
 ---------------------------
 
-.. automodule:: qubelib.wavesequence
+.. automodule:: e7awgsw.wavesequence
    :members:
    :undoc-members:
    :show-inheritance:

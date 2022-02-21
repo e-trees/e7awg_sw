@@ -1,7 +1,7 @@
-qubelib
+e7awgsw
 =======
 
 .. toctree::
    :maxdepth: 4
 
-   qubelib
+   e7awgsw

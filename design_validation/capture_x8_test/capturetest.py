@@ -24,7 +24,6 @@ class CaptureTest(object):
         if CaptureModule.U1 in capture_modules:
             self.__awg_to_capture_module[AWG.U15] = CaptureModule.U1
         self.__capture_units = CaptureModule.get_units(*capture_modules)
-        print(self.__awg_to_capture_module)
         os.makedirs(self.__res_dir, exist_ok = True)
     
     def __save_wave_samples(self, awg_to_expected, capture_unit_to_capture_data):

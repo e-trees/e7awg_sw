@@ -11,7 +11,7 @@ from e7awgsw.logger import *
 
 
 class RemoteAwgCtrl(AwgCtrlBase):
-    """ QuBE 制御サーバを通して AWG を制御するためのクラス """
+    """ LabRAD サーバを通して AWG を制御するためのクラス """
 
     def __init__(
         self,
@@ -22,7 +22,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
         logger = get_null_logger()):
         """
         Args:
-            remote_server_ip_addr (string): QuBE 制御サーバの IP アドレス  (例 '192.168.0.2', 'localhost')
+            remote_server_ip_addr (string): LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')
             awg_ctrl_ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
             enable_lib_log (bool):
                 | True -> ライブラリの標準のログ機能を有効にする.
@@ -35,7 +35,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
         try:
             self._validate_ip_addr(remote_server_ip_addr)
-            self.__client = labrad.connect(remote_server_ip_addr)
+            self.__client = labrad.connect(remote_server_ip_addr, password='')
             self.__server = self.__client.awg_capture_server
             self.__handler = self.__get_awg_ctrl_handler(awg_ctrl_ip_addr)
         except Exception as e:
@@ -58,7 +58,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
 
     def disconnect(self):
-        """QuBE 制御サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.
+        """LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.
 
         | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
         | そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.

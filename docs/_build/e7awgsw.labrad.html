@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>QuBE Python Library - e7awgsw.labrad package</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css" integrity="sha256-xOpS+e/dER8z72w+qryCieOGysQI8cELAVt3MHG0phY=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/tooltipster.bundle.min.css" integrity="sha256-Qc4lCfqZWYaHF5hgEOFrYzSIX9Rrxk0NPHRac+08QeQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css" integrity="sha256-Wa1I4jhSXeWd3N6RhfPlkqr1WlT+zS3Vh2YGCg0129E=" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Code+Pro|Source+Sans+Pro|Source+Serif+Pro|Roboto|Roboto+Mono" rel="stylesheet">
+<link href="https://fonts.red-dove.com/iosevka-ss09-regular/webfont.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/sizzle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/sizzle.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" integrity="sha256-G7A4JrJjJlFqP0yamznwPjAApIKPkadeHfyIwiaa9e0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/js/tooltipster.bundle.min.js" integrity="sha256-NOU7KrY2aTI4PxDegqYUIknk9qfxVCS0E4JfE9aMwaA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+      $(document).data('sizzle', {on_load: []});
+    </script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+      <script src="app-data.js"></script>
+<link rel="index" title="索引" href="genindex.html" />
+<link rel="search" title="検索" href="search.html" />
+<link rel="prev" title="e7awgsw namespace" href="e7awgsw.html" />
+
+</head>
+<body class="full-height test">
+<noscript>
+  <div>
+    <div id="noscript-message">JavaScript is not enabled. It is needed for this website to work.</div>
+  </div>
+</noscript>
+<div id="whole-page" class="container-fluid content full-height">
+  <div id="header-row" class="row">
+    <div id="header-container" class="col-md-12">
+      <div id="hdr-left">
+        <i class="fa fa-bars menu-toggle"></i>
+        
+<a href="index.html" class="text-logo">QuBE Python Library 1.0.0 ドキュメント</a>
+
+      </div>
+      <div id="hdr-centre" class="text-center stretch">
+        <h3 title="e7awgsw.labrad package">e7awgsw.labrad package</h3>
+        <h6>e7awgsw.labrad package</h6>
+      </div>
+      <div id="hdr-search">
+        
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+      </div>
+
+      <div id="hdr-index">
+        <a href="genindex.html" class="btn btn-default" title="Go to the index"><i class="fa fa-list"></i></a>
+      </div>
+
+      <div id="hdr-source">
+        <a href="_sources/e7awgsw.labrad.rst.txt" class="btn btn-default" title="See the source for this page"><i class="fa fa-code"></i></a>
+      </div>
+
+      <div id="hdr-right">
+        
+  
+  <div class="prev-next">
+    
+      <div class="pull-left">
+        <a class="btn btn-default prev" href="e7awgsw.html" title="Previous chapter (e7awgsw namespace)"><i class="fa fa-chevron-left mr-1em" aria-hidden="true"></i><span class="btn-text">e7awgsw namespace</span></a>
+      </div>
+    
+    </div>
+  
+      </div>
+      <div id="alt-hdr-right">
+
+        <a href="e7awgsw.html"><i class="fa fa-chevron-left mr-8"></i></a>
+
+
+        <a href="index.html"><i class="fa fa-home mr-8"></i></a>
+
+
+        <a href="search.html"><i class="fa fa-search mr-8"></i></a>
+
+
+        <a href="genindex.html"><i class="fa fa-list mr-8"></i></a>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="content-row" class="row">
+    <div id="page-content" class="col-md-12 flex-col">
+      <div id="content-container">
+        <div id="nav">
+          
+  <div class="navsidebar">
+    <div id="sidebar-search">
+      
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+    </div>
+      <div class="sidebar-block">
+        <div class="sidebar-tocheading">
+          <div class="pull-left">
+            <h2>Table Of Contents</h2>
+          </div>
+          <div class="pull-right" title="Hide this sidebar (hover at left edge to bring it back)"><i class="fa fa-chevron-left hidetoc"></i></div>
+        </div>
+        <div class="sidebar-toc">
+      
+          <div id="toc-filter" title="Type in here to show only matching topics">
+            <input class="form-control" id="toc-filter-query" placeholder="Filter by title ...">
+          </div>
+      
+        
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="e7awgsw.html#module-e7awgsw">e7awgsw namespace</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="e7awgsw.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#module-e7awgsw.labrad">e7awgsw.labrad package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.awgctrl">e7awgsw.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.awgwave">e7awgsw.awgwave module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.capturectrl">e7awgsw.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+        </div>
+      </div>
+  </div>
+        </div>
+        <div id="content" tabindex="0" class="stretch">
+          <div id="mnav">
+            
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="e7awgsw.html#module-e7awgsw">e7awgsw namespace</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="e7awgsw.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#module-e7awgsw.labrad">e7awgsw.labrad package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.awgctrl">e7awgsw.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.awgwave">e7awgsw.awgwave module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.capturectrl">e7awgsw.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+          </div>
+          <div class="body">
+            
+  <div class="section" id="module-e7awgsw.labrad">
+<span id="e7awgsw-labrad-package"></span><h1>e7awgsw.labrad package<a class="headerlink" href="#module-e7awgsw.labrad" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteAwgCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.</span></code><code class="sig-name descname"><span class="pre">RemoteAwgCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">awg_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteAwgCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase" title="e7awgsw.awgctrl.AwgCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.awgctrl.AwgCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通して AWG を制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteAwgCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">awg_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteAwgCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>awg_ctrl_ip_addr</strong> (<em>string</em>) -- AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteAwgCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteAwgCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteCaptureCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.</span></code><code class="sig-name descname"><span class="pre">RemoteCaptureCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">capture_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteCaptureCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase" title="e7awgsw.capturectrl.CaptureCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.capturectrl.CaptureCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通してキャプチャユニットを制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteCaptureCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">capture_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteCaptureCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>capture_ctrl_ip_addr</strong> (<em>string</em>) -- キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteCaptureCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteCaptureCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="このヘッドラインへのパーマリンク">¶</a></h2>
+</div>
+<div class="section" id="module-e7awgsw.labrad.awgcapture_server">
+<span id="e7awgsw-labrad-awgcapture-server-module"></span><h2>e7awgsw.labrad.awgcapture_server module<a class="headerlink" href="#module-e7awgsw.labrad.awgcapture_server" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.awgcapture_server.</span></code><code class="sig-name descname"><span class="pre">QubeServer</span></code><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">labrad.server.ThreadedServer</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>Create a new threaded server.</p>
+<p>Requests and lifecycle methods like initServer will be executed on a
+thread pool instead of in the twisted reactor thread. In addition,
+accessing self.client from a thread other than the reactor thread will
+return a synchronous labrad.client.Client object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>pool</strong> (<em>None</em><em> | </em><em>concurrent.futures.ThreadPoolExecutor</em>) -- Thread pool instance to use for server lifecycle methods and
+request handling. If None, use the default twisted threadpool,
+which maxes out at 10 threads.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.check_awg_err">
+<code class="sig-name descname"><span class="pre">check_awg_err</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.check_awg_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.check_awg_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.check_capture_unit_err">
+<code class="sig-name descname"><span class="pre">check_capture_unit_err</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.check_capture_unit_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.check_capture_unit_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.create_awgctrl">
+<code class="sig-name descname"><span class="pre">create_awgctrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">ipaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.create_awgctrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.create_awgctrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.create_capturectrl">
+<code class="sig-name descname"><span class="pre">create_capturectrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">ipaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.create_capturectrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.create_capturectrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.disable_start_trigger">
+<code class="sig-name descname"><span class="pre">disable_start_trigger</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.disable_start_trigger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.disable_start_trigger" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.discard_awgctrl">
+<code class="sig-name descname"><span class="pre">discard_awgctrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.discard_awgctrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.discard_awgctrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.discard_capturectrl">
+<code class="sig-name descname"><span class="pre">discard_capturectrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.discard_capturectrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.discard_capturectrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.enable_start_trigger">
+<code class="sig-name descname"><span class="pre">enable_start_trigger</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.enable_start_trigger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.enable_start_trigger" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.get_capture_data">
+<code class="sig-name descname"><span class="pre">get_capture_data</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.get_capture_data"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.get_capture_data" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.get_wave_startable_block_timing">
+<code class="sig-name descname"><span class="pre">get_wave_startable_block_timing</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.get_wave_startable_block_timing"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.get_wave_startable_block_timing" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.initialize_awgs">
+<code class="sig-name descname"><span class="pre">initialize_awgs</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.initialize_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.initialize_awgs" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.initialize_capture_units">
+<code class="sig-name descname"><span class="pre">initialize_capture_units</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.initialize_capture_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.initialize_capture_units" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.name">
+<code class="sig-name descname"><span class="pre">name</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Awg</span> <span class="pre">Capture</span> <span class="pre">Server'</span></em><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.name" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.num_captured_samples">
+<code class="sig-name descname"><span class="pre">num_captured_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.num_captured_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.num_captured_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.reset_awgs">
+<code class="sig-name descname"><span class="pre">reset_awgs</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.reset_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.reset_awgs" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.reset_capture_units">
+<code class="sig-name descname"><span class="pre">reset_capture_units</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.reset_capture_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.reset_capture_units" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.select_trigger_awg">
+<code class="sig-name descname"><span class="pre">select_trigger_awg</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_module_id</span></span></em>, <em><span class="n"><span class="pre">awg_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.select_trigger_awg"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.select_trigger_awg" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.set_capture_params">
+<code class="sig-name descname"><span class="pre">set_capture_params</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.set_capture_params"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.set_capture_params" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.set_wave_sequence">
+<code class="sig-name descname"><span class="pre">set_wave_sequence</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id</span></span></em>, <em><span class="n"><span class="pre">wave_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.set_wave_sequence"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.set_wave_sequence" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.set_wave_startable_block_timing">
+<code class="sig-name descname"><span class="pre">set_wave_startable_block_timing</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">interval</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.set_wave_startable_block_timing"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.set_wave_startable_block_timing" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.start_awgs">
+<code class="sig-name descname"><span class="pre">start_awgs</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.start_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.start_awgs" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.start_capture_units">
+<code class="sig-name descname"><span class="pre">start_capture_units</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.start_capture_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.start_capture_units" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.terminate_awgs">
+<code class="sig-name descname"><span class="pre">terminate_awgs</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.terminate_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.terminate_awgs" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.wait_for_awgs_to_stop">
+<code class="sig-name descname"><span class="pre">wait_for_awgs_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">timeout</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.wait_for_awgs_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.wait_for_awgs_to_stop" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.QubeServer.wait_for_capture_units_to_stop">
+<code class="sig-name descname"><span class="pre">wait_for_capture_units_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">timeout</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#QubeServer.wait_for_capture_units_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.QubeServer.wait_for_capture_units_to_stop" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.labrad.remoteawgctrl">
+<span id="e7awgsw-labrad-remoteawgctrl-module"></span><h2>e7awgsw.labrad.remoteawgctrl module<a class="headerlink" href="#module-e7awgsw.labrad.remoteawgctrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.remoteawgctrl.</span></code><code class="sig-name descname"><span class="pre">RemoteAwgCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">awg_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase" title="e7awgsw.awgctrl.AwgCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.awgctrl.AwgCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通して AWG を制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">awg_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>awg_ctrl_ip_addr</strong> (<em>string</em>) -- AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remoteawgctrl.html#RemoteAwgCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remoteawgctrl.RemoteAwgCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.labrad.remotecapturectrl">
+<span id="e7awgsw-labrad-remotecapturectrl-module"></span><h2>e7awgsw.labrad.remotecapturectrl module<a class="headerlink" href="#module-e7awgsw.labrad.remotecapturectrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.remotecapturectrl.</span></code><code class="sig-name descname"><span class="pre">RemoteCaptureCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">capture_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase" title="e7awgsw.capturectrl.CaptureCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.capturectrl.CaptureCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通してキャプチャユニットを制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">capture_ctrl_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>capture_ctrl_ip_addr</strong> (<em>string</em>) -- キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-row" class="row">
+
+    <div class="col-md-12">
+        <span></span><span class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0 and the
+        <a href="https://pypi.org/project/sphinx-sizzle-theme/"
+
+           title="0.0.9/821a5457 [2020-04-16T19:31:16]"
+
+        >Sizzle</a> theme.</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="tooltips" class="hidden">
+</div>
+
+<script>
+$(document).ready(function() {
+  'use strict';
+  var $search = $('.search-query');
+
+  var $filter = $('#toc-filter-query');
+  var $toclist = $('.sidebar-toc > ul').find('li');
+
+  if ($toclist.length === 0) {
+    $toclist = $('.localtoc > ul').find('li');
+  }
+
+
+  var $nav = $('#nav');
+
+  //$('#whole-page').removeClass('hidden');
+  var nav_width = $nav.width();
+
+
+  var search_url = 'search.html';
+
+  function perform_search(e) {
+    var $elem;
+
+    if (e.type === 'keypress') {
+      $elem = $(e.target);
+    }
+    else if (e.type === 'click') {
+      $elem = $(e.target).parents('.input-group').find('input');
+    }
+    var q = $elem.val().trim();
+
+    if (q) {
+      var url = search_url + '?q=' + q + '&check_keywords=yes&area=default';
+
+      location.href = url;
+    }
+  }
+
+
+  function apply_filter() {
+    var s = $filter.val().trim().toLowerCase();
+
+    $toclist.find('a').removeClass('hidden');
+    $toclist.each(function() {
+      var $this = $(this);
+      var $link = $this.find('> a');
+      var t = $link.text().toLowerCase();
+      var show = t.indexOf(s) >= 0;
+
+      if (!show) {
+        $link.addClass('hidden');
+      }
+    });
+  }
+
+  $filter.on('keyup', function(e) {
+    apply_filter();
+  });
+
+
+
+  $search.on('keypress', function(e) {
+    if (e.which == 13) {
+      perform_search(e);
+    }
+  });
+  $search.parents('.input-group').find('.input-group-addon').on('click', perform_search);
+  $(document).on('click', '.summary .fa-caret-right', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $next = $elem.next();
+    $elem.addClass('hidden');
+    $next.removeClass('hidden');
+  });
+  $(document).on('click', '.detail .fa-caret-down', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $prev = $elem.prev();
+    $elem.addClass('hidden');
+    $prev.removeClass('hidden');
+  });
+
+  $('#content').on('click', function() {
+    $('#mnav').hide();
+  });
+
+  var counter = 0;
+  var timer = null;
+
+  function show_nav() {
+    $('#content').off('mousemove', track_mouse);
+    if (timer !== null) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    $nav.show();
+  }
+
+  function track_mouse(e) {
+    var x = e.clientX;
+
+    if (x < 15) {
+      ++counter;
+      if (timer === null) {
+        timer = setTimeout(show_nav, 2000);
+      }
+    }
+    else {
+      counter = 0;
+    }
+    if (counter >= 20) {
+      show_nav();
+    }
+  };
+
+  function hide_nav() {
+    $nav.hide();
+    counter = 0;
+    $('#content').on('mousemove', track_mouse);
+  }
+
+  $('.hidetoc').on('click', hide_nav);
+
+  $(document).on('keyup', function(e) {
+    if (e.ctrlKey) {
+      if (e.which == 37) {      // Ctrl+left arrow
+        hide_nav();
+      }
+      else if (e.which == 39) { // Ctrl+right arrow
+        show_nav();
+      }
+    }
+  });
+
+  $('.menu-toggle').on('click', function(e) {
+    $('#mnav').toggle();
+  });
+
+  function scroll_nav(frag) {
+    var sel = '#nav ' + (frag ? 'a[href="' + frag + '"]' : '.toctree-l1 a.current');
+
+    var $link = $(sel);
+
+    if ($link.length > 0) {
+      $link[0].scrollIntoView({block: 'center'});
+    }
+  }
+
+  // If the navigator is long, then the item we clicked on to get here might
+  // not be in view. Try to scroll it into the view - a slight delay is needed
+  // to get it to sync properly with other stuff going on (as the page has just
+  // loaded). Hence the setTimeout with a timeout of 0.
+
+  function do_scroll() {
+    scroll_nav(window.location.hash);
+  }
+
+  setTimeout(do_scroll, 0);
+
+  function adjust_size() {
+    // we need to set the height explicitly so that scrolling regions in the
+    // content area work properly.
+    var h = $('#page-content').height();
+
+    $('#nav, #content').height(h);
+    if ($('#nav').is(':visible')) {
+      $('#mnav').hide();
+    }
+  }
+
+  adjust_size();
+
+  $(window).on('resize', adjust_size);
+
+  function focus_content() {
+    $('#content').focus();  // so that keyboard can be used to scroll, etc.
+  }
+
+  setTimeout(focus_content, 150);
+
+  var sizzle = $(document).data('sizzle');
+
+  function make_tooltip(id, h, b) {
+    var $e = $('<div>').attr('id', id);
+    var $b = $('<div>').addClass('tc-body').html(b);
+
+    if (h) {
+      var $h = $('<div>').addClass('tc-heading').html(h);
+      $e.append($h);
+    }
+    $e.append($b);
+    return $e;
+  }
+
+  var default_tt_options = {
+    theme: ['tooltipster-light', 'tooltipster-light-customized'],
+    interactive: true,
+    maxWidth: 600,
+    contentCloning: true
+  };
+
+  function activate_tooltips() {
+    var $tt = $('.tt');
+
+    //console.log('tt links:', $tt.length);
+    $tt.tooltipster(default_tt_options);
+  }
+
+
+
+  function add_glossary_tooltips() {
+    var links = $('a');  // can qualify with .reference.internal
+    var glinks = {};
+    var pat = /(.*)\.html#(term-.*)$/;
+    var found = false;  // links in this document
+
+    $.each(links, function(i, link) {
+        var $link = $(link);
+        var href = $link.attr('href');
+        var m = href.match(pat);
+
+        if (m) {
+          var s = m[1].replace(/^(\.\.\/)+/, '');
+
+          if (s === sizzle.app_data.glossary.document) {
+            var k = m[2];
+
+            if (k in glinks) {
+              glinks[k].push($link);
+            }
+            else {
+              glinks[k] = [$link];
+            }
+            found = true;
+          }
+        }
+    });
+    if (found) {
+      var $t = $('#tooltips');
+      var data = sizzle.app_data.glossary.terms;
+
+      $.each(glinks, function(k, v) {
+        var d = data[k];
+
+        if (d) {  // as a sanity check
+          var s = 'tc-'+ k;
+          var $e = make_tooltip(s, d.term, d.defn);
+          $t.append($e);
+
+          $.each(v, function(i, link) {
+            link.addClass('tt').attr('data-tooltip-content', '#' + s);
+          });
+        }
+      });
+    }
+  }
+
+  if (sizzle.app_data && sizzle.app_data.glossary &&
+      sizzle.app_data.glossary.document) {
+    add_glossary_tooltips();
+  }
+
+
+
+
+  function add_custom_tooltips() {
+    var info_tips = sizzle.app_data.custom_data['info-tips'] || {};
+
+    if ($.isEmptyObject(info_tips)) {
+      return;
+    }
+
+    var tt_options = $.extend({contentAsHTML: true}, default_tt_options);
+
+    $('.tc-info').each(function() {
+      var $elem = $(this).prev();
+      var classes = $elem.attr('class');
+      var m = /\btci-([\S]+)/.exec(classes);
+
+      if (m !== null) {
+        var key = m[1];
+
+        if (key in info_tips) {
+          var v = info_tips[key];
+          var tt = $elem.tooltipster(tt_options).tooltipster('content', v);
+        }
+      }
+    });
+  }
+
+  add_custom_tooltips();
+
+  setTimeout(activate_tooltips, 1000);
+
+
+  // Clipboard copy for code blocks with captions
+
+  $('.code-block-caption').each(function() {
+    var $cap = $(this);
+    var $btn = $('<span class="clip-copy"><span class="copied hidden">Copied!</span><i class="fa fa-clipboard" title="Copy contents"></i></span>');
+    var $code = $cap.parent().find('.highlight');
+
+    $cap.append($btn);
+    $btn.find('.fa-clipboard').data('clip-text', $code.text());
+  });
+
+  var clipboard = new ClipboardJS('.code-block-caption .fa-clipboard', {
+    'text': function(trigger) {
+      return $(trigger).data('clip-text');
+    }
+  });
+
+  clipboard.on('success', function(e) {
+    var $copied = $(e.trigger).prev();
+
+    $copied.removeClass('hidden');
+
+    setTimeout(function() {$copied.addClass('hidden'); }, 1000);
+  });
+
+  if (sizzle.on_load) {
+    sizzle.on_load.forEach(function(f) {
+      f();
+    });
+  }
+});
+</script>
+</body>
+</html>
