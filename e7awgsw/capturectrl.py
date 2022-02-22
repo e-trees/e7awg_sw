@@ -1,7 +1,6 @@
 import socket
 import time
 import struct
-import fcntl
 from abc import ABCMeta, abstractmethod
 from .hwparam import *
 from .memorymap import *
@@ -10,7 +9,7 @@ from .hwdefs import *
 from .captureparam import *
 from .exception import *
 from .logger import *
-
+from .lock import *
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
     # 1 キャプチャモジュールが保存可能なサンプル数
@@ -351,9 +350,8 @@ class CaptureCtrl(CaptureCtrlBase):
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
-        self.__lock_fp = None
         filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
-        self.__lock_fp = open(filepath, 'w')
+        self.__flock = ReentrantFileLock(filepath)
 
 
     def __enter__(self):
@@ -372,12 +370,10 @@ class CaptureCtrl(CaptureCtrlBase):
 
         """
         try:
-            if self.__lock_fp is not None:
-                self.__lock_fp.close()
+            self.__flock.discard()
         except Exception as e:
             log_error(e, *self._loggers)
-
-        self.__lock_fp = None
+        self.__flock = None
 
 
     def _set_capture_params(self, capture_unit_id, param):
@@ -495,18 +491,17 @@ class CaptureCtrl(CaptureCtrlBase):
 
 
     def _start_capture_units(self, *capture_unit_id_list):
-        self.__lock()
-        self.__select_ctrl_target(*capture_unit_id_list)
+        with self.__flock:
+            self.__select_ctrl_target(*capture_unit_id_list)
 
-        self.__reg_access.write_bits(
-            CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
-        self.__reg_access.write_bits(
-            CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 1)
-        self.__reg_access.write_bits(
-            CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
-        
-        self.__deselect_ctrl_target(*capture_unit_id_list)
-        self.__unlock()
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 1)
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+            
+            self.__deselect_ctrl_target(*capture_unit_id_list)
 
 
     def _reset_capture_units(self, *capture_unit_id_list):
@@ -522,56 +517,51 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def __select_ctrl_target(self, *capture_unit_id_list):
         """一括制御を有効にするキャプチャユニットを選択する"""
-        self.__lock()
-        for capture_unit_id in capture_unit_id_list:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
-                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
-        self.__unlock()
+        with self.__flock:
+            for capture_unit_id in capture_unit_id_list:
+                self.__reg_access.write_bits(
+                    CaptureMasterCtrlRegs.ADDR,
+                    CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
+                    CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
 
 
     def __deselect_ctrl_target(self, *capture_unit_id_list):
         """一括制御を無効にするキャプチャユニットを選択する"""
-        self.__lock()
-        for capture_unit_id in capture_unit_id_list:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
-                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
-        self.__unlock()
+        with self.__flock:
+            for capture_unit_id in capture_unit_id_list:
+                self.__reg_access.write_bits(
+                    CaptureMasterCtrlRegs.ADDR,
+                    CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL, 
+                    CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
 
 
     def _select_trigger_awg(self, capture_module_id, awg_id):
-        self.__lock()
-        if capture_module_id == CaptureModule.U0:
-            offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
-        elif capture_module_id == CaptureModule.U1:
-            offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
-        
-        awg_id = 0 if (awg_id is None) else (awg_id + 1)
-        self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
-        self.__unlock()
+        with self.__flock:
+            if capture_module_id == CaptureModule.U0:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
+            elif capture_module_id == CaptureModule.U1:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
+            
+            awg_id = 0 if (awg_id is None) else (awg_id + 1)
+            self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
 
 
     def _enable_start_trigger(self, *capture_unit_id_list):
-        self.__lock()
-        for capture_unit_id in capture_unit_id_list:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
-                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
-        self.__unlock()
+        with self.__flock:
+            for capture_unit_id in capture_unit_id_list:
+                self.__reg_access.write_bits(
+                    CaptureMasterCtrlRegs.ADDR,
+                    CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
+                    CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 1)
 
 
     def _disable_start_trigger(self, *capture_unit_id_list):
-        self.__lock()
-        for capture_unit_id in capture_unit_id_list:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR,
-                CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
-                CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
-        self.__unlock()
+        with self.__flock:
+            for capture_unit_id in capture_unit_id_list:
+                self.__reg_access.write_bits(
+                    CaptureMasterCtrlRegs.ADDR,
+                    CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
+                    CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
 
 
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
@@ -661,21 +651,3 @@ class CaptureCtrl(CaptureCtrlBase):
         sum_end_word_no = min(param.sum_start_word_no + param.num_words_to_sum - 1, num_words_in_sum_sec - 1)
         num_sum_words = sum_end_word_no - max(0, param.sum_start_word_no) + 1
         return max(num_sum_words, 0)
-
-
-    def __lock(self):
-        try:
-            # ロック対象のファイルのディスクリプタが同じだと flock が再入可能になるので, 同じディスクリプタでロックをとる
-            # スレッド間の排他制御には使えない点に注意.
-            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_EX)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def __unlock(self):
-        try:
-            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_UN)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise

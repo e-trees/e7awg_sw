@@ -1,13 +1,13 @@
 #!/bin/sh
 cd `dirname $0`
 num=0
-num_repeats=2
+num_repeats=20
 while [ $num -lt $num_repeats ]
 do
     echo "loop = "$num
-    python capture_x8_test.py --result-dir=proc_0 --capture-module=0 --num-tests=10 > result_0.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_0 --capture-module=0 --num-tests=100 > result_0.txt 2>&1 &
     pid0=$!
-    python capture_x8_test.py --result-dir=proc_1 --capture-module=1 --num-tests=10 > result_1.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_1 --capture-module=1 --num-tests=100 > result_1.txt 2>&1 &
     pid1=$!
     wait $pid0
     res0=$?

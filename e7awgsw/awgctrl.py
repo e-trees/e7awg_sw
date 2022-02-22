@@ -1,5 +1,4 @@
 import time
-import fcntl
 from abc import ABCMeta, abstractmethod
 from .wavesequence import *
 from .hwparam import *
@@ -7,6 +6,7 @@ from .memorymap import *
 from .udpaccess import *
 from .exception import *
 from .logger import *
+from .lock import *
 
 class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)
@@ -305,7 +305,7 @@ class AwgCtrl(AwgCtrlBase):
         self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)        
         filepath = '/tmp/e7awg_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr)))
-        self.__lock_fp = open(filepath, 'w')
+        self.__flock = ReentrantFileLock(filepath)
 
 
     def __enter__(self):
@@ -324,12 +324,10 @@ class AwgCtrl(AwgCtrlBase):
 
         """
         try:
-            if self.__lock_fp is not None:
-                self.__lock_fp.close()
+            self.__flock.discard()
         except Exception as e:
             log_error(e, *self._loggers)
-
-        self.__lock_fp = None
+        self.__flock = None
 
 
     def _set_wave_sequence(self, awg_id, wave_seq):
@@ -396,47 +394,44 @@ class AwgCtrl(AwgCtrlBase):
 
     def __select_ctrl_target(self, *awg_id_list):
         """一括制御を有効にする AWG を選択する"""
-        self.__lock()
-        for awg_id in awg_id_list:
-            self.__reg_access.write_bits(
-                AwgMasterCtrlRegs.ADDR,
-                AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
-                AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 1)
-        self.__unlock()
+        with self.__flock:
+            for awg_id in awg_id_list:
+                self.__reg_access.write_bits(
+                    AwgMasterCtrlRegs.ADDR,
+                    AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
+                    AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 1)
 
 
     def __deselect_ctrl_target(self, *awg_id_list):
         """一括制御を無効にする AWG を選択する"""
-        self.__lock()
-        for awg_id in awg_id_list:
-            self.__reg_access.write_bits(
-                AwgMasterCtrlRegs.ADDR,
-                AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
-                AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 0)
-        self.__unlock()
+        with self.__flock:
+            for awg_id in awg_id_list:
+                self.__reg_access.write_bits(
+                    AwgMasterCtrlRegs.ADDR,
+                    AwgMasterCtrlRegs.Offset.CTRL_TARGET_SEL,
+                    AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 0)
 
 
     def _start_awgs(self, *awg_id_list):
-        self.__lock()
-        self.__select_ctrl_target(*awg_id_list)
-        
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 1)
-        self.__wait_for_awgs_ready(5, *awg_id_list)
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
+        with self.__flock:
+            self.__select_ctrl_target(*awg_id_list)
+            
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 1)
+            self.__wait_for_awgs_ready(5, *awg_id_list)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PREPARE, 1, 0)
 
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 1)
-        self.__reg_access.write_bits(
-            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
-        
-        self.__deselect_ctrl_target(*awg_id_list)
-        self.__unlock()
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 1)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_START, 1, 0)
+            
+            self.__deselect_ctrl_target(*awg_id_list)
 
 
     def _terminate_awgs(self, *awg_id_list):
@@ -555,21 +550,3 @@ class AwgCtrl(AwgCtrlBase):
                 awg_to_err[awg_id] = err_list
         
         return awg_to_err
-
-
-    def __lock(self):
-        try:
-            # ロック対象のファイルのディスクリプタが同じだと flock が再入可能になるので, 同じディスクリプタでロックをとる
-            # スレッド間の排他制御には使えない点に注意.
-            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_EX)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def __unlock(self):
-        try:
-            fcntl.flock(self.__lock_fp.fileno(), fcntl.LOCK_UN)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
