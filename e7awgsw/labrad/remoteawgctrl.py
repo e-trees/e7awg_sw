@@ -35,7 +35,8 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
         try:
             self._validate_ip_addr(remote_server_ip_addr)
-            self.__client = labrad.connect(remote_server_ip_addr, password='')
+            self.__client = labrad.connect(
+                remote_server_ip_addr, password='', port=7682, tls_mode='off')
             self.__server = self.__client.awg_capture_server
             self.__handler = self.__get_awg_ctrl_handler(awg_ctrl_ip_addr)
         except Exception as e:

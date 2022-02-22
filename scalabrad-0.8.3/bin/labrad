@@ -140,4 +140,4 @@ exec "$JAVACMD" \
      -Dprog.home="${PROG_HOME}" \
      -Dprog.version="${PROG_VERSION}" \
      org.labrad.manager.Manager "$@" \
-     --tls-hosts=awg 
+     --tls-required=false
