@@ -201,6 +201,15 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         return self._check_err(*awg_id_list)
 
 
+    def version(self):
+        """AWG のバージョンを取得する
+
+        Returns:
+            string: バージョンを表す文字列
+        """
+        return self._version()
+
+
     def _validate_ip_addr(self, ip_addr):
         try:
             if ip_addr != 'localhost':
@@ -267,6 +276,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _check_err(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _version(self):
         pass
 
 
@@ -550,3 +563,13 @@ class AwgCtrl(AwgCtrlBase):
                 awg_to_err[awg_id] = err_list
         
         return awg_to_err
+
+
+    def _version(self):
+        data = self.__reg_access.read(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.VERSION)
+        ver_char = chr(0xFF & (data >> 24))
+        ver_year = str(0xFF & (data >> 16))
+        ver_month = str(0xF & (data >> 12))
+        ver_day = str(0xFF & (data >> 4))
+        ver_id = 0xF & data
+        return '{}:20{}/{}/{}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)

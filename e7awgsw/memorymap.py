@@ -3,6 +3,7 @@ class AwgMasterCtrlRegs(object):
     ADDR = 0x0
 
     class Offset(object):
+        VERSION             = 0x0
         CTRL_TARGET_SEL     = 0x4
         CTRL                = 0x8
         WAKEUP_STATUS       = 0xC
@@ -158,6 +159,7 @@ class CaptureMasterCtrlRegs(object):
     ADDR = 0x0
 
     class Offset(object):
+        VERSION         = 0x0
         TRIG_AWG_SEL_0  = 0x4
         TRIG_AWG_SEL_1  = 0x8
         AWG_TRIG_MASK   = 0xC

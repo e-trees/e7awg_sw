@@ -237,6 +237,15 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         return self._check_err(*capture_unit_id_list)
 
 
+    def version(self):
+        """キャプチャユニットのバージョンを取得する
+
+        Returns:
+            string: バージョンを表す文字列
+        """
+        return self._version()
+
+
     def _validate_ip_addr(self, ip_addr):
         try:
             if ip_addr != 'localhost':
@@ -319,6 +328,9 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     def _check_err(self, *capture_unit_id_list):
         pass
 
+    @abstractmethod
+    def _version(self):
+        pass
 
 class CaptureCtrl(CaptureCtrlBase):
 
@@ -651,3 +663,13 @@ class CaptureCtrl(CaptureCtrlBase):
         sum_end_word_no = min(param.sum_start_word_no + param.num_words_to_sum - 1, num_words_in_sum_sec - 1)
         num_sum_words = sum_end_word_no - max(0, param.sum_start_word_no) + 1
         return max(num_sum_words, 0)
+
+    
+    def _version(self):
+        data = self.__reg_access.read(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.VERSION)
+        ver_char = chr(0xFF & (data >> 24))
+        ver_year = str(0xFF & (data >> 16))
+        ver_month = str(0xF & (data >> 12))
+        ver_day = str(0xFF & (data >> 4))
+        ver_id = 0xF & data
+        return '{}:20{}/{}/{}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)

@@ -162,6 +162,17 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(awg_id_to_err_list)
 
 
+    @setting(111, handle='s', returns='y')
+    def awg_version(self, c, handle):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            version = awgctrl.version()
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(version)
+
+
     @setting(200, returns='y')
     def create_capturectrl(self, c, ipaddr):
         try:
@@ -173,7 +184,7 @@ class QubeServer(ThreadedServer):
             return pickle.dumps(e)
 
         return pickle.dumps(str(handle))
-
+        
 
     @setting(201, handle='s', returns='y')
     def discard_capturectrl(self, c, handle):
@@ -309,6 +320,17 @@ class QubeServer(ThreadedServer):
             return pickle.dumps(e)
 
         return pickle.dumps(cap_unit_id_to_err_list)
+
+
+    @setting(213, handle='s', returns='y')
+    def capture_unit_version(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            version = capturectrl.version()
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(version)
 
 
 __server__ = QubeServer()

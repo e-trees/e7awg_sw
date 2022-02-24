@@ -177,6 +177,15 @@ class RemoteAwgCtrl(AwgCtrlBase):
             raise
 
 
+    def _version(self):
+        try:
+            result = self.__server.awg_version(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def __decode_and_check(self, data):
         data = pickle.loads(data)
         if isinstance(data, Exception):
