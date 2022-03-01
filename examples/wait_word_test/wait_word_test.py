@@ -142,7 +142,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         capture_units = CaptureModule.get_units(*capture_modules)
         # 初期化
         awg_ctrl.initialize(*awgs)
-        cap_ctrl.initialize(*capture_modules)
+        cap_ctrl.initialize(*capture_units)
         # トリガ AWG の設定
         set_trigger_awg(cap_ctrl, awgs[0], capture_modules)
         # 波形シーケンスの設定

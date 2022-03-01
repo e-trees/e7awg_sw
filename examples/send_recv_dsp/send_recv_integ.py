@@ -15,7 +15,7 @@ from e7awgsw.labrad import *
 
 SAVE_DIR = "result_send_recv_integ/"
 IP_ADDR = '10.0.0.16'
-CAPTURE_DELAY = 100 # cpature words = cycyles@125MHz 
+ADDITIONAL_CAPTURE_DELAY = 0 # cpature words = cycyles@125MHz 
 
 wave_params = namedtuple(
     'WaveParams',
@@ -24,7 +24,7 @@ wave_params = namedtuple(
      'ctrl_wave_len',
      'readout_freq',
      'readout_wave_len',
-     'num_readout_blank',
+     'readout_blank_len',
      'num_chunk_repeats'))
 
 awg_list = namedtuple(
@@ -98,9 +98,10 @@ def gen_readout_wave_seq(params, i_samples, q_samples):
     readout 波形シーケンス作成
     """
     iq_samples = IqWave.convert_to_iq_format(i_samples, q_samples, WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK)
-    num_added_samples = len(iq_samples) - len(i_samples) # 付加された 0 データは, ブランク波形の一部とする
+    # I/Q サンプルに付加された 0 データの分 readout 波形のブランクを短くする
+    num_added_samples = len(iq_samples) - len(i_samples)
     num_blank_samples = max(
-        int(AwgCtrl.SAMPLING_RATE * params.num_readout_blank / 1e3) - num_added_samples, 0)
+        int(AwgCtrl.SAMPLING_RATE * params.readout_blank_len / 1e3) - num_added_samples, 0)
     num_blank_words = num_blank_samples // WaveSequence.NUM_SAMPLES_IN_AWG_WORD
 
     wave_seq = WaveSequence(num_wait_words = params.num_wait_words, num_repeats = 1)
@@ -122,6 +123,15 @@ def set_wave_sequence(awg_ctrl, params):
     ctrl_wave_seq = gen_ctrl_wave_seq(
         params, ro_wave_seq.chunk(0).num_samples, ctrl_i_samples, ctrl_q_samples)
 
+    print(ctrl_wave_seq.chunk(0).num_repeats)
+    print(ro_wave_seq.chunk(0).num_repeats)
+    s = (ctrl_wave_seq.num_all_words - ctrl_wave_seq.num_wait_words) // ctrl_wave_seq.chunk(0).num_repeats
+    p = (ro_wave_seq.num_all_words - ro_wave_seq.num_wait_words) // ro_wave_seq.chunk(0).num_repeats
+    #print('ctrl wave chunk', s, '  ', len(ctrl_i_samples))
+    #print('ro wave chunk', p, '  ', len(ro_i_samples))
+    print('ctrl wave chunk', s*4 - len(ctrl_i_samples), '  ', len(ctrl_i_samples))
+    print('ro wave chunk', p*4 - len(ro_i_samples), '  ', len(ro_i_samples))
+
     # control 波形と readout 波形の長さが一致することを確認
     assert ctrl_wave_seq.num_all_words == ro_wave_seq.num_all_words
 
@@ -137,29 +147,32 @@ def set_wave_sequence(awg_ctrl, params):
     }
 
 
-def set_capture_params(cap_ctrl, wave_seq, capture_units):
-    capture_param = gen_capture_param(wave_seq)
+def set_capture_params(cap_ctrl, ctrl_wave_seq, ro_wave_seq, capture_units):
+    capture_param = gen_capture_param(ctrl_wave_seq, ro_wave_seq)
     for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
 
-def gen_capture_param(wave_seq):
+def gen_capture_param(ctrl_wave_seq, ro_wave_seq):
     capture_param = CaptureParam()
-    capture_param.num_integ_sections = wave_seq.chunk(0).num_repeats # 積算区間数
+    capture_param.num_integ_sections = ro_wave_seq.chunk(0).num_repeats # 積算区間数
 
     # readout 波形の長さから, 追加で 1us キャプチャするためのキャプチャワード数を計算
     additional_capture_words = int(1e-6 * CaptureCtrl.SAMPLING_RATE) // CaptureParam.NUM_SAMPLES_IN_ADC_WORD
-    additional_capture_words = min(additional_capture_words, wave_seq.chunk(0).num_blank_words - 1)
+    additional_capture_words = min(additional_capture_words, ro_wave_seq.chunk(0).num_blank_words - 1)
 
-    sum_section_len = wave_seq.chunk(0).num_words - wave_seq.chunk(0).num_blank_words + additional_capture_words
-    num_blank_words = wave_seq.chunk(0).num_words - sum_section_len
+    sum_section_len = ro_wave_seq.chunk(0).num_words - ro_wave_seq.chunk(0).num_blank_words + additional_capture_words
+    num_blank_words = ro_wave_seq.chunk(0).num_words - sum_section_len
+    print('aa  ', sum_section_len, num_blank_words)
     capture_param.add_sum_section(sum_section_len, num_blank_words)
     capture_param.sum_start_word_no = 0
     capture_param.num_words_to_sum = CaptureParam.MAX_SUM_SECTION_LEN
     capture_param.sel_dsp_units_to_enable(DspUnit.INTEGRATION)
-    capture_param.capture_delay = CAPTURE_DELAY
+    capture_param.capture_delay = ctrl_wave_seq.num_wait_words + ctrl_wave_seq.chunk(0).num_wave_words
+    capture_param.capture_delay += ADDITIONAL_CAPTURE_DELAY
+    print('cap delay ', capture_param.capture_delay)
     # readout 波形のサンプル数とキャプチャするサンプル数が一致することを確認
-    assert wave_seq.num_all_samples == capture_param.num_samples_to_process
+    assert ro_wave_seq.num_all_samples == capture_param.num_samples_to_process
     return capture_param
 
 
@@ -242,7 +255,11 @@ def main(wave_params, capture_modules, use_labrad, server_ip_addr):
         # 波形シーケンスの設定
         awg_to_wave_sequence = set_wave_sequence(awg_ctrl, wave_params)
         # キャプチャパラメータの設定
-        set_capture_params(cap_ctrl, awg_to_wave_sequence[AWG_LIST.readout_awg_0], capture_units)
+        set_capture_params(
+            cap_ctrl,
+            awg_to_wave_sequence[AWG_LIST.ctrl_awg_0],
+            awg_to_wave_sequence[AWG_LIST.readout_awg_0],
+            capture_units)
         # 波形送信スタート
         awg_ctrl.start_awgs(*AWG_LIST)
         # 波形送信完了待ち
@@ -270,7 +287,7 @@ if __name__ == "__main__":
     parser.add_argument('--labrad', action='store_true')
     args = parser.parse_args()
 
-    ctrl_wave_len = 10
+    ctrl_wave_len = 100
     if args.wavelen is not None:
         ctrl_wave_len = int(args.wavelen)
 
@@ -291,7 +308,7 @@ if __name__ == "__main__":
         ctrl_wave_len = ctrl_wave_len, # ns
         readout_freq = 100, # MHz,
         readout_wave_len = 2000, # ns,
-        num_readout_blank = 0.1, # ms
+        readout_blank_len = 0.1, # ms
         num_chunk_repeats = 10000, # 積算回数
     )
 

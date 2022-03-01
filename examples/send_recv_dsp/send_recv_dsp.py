@@ -38,7 +38,7 @@ def gen_cos_wave(freq, num_cycles, amp):
     num_samples = int(num_cycles * AwgCtrl.SAMPLING_RATE / (freq * 1e6))
     i_data =  [int(amp * math.cos(i * dt)) for i in range(num_samples)]
     q_data =  [int(amp * math.sin(i * dt)) for i in range(num_samples)]
-    return list(zip(i_data, q_data))
+    return IqWave.convert_to_iq_format(i_data, q_data, WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK)
 
 
 def gen_wave_seq():
@@ -47,20 +47,14 @@ def gen_wave_seq():
         num_repeats = NUM_WAVE_SEQ_REPEATS)
 
     num_chunks = 1
-    samples = gen_cos_wave(4.8, NUM_WAVE_CYCLES, 32760)
-    for i in range(num_chunks):
-        # 1 波形チャンクのサンプル数は 64 の倍数でなければならない
-        num_samples_in_wblcok = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK
-        if len(samples) % num_samples_in_wblcok != 0:
-            additional_samples = num_samples_in_wblcok - (len(samples) % num_samples_in_wblcok)
-            samples.extend([(0, 0)] * additional_samples)
-
+    samples = gen_cos_wave(5.0, NUM_WAVE_CYCLES, 32760)
+    for _ in range(num_chunks):
         wave_seq.add_chunk(
-            iq_samples = samples, # 50MHz cos x512
+            iq_samples = samples, # 10.0MHz cos x512
             num_blank_words = 0, 
             num_repeats = 1)
     return wave_seq
-
+ 
 
 def set_wave_sequence(awg_ctrl):
     awg_to_wave_sequence = {}
@@ -81,10 +75,9 @@ def gen_capture_param(wave_seq):
     capture_param = CaptureParam()
     capture_param.num_integ_sections = wave_seq.num_repeats
 
-    num_sum_sections = NUM_WAVE_CYCLES * 2 
     wave_words = (wave_seq.num_all_words -  wave_seq.num_wait_words)
-    sum_section_len = wave_words // wave_seq.num_repeats // num_sum_sections  # 出力する余弦波の半周期分を総和区間とする
-    for _ in range(num_sum_sections):
+    sum_section_len = wave_words // wave_seq.num_repeats // NUM_WAVE_CYCLES  # 出力する余弦波の1周期分を総和区間とする
+    for _ in range(NUM_WAVE_CYCLES):
         # 総和区間長が 6 ワード以下の場合 decimation から値が出てこなくなるので 7 ワード以上を指定する
         capture_param.add_sum_section(sum_section_len - 1, 1)
     # 総和範囲の指定
@@ -104,6 +97,7 @@ def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
     for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
+        print(num_captured_samples)
         capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
     return capture_unit_to_capture_data
 

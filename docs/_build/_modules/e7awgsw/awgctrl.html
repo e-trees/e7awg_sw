@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -180,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -192,7 +194,6 @@
             
   <h1>e7awgsw.awgctrl のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">fcntl</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">.wavesequence</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
@@ -200,6 +201,7 @@
 <span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="AwgCtrlBase"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgCtrlBase</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span> <span class="o">=</span> <span class="n">ABCMeta</span><span class="p">):</span>
     <span class="c1">#: AWG のサンプリングレート (単位=サンプル数/秒)</span>
@@ -394,6 +396,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_err</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="AwgCtrlBase.version"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.version">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;AWG のバージョンを取得する</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            string: バージョンを表す文字列</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">()</span></div>
+
+
     <span class="k">def</span> <span class="nf">_validate_ip_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip_addr</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ip_addr</span> <span class="o">!=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">:</span>
@@ -460,6 +471,10 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_check_err</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
@@ -498,7 +513,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span> <span class="o">=</span> <span class="n">AwgRegAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">AWG_REG_PORT</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span> <span class="o">=</span> <span class="n">WaveRamAccess</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>        
         <span class="n">filepath</span> <span class="o">=</span> <span class="s1">&#39;/tmp/e7awg_</span><span class="si">{}</span><span class="s1">.lock&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">inet_ntoa</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">ip_addr</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span> <span class="o">=</span> <span class="n">ReentrantFileLock</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -517,12 +532,10 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="o">.</span><span class="n">discard</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
     <span class="k">def</span> <span class="nf">_set_wave_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">):</span>
@@ -589,47 +602,44 @@
 
     <span class="k">def</span> <span class="nf">__select_ctrl_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;一括制御を有効にする AWG を選択する&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL_TARGET_SEL</span><span class="p">,</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__unlock</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL_TARGET_SEL</span><span class="p">,</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">__deselect_ctrl_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;一括制御を無効にする AWG を選択する&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL_TARGET_SEL</span><span class="p">,</span>
-                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__unlock</span><span class="p">()</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL_TARGET_SEL</span><span class="p">,</span>
+                    <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_start_awgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__wait_for_awgs_ready</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__wait_for_awgs_ready</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_PREPARE</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-            <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__unlock</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_START</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_terminate_awgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
@@ -750,22 +760,14 @@
         <span class="k">return</span> <span class="n">awg_to_err</span>
 
 
-    <span class="k">def</span> <span class="nf">__lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># ロック対象のファイルのディスクリプタが同じだと flock が再入可能になるので, 同じディスクリプタでロックをとる</span>
-            <span class="c1"># スレッド間の排他制御には使えない点に注意.</span>
-            <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_EX</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
-            <span class="k">raise</span>
-
-
-    <span class="k">def</span> <span class="nf">__unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
-            <span class="k">raise</span></div>
+    <span class="k">def</span> <span class="nf">_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">VERSION</span><span class="p">)</span>
+        <span class="n">ver_char</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0xFF</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">))</span>
+        <span class="n">ver_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mh">0xFF</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">))</span>
+        <span class="n">ver_month</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mh">0xF</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">12</span><span class="p">))</span>
+        <span class="n">ver_day</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mh">0xFF</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">ver_id</span> <span class="o">=</span> <span class="mh">0xF</span> <span class="o">&amp;</span> <span class="n">data</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">:20</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ver_char</span><span class="p">,</span> <span class="n">ver_year</span><span class="p">,</span> <span class="n">ver_month</span><span class="p">,</span> <span class="n">ver_day</span><span class="p">,</span> <span class="n">ver_id</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

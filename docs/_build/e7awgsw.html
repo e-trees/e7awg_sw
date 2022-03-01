@@ -166,6 +166,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -201,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -436,6 +438,22 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*awg_id_list</strong> (<em>list of AWG</em>) -- 強制終了する AWG の ID</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.version">
+<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.version" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG のバージョンを取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">バージョンを表す文字列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
@@ -1198,6 +1216,22 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- キャプチャを開始するキャプチャユニットの ID</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.version">
+<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.version" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャユニットのバージョンを取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">バージョンを表す文字列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">string</td>
 </tr>
 </tbody>
 </table>
@@ -2032,6 +2066,36 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-e7awgsw.lock">
+<span id="e7awgsw-lock-module"></span><h2>e7awgsw.lock module<a class="headerlink" href="#module-e7awgsw.lock" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.lock.</span></code><code class="sig-name descname"><span class="pre">ReentrantFileLock</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>スレッド間, プロセス間排他可能なファイルロック</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.acquire">
+<code class="sig-name descname"><span class="pre">acquire</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.acquire"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.acquire" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.discard">
+<code class="sig-name descname"><span class="pre">discard</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.discard"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.discard" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.release">
+<code class="sig-name descname"><span class="pre">release</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.release"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.release" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-e7awgsw.utiltool">
 <span id="e7awgsw-utiltool-module"></span><h2>e7awgsw.utiltool module<a class="headerlink" href="#module-e7awgsw.utiltool" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py function">
@@ -2130,6 +2194,43 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">この波形チャンクのサンプル数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveChunk.num_wave_samples">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">num_wave_samples</span></code><a class="headerlink" href="#e7awgsw.wavesequence.WaveChunk.num_wave_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>この波形チャンクの有波形部のサンプル数</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">この波形チャンクの有波形部のサンプル数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveChunk.num_wave_words">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">num_wave_words</span></code><a class="headerlink" href="#e7awgsw.wavesequence.WaveChunk.num_wave_words" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>この波形チャンクの有波形部の長さ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
+<div class="line">この波形チャンクの有波形部の長さ</div>
+<div class="line">単位は AWG ワード数.</div>
+<div class="line">1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</div>
+</div>
+</td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
 </tr>

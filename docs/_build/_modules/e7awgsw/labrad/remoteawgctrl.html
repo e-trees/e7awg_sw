@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -180,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -228,7 +230,8 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_ip_addr</span><span class="p">(</span><span class="n">remote_server_ip_addr</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__client</span> <span class="o">=</span> <span class="n">labrad</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">remote_server_ip_addr</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__client</span> <span class="o">=</span> <span class="n">labrad</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">remote_server_ip_addr</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">7682</span><span class="p">,</span> <span class="n">tls_mode</span><span class="o">=</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__client</span><span class="o">.</span><span class="n">awg_capture_server</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awg_ctrl_handler</span><span class="p">(</span><span class="n">awg_ctrl_ip_addr</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -363,6 +366,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">awg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">]</span>
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server</span><span class="o">.</span><span class="n">check_awg_err</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handler</span><span class="p">,</span> <span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decode_and_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+
+    <span class="k">def</span> <span class="nf">_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server</span><span class="o">.</span><span class="n">awg_version</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handler</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decode_and_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>

@@ -61,7 +61,7 @@ class WaveSequence(object):
                 | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)
             num_blank_words (int): 
                 | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.
-                | 単位は AWG ワード数.
+                | 単位は AWG ワード.
                 | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
             num_repeats (int): 追加する波形チャンクを繰り返す回数
         """
@@ -152,7 +152,7 @@ class WaveSequence(object):
     def num_wait_words(self):
         """波形シーケンスの先頭に付く 0 データの長さ.
         
-        | 単位は AWG ワード数.
+        | 単位は AWG ワード.
         | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
 
         Returns:
@@ -380,7 +380,7 @@ class WaveChunk(object):
         Returns:
             int: 
                 | この波形チャンクのポストブランクの長さ.
-                | 単位は AWG ワード数.
+                | 単位は AWG ワード.
                 | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
         """
         return self.__num_blank_words
@@ -393,6 +393,27 @@ class WaveChunk(object):
             int: この波形チャンクのポストブランクのサンプル数
         """
         return self.num_blank_words * NUM_SAMPLES_IN_AWG_WORD
+
+    @property
+    def num_wave_words(self):
+        """この波形チャンクの有波形部の長さ
+        
+        Returns:
+            int: 
+                | この波形チャンクの有波形部の長さ
+                | 単位は AWG ワード.
+                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
+        """
+        return self.__wave_data.num_bytes // AWG_WORD_SIZE
+
+    @property
+    def num_wave_samples(self):
+        """この波形チャンクの有波形部のサンプル数
+        
+        Returns:
+            int: この波形チャンクの有波形部のサンプル数
+        """
+        return self.num_wave_words * NUM_SAMPLES_IN_AWG_WORD
 
     @property
     def num_repeats(self):
@@ -412,7 +433,7 @@ class WaveChunk(object):
         Returns:
             int: この波形チャンクのワード数
         """
-        return self.__wave_data.num_bytes // AWG_WORD_SIZE + self.__num_blank_words
+        return self.num_wave_words + self.num_blank_words
 
     @property
     def num_samples(self):

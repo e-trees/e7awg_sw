@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -180,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -355,6 +357,17 @@
         <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">awg_id_to_err_list</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="QubeServer.awg_version"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.QubeServer.awg_version">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">awg_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">awgctrl</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="QubeServer.create_capturectrl"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.QubeServer.create_capturectrl">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">create_capturectrl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">ipaddr</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -366,7 +379,7 @@
             <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">handle</span><span class="p">))</span></div>
-
+        
 
 <div class="viewcode-block" id="QubeServer.discard_capturectrl"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.QubeServer.discard_capturectrl">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">discard_capturectrl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
@@ -501,7 +514,18 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_unit_id_to_err_list</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_unit_id_to_err_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QubeServer.capture_unit_version"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.QubeServer.capture_unit_version">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">213</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">capture_unit_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div></div>
 
 
 <span class="n">__server__</span> <span class="o">=</span> <span class="n">QubeServer</span><span class="p">()</span>

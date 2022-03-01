@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>QuBE Python Library - e7awgsw.exception</title>
+<title>QuBE Python Library - e7awgsw.lock</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
@@ -58,8 +58,8 @@
 
       </div>
       <div id="hdr-centre" class="text-center stretch">
-        <h3 title="e7awgsw.exception">e7awgsw.exception</h3>
-        <h6>e7awgsw.exception</h6>
+        <h3 title="e7awgsw.lock">e7awgsw.lock</h3>
+        <h6>e7awgsw.lock</h6>
       </div>
       <div id="hdr-search">
         
@@ -192,13 +192,45 @@
           </div>
           <div class="body">
             
-  <h1>e7awgsw.exception のソースコード</h1><div class="highlight"><pre>
-<span></span>
-<div class="viewcode-block" id="AwgTimeoutError"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.exception.AwgTimeoutError">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgTimeoutError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+  <h1>e7awgsw.lock のソースコード</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">fcntl</span>
+<span class="kn">import</span> <span class="nn">threading</span>
 
-<div class="viewcode-block" id="CaptureUnitTimeoutError"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.exception.CaptureUnitTimeoutError">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureUnitTimeoutError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<div class="viewcode-block" id="ReentrantFileLock"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.lock.ReentrantFileLock">[ドキュメント]</a><span class="k">class</span> <span class="nc">ReentrantFileLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;スレッド間, プロセス間排他可能なファイルロック&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ReentrantFileLock.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.lock.ReentrantFileLock.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="n">exist_ok</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_holds</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__rlock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReentrantFileLock.acquire"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.lock.ReentrantFileLock.acquire">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__rlock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_holds</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_EX</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReentrantFileLock.release"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.lock.ReentrantFileLock.release">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_holds</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_holds</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fcntl</span><span class="o">.</span><span class="n">flock</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">LOCK_UN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__rlock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReentrantFileLock.discard"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.lock.ReentrantFileLock.discard">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">discard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__lock_fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    
+    
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 </pre></div>
 
           </div>

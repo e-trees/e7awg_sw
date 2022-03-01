@@ -145,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -180,6 +181,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -588,6 +590,27 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_wave_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;この波形チャンクの有波形部の長さ</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: </span>
+<span class="sd">                | この波形チャンクの有波形部の長さ</span>
+<span class="sd">                | 単位は AWG ワード数.</span>
+<span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span><span class="o">.</span><span class="n">num_bytes</span> <span class="o">//</span> <span class="n">AWG_WORD_SIZE</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_wave_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;この波形チャンクの有波形部のサンプル数</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: この波形チャンクの有波形部のサンプル数</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wave_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;この波形チャンクを繰り返す回数</span>
 <span class="sd">        </span>
@@ -605,7 +628,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: この波形チャンクのワード数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span><span class="o">.</span><span class="n">num_bytes</span> <span class="o">//</span> <span class="n">AWG_WORD_SIZE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blank_words</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wave_words</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_blank_words</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
