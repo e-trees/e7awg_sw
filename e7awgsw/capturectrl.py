@@ -492,7 +492,7 @@ class CaptureCtrl(CaptureCtrlBase):
         num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE * self.__CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
         samples = [rd_data[i : i + CAPTURED_SAMPLE_SIZE // 2] for i in range(0, num_bytes, CAPTURED_SAMPLE_SIZE // 2)]
-        samples = [struct.unpack('<d', sample)[0] for sample in samples]
+        samples = [struct.unpack('<f', sample)[0] for sample in samples]
         samples = samples[0:num_samples * 2]
         return list(zip(samples[0::2], samples[1::2]))
 
@@ -634,13 +634,13 @@ class CaptureCtrl(CaptureCtrlBase):
             if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
                 msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
                        .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
-                log_error(msg, *self.__loggers)
+                log_error(msg, *self._loggers)
                 raise ValueError(msg)
         
         elif num_cap_samples > self.MAX_CAPTURE_SAMPLES:
             msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
                    .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_cap_samples))
-            log_error(msg, *self.__loggers)
+            log_error(msg, *self._loggers)
             raise ValueError(msg)
 
         if DspUnit.SUM in dsp_units_enabled:
@@ -651,7 +651,7 @@ class CaptureCtrl(CaptureCtrlBase):
                            .format(sum_sec_no, capture_unit_id))
                     msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
                             .format(CaptureParam.MAX_SUM_RAMGE_LEN, num_words_to_sum))
-                    log_warning(msg, *self.__loggers)
+                    log_warning(msg, *self._loggers)
                     print('WARNING: ' + msg)
 
 

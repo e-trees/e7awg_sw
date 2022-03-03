@@ -1,6 +1,6 @@
 import pathlib
 import sys
-import struct
+import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
@@ -75,8 +75,8 @@ def dsp(samples, capture_param):
 
     i_samples = sum(i_samples_list, [])
     q_samples = sum(q_samples_list, [])
-    i_samples = [int_to_float(i_sample) for i_sample in i_samples]
-    q_samples = [int_to_float(q_sample) for q_sample in q_samples]
+    i_samples = [float(int_to_float(i_sample)) for i_sample in i_samples]
+    q_samples = [float(int_to_float(q_sample)) for q_sample in q_samples]
     return list(zip(i_samples, q_samples))
 
 
@@ -202,17 +202,18 @@ def integration(sample_list, num_sum_sections, num_integ_sections):
         result.append(integ_list)
     return result
 
-def double_to_raw_bits(val):
-    ba = list(bytearray(struct.pack("d", val)))
-    return int.from_bytes(ba, 'little')
 
-def rawbits_to_double(val):
-    val = val.to_bytes(8, 'little')
-    return struct.unpack('d', val)[0]
+def float_to_raw_bits(val):
+    return int.from_bytes(val.tobytes(), 'little')
+
+
+def rawbits_to_float(val):
+    return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
+
 
 def int_to_float(val):
     if val == 0:
-        return 0.0
+        return np.float32(0)
 
     negative = False
     val = val & 0xFFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
@@ -220,18 +221,18 @@ def int_to_float(val):
         negative = True
         val = -val
 
-    dval0 = float(val & 0xFFFFFFFF_FFFFFFFF)
-    dval1 = float((val >> 64) & 0xFFFF_FFFFFFFFFF)
-    raw_val0 = double_to_raw_bits(dval0)
-    raw_val1 = double_to_raw_bits(dval1)
-    exp0 = ((raw_val0 >> 52) - 30) & 0x7FF
-    exp1 = ((raw_val1 >> 52) + 34) & 0x7FF
-    raw_val0 = (raw_val0 & 80000000_00000000) | (exp0 << 52) | (raw_val0 & 0xFFF_FFFFFFFFFF)
-    raw_val1 = (raw_val1 & 80000000_00000000) | (exp1 << 52) | (raw_val1 & 0xFFF_FFFFFFFFFF)
-    raw_val0 &= 0xFFFFFFFFFFFFFFFF
-    raw_val1 &= 0xFFFFFFFFFFFFFFFF
-    dval0 = rawbits_to_double(raw_val0)
-    dval1 = rawbits_to_double(raw_val1)
+    dval0 = np.float32(val & 0xFFFFFFFF_FFFFFFFF)
+    dval1 = np.float32((val >> 64) & 0xFFFF_FFFFFFFFFF)
+    raw_val0 = float_to_raw_bits(dval0)
+    raw_val1 = float_to_raw_bits(dval1)
+    exp0 = ((raw_val0 >> 23) - 30) & 0xFF
+    exp1 = ((raw_val1 >> 23) + 34) & 0xFF
+    raw_val0 = (raw_val0 & 0x80000000) | (exp0 << 23) | (raw_val0 & 0x7FFFFF)
+    raw_val1 = (raw_val1 & 0x80000000) | (exp1 << 23) | (raw_val1 & 0x7FFFFF)
+    raw_val0 &= 0xFFFFFFFF
+    raw_val1 &= 0xFFFFFFFF
+    dval0 = rawbits_to_float(raw_val0)
+    dval1 = rawbits_to_float(raw_val1)
     if negative:
         return -(dval0 + dval1)
     return dval0 + dval1
