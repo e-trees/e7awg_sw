@@ -16,8 +16,8 @@ ADC_WORD_SIZE = 16
 ADC_SAMPLE_SIZE = 4
 # キャプチャユニットが 1 サイクルで取得するサンプル数
 NUM_SAMPLES_IN_ADC_WORD = ADC_WORD_SIZE // ADC_SAMPLE_SIZE
-# メモリに保存されたサンプルのサイズ (単位 : bytes,  I = 64 bit,  Q = 64 bit)
-CAPTURED_SAMPLE_SIZE = 16
+# メモリに保存されたサンプルのサイズ (単位 : bytes,  I = 32 bit,  Q = 32 bit)
+CAPTURED_SAMPLE_SIZE = 8
 # 1 キャプチャモジュールが保存可能なデータサイズ (bytes)
 MAX_CAPTURE_SIZE = 256 * 1024 * 1024
 # 積算ユニットが保持できる積算値の最大数
