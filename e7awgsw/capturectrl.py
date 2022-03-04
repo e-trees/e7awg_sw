@@ -646,11 +646,11 @@ class CaptureCtrl(CaptureCtrlBase):
         if DspUnit.SUM in dsp_units_enabled:
             for sum_sec_no in range(param.num_sum_sections):
                 num_words_to_sum = self.__calc_num_words_in_sum_range(sum_sec_no, param)
-                if num_words_to_sum > CaptureParam.MAX_SUM_RAMGE_LEN:
+                if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN:
                     msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
                            .format(sum_sec_no, capture_unit_id))
                     msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
-                            .format(CaptureParam.MAX_SUM_RAMGE_LEN, num_words_to_sum))
+                            .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
                     log_warning(msg, *self._loggers)
                     print('WARNING: ' + msg)
 
