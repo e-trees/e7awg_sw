@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'QuBE Python Library'
+project = 'e7awg Software Library'
 copyright = '2021, e-trees.Japan'
 author = 'e-trees.Japan'
 

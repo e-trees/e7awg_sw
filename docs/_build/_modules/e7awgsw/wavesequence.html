@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>QuBE Python Library - e7awgsw.wavesequence</title>
+<title>e7awg Software Library - e7awgsw.wavesequence</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
@@ -54,7 +54,7 @@
       <div id="hdr-left">
         <i class="fa fa-bars menu-toggle"></i>
         
-<a href="../../index.html" class="text-logo">QuBE Python Library 1.0.0 ドキュメント</a>
+<a href="../../index.html" class="text-logo">e7awg Software Library 1.0.0 ドキュメント</a>
 
       </div>
       <div id="hdr-centre" class="text-center stretch">
@@ -256,7 +256,7 @@
 <span class="sd">                | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)</span>
 <span class="sd">            num_blank_words (int): </span>
 <span class="sd">                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</span>
-<span class="sd">                | 単位は AWG ワード数.</span>
+<span class="sd">                | 単位は AWG ワード.</span>
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">            num_repeats (int): 追加する波形チャンクを繰り返す回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -347,7 +347,7 @@
     <span class="k">def</span> <span class="nf">num_wait_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;波形シーケンスの先頭に付く 0 データの長さ.</span>
 <span class="sd">        </span>
-<span class="sd">        | 単位は AWG ワード数.</span>
+<span class="sd">        | 単位は AWG ワード.</span>
 <span class="sd">        | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 
 <span class="sd">        Returns:</span>
@@ -575,7 +575,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: </span>
 <span class="sd">                | この波形チャンクのポストブランクの長さ.</span>
-<span class="sd">                | 単位は AWG ワード数.</span>
+<span class="sd">                | 単位は AWG ワード.</span>
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blank_words</span>
@@ -596,7 +596,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: </span>
 <span class="sd">                | この波形チャンクの有波形部の長さ</span>
-<span class="sd">                | 単位は AWG ワード数.</span>
+<span class="sd">                | 単位は AWG ワード.</span>
 <span class="sd">                | 1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span><span class="o">.</span><span class="n">num_bytes</span> <span class="o">//</span> <span class="n">AWG_WORD_SIZE</span>

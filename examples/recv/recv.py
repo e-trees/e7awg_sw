@@ -109,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument('--ipaddr')
     parser.add_argument('--words')
     parser.add_argument('--capture-module')
-    parser.add_argument('--labrad')
+    parser.add_argument('--labrad', action='store_true')
     parser.add_argument('--server-ipaddr')
     args = parser.parse_args()
     

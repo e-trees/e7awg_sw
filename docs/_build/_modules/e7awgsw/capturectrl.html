@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>QuBE Python Library - e7awgsw.capturectrl</title>
+<title>e7awg Software Library - e7awgsw.capturectrl</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
@@ -54,7 +54,7 @@
       <div id="hdr-left">
         <i class="fa fa-bars menu-toggle"></i>
         
-<a href="../../index.html" class="text-logo">QuBE Python Library 1.0.0 ドキュメント</a>
+<a href="../../index.html" class="text-logo">e7awg Software Library 1.0.0 ドキュメント</a>
 
       </div>
       <div id="hdr-centre" class="text-center stretch">
@@ -687,7 +687,7 @@
         <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
         <span class="n">rd_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">],</span> <span class="n">num_bytes</span><span class="p">)</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">rd_data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)]</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;d&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">]</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;f&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">]</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_samples</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]))</span>
 
@@ -829,24 +829,24 @@
             <span class="k">if</span> <span class="n">num_integ_vec_elems</span> <span class="o">&gt;</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
-                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         
         <span class="k">elif</span> <span class="n">num_cap_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">))</span>
-            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">sum_sec_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">num_sum_sections</span><span class="p">):</span>
                 <span class="n">num_words_to_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span><span class="p">:</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.</span><span class="se">\n</span><span class="s1">&#39;</span>
                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
                     <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RAMGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
-                    <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
+                    <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
 
 
