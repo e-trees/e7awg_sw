@@ -1,4 +1,4 @@
 
 ・キャプチャサンプル数はどうやって指定しますか?
-	-> QuBE ライブラリの CaptureParam クラスの add_sum_section メソッドで指定します.
+	-> e7awgsw ライブラリの CaptureParam クラスの add_sum_section メソッドで指定します.
 

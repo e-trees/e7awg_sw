@@ -10,7 +10,7 @@ lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import *
 
-class QubeServer(ThreadedServer):
+class AwgCaptureServer(ThreadedServer):
 
     name = 'Awg Capture Server'
 
@@ -333,7 +333,7 @@ class QubeServer(ThreadedServer):
         return pickle.dumps(version)
 
 
-__server__ = QubeServer()
+__server__ = AwgCaptureServer()
 
 if __name__ == '__main__':
     util.runServer(__server__)
