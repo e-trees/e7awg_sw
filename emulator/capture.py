@@ -89,7 +89,7 @@ class CaptureUnit(object):
                     self.__state = CaptureUnitState.COMPLETE
         except Exception as e:
             print('ERR [capture_wave] : {}'.format(e), file = sys.stderr)
-            print('The e7awg_hw simulator has stopped!\n', file = sys.stderr)
+            print('The e7awg_hw emulator has stopped!\n', file = sys.stderr)
             raise
 
 
@@ -152,7 +152,7 @@ class CaptureUnit(object):
             # シミュレータの最大処理サンプル数のチェック
             if param.num_samples_to_process > self.__MAX_SAMPLES_IN_CAPTURE_SECTION:
                 raise ValueError(
-                    'No more than {} samples can be entered into the capture units in e7awg_hw simulator.\n  Tried to input {} samples.'
+                    'No more than {} samples can be entered into the capture units in e7awg_hw emulator.\n  Tried to input {} samples.'
                     .format(self.__MAX_SAMPLES_IN_CAPTURE_SECTION + 1, param.num_samples_to_process))
 
             if DspUnit.INTEGRATION in dsp_units_enabled:

@@ -53,7 +53,7 @@ class UplDispatcher:
                     raise ValueError(msg)
         except Exception as e:
             print('ERR [process_hbm_packet] : {}'.format(e), file = sys.stderr)
-            print('The e7awg_hw simulator has stopped!\n', file = sys.stderr)
+            print('The e7awg_hw emulator has stopped!\n', file = sys.stderr)
             raise
 
 
@@ -88,7 +88,7 @@ class UplDispatcher:
                     raise ValueError(msg)
         except Exception as e:
             print('ERR [process_awg_cap_packet] : {}'.format(e), file = sys.stderr)
-            print('The e7awg_hw simulator has stopped!\n', file = sys.stderr)
+            print('The e7awg_hw emulator has stopped!\n', file = sys.stderr)
             raise
 
     def __read_awg_reg(self, packet, reply_addr):
