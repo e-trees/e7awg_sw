@@ -190,8 +190,10 @@ class WaveSequence(object):
             num_chunk_words += chunk.num_words * chunk.num_repeats
         return num_chunk_words * self.__num_repeats + self.__num_wait_words
 
-    def __all_samples_lazy(self, include_wait_words = True):
+    def all_samples_lazy(self, include_wait_words = True):
         """この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)
+
+        | all_samples の遅延評価版
 
         Args:
             *include_wait_words (bool)
@@ -201,8 +203,6 @@ class WaveSequence(object):
         Returns:
             list of (int, int): 波形サンプルデータのリスト.
         """
-        if not include_wait_words:
-            return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
         return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
 
     def all_samples(self, include_wait_words = True):
@@ -289,9 +289,21 @@ class WaveSequence(object):
             else:
                 self.__num_wait_samples = 0
                 self.__len = wave_seq.num_all_samples - wave_seq.num_wait_samples
-            self.__num_repeats = wave_seq.num_repeats
+
+            self.__chunk_range_list = self.__gen_chunk_range_list(self.__chunks)
+
+            # 1 波形シーケンス当たりのサンプル数
+            self.__num_samples_in_seq = (self.__len - self.__num_wait_samples) // wave_seq.num_repeats
             self.__loggers = loggers
-            
+        
+        def __gen_chunk_range_list(self, chunks):
+            chunk_range_list = []
+            start_idx = 0
+            for chunk in chunks:
+                end_idx = start_idx + chunk.num_repeats * chunk.num_samples - 1
+                chunk_range_list.append((start_idx, end_idx))
+                start_idx = end_idx + 1
+            return chunk_range_list
 
         def __repr__(self):
             return self.__str__()
@@ -311,33 +323,41 @@ class WaveSequence(object):
         def __getitem__(self, key):
             if isinstance(key, int):
                 if key < 0:
-                    key += len(self)
-                if (key < 0) or (key >= len(self)):
+                    key += self.__len
+                if (key < 0) or (self.__len <= key):
                     msg = 'The index [{}] is out of range.'.format(key)
                     log_error(msg, *self.__loggers)
                     raise IndexError(msg)
                 if key < self.__num_wait_samples:
                     return (0, 0)
 
-                 # 1 波形シーケンス当たりのサンプル数
-                num_samples_in_seq = (self.__len - self.__num_wait_samples) // self.__num_repeats
-                key = (key - self.__num_wait_samples) % num_samples_in_seq
-                start_idx = 0
-                for chunk in self.__chunks:
-                    end_idx = start_idx + chunk.num_repeats * chunk.num_samples
-                    if (start_idx <= key) and (key < end_idx):
-                        key = (key - start_idx) % chunk.num_samples
-                        if key < chunk.num_samples - chunk.num_blank_samples:
-                            return chunk.wave_data.sample(key)
-                        else:
-                            return (0, 0)
-                    start_idx = end_idx
+                key = (key - self.__num_wait_samples) % self.__num_samples_in_seq
+                chunk, start_idx, _ = self.__find_chunk(key)
+                key = (key - start_idx) % chunk.num_samples
+                if key < chunk.wave_data.num_samples:
+                    return chunk.wave_data.sample(key)
+                else:
+                    return (0, 0)
+
             elif isinstance(key, slice):
-                return [self[i] for i in range(*key.indices(len(self)))]
+                return [self[i] for i in range(*key.indices(self.__len))]
             else:
                 msg = 'Invalid argument type.'
                 log_error(msg, *self.__loggers)
                 raise TypeError(msg)
+
+        def __find_chunk(self, idx):
+            first = 0
+            last = len(self.__chunk_range_list) - 1
+            while first <= last:
+                target = (first + last) // 2
+                start, end = self.__chunk_range_list[target]
+                if (start <= idx) and (idx <= end):
+                    return (self.__chunks[target], start, end)
+                if end < idx:
+                    first = target + 1
+                else:
+                    last = target - 1
 
         def __len__(self):
             return self.__len

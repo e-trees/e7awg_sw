@@ -3,14 +3,14 @@ from capturetestdsp import *
 import random
 import argparse
 
-def main(num_tests, capture_modules, use_labrad, server_ip_addr):
+def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr):
     random.seed(10)
 
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
         res_dir = 'result/{:03d}'.format(test_id)
-        test = CaptureTestDsp(res_dir, capture_modules, use_labrad, server_ip_addr)
+        test = CaptureTestDsp(res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr)
 
         print('-- comp fir --')
         result = test.run_test('comp_fir', DspUnit.COMPLEX_FIR)
@@ -65,6 +65,7 @@ def main(num_tests, capture_modules, use_labrad, server_ip_addr):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--num-tests')
+    parser.add_argument('--ipaddr')
     parser.add_argument('--capture-module')
     parser.add_argument('--server-ipaddr')
     parser.add_argument('--labrad', action='store_true')
@@ -74,6 +75,10 @@ if __name__ == "__main__":
     if args.num_tests is not None:
         num_tests = int(args.num_tests)
 
+    ip_addr = '10.0.0.16'
+    if args.ipaddr is not None:
+        ip_addr = args.ipaddr
+
     capture_modules = CaptureModule.all()
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
@@ -82,4 +87,9 @@ if __name__ == "__main__":
     if args.server_ipaddr is not None:
         server_ip_addr = args.server_ipaddr
 
-    main(num_tests, capture_modules, args.labrad, server_ip_addr)
+    main(
+        num_tests,
+        ip_addr,
+        capture_modules,
+        args.labrad,
+        server_ip_addr)

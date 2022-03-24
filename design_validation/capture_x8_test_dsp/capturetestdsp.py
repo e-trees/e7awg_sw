@@ -2,19 +2,18 @@ import sys
 import os
 import random
 import pathlib
-from dspmodule import dsp
 from testutil import *
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import *
 from e7awgsw.labrad import *
+from emulator.dspmodule import *
 
 class CaptureTestDsp(object):
 
-    IP_ADDR = '10.0.0.16'
-
-    def __init__(self, res_dir, capture_modules, use_labrad, server_ip_addr):
+    def __init__(self, res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr):
+        self.__ip_addr = ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
@@ -166,15 +165,15 @@ class CaptureTestDsp(object):
 
     def __create_awg_ctrl(self):
         if self.__use_labrad:
-            return RemoteAwgCtrl(self.__server_ip_addr, self.IP_ADDR)
+            return RemoteAwgCtrl(self.__server_ip_addr, self.__ip_addr)
         else:
-            return AwgCtrl(self.IP_ADDR)
+            return AwgCtrl(self.__ip_addr)
 
     def __create_cap_ctrl(self):
         if self.__use_labrad:
-            return RemoteCaptureCtrl(self.__server_ip_addr, self.IP_ADDR)
+            return RemoteCaptureCtrl(self.__server_ip_addr, self.__ip_addr)
         else:
-            return CaptureCtrl(self.IP_ADDR)
+            return CaptureCtrl(self.__ip_addr)
 
 
     def run_test(self, test_name, *dsp_units):
@@ -186,9 +185,9 @@ class CaptureTestDsp(object):
             # 波形送信スタート
             awg_ctrl.start_awgs(*self.__awg_to_capture_module.keys())
             # 波形送信完了待ち
-            awg_ctrl.wait_for_awgs_to_stop(5, *self.__awg_to_capture_module.keys())
+            awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(5, *self.__cap_units_to_test)
+            cap_ctrl.wait_for_capture_units_to_stop(1200, *self.__cap_units_to_test)
             # キャプチャデータ取得
             print('get capture data')
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)

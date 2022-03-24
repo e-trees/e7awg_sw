@@ -123,15 +123,6 @@ def set_wave_sequence(awg_ctrl, params):
     ctrl_wave_seq = gen_ctrl_wave_seq(
         params, ro_wave_seq.chunk(0).num_samples, ctrl_i_samples, ctrl_q_samples)
 
-    print(ctrl_wave_seq.chunk(0).num_repeats)
-    print(ro_wave_seq.chunk(0).num_repeats)
-    s = (ctrl_wave_seq.num_all_words - ctrl_wave_seq.num_wait_words) // ctrl_wave_seq.chunk(0).num_repeats
-    p = (ro_wave_seq.num_all_words - ro_wave_seq.num_wait_words) // ro_wave_seq.chunk(0).num_repeats
-    #print('ctrl wave chunk', s, '  ', len(ctrl_i_samples))
-    #print('ro wave chunk', p, '  ', len(ro_i_samples))
-    print('ctrl wave chunk', s*4 - len(ctrl_i_samples), '  ', len(ctrl_i_samples))
-    print('ro wave chunk', p*4 - len(ro_i_samples), '  ', len(ro_i_samples))
-
     # control 波形と readout 波形の長さが一致することを確認
     assert ctrl_wave_seq.num_all_words == ro_wave_seq.num_all_words
 
@@ -163,14 +154,12 @@ def gen_capture_param(ctrl_wave_seq, ro_wave_seq):
 
     sum_section_len = ro_wave_seq.chunk(0).num_words - ro_wave_seq.chunk(0).num_blank_words + additional_capture_words
     num_blank_words = ro_wave_seq.chunk(0).num_words - sum_section_len
-    print('aa  ', sum_section_len, num_blank_words)
     capture_param.add_sum_section(sum_section_len, num_blank_words)
     capture_param.sum_start_word_no = 0
     capture_param.num_words_to_sum = CaptureParam.MAX_SUM_SECTION_LEN
     capture_param.sel_dsp_units_to_enable(DspUnit.INTEGRATION)
     capture_param.capture_delay = ctrl_wave_seq.num_wait_words + ctrl_wave_seq.chunk(0).num_wave_words
     capture_param.capture_delay += ADDITIONAL_CAPTURE_DELAY
-    print('cap delay ', capture_param.capture_delay)
     # readout 波形のサンプル数とキャプチャするサンプル数が一致することを確認
     assert ro_wave_seq.num_all_samples == capture_param.num_samples_to_process
     return capture_param

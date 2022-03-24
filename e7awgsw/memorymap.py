@@ -228,7 +228,7 @@ class CaptureCtrlRegs(object):
 
 
 class CaptureParamRegs(object):
-    #### wave params ####
+    #### capture params ####
     class Addr(object):
         CAPTURE_0  = 0x10000
         CAPTURE_1  = 0x20000

@@ -385,10 +385,10 @@ class CaptureParam(object):
 
     @property
     def sum_start_word_no(self):
-        """積算を開始するキャプチャワードの番号
+        """総和を開始するキャプチャワードの番号
 
             | 総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,
-            | N が以下の条件を満たすキャプチャワード N が積算対象となる.
+            | N が以下の条件を満たすキャプチャワード N が総和対象となる.
             | 
             | 総和開始点 = sum_start_word_no (≧ 0)
             | 総和終了点 = sum_start_word_no + num_words_to_sum - 1 (≦ 4294967294)
@@ -396,11 +396,11 @@ class CaptureParam(object):
 
         Args:
             val (int):
-                | 各積算区間内で積算を開始するキャプチャワードの番号. (≧ 0)
+                | 各総和区間内で総和を開始するキャプチャワードの番号. (≧ 0)
                 | 間引きが有効になっている場合, 間引き後に残ったキャプチャワードのみ数える.
-                | (積算区間のキャプチャワード数 - 1) < sum_start_word_no の場合, その積算区間の積算値は算出されない.
+                | (総和区間のキャプチャワード数 - 1) < sum_start_word_no の場合, その総和区間の総和は算出されない.
         Returns:
-            int: 積算を開始するキャプチャワードの番号
+            int: 総和を開始するキャプチャワードの番号
         """
         return self.__sum_start_word_no
 
@@ -416,10 +416,10 @@ class CaptureParam(object):
 
     @property
     def num_words_to_sum(self):
-        """積算するキャプチャワード数
+        """総和するキャプチャワード数
 
             | 総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,
-            | N が以下の条件を満たすキャプチャワード N が積算対象となる.
+            | N が以下の条件を満たすキャプチャワード N が総和対象となる.
             | 
             | 総和開始点 = sum_start_word_no (≧ 0)
             | 総和終了点 = sum_start_word_no + num_words_to_sum - 1 (≦ 4294967294)
@@ -427,10 +427,10 @@ class CaptureParam(object):
 
         Args:
             val (int):
-                | 各積算区間内で積算対象とするキャプチャワードの数.
+                | 各総和区間内で総和対象とするキャプチャワードの数.
                 | 間引きが有効になっている場合, 間引き後に残ったキャプチャワードのみ数える.
         Returns:
-            int: 積算するキャプチャワード数
+            int: 総和するキャプチャワード数
         """
         return self.__num_words_to_sum
 

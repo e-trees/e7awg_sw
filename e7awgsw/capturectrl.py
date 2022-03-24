@@ -362,6 +362,8 @@ class CaptureCtrl(CaptureCtrlBase):
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        if ip_addr == 'localhost':
+            ip_addr = '127.0.0.1'
         filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
         self.__flock = ReentrantFileLock(filepath)
 
@@ -668,8 +670,8 @@ class CaptureCtrl(CaptureCtrlBase):
     def _version(self):
         data = self.__reg_access.read(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.VERSION)
         ver_char = chr(0xFF & (data >> 24))
-        ver_year = str(0xFF & (data >> 16))
-        ver_month = str(0xF & (data >> 12))
-        ver_day = str(0xFF & (data >> 4))
+        ver_year = 0xFF & (data >> 16)
+        ver_month = 0xF & (data >> 12)
+        ver_day = 0xFF & (data >> 4)
         ver_id = 0xF & data
-        return '{}:20{}/{}/{}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)
+        return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)

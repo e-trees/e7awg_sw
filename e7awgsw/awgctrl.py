@@ -316,7 +316,9 @@ class AwgCtrl(AwgCtrlBase):
         """
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
-        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)        
+        self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        if ip_addr == 'localhost':
+            ip_addr = '127.0.0.1'
         filepath = '/tmp/e7awg_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr)))
         self.__flock = ReentrantFileLock(filepath)
 
@@ -459,10 +461,10 @@ class AwgCtrl(AwgCtrlBase):
     def _reset_awgs(self, *awg_id_list):
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
-                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_START, 1, 1)
+                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_RESET, 1, 1)
             time.sleep(10e-6)
             self.__reg_access.write_bits(
-                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_START, 1, 0)
+                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
 
 
@@ -568,8 +570,8 @@ class AwgCtrl(AwgCtrlBase):
     def _version(self):
         data = self.__reg_access.read(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.VERSION)
         ver_char = chr(0xFF & (data >> 24))
-        ver_year = str(0xFF & (data >> 16))
-        ver_month = str(0xF & (data >> 12))
-        ver_day = str(0xFF & (data >> 4))
+        ver_year = 0xFF & (data >> 16)
+        ver_month = 0xF & (data >> 12)
+        ver_day = 0xFF & (data >> 4)
         ver_id = 0xF & data
-        return '{}:20{}/{}/{}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)
+        return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)

@@ -97,7 +97,6 @@ def get_capture_data(cap_ctrl, capture_units):
     capture_unit_to_capture_data = {}
     for capture_unit_id in capture_units:
         num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-        print(num_captured_samples)
         capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
     return capture_unit_to_capture_data
 
@@ -179,7 +178,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         # 波形送信完了待ち
         awg_ctrl.wait_for_awgs_to_stop(5, *awgs)
         # キャプチャ完了待ち
-        cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
+        cap_ctrl.wait_for_capture_units_to_stop(600, *capture_units)
         # エラーチェック
         check_err(awg_ctrl, cap_ctrl, awgs, capture_units)
         # キャプチャデータ取得

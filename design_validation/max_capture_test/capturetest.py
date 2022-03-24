@@ -11,9 +11,8 @@ from e7awgsw import hwparam
 
 class CaptureTest(object):
 
-    IP_ADDR = '10.0.0.16'
-
-    def __init__(self, res_dir, use_labrad, server_ip_addr):
+    def __init__(self, res_dir, ip_addr, use_labrad, server_ip_addr):
+        self.__ip_addr = ip_addr
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
@@ -102,15 +101,15 @@ class CaptureTest(object):
 
     def __create_awg_ctrl(self):
         if self.__use_labrad:
-            return RemoteAwgCtrl(self.__server_ip_addr, self.IP_ADDR)
+            return RemoteAwgCtrl(self.__server_ip_addr, self.__ip_addr)
         else:
-            return AwgCtrl(self.IP_ADDR)
+            return AwgCtrl(self.__ip_addr)
 
     def __create_cap_ctrl(self):
         if self.__use_labrad:
-            return RemoteCaptureCtrl(self.__server_ip_addr, self.IP_ADDR)
+            return RemoteCaptureCtrl(self.__server_ip_addr, self.__ip_addr)
         else:
-            return CaptureCtrl(self.IP_ADDR)
+            return CaptureCtrl(self.__ip_addr)
 
 
     def run_test(self):
@@ -127,7 +126,7 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, self.__awg)
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(5, *self.__capture_units)
+            cap_ctrl.wait_for_capture_units_to_stop(1200, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック

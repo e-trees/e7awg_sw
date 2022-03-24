@@ -18,17 +18,31 @@ file_logger.addHandler(fh)
 null_logger = getLogger('nullLibLog')
 null_logger.addHandler(logging.NullHandler())
 
+
+sh = logging.StreamHandler(sys.stderr)
+sh.setFormatter(formatter)
+stderr_logger = getLogger('stderrLog')
+stderr_logger.addHandler(sh)
+
+
 def get_file_logger():
     return file_logger
 
+
 def get_null_logger():
     return null_logger
+
+
+def get_stderr_logger():
+    return stderr_logger
+
 
 def log_error(msg, *loggers):
     for logger in loggers:
         if isinstance(msg, Exception):
             msg = '{}: {}'.format(type(msg).__name__, msg)
         logger.error(msg, stacklevel = 2)
+
 
 def log_warning(msg, *loggers):
     for logger in loggers:

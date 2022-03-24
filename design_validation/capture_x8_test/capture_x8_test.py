@@ -2,14 +2,14 @@ import argparse
 from capturetest import *
 
 
-def main(num_tests, capture_modules, use_labrad, server_ip_addr, res_root_dir):
+def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, res_root_dir):
 
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
         res_dir = '{}/{:03d}'.format(res_root_dir, test_id)
         result = CaptureTest(
-            res_dir, capture_modules, use_labrad, server_ip_addr).run_test()
+            res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr).run_test()
         if not result:
             print('failure')
             failed_tests.append(test_id)
@@ -26,6 +26,7 @@ def main(num_tests, capture_modules, use_labrad, server_ip_addr, res_root_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--num-tests')
+    parser.add_argument('--ipaddr')
     parser.add_argument('--capture-module')
     parser.add_argument('--server-ipaddr')
     parser.add_argument('--labrad', action='store_true')
@@ -35,6 +36,10 @@ if __name__ == "__main__":
     num_tests = 10
     if args.num_tests is not None:
         num_tests = int(args.num_tests)
+
+    ip_addr = '10.0.0.16'
+    if args.ipaddr is not None:
+        ip_addr = args.ipaddr
 
     capture_modules = CaptureModule.all()
     if args.capture_module is not None:
@@ -50,6 +55,7 @@ if __name__ == "__main__":
 
     status = main(
         num_tests,
+        ip_addr,
         capture_modules,
         args.labrad,
         server_ip_addr,
