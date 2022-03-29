@@ -14,7 +14,7 @@ do
     wait $pid1
     res1=$?
 
-    if [ "$res0" -ne 0 ] || [ "$res0" -ne 0 ]; then
+    if [ "$res0" -ne 0 ] || [ "$res1" -ne 0 ]; then
         echo "-- error --"
         echo "  res 0 = "$res0
         echo "  res 1 = "$res1
