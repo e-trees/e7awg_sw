@@ -41,7 +41,7 @@ def gen_wave_seq():
     
     num_chunks = 1
     for i in range(num_chunks):
-        samples = gen_cos_wave(50, 8, 32760)
+        samples = gen_cos_wave(2.5, 8, 5000)
         # 1 波形チャンクのサンプル数は 64 の倍数でなければならない
         num_samples_in_wblcok = WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK
         if len(samples) % num_samples_in_wblcok != 0:
