@@ -399,7 +399,7 @@ class AwgCtrl(AwgCtrlBase):
         self.__deselect_ctrl_target(*awg_id_list)
         for awg_id in awg_id_list:
             self.__reg_access.write(AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, 0)
-        self.reset_awgs(*awg_id_list)
+        #self.reset_awgs(*awg_id_list)
         wave_seq = WaveSequence(0, 1)
         wave_seq.add_chunk([(0,0)] * 64, 0, 1)
         for awg_id in awg_id_list:
