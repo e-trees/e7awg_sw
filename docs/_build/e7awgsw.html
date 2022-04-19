@@ -1561,11 +1561,11 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.num_words_to_sum">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">num_words_to_sum</span></code><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.num_words_to_sum" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>積算するキャプチャワード数</p>
+<dd><p>総和するキャプチャワード数</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,</div>
-<div class="line">N が以下の条件を満たすキャプチャワード N が積算対象となる.</div>
+<div class="line">N が以下の条件を満たすキャプチャワード N が総和対象となる.</div>
 <div class="line"><br /></div>
 <div class="line">総和開始点 = sum_start_word_no (≧ 0)</div>
 <div class="line">総和終了点 = sum_start_word_no + num_words_to_sum - 1 (≦ 4294967294)</div>
@@ -1577,12 +1577,12 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>val</strong> (<em>int</em>) -- <div class="line-block">
-<div class="line">各積算区間内で積算対象とするキャプチャワードの数.</div>
+<div class="line">各総和区間内で総和対象とするキャプチャワードの数.</div>
 <div class="line">間引きが有効になっている場合, 間引き後に残ったキャプチャワードのみ数える.</div>
 </div>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">積算するキャプチャワード数</td>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">総和するキャプチャワード数</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
 </tr>
@@ -1688,11 +1688,11 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.sum_start_word_no">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">sum_start_word_no</span></code><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.sum_start_word_no" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>積算を開始するキャプチャワードの番号</p>
+<dd><p>総和を開始するキャプチャワードの番号</p>
 <blockquote>
 <div><div class="line-block">
 <div class="line">総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,</div>
-<div class="line">N が以下の条件を満たすキャプチャワード N が積算対象となる.</div>
+<div class="line">N が以下の条件を満たすキャプチャワード N が総和対象となる.</div>
 <div class="line"><br /></div>
 <div class="line">総和開始点 = sum_start_word_no (≧ 0)</div>
 <div class="line">総和終了点 = sum_start_word_no + num_words_to_sum - 1 (≦ 4294967294)</div>
@@ -1704,13 +1704,13 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>val</strong> (<em>int</em>) -- <div class="line-block">
-<div class="line">各積算区間内で積算を開始するキャプチャワードの番号. (≧ 0)</div>
+<div class="line">各総和区間内で総和を開始するキャプチャワードの番号. (≧ 0)</div>
 <div class="line">間引きが有効になっている場合, 間引き後に残ったキャプチャワードのみ数える.</div>
-<div class="line">(積算区間のキャプチャワード数 - 1) &lt; sum_start_word_no の場合, その積算区間の積算値は算出されない.</div>
+<div class="line">(総和区間のキャプチャワード数 - 1) &lt; sum_start_word_no の場合, その総和区間の総和は算出されない.</div>
 </div>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">積算を開始するキャプチャワードの番号</td>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">総和を開始するキャプチャワードの番号</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
 </tr>
@@ -2460,6 +2460,31 @@
 <dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.all_samples">
 <code class="sig-name descname"><span class="pre">all_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">include_wait_words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/wavesequence.html#WaveSequence.all_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.all_samples" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*include_wait_words</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True  -&gt; 戻り値の中にシーケンスの先頭の 0 データを含む</div>
+<div class="line">False -&gt; 戻り値の中にシーケンスの先頭の 0 データを含まない</div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">波形サンプルデータのリスト.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of (int, int)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.all_samples_lazy">
+<code class="sig-name descname"><span class="pre">all_samples_lazy</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">include_wait_words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/wavesequence.html#WaveSequence.all_samples_lazy"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.all_samples_lazy" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</p>
+<div class="line-block">
+<div class="line">all_samples の遅延評価版</div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

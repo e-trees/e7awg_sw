@@ -385,8 +385,10 @@
             <span class="n">num_chunk_words</span> <span class="o">+=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_words</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span>
         <span class="k">return</span> <span class="n">num_chunk_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span>
 
-    <span class="k">def</span> <span class="nf">__all_samples_lazy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="WaveSequence.all_samples_lazy"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples_lazy">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">all_samples_lazy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
+
+<span class="sd">        | all_samples の遅延評価版</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            *include_wait_words (bool)</span>
@@ -396,9 +398,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list of (int, int): 波形サンプルデータのリスト.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_wait_words</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WaveSequence.all_samples"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
@@ -484,9 +484,21 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_all_samples</span> <span class="o">-</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_wait_samples</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_repeats</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__chunk_range_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_chunk_range_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span>
+
+            <span class="c1"># 1 波形シーケンス当たりのサンプル数</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples_in_seq</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">//</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_repeats</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="n">loggers</span>
-            
+        
+        <span class="k">def</span> <span class="nf">__gen_chunk_range_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+            <span class="n">chunk_range_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+                <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">chunk_range_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">start_idx</span><span class="p">,</span> <span class="n">end_idx</span><span class="p">))</span>
+                <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">chunk_range_list</span>
 
         <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
@@ -506,33 +518,41 @@
         <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">key</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">key</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+                    <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">&lt;=</span> <span class="n">key</span><span class="p">):</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;The index [</span><span class="si">{}</span><span class="s1">] is out of range.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
                     <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">:</span>
                     <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-                 <span class="c1"># 1 波形シーケンス当たりのサンプル数</span>
-                <span class="n">num_samples_in_seq</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">%</span> <span class="n">num_samples_in_seq</span>
-                <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span>
-                    <span class="n">end_idx</span> <span class="o">=</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span> <span class="o">*</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">start_idx</span> <span class="o">&lt;=</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">end_idx</span><span class="p">):</span>
-                        <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span> <span class="o">%</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span>
-                        <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span> <span class="o">-</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_samples</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-                    <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples_in_seq</span>
+                <span class="n">chunk</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_chunk</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span> <span class="o">%</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">num_samples</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))]</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span><span class="p">))]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid argument type.&#39;</span>
                 <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__find_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunk_range_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">first</span> <span class="o">&lt;=</span> <span class="n">last</span><span class="p">:</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">first</span> <span class="o">+</span> <span class="n">last</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunk_range_list</span><span class="p">[</span><span class="n">target</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="o">&lt;=</span> <span class="n">idx</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">idx</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">end</span> <span class="o">&lt;</span> <span class="n">idx</span><span class="p">:</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="n">target</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">last</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>

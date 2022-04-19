@@ -34,9 +34,9 @@ def gen_cos_wave(freq, num_cycles, amp):
     return list(zip(i_data, q_data))
 
 
-def gen_wave_seq():
+def gen_wave_seq(num_wait_words=16):
     wave_seq = WaveSequence(
-        num_wait_words = 16,
+        num_wait_words = num_wait_words,
         num_repeats = 1)
     
     num_chunks = 1
@@ -54,9 +54,9 @@ def gen_wave_seq():
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words=16):
     awg_to_wave_sequence = {}
-    wave_seq = gen_wave_seq()
+    wave_seq = gen_wave_seq(num_wait_words)
     for awg_id in awgs:
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
@@ -144,7 +144,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
         return CaptureCtrl(IP_ADDR)
 
 
-def main(awgs, capture_modules, use_labrad, server_ip_addr):
+def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words):
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         capture_units = CaptureModule.get_units(*capture_modules)
@@ -154,7 +154,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         # トリガ AWG の設定
         set_trigger_awg(cap_ctrl, awgs[0], capture_modules)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words)
         # キャプチャパラメータの設定
         set_capture_params(cap_ctrl, awg_to_wave_sequence[awgs[0]], capture_units)
         # 波形送信スタート
@@ -179,8 +179,9 @@ if __name__ == "__main__":
     parser.add_argument('--ipaddr')
     parser.add_argument('--awgs')
     parser.add_argument('--capture-module')
-    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
+    parser.add_argument('--num-wait-words', default=16, type=int)
     args = parser.parse_args()
 
     if args.ipaddr is not None:
@@ -194,8 +195,4 @@ if __name__ == "__main__":
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    server_ip_addr = 'localhost'
-    if args.server_ipaddr is not None:
-        server_ip_addr = args.server_ipaddr
-
-    main(awgs, capture_modules, args.labrad, server_ip_addr)
+    main(awgs, capture_modules, args.labrad, args.server_ipaddr, args.num_wait_words)
