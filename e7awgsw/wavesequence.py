@@ -50,6 +50,10 @@ class WaveSequence(object):
         self.__num_wait_words = num_wait_words
         self.__num_repeats = num_repeats
 
+    def del_chunk(self, index):
+        if index < len(self.__chunks):
+            del self.__chunks[index]
+        
     def add_chunk(self, iq_samples, num_blank_words, num_repeats):
         """波形チャンクを追加する
 
