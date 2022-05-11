@@ -121,56 +121,112 @@ I/Q データを I = 実部，Q = 虚部である複素数とみなし，係数�
 
 ### 3.4 レジスタ一覧
 キャプチャユニットを制御するためのレジスタ一覧を以下に示します．
-「#」がついているレジスタは，表中の設定範囲の他に制約があります．
-詳細は **3.5 キャプチャパラメータの制約**を参照してください．
+レジスタ名に「#」がついているレジスタは，**3.5 キャプチャパラメータの制約**に記載した制約を満たさなければなりません．
 
 ![キャプチャ制御レジスタ一覧](./figures/capture_regs.jpg)
 
 ### 3.5 キャプチャパラメータの制約
-積算区間数，総和区間数および各総和区間の長さは，HW リソースの都合上，数式 ①，②の制約を満たさなければなりません．
+総和区間数，積算区間数，各総和区間の長さ，総和開始点，総和終了点は，HW リソースの都合上，式 ①～⑧の制約を全て満たさなければなりません．
 
 $$
 \begin{align*}
-M &= 総和区間数  \\[1ex]
-N &= 積算区間数  \\[1ex]
 
-S\lparen i \rparen &= 総和区間 \; i \;のキャプチャワード数 \\[1ex]
+M &: 総和区間数  \\[1ex]
+N &: 積算区間数  \\[1ex]
+S(i) &: 総和区間 \; i \;のキャプチャワード数 \\[1ex]
+P &: 総和開始点  \\[1ex]
+Q &: 総和終了点 \\[2ex]
+
+S'(i) &= \left\{
+\begin{array}{ll}
+  S(i) & (間引きなし)\\ & \\
+  \lfloor \frac{S(i) + 1}{8} \rfloor & (間引きあり)\\
+\end{array}
+\right. \\[5ex]
+
+S''(i) &= \min(\, S'(i) - 1, \;Q \,) - P \\[3ex]
 
 A &= \left\{
 \begin{array}{ll}
-  4 \displaystyle\sum_{i=0}^{M-1}S\lparen i \rparen & (間引きなし)\\ & \\
-  4 \displaystyle\sum_{i=0}^{M-1} \lfloor \frac{S\lparen i \rparen + 1}{8} \rfloor & (間引きあり)\\
+  4 & (総和なし)\\
+  1 & (総和あり)\\
 \end{array}
-\right. \\[8ex]
+\right. \\[3ex]
 
 B &= \left\{
 \begin{array}{ll}
-  A & (総和なし)\\
+  \displaystyle\sum_{i=0}^{M-1}S'(i) & (総和なし)\\ \\
   M & (総和あり)\\
 \end{array}
-\right. \\[2ex]
+\right. \\[6ex]
 
 C &= \left\{
 \begin{array}{ll}
   N & (積算なし)\\
   1 & (積算あり)\\
 \end{array}
-\right. \\[2ex]
+\right. \\[3ex]
 
 D &= \left\{
 \begin{array}{ll}
   0 & (積算なし)\\
   B & (積算あり)\\
 \end{array}
-\right. \\[6ex]
+\right. \\[3ex]
 
-BC &\leqq 33554432 \cdots \text{\textcircled 1} \\[1ex]
-D &\leqq 16384 \cdots \text{\textcircled 2} \\
 \end{align*}
 $$
 
-### UDP データフォーマット
+$$
+\begin{align*}
+1 &\leqq M \leqq 4096 &\cdots \text{\textcircled 1} \\[1ex]
+1 &\leqq N \leqq 1048576 &\cdots \text{\textcircled 2} \\[1ex]
+1 &\leqq S\lparen i \rparen \leqq 4294967294 , \; \forall i \;(0 \leqq i \leqq M - 1) &\cdots \text{\textcircled 3} \\[1ex]
+0 &\leqq P \leqq 4294967294 &\cdots \text{\textcircled 4} \\[1ex]
+P &\leqq Q \leqq 4294967294 &\cdots \text{\textcircled 5} \\[3ex]
 
+ABC &\leqq 33554432 &\cdots \text{\textcircled 6} \\[1ex]
+D &\leqq 4096 &\cdots \text{\textcircled 7} \\[1ex]
+S''(i) &\leqq 1023 , \; \forall i \;(0 \leqq i \leqq M - 1) &\cdots \text{\textcircled 8} \\[1ex]
+\end{align*}
+$$
 
+<!--
+条件 1 ～ 3 は, それぞれのパラメータ単体で取り得る範囲
+条件 6 は, キャプチャデータを格納するのに必要な HBM のサイズからくる制約
+条件 7 は, 積算結果を格納する一時メモリのサイズからくる制約
+条件 8 は, 積算結果がオーバーフローしない条件.  なお, S'' が 0 未満になる場合, 総和は結果を算出しない.
+-->
+
+### 3.6 UDP パケットフォーマット
+**3.4 レジスタ一覧**のレジスタにアクセスするためには，UDP パケットを e7awg_hw の 16385 ポートに送る必要があります．
+キャプチャユニット制御用の UDP パケットには，以下の 4 種類があり，1 と 3 が e7awg_hw に送るパケットで，2 と 4 がその応答として e7awg_hw から送られるパケットです．
+
+1. キャプチャレジスタ読み出しパケット <br>
+2. キャプチャレジスタ読み出し応答パケット <br>
+3. キャプチャレジスタ書き込みパケット <br>
+4. キャプチャレジスタ書き込み応答パケット <br>
+
+#### 1. キャプチャレジスタ読み出しパケット
+このパケットを e7awg_hw に送信すると，`A` から `A + B - 1` までのアドレスのレジスタ値が，キャプチャレジスタ読み出し応答パケットとして返ってきます．A と B は共に 4 の倍数を指定してください．B の最大値は 4072 です．
+
+![キャプチャレジスタ読み出し](./figures/udp_capture_read.png)
+
+#### 2. キャプチャレジスタ読み出し応答パケット
+
+レジスタ値が正常に読みだせた場合，**アドレス** と **バイト数** フィールドには，キャプチャレジスタ読み出しパケットで指定した値が入っています．
+
+![キャプチャレジスタ読み出し応答](./figures/udp_capture_read_resp.png)
+
+#### 3. キャプチャレジスタ書き込みパケット
+このパケットを e7awg_hw に送信すると，`A` から `A + B - 1` までのアドレスのレジスタ値が，**レジスタ\[A\]** から **レジスタ\[A+B-4\]** までの値で置き換わります．A と B は共に 4 の倍数を指定してください．B の最大値は 4072 です．
+
+![キャプチャレジスタ書き込み](./figures/udp_capture_write.png)
+
+#### 4. キャプチャレジスタ書き込み応答パケット
+
+レジスタ値が正常に書き込めた場合，**アドレス** と **バイト数** フィールドには，キャプチャレジスタ書き込みパケットで指定した値が入っています．
+
+![キャプチャレジスタ書き込み応答](./figures/udp_capture_write_resp.png)
 
 ## 4. HBM データレイアウト
