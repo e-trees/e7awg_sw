@@ -236,10 +236,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_wave_start_interval(self, interval):
-        if not (isinstance(interval, int) and (0 <= interval and interval <= 0xFFFFFFFF)):
+        if not (isinstance(interval, int) and (1 <= interval and interval <= 0xFFFFFFFF)):
             raise ValueError(
                 "The interval must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(0, 0xFFFFFFFF, interval))
+                .format(1, 0xFFFFFFFF, interval))
 
 
     @abstractmethod
