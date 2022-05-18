@@ -121,7 +121,7 @@ def decimation(samples, sum_section_list, num_integ_sections, num_fir_taps):
     """
     間引き処理は, 各総和区間内のサンプル数を 1/8 に減らす.
     間引き前のサンプル数を N, 間引き後のサンプル数を M とすると
-    M = floor((N + 4) / 32)  * 4  となる.
+    M = floor(N / 16) * 4  となる.
     リストのリストを返す.
     """
     result = []
@@ -130,11 +130,11 @@ def decimation(samples, sum_section_list, num_integ_sections, num_fir_taps):
         for sum_section in sum_section_list:
             sum_section_len = sum_section[0] * CaptureParam.NUM_SAMPLES_IN_ADC_WORD
             post_blank_len = sum_section[1] * CaptureParam.NUM_SAMPLES_IN_ADC_WORD
-            num_samples_left = (sum_section_len + 4) // 32 * CaptureParam.NUM_SAMPLES_IN_ADC_WORD
-            samples_left = samples[idx:idx + sum_section_len:8][0:num_samples_left]
+            num_samples_left = sum_section_len // 16 * CaptureParam.NUM_SAMPLES_IN_ADC_WORD
+            samples_left = samples[idx:idx + sum_section_len:4][0:num_samples_left]
             
             # 後段の FIR 用のデータを付加する
-            proceding = [(0, 0) if j < 0 else samples[j] for j in range(idx - (num_fir_taps - 1) * 8, idx, 8)]
+            proceding = [(0, 0) if j < 0 else samples[j] for j in range(idx - (num_fir_taps - 1) * 4, idx, 4)]
             result.append(proceding + samples_left)
             idx += sum_section_len + post_blank_len
     return result

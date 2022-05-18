@@ -109,8 +109,8 @@ class CaptureTestDsp(object):
             num_sum_sections = 512
             capture_param.num_integ_sections = 4
         for _ in range(num_sum_sections):
-            # 総和区間長が 6 ワード以下の場合 decimation から値が出てこなくなるので 7 ワード以上を指定する
-            capture_param.add_sum_section(random.randint(7, max_sum_sec_len), random.randint(1, 24))
+            # 総和区間長が 3 ワード以下の場合 decimation から値が出てこなくなるので 4 ワード以上を指定する
+            capture_param.add_sum_section(random.randint(4, max_sum_sec_len), random.randint(1, 24))
         return capture_param
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
