@@ -104,7 +104,7 @@ class CaptureTestDsp(object):
         # sum あり, integ あり
         elif (DspUnit.INTEGRATION in dsp_units) and (DspUnit.SUM in dsp_units):
             num_sum_sections = 4096
-            capture_param.num_integ_sections = 8
+            capture_param.num_integ_sections = 5
         else:
             num_sum_sections = 512
             capture_param.num_integ_sections = 4

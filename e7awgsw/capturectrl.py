@@ -660,7 +660,7 @@ class CaptureCtrl(CaptureCtrlBase):
     def __calc_num_words_in_sum_range(self, sum_sec_no, param):
         num_words_in_sum_sec = param.sum_section(sum_sec_no)[0]
         if DspUnit.DECIMATION in param.dsp_units_enabled:
-            num_words_in_sum_sec = ((num_words_in_sum_sec + 1) * CaptureParam.NUM_SAMPLES_IN_ADC_WORD) // 32
+            num_words_in_sum_sec = num_words_in_sum_sec // 4
 
         sum_end_word_no = min(param.sum_start_word_no + param.num_words_to_sum - 1, num_words_in_sum_sec - 1)
         num_sum_words = sum_end_word_no - max(0, param.sum_start_word_no) + 1

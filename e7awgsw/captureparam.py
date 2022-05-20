@@ -372,9 +372,8 @@ class CaptureParam(object):
                 # 総和が有効だと総和区間のサンプルは 1 つにまとめられる
                 num_samples_in_integ_section += 1
             elif DspUnit.DECIMATION in dsp_units_enabled:
-                # 間引きは 8 で割った余りが 7 のとき, 出力ワード数が切り上げになる. 
-                # つまり, 7 ワード入力すると 1 ワード出力され, 15 ワード入力すると 2 ワード出力される.
-                num_samples_in_integ_section += ((num_cap_words + 1) // 8) * NUM_SAMPLES_IN_ADC_WORD
+                # 間引き後のキャプチャワード数は floor(間引き前キャプチャワード数 / 4)
+                num_samples_in_integ_section += num_cap_words // 4 * NUM_SAMPLES_IN_ADC_WORD
             else:
                 num_samples_in_integ_section += num_cap_words * NUM_SAMPLES_IN_ADC_WORD
                 
