@@ -207,8 +207,10 @@
 <span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="CaptureCtrlBase"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureCtrlBase</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span> <span class="o">=</span> <span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="c1"># 1 キャプチャモジュールが保存可能なサンプル数</span>
+    <span class="c1">#: 1 キャプチャモジュールが保存可能なサンプル数</span>
     <span class="n">MAX_CAPTURE_SAMPLES</span> <span class="o">=</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">//</span> <span class="n">CAPTURED_SAMPLE_SIZE</span>
+    <span class="c1">#: 1 キャプチャモジュールが保存可能な四値化結果の数</span>
+    <span class="n">MAX_CLASSIFICATION_RESULTS</span> <span class="o">=</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">//</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span>
     <span class="c1">#: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)</span>
     <span class="n">SAMPLING_RATE</span> <span class="o">=</span> <span class="mi">500000000</span>
 
@@ -268,7 +270,7 @@
 <span class="sd">            num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.</span>
+<span class="sd">            list of (float, float): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -281,8 +283,29 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_capture_data</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="CaptureCtrlBase.get_classification_results"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_classification_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_results</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットが保存した四値化結果を取得する.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            capture_unit_id (int): この ID のキャプチャユニットが保存した四値化結果を取得する</span>
+<span class="sd">            num_results (int): 取得する四値化結果の個数</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of int: 四値化結果のリスト. 各データは 0 ～ 3 の整数.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_num_classification_results</span><span class="p">(</span><span class="n">num_results</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_classification_results</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_results</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="CaptureCtrlBase.num_captured_samples"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.num_captured_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_captured_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したキャプチャユニットが保存したサンプル数もしくは, 四値化結果の個数を取得する. (I データと Q データはまとめて 1 サンプル)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 保存されたサンプル数</span>
@@ -464,6 +487,12 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;The number of samples must be an integer.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_samples</span><span class="p">))</span>
 
+
+    <span class="k">def</span> <span class="nf">_validate_num_classification_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_results</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_results</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of classification results must be an integer.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">num_results</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="nf">_validate_capture_module_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_module_id</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_module_id</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture module ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_module_id</span><span class="p">))</span>
@@ -489,6 +518,10 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_get_capture_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_get_classification_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_results</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
@@ -596,6 +629,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_real_fir_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_i_coefs</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">real_fir_q_coefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_comp_window_coefs</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">complex_window_coefs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_sum_range</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">num_words_to_sum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_decision_func_params</span><span class="p">(</span>
+            <span class="n">capture_unit_id</span><span class="p">,</span> <span class="p">[</span><span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">get_decision_func_params</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">param</span><span class="o">.</span><span class="n">get_decision_func_params</span><span class="p">(</span><span class="mi">1</span><span class="p">)])</span>
 
 
     <span class="k">def</span> <span class="nf">__set_sum_sec_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">sum_sec_list</span><span class="p">):</span>
@@ -673,6 +708,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">SUM_END_TIME</span><span class="p">,</span> <span class="n">end_start_word_no</span><span class="p">)</span>
 
 
+    <span class="k">def</span> <span class="nf">__set_decision_func_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;四値化判定式のパラメータを設定する&quot;&quot;&quot;</span>
+        <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="n">coef_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(),</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">multi_write</span><span class="p">(</span><span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureParamRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">decision_func_params</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">*</span><span class="n">coef_list</span><span class="p">)</span>
+
+
     <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disable_start_trigger</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
@@ -686,12 +728,27 @@
 
     <span class="k">def</span> <span class="nf">_get_capture_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
         <span class="n">num_bytes</span> <span class="o">=</span> <span class="n">num_samples</span> <span class="o">*</span> <span class="n">CAPTURED_SAMPLE_SIZE</span>
-        <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">num_bytes</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
         <span class="n">rd_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">],</span> <span class="n">num_bytes</span><span class="p">)</span>
-        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">rd_data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)]</span>
+        <span class="n">part_size</span> <span class="o">=</span> <span class="n">CAPTURED_SAMPLE_SIZE</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">rd_data</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">part_size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">part_size</span><span class="p">)]</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;f&#39;</span><span class="p">,</span> <span class="n">sample</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">]</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_samples</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]))</span>
+
+
+    <span class="k">def</span> <span class="nf">_get_classification_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_results</span><span class="p">):</span>
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_results</span> <span class="o">*</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">num_bytes</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">rd_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_ram_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__CAPTURE_ADDR</span><span class="p">[</span><span class="n">capture_unit_id</span><span class="p">],</span> <span class="n">num_bytes</span><span class="p">)</span>
+        <span class="n">classification_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">rd_data</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">shift</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+                <span class="n">classification_results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">byte</span> <span class="o">&gt;&gt;</span> <span class="n">shift</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">classification_results</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">num_results</span><span class="p">]</span>
 
 
     <span class="k">def</span> <span class="nf">_num_captured_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">):</span>
@@ -820,48 +877,66 @@
         <span class="n">dsp_units_enabled</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span>
         <span class="n">num_cap_samples</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">calc_capture_samples</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">INTEGRATION</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
-            <span class="c1"># 積算ユニットが保持できる積算値の数をオーバーしていないかチェック</span>
-            <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
-                <span class="c1"># 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, </span>
-                <span class="c1"># 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる</span>
-                <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_cap_samples</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_cap_samples</span> <span class="o">//</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span>
-
-            <span class="k">if</span> <span class="n">num_integ_vec_elems</span> <span class="o">&gt;</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
-                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
-                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__check_num_integration_samples</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">dsp_units_enabled</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">)</span>
         
-        <span class="k">elif</span> <span class="n">num_cap_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
-                   <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">CLASSIFICATION</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__check_num_classification_samples</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">((</span><span class="n">DspUnit</span><span class="o">.</span><span class="n">INTEGRATION</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span><span class="n">DspUnit</span><span class="o">.</span><span class="n">CLASSIFICATION</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__check_num_capture_samples</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_cap_samples</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__check_num_sum_samples</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__check_num_integration_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">dsp_units_enabled</span><span class="p">,</span> <span class="n">num_capture_samples</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;積算ユニットが保持できる積算値の数をオーバーしていないかチェックする&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="c1"># 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, </span>
+            <span class="c1"># 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる</span>
+            <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_capture_samples</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">num_integ_vec_elems</span> <span class="o">=</span> <span class="n">num_capture_samples</span> <span class="o">//</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span>
+
+        <span class="k">if</span> <span class="n">num_integ_vec_elems</span> <span class="o">&gt;</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;The number of elements in the capture unit </span><span class="si">{}</span><span class="s2">&#39;s integration result vector is too large.  (max = </span><span class="si">{}</span><span class="s2">, setting = </span><span class="si">{}</span><span class="s2">)&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">num_integ_vec_elems</span><span class="p">))</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">SUM</span> <span class="ow">in</span> <span class="n">dsp_units_enabled</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">sum_sec_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">num_sum_sections</span><span class="p">):</span>
-                <span class="n">num_words_to_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
-                    <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
-                    <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__check_num_classification_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_capture_samples</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;四値化結果が保存領域に納まるかチェックする&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">num_capture_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CLASSIFICATION_RESULTS</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many classification results.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CLASSIFICATION_RESULTS</span><span class="p">,</span> <span class="n">num_capture_samples</span><span class="p">))</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">__calc_num_words_in_sum_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
-        <span class="n">num_words_in_sum_sec</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_section</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">DECIMATION</span> <span class="ow">in</span> <span class="n">param</span><span class="o">.</span><span class="n">dsp_units_enabled</span><span class="p">:</span>
-            <span class="n">num_words_in_sum_sec</span> <span class="o">=</span> <span class="p">((</span><span class="n">num_words_in_sum_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">)</span> <span class="o">//</span> <span class="mi">32</span>
+    <span class="k">def</span> <span class="nf">__check_num_capture_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_capture_samples</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャサンプルが保存領域に納まるかチェックする&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">num_capture_samples</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Capture unit </span><span class="si">{}</span><span class="s1"> has too many capture samples.  (max = </span><span class="si">{}</span><span class="s1">, setting = </span><span class="si">{}</span><span class="s1">)&#39;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CAPTURE_SAMPLES</span><span class="p">,</span> <span class="n">num_capture_samples</span><span class="p">))</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="n">sum_end_word_no</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span> <span class="o">+</span> <span class="n">param</span><span class="o">.</span><span class="n">num_words_to_sum</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_words_in_sum_sec</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">num_sum_words</span> <span class="o">=</span> <span class="n">sum_end_word_no</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">sum_start_word_no</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">num_sum_words</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    
+    <span class="k">def</span> <span class="nf">__check_num_sum_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;総和結果がオーバーフローしないかチェックする&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sum_sec_no</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">num_sum_sections</span><span class="p">):</span>
+            <span class="n">num_words_to_sum</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">num_samples_to_sum</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_words_to_sum</span> <span class="o">&gt;</span> <span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The size of the sum range in sum section </span><span class="si">{}</span><span class="s1"> on capture unit </span><span class="si">{}</span><span class="s1"> is too large.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                       <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sum_sec_no</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">))</span>
+                <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span><span class="s1">&#39;If the number of capture words to be summed exceeds </span><span class="si">{}</span><span class="s1">, the sum may overflow.  </span><span class="si">{}</span><span class="s1"> was set.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CaptureParam</span><span class="o">.</span><span class="n">MAX_SUM_RANGE_LEN</span><span class="p">,</span> <span class="n">num_words_to_sum</span><span class="p">))</span>
+                <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+
+
     <span class="k">def</span> <span class="nf">_version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">VERSION</span><span class="p">)</span>
         <span class="n">ver_char</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mh">0xFF</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">))</span>

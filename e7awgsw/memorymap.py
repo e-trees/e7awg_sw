@@ -265,6 +265,7 @@ class CaptureParamRegs(object):
         __MAX_REAL_FIR_Q_DATA_COEFS  = 8
         __MAX_COMP_WINDOW_REAL_COEFS = 2048
         __MAX_COMP_WINDOW_IMGA_COEFS = 2048
+        __MAX_DECISION_FUNC_PARAMS   = 6
 
         @classmethod
         def sum_section_length(cls, idx):
@@ -321,3 +322,10 @@ class CaptureParamRegs(object):
                 raise ValueError("complex window imaginary coefficient addr offset error")
             COMP_WINDOW_IMAGINARY_COEF_OFFSET = 0xD000
             return 4 * idx + COMP_WINDOW_IMAGINARY_COEF_OFFSET
+
+        @classmethod
+        def decision_func_params(cls, idx):
+            if idx >= cls.__MAX_DECISION_FUNC_PARAMS:
+                raise ValueError("decision func param addr offset error")
+            DECISION_FUNC_PARAMS_OFFSET = 0xF000
+            return 4 * idx + DECISION_FUNC_PARAMS_OFFSET

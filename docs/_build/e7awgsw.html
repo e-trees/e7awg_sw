@@ -1024,7 +1024,14 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_SAMPLES">
 <code class="sig-name descname"><span class="pre">MAX_CAPTURE_SAMPLES</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33554432</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_SAMPLES" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
+<dd><p>1 キャプチャモジュールが保存可能なサンプル数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.MAX_CLASSIFICATION_RESULTS">
+<code class="sig-name descname"><span class="pre">MAX_CLASSIFICATION_RESULTS</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1073741824</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.MAX_CLASSIFICATION_RESULTS" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>1 キャプチャモジュールが保存可能な四値化結果の数</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE">
@@ -1112,7 +1119,31 @@
 <tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first">I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body"><p class="first last">sample_list (list of (float, float))</p>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body"><p class="first last">list of (float, float)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results">
+<code class="sig-name descname"><span class="pre">get_classification_results</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_classification_results"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>引数で指定したキャプチャユニットが保存した四値化結果を取得する.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
+<li><strong>capture_unit_id</strong> (<em>int</em>) -- この ID のキャプチャユニットが保存した四値化結果を取得する</li>
+<li><strong>num_results</strong> (<em>int</em>) -- 取得する四値化結果の個数</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body"><p class="first">四値化結果のリスト. 各データは 0 ～ 3 の整数.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body"><p class="first last">list of int</p>
 </td>
 </tr>
 </tbody>
@@ -1136,7 +1167,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.num_captured_samples">
 <code class="sig-name descname"><span class="pre">num_captured_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.num_captured_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.num_captured_samples" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)</p>
+<dd><p>引数で指定したキャプチャユニットが保存したサンプル数もしくは, 四値化結果の個数を取得する. (I データと Q データはまとめて 1 サンプル)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1275,6 +1306,18 @@
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_COEF_VAL">
+<code class="sig-name descname"><span class="pre">MAX_DECISION_FUNC_COEF_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32768</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_COEF_VAL" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化判別式の係数の最大値</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_CONST_VAL">
+<code class="sig-name descname"><span class="pre">MAX_DECISION_FUNC_CONST_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">39614081257132168796771975167</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_CONST_VAL" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化判別式の定数の最大値</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MAX_FIR_COEF_VAL">
 <code class="sig-name descname"><span class="pre">MAX_FIR_COEF_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32767</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MAX_FIR_COEF_VAL" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>複素 or 実数 FIR フィルタの係数の最大値</p>
@@ -1314,6 +1357,18 @@
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MAX_WINDOW_COEF_VAL">
 <code class="sig-name descname"><span class="pre">MAX_WINDOW_COEF_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2147483647</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MAX_WINDOW_COEF_VAL" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>窓関数の係数の最大値</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_COEF_VAL">
+<code class="sig-name descname"><span class="pre">MIN_DECISION_FUNC_COEF_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-32768</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_COEF_VAL" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化判別式の係数の最小値</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_CONST_VAL">
+<code class="sig-name descname"><span class="pre">MIN_DECISION_FUNC_CONST_VAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-39614081257132168796771975168</span></em><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_CONST_VAL" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化判別式の定数の最小値</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1403,7 +1458,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.calc_capture_samples">
 <code class="sig-name descname"><span class="pre">calc_capture_samples</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.calc_capture_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.calc_capture_samples" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>現在のキャプチャパラメータで保存されるサンプル数を計算する</p>
+<dd><p>現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1504,6 +1559,29 @@
 </table>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.get_decision_func_params">
+<code class="sig-name descname"><span class="pre">get_decision_func_params</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">func_sel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.get_decision_func_params"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.get_decision_func_params" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化に使用する判定式のパラメータを取得する</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">判定式(I, Q) = coef_a * I + coef_b * Q + const_c</div>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>func_sel</strong> (<em>int</em>) -- パラメータを設定する判別式の選択 (0 or 1)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">(coef_a, coef_b, const_c)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">tuple of numpy.float32</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.num_integ_sections">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">num_integ_sections</span></code><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.num_integ_sections" title="この定義へのパーマリンク">¶</a></dt>
@@ -1537,6 +1615,24 @@
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.num_samples_to_sum">
+<code class="sig-name descname"><span class="pre">num_samples_to_sum</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">section_no</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.num_samples_to_sum"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.num_samples_to_sum" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>現在のキャプチャパラメータで, 引数で指定した総和区間で総和されるサンプル数を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>section_no</strong> (<em>int</em>) -- 総和区間の番号 (登録した順に 0 ～ (登録数 - 1))</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">引数で指定した総和区間で総和されるサンプル数</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
 </tr>
 </tbody>
 </table>
@@ -1646,6 +1742,31 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*dsp_units</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.DspUnit" title="e7awgsw.hwdefs.DspUnit"><em>DspUnit</em></a>) -- 有効にする DSP ユニットの ID</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.set_decision_func_params">
+<code class="sig-name descname"><span class="pre">set_decision_func_params</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">func_sel</span></span></em>, <em><span class="n"><span class="pre">coef_a</span></span></em>, <em><span class="n"><span class="pre">coef_b</span></span></em>, <em><span class="n"><span class="pre">const_c</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.set_decision_func_params"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.set_decision_func_params" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化に使用する判定式のパラメータを設定する</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">判定式(I, Q) = coef_a * I + coef_b * Q + const_c</div>
+</div>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func_sel</strong> (<em>int</em>) -- パラメータを設定する判定式の選択 (0 or 1)</li>
+<li><strong>coef_a</strong> (<em>numpy.float32</em>) -- 判定式で I データに掛ける係数 (-32768 ～ 32767)</li>
+<li><strong>coef_b</strong> (<em>numpy.float32</em>) -- 判定式で Q データに掛ける係数 (-32768 ～ 32767)</li>
+<li><strong>const_c</strong> (<em>numpy.float32</em>) -- 判定式の定数項 (-0x80000000_00000000_00000000 ～ 0x7FFFFFFF_FFFFFFFF_FFFFFFFF)</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -2012,10 +2133,35 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">DecisionFunc</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#DecisionFunc"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>四値化処理の判定式の ID</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc.U0">
+<code class="sig-name descname"><span class="pre">U0</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc.U0" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>判定式 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc.U1">
+<code class="sig-name descname"><span class="pre">U1</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc.U1" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>判定式 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.DspUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">DspUnit</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#DspUnit"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.DspUnit" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>キャプチャユニットが持つ信号処理モジュールの列挙型</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DspUnit.CLASSIFICATION">
+<code class="sig-name descname"><span class="pre">CLASSIFICATION</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#e7awgsw.hwdefs.DspUnit.CLASSIFICATION" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.DspUnit.COMPLEX_FIR">
 <code class="sig-name descname"><span class="pre">COMPLEX_FIR</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#e7awgsw.hwdefs.DspUnit.COMPLEX_FIR" title="この定義へのパーマリンク">¶</a></dt>
@@ -2536,6 +2682,11 @@
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.del_chunk">
+<code class="sig-name descname"><span class="pre">del_chunk</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/wavesequence.html#WaveSequence.del_chunk"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.del_chunk" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.num_all_samples">

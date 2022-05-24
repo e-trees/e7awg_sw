@@ -245,6 +245,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">=</span> <span class="n">num_wait_words</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">num_repeats</span></div>
 
+<div class="viewcode-block" id="WaveSequence.del_chunk"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.del_chunk">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">del_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">):</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+        
 <div class="viewcode-block" id="WaveSequence.add_chunk"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.add_chunk">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">add_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iq_samples</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;波形チャンクを追加する</span>
 

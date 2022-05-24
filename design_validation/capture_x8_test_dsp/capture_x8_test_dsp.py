@@ -48,11 +48,38 @@ def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr):
             print('failure integration')
             failed_tests.append('{} - integ'.format(test_id))
 
-        print('\n-- all --')
-        result = test.run_test('all', *DspUnit.all())
+        print('\n-- classification --')
+        result = test.run_test('classification', DspUnit.CLASSIFICATION)
+        if not result:
+            print('failure classification')
+            failed_tests.append('{} - classification'.format(test_id))
+
+        print('\n-- all in integration path --')
+        result = test.run_test(
+            'integration_path',
+            DspUnit.COMPLEX_FIR,
+            DspUnit.DECIMATION,
+            DspUnit.REAL_FIR,
+            DspUnit.COMPLEX_WINDOW,
+            DspUnit.SUM,
+            DspUnit.INTEGRATION)
         if not result:
             print('failure all')
-            failed_tests.append('{} - all'.format(test_id))
+            failed_tests.append('{} - all in integration path'.format(test_id))
+
+        print('\n-- all in classification path --')
+        result = test.run_test(
+            'classification_path',
+            DspUnit.COMPLEX_FIR,
+            DspUnit.DECIMATION,
+            DspUnit.REAL_FIR,
+            DspUnit.COMPLEX_WINDOW,
+            DspUnit.SUM,
+            DspUnit.CLASSIFICATION)
+        if not result:
+            print('failure all')
+            failed_tests.append('{} - all in classification path'.format(test_id))
+            
         print()
 
     if failed_tests:

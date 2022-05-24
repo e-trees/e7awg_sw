@@ -2,6 +2,7 @@ from .hwparam import *
 from .hwdefs import *
 import copy
 from .logger import *
+import numpy as np
 
 class CaptureParam(object):
     """ キャプチャパラメータを保持するクラス"""
@@ -23,6 +24,11 @@ class CaptureParam(object):
 
     MAX_SUM_RANGE_LEN = 1024           #: オーバーフローせずに総和可能な総和範囲の長さ (単位：キャプチャワード)
     
+    MIN_DECISION_FUNC_COEF_VAL = -32768                          #: 四値化判別式の係数の最小値
+    MAX_DECISION_FUNC_COEF_VAL = 32768                           #: 四値化判別式の係数の最大値
+    MIN_DECISION_FUNC_CONST_VAL = -0x80000000_00000000_00000000  #: 四値化判別式の定数の最小値
+    MAX_DECISION_FUNC_CONST_VAL = 0x7FFFFFFF_FFFFFFFF_FFFFFFFF   #: 四値化判別式の定数の最大値
+
     NUM_SAMPLES_IN_ADC_WORD = NUM_SAMPLES_IN_ADC_WORD #: 1 キャプチャワード当たりのサンプル数
 
     def __init__(self, *, enable_lib_log = True, logger = get_null_logger()):
@@ -43,6 +49,9 @@ class CaptureParam(object):
         self.__comp_window_coefs = [0 + 0j] * self.NUM_COMPLEXW_WINDOW_COEFS
         self.__sum_start_word_no = 0
         self.__num_words_to_sum = self.MAX_SUM_SECTION_LEN
+        self.__decision_func_params = [
+            (np.float32(0), np.float32(0), np.float32(0)),
+            (np.float32(0), np.float32(0), np.float32(0))]
         self.__loggers = [logger]
         if enable_lib_log:
             self.__loggers.append(get_file_logger())
@@ -359,7 +368,7 @@ class CaptureParam(object):
         self.__comp_window_coefs = val
     
     def calc_capture_samples(self):
-        """現在のキャプチャパラメータで保存されるサンプル数を計算する
+        """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
 
         Returns:
             現在のキャプチャパラメータで保存されるサンプル数
@@ -368,19 +377,47 @@ class CaptureParam(object):
         dsp_units_enabled = self.dsp_units_enabled
         for i in range(self.num_sum_sections):
             num_cap_words = self.__sumsections[i][0]
-            if DspUnit.SUM in dsp_units_enabled:
+            if DspUnit.DECIMATION in dsp_units_enabled:
+                # 間引き後のキャプチャワード数は floor(間引き前キャプチャワード数 / 4)
+                num_cap_samples = num_cap_words // 4 * NUM_SAMPLES_IN_ADC_WORD
+            else:
+                num_cap_samples = num_cap_words * NUM_SAMPLES_IN_ADC_WORD
+
+            if (DspUnit.SUM in dsp_units_enabled) and (num_cap_samples > 0):
                 # 総和が有効だと総和区間のサンプルは 1 つにまとめられる
                 num_samples_in_integ_section += 1
-            elif DspUnit.DECIMATION in dsp_units_enabled:
-                # 間引き後のキャプチャワード数は floor(間引き前キャプチャワード数 / 4)
-                num_samples_in_integ_section += num_cap_words // 4 * NUM_SAMPLES_IN_ADC_WORD
             else:
-                num_samples_in_integ_section += num_cap_words * NUM_SAMPLES_IN_ADC_WORD
+                num_samples_in_integ_section += num_cap_samples
                 
         if DspUnit.INTEGRATION in dsp_units_enabled:
             return num_samples_in_integ_section
 
         return num_samples_in_integ_section * self.__num_integ_sections
+
+
+    def num_samples_to_sum(self, section_no):
+        """現在のキャプチャパラメータで, 引数で指定した総和区間で総和されるサンプル数を取得する
+        
+        Args:
+            section_no (int): 総和区間の番号 (登録した順に 0 ～ (登録数 - 1))
+
+        Returns:
+            int: 引数で指定した総和区間で総和されるサンプル数
+        """
+        if not (isinstance(section_no, int) and
+                (0 <= section_no and section_no < self.num_sum_sections)):
+            msg = ("The current number of sum sections is {}.\nSpecify 0 to {} for 'section_no'.  '{}' was set\n"
+                .format(self.num_sum_sections, self.num_sum_sections - 1, section_no))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+
+        num_words_in_sum_sec = self.sum_section(section_no)[0]
+        if DspUnit.DECIMATION in self.dsp_units_enabled:
+            num_words_in_sum_sec = num_words_in_sum_sec // 4
+
+        sum_end_word_no = min(self.sum_start_word_no + self.num_words_to_sum - 1, num_words_in_sum_sec - 1)
+        num_sum_words = sum_end_word_no - max(0, self.sum_start_word_no) + 1
+        return max(num_sum_words, 0)
 
     @property
     def sum_start_word_no(self):
@@ -441,6 +478,64 @@ class CaptureParam(object):
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
         self.__num_words_to_sum = val
+
+    def set_decision_func_params(self, func_sel, coef_a, coef_b, const_c):
+        """四値化に使用する判定式のパラメータを設定する
+
+            | 判定式(I, Q) = coef_a * I + coef_b * Q + const_c
+
+        Args:
+            func_sel (int):           パラメータを設定する判定式の選択 (0 or 1)
+            coef_a   (numpy.float32): 判定式で I データに掛ける係数 (-32768 ～ 32767)
+            coef_b   (numpy.float32): 判定式で Q データに掛ける係数 (-32768 ～ 32767)
+            const_c  (numpy.float32): 判定式の定数項 (-0x80000000_00000000_00000000 ～ 0x7FFFFFFF_FFFFFFFF_FFFFFFFF)
+        """
+        if not ((func_sel == DecisionFunc.U0) or (func_sel == DecisionFunc.U1)):
+            msg = "'func_sel' must be 0 or 1.  {}".format(func_sel)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+
+        if not (isinstance(coef_a, np.float32) and
+                self.__is_in_range(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_a)):
+            msg = ("The decision function coefficients must be {} ~ {}.  '{}' was set."
+                 .format(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_a))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+
+
+        if not (isinstance(coef_b, np.float32) and
+                self.__is_in_range(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_b)):
+            msg = ("The decision function coefficisnts must be {} ~ {}.  '{}' was set."
+                 .format(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_b))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+        
+        if not (isinstance(const_c, np.float32) and
+                self.__is_in_range(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c)):
+            msg = ("The decision function constant must be {} ~ {}.  '{}' was set."
+                 .format(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, coef_c))
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+
+        self.__decision_func_params[int(func_sel)] = (coef_a, coef_b, const_c)
+
+    def get_decision_func_params(self, func_sel):
+        """四値化に使用する判定式のパラメータを取得する
+
+            | 判定式(I, Q) = coef_a * I + coef_b * Q + const_c
+
+        Args:
+            func_sel (int): パラメータを設定する判別式の選択 (0 or 1)
+
+        Returns:
+            tuple of numpy.float32: (coef_a, coef_b, const_c)
+        """
+        if not ((func_sel == DecisionFunc.U0) or (func_sel == DecisionFunc.U1)):
+            msg = "Decision function selector must be 0 or 1.  {}".format(func_sel)
+            log_error(msg, *self.__loggers)
+            raise ValueError(msg)
+        
+        return self.__decision_func_params[int(func_sel)]
 
     def __is_in_range(self, min, max, val):
         return (min <= val) and (val <= max)

@@ -348,6 +348,8 @@
 </li>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk_list">chunk_list (e7awgsw.wavesequence.WaveSequence のプロパティ)</a>
 </li>
+      <li><a href="e7awgsw.html#e7awgsw.hwdefs.DspUnit.CLASSIFICATION">CLASSIFICATION (e7awgsw.hwdefs.DspUnit の属性)</a>
+</li>
       <li><a href="e7awgsw.html#e7awgsw.awgctrl.AwgCtrl.close">close() (e7awgsw.awgctrl.AwgCtrl のメソッド)</a>
 
       <ul>
@@ -378,6 +380,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.DspUnit.DECIMATION">DECIMATION (e7awgsw.hwdefs.DspUnit の属性)</a>
 </li>
+      <li><a href="e7awgsw.html#e7awgsw.hwdefs.DecisionFunc">DecisionFunc (e7awgsw.hwdefs のクラス)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.del_chunk">del_chunk() (e7awgsw.wavesequence.WaveSequence のメソッド)</a>
+</li>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveData.deserialize">deserialize() (e7awgsw.wavesequence.WaveData のクラスメソッド)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.disable_start_trigger">disable_start_trigger() (e7awgsw.capturectrl.CaptureCtrlBase のメソッド)</a>
@@ -390,10 +396,10 @@
 </li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_awgctrl">discard_awgctrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
-      <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl">discard_capturectrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl">discard_capturectrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
+</li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.RemoteAwgCtrl.disconnect">disconnect() (e7awgsw.labrad.RemoteAwgCtrl のメソッド)</a>
 
       <ul>
@@ -562,6 +568,10 @@
         <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data">(e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
       </ul></li>
+      <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results">get_classification_results() (e7awgsw.capturectrl.CaptureCtrlBase のメソッド)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.get_decision_func_params">get_decision_func_params() (e7awgsw.captureparam.CaptureParam のメソッド)</a>
+</li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureModule.get_units">get_units() (e7awgsw.hwdefs.CaptureModule のクラスメソッド)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.get_wave_startable_block_timing">get_wave_startable_block_timing() (e7awgsw.awgctrl.AwgCtrlBase のメソッド)</a>
@@ -622,6 +632,12 @@
 </li>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.MAX_CHUNKS">MAX_CHUNKS (e7awgsw.wavesequence.WaveSequence の属性)</a>
 </li>
+      <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.MAX_CLASSIFICATION_RESULTS">MAX_CLASSIFICATION_RESULTS (e7awgsw.capturectrl.CaptureCtrlBase の属性)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_COEF_VAL">MAX_DECISION_FUNC_COEF_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_DECISION_FUNC_CONST_VAL">MAX_DECISION_FUNC_CONST_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
+</li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_FIR_COEF_VAL">MAX_FIR_COEF_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_INTEG_SECTIONS">MAX_INTEG_SECTIONS (e7awgsw.captureparam.CaptureParam の属性)</a>
@@ -632,10 +648,10 @@
         <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.MAX_POST_BLANK_LEN">(e7awgsw.wavesequence.WaveSequence の属性)</a>
 </li>
       </ul></li>
-      <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.MAX_SEQUENCE_REPEATS">MAX_SEQUENCE_REPEATS (e7awgsw.wavesequence.WaveSequence の属性)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.MAX_SEQUENCE_REPEATS">MAX_SEQUENCE_REPEATS (e7awgsw.wavesequence.WaveSequence の属性)</a>
+</li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_SUM_RANGE_LEN">MAX_SUM_RANGE_LEN (e7awgsw.captureparam.CaptureParam の属性)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MAX_SUM_SECTION_LEN">MAX_SUM_SECTION_LEN (e7awgsw.captureparam.CaptureParam の属性)</a>
@@ -649,6 +665,10 @@
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AwgErr.MEM_RD">MEM_RD (e7awgsw.hwdefs.AwgErr の属性)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureErr.MEM_WR">MEM_WR (e7awgsw.hwdefs.CaptureErr の属性)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_COEF_VAL">MIN_DECISION_FUNC_COEF_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MIN_DECISION_FUNC_CONST_VAL">MIN_DECISION_FUNC_CONST_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.MIN_FIR_COEF_VAL">MIN_FIR_COEF_VAL (e7awgsw.captureparam.CaptureParam の属性)</a>
 </li>
@@ -690,14 +710,14 @@
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.NUM_REAL_FIR_COEFS">NUM_REAL_FIR_COEFS (e7awgsw.captureparam.CaptureParam の属性)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveChunk.num_repeats">num_repeats (e7awgsw.wavesequence.WaveChunk のプロパティ)</a>
 
       <ul>
         <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_repeats">(e7awgsw.wavesequence.WaveSequence のプロパティ)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveChunk.num_samples">num_samples (e7awgsw.wavesequence.WaveChunk のプロパティ)</a>
 
       <ul>
@@ -711,6 +731,8 @@
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.NUM_SAMPLES_IN_WAVE_BLOCK">NUM_SAMPLES_IN_WAVE_BLOCK (e7awgsw.wavesequence.WaveSequence の属性)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.num_samples_to_process">num_samples_to_process (e7awgsw.captureparam.CaptureParam のプロパティ)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.num_samples_to_sum">num_samples_to_sum() (e7awgsw.captureparam.CaptureParam のメソッド)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.num_sum_sections">num_sum_sections (e7awgsw.captureparam.CaptureParam のプロパティ)</a>
 </li>
@@ -848,6 +870,8 @@
         <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.set_capture_params">(e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
       </ul></li>
+      <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.set_decision_func_params">set_decision_func_params() (e7awgsw.captureparam.CaptureParam のメソッド)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence">set_wave_sequence() (e7awgsw.awgctrl.AwgCtrlBase のメソッド)</a>
@@ -911,6 +935,8 @@
 </li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U0">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U0">(e7awgsw.hwdefs.DecisionFunc の属性)</a>
+</li>
       </ul></li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U1">U1 (e7awgsw.hwdefs.AWG の属性)</a>
 
@@ -918,6 +944,8 @@
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureModule.U1">(e7awgsw.hwdefs.CaptureModule の属性)</a>
 </li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U1">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
+</li>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U1">(e7awgsw.hwdefs.DecisionFunc の属性)</a>
 </li>
       </ul></li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U10">U10 (e7awgsw.hwdefs.AWG の属性)</a>
@@ -932,14 +960,14 @@
 </li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U15">U15 (e7awgsw.hwdefs.AWG の属性)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U2">U2 (e7awgsw.hwdefs.AWG の属性)</a>
 
       <ul>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U2">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U3">U3 (e7awgsw.hwdefs.AWG の属性)</a>
 
       <ul>

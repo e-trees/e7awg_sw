@@ -431,10 +431,10 @@
 
 
     <span class="k">def</span> <span class="nf">_validate_wave_start_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">interval</span> <span class="ow">and</span> <span class="n">interval</span> <span class="o">&lt;=</span> <span class="mh">0xFFFFFFFF</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">interval</span> <span class="ow">and</span> <span class="n">interval</span> <span class="o">&lt;=</span> <span class="mh">0xFFFFFFFF</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;The interval must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span> <span class="n">interval</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span> <span class="n">interval</span><span class="p">))</span>
 
 
     <span class="nd">@abstractmethod</span>
@@ -594,7 +594,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset_awgs</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+        <span class="c1">#self.reset_awgs(*awg_id_list)</span>
         <span class="n">wave_seq</span> <span class="o">=</span> <span class="n">WaveSequence</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">wave_seq</span><span class="o">.</span><span class="n">add_chunk</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>

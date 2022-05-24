@@ -12,8 +12,10 @@ from .logger import *
 from .lock import *
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
-    # 1 キャプチャモジュールが保存可能なサンプル数
+    #: 1 キャプチャモジュールが保存可能なサンプル数
     MAX_CAPTURE_SAMPLES = MAX_CAPTURE_SIZE // CAPTURED_SAMPLE_SIZE
+    #: 1 キャプチャモジュールが保存可能な四値化結果の数
+    MAX_CLASSIFICATION_RESULTS = MAX_CAPTURE_SIZE * 8 // CLASSIFICATION_RESULT_SIZE
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
@@ -73,7 +75,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)
 
         Returns:
-            sample_list (list of (float, float)): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
+            list of (float, float): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
         """
         if self._validate_args:
             try:
@@ -86,8 +88,29 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         return self._get_capture_data(capture_unit_id, num_samples)
 
 
+    def get_classification_results(self, capture_unit_id, num_results):
+        """引数で指定したキャプチャユニットが保存した四値化結果を取得する.
+
+        Args:
+            capture_unit_id (int): この ID のキャプチャユニットが保存した四値化結果を取得する
+            num_results (int): 取得する四値化結果の個数
+
+        Returns:
+            list of int: 四値化結果のリスト. 各データは 0 ～ 3 の整数.
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(capture_unit_id)
+                self._validate_num_classification_results(num_results)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        return self._get_classification_results(capture_unit_id, num_results)
+
+
     def num_captured_samples(self, capture_unit_id):
-        """引数で指定したキャプチャユニットが保存したサンプル数を取得する (I データと Q データはまとめて 1 サンプル)
+        """引数で指定したキャプチャユニットが保存したサンプル数もしくは, 四値化結果の個数を取得する. (I データと Q データはまとめて 1 サンプル)
 
         Returns:
             int: 保存されたサンプル数
@@ -269,6 +292,12 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             raise ValueError(
                 "The number of samples must be an integer.  '{}' was set.".format(num_samples))
 
+
+    def _validate_num_classification_results(self, num_results):
+        if not isinstance(num_results, int):
+            raise ValueError(
+                "The number of classification results must be an integer.  '{}' was set.".format(num_results))
+
     def _validate_capture_module_id(self, *capture_module_id):
         if not CaptureModule.includes(*capture_module_id):
             raise ValueError('Invalid capture module ID {}'.format(capture_module_id))
@@ -294,6 +323,10 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _get_capture_data(self, capture_unit_id, num_samples):
+        pass
+
+    @abstractmethod
+    def _get_classification_results(self, capture_unit_id, num_results):
         pass
 
     @abstractmethod
@@ -401,6 +434,8 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__set_real_fir_coefs(capture_unit_id, param.real_fir_i_coefs, param.real_fir_q_coefs)
         self.__set_comp_window_coefs(capture_unit_id, param.complex_window_coefs)
         self.__set_sum_range(capture_unit_id, param.sum_start_word_no, param.num_words_to_sum)
+        self.__set_decision_func_params(
+            capture_unit_id, [*param.get_decision_func_params(0), *param.get_decision_func_params(1)])
 
 
     def __set_sum_sec_len(self, capture_unit_id, sum_sec_list):
@@ -478,6 +513,13 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__reg_access.write(base_addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
 
 
+    def __set_decision_func_params(self, capture_unit_id, params):
+        """四値化判定式のパラメータを設定する"""
+        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
+        coef_list = [int.from_bytes(param.tobytes(), 'little') for param in params]
+        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.decision_func_params(0), *coef_list)
+
+
     def _initialize(self, *capture_unit_id_list):
         self._disable_start_trigger(*capture_unit_id_list)
         self.__deselect_ctrl_target(*capture_unit_id_list)
@@ -491,12 +533,27 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def _get_capture_data(self, capture_unit_id, num_samples):
         num_bytes = num_samples * CAPTURED_SAMPLE_SIZE
-        num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE * self.__CAPTURE_RAM_WORD_SIZE
+        num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE
+        num_bytes *= self.__CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
-        samples = [rd_data[i : i + CAPTURED_SAMPLE_SIZE // 2] for i in range(0, num_bytes, CAPTURED_SAMPLE_SIZE // 2)]
+        part_size = CAPTURED_SAMPLE_SIZE // 2
+        samples = [rd_data[i : i + part_size] for i in range(0, num_bytes, part_size)]
         samples = [struct.unpack('<f', sample)[0] for sample in samples]
         samples = samples[0:num_samples * 2]
         return list(zip(samples[0::2], samples[1::2]))
+
+
+    def _get_classification_results(self, capture_unit_id, num_results):
+        num_bytes = (num_results * CLASSIFICATION_RESULT_SIZE + 7) // 8
+        num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE
+        num_bytes *= self.__CAPTURE_RAM_WORD_SIZE
+        rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
+        classification_results = []
+        for byte in rd_data:
+            for shift in [0, 2, 4, 6]:
+                classification_results.append((byte >> shift) & 3)
+
+        return classification_results[0:num_results]
 
 
     def _num_captured_samples(self, capture_unit_id):
@@ -625,48 +682,66 @@ class CaptureCtrl(CaptureCtrlBase):
         dsp_units_enabled = param.dsp_units_enabled
         num_cap_samples = param.calc_capture_samples()
         if DspUnit.INTEGRATION in dsp_units_enabled:
-            # 積算ユニットが保持できる積算値の数をオーバーしていないかチェック
-            if DspUnit.SUM in dsp_units_enabled:
-                # 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, 
-                # 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる
-                num_integ_vec_elems = num_cap_samples
-            else:
-                num_integ_vec_elems = num_cap_samples // NUM_SAMPLES_IN_ADC_WORD
-
-            if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
-                msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
-                       .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
-                log_error(msg, *self._loggers)
-                raise ValueError(msg)
+            self.__check_num_integration_samples(capture_unit_id, dsp_units_enabled, num_cap_samples)
         
-        elif num_cap_samples > self.MAX_CAPTURE_SAMPLES:
-            msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
-                   .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_cap_samples))
+        if DspUnit.CLASSIFICATION in dsp_units_enabled:
+            self.__check_num_classification_samples(capture_unit_id, num_cap_samples)
+
+        if ((DspUnit.INTEGRATION not in dsp_units_enabled) and
+            (DspUnit.CLASSIFICATION not in dsp_units_enabled)):
+            self.__check_num_capture_samples(capture_unit_id, num_cap_samples)
+
+        if DspUnit.SUM in dsp_units_enabled:
+            self.__check_num_sum_samples(capture_unit_id, param)
+
+
+    def __check_num_integration_samples(self, capture_unit_id, dsp_units_enabled, num_capture_samples):
+        """積算ユニットが保持できる積算値の数をオーバーしていないかチェックする"""
+        if DspUnit.SUM in dsp_units_enabled:
+            # 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, 
+            # 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる
+            num_integ_vec_elems = num_capture_samples
+        else:
+            num_integ_vec_elems = num_capture_samples // NUM_SAMPLES_IN_ADC_WORD
+
+        if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
+            msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
+                    .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
-        if DspUnit.SUM in dsp_units_enabled:
-            for sum_sec_no in range(param.num_sum_sections):
-                num_words_to_sum = self.__calc_num_words_in_sum_range(sum_sec_no, param)
-                if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN:
-                    msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
-                           .format(sum_sec_no, capture_unit_id))
-                    msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
-                            .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
-                    log_warning(msg, *self._loggers)
-                    print('WARNING: ' + msg)
+
+    def __check_num_classification_samples(self, capture_unit_id, num_capture_samples):
+        """四値化結果が保存領域に納まるかチェックする"""
+        if num_capture_samples > self.MAX_CLASSIFICATION_RESULTS:
+            msg = ('Capture unit {} has too many classification results.  (max = {}, setting = {})'
+                .format(capture_unit_id, self.MAX_CLASSIFICATION_RESULTS, num_capture_samples))
+            log_error(msg, *self._loggers)
+            raise ValueError(msg)
 
 
-    def __calc_num_words_in_sum_range(self, sum_sec_no, param):
-        num_words_in_sum_sec = param.sum_section(sum_sec_no)[0]
-        if DspUnit.DECIMATION in param.dsp_units_enabled:
-            num_words_in_sum_sec = num_words_in_sum_sec // 4
+    def __check_num_capture_samples(self, capture_unit_id, num_capture_samples):
+        """キャプチャサンプルが保存領域に納まるかチェックする"""
+        if num_capture_samples > self.MAX_CAPTURE_SAMPLES:
+            msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
+                .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_capture_samples))
+            log_error(msg, *self._loggers)
+            raise ValueError(msg)
 
-        sum_end_word_no = min(param.sum_start_word_no + param.num_words_to_sum - 1, num_words_in_sum_sec - 1)
-        num_sum_words = sum_end_word_no - max(0, param.sum_start_word_no) + 1
-        return max(num_sum_words, 0)
 
-    
+    def __check_num_sum_samples(self, capture_unit_id, param):
+        """総和結果がオーバーフローしないかチェックする"""
+        for sum_sec_no in range(param.num_sum_sections):
+            num_words_to_sum = param.num_samples_to_sum(sum_sec_no)
+            if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN * NUM_SAMPLES_IN_ADC_WORD:
+                msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
+                       .format(sum_sec_no, capture_unit_id))
+                msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
+                        .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
+                log_warning(msg, *self._loggers)
+                print('WARNING: ' + msg)
+
+
     def _version(self):
         data = self.__reg_access.read(CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.VERSION)
         ver_char = chr(0xFF & (data >> 24))

@@ -75,8 +75,19 @@ def dsp(samples, capture_param):
 
     i_samples = sum(i_samples_list, [])
     q_samples = sum(q_samples_list, [])
-    i_samples = [float(int_to_float(i_sample)) for i_sample in i_samples]
-    q_samples = [float(int_to_float(q_sample)) for q_sample in q_samples]
+    i_samples = [int_to_float(i_sample) for i_sample in i_samples]
+    q_samples = [int_to_float(q_sample) for q_sample in q_samples]
+
+    if DspUnit.CLASSIFICATION in dsp_units_enabled:
+        results = classification(
+            i_samples,
+            q_samples,
+            capture_param.get_decision_func_params(DecisionFunc.U0),
+            capture_param.get_decision_func_params(DecisionFunc.U1))
+        return results
+
+    i_samples = [float(i_sample) for i_sample in i_samples]
+    q_samples = [float(q_sample) for q_sample in q_samples]
     return list(zip(i_samples, q_samples))
 
 
@@ -200,6 +211,27 @@ def integration(sample_list, num_sum_sections, num_integ_sections):
             for k in range(len(integ_list)):
                 integ_list[k] += samples[k]
         result.append(integ_list)
+    return result
+
+
+def classification(
+    i_sample_list, q_sample_list, decision_func_params_0, decision_func_params_1):
+    result = []
+    a0, b0, c0 = decision_func_params_0
+    a1, b1, c1 = decision_func_params_1
+    for i in range(len(i_sample_list)):
+        i_val = i_sample_list[i]
+        q_val = q_sample_list[i]
+        res_0 = a0 * i_val + b0 * q_val + c0
+        res_1 = a1 * i_val + b1 * q_val + c1
+        if (res_0 >= 0) and (res_1 >= 0):
+            result.append(0)
+        elif (res_0 >= 0) and (res_1 < 0):
+            result.append(1)
+        elif (res_0 < 0) and (res_1 >= 0):
+            result.append(2)
+        elif (res_0 < 0) and (res_1 < 0):
+            result.append(3)
     return result
 
 

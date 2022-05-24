@@ -3,6 +3,7 @@ import os
 import random
 import pathlib
 from testutil import *
+import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
@@ -33,11 +34,11 @@ class CaptureTestDsp(object):
             self.__setup_modules(awg_ctrl, cap_ctrl)
     
     def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
-        for cap_unit_id, cap_data in capture_unit_to_capture_data.items():
+        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
             dir = self.__res_dir + '/' + test_name
             os.makedirs(dir, exist_ok = True)
             capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data, capture_data_file)
+            self.__write_to_file(cap_data_list, capture_data_file)
         
     def __save_capture_params(self, capture_unit_to_capture_param, test_name):
         for cap_unit_id, cap_param in capture_unit_to_capture_param.items():
@@ -47,10 +48,13 @@ class CaptureTestDsp(object):
             with open(capture_param_file, 'w') as txt_file:
                 txt_file.write(str(cap_param))
 
-    def __write_to_file(self, iq_data_list, filepath):
+    def __write_to_file(self, cap_data_list, filepath):
         with open(filepath, 'w') as txt_file:
-            for i_data, q_data in iq_data_list:
-                txt_file.write("{}    {}\n".format(i_data, q_data))
+            for cap_data in cap_data_list:
+                if isinstance(cap_data, tuple):
+                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+                else:
+                    txt_file.write("{}\n".format(cap_data))
 
     def __gen_wave_seq(self, num_samples):
         wave_seq = WaveSequence(
@@ -111,6 +115,13 @@ class CaptureTestDsp(object):
         for _ in range(num_sum_sections):
             # 総和区間長が 3 ワード以下の場合 decimation から値が出てこなくなるので 4 ワード以上を指定する
             capture_param.add_sum_section(random.randint(4, max_sum_sec_len), random.randint(1, 24))
+
+        a0 = np.float32(random.randint(CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
+        b0 = np.float32(random.randint(CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
+        c0 = np.float32(random.randint(-10000, 10000))
+        capture_param.set_decision_func_params(DecisionFunc.U0, a0, b0, c0)
+        capture_param.set_decision_func_params(DecisionFunc.U1, b0, -a0, -c0)
+
         return capture_param
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
@@ -134,11 +145,14 @@ class CaptureTestDsp(object):
             awg_ctrl.set_wave_sequence(awg_id, wave_seq)
         return awg_to_wave_sequence        
 
-    def __get_capture_data(self, cap_ctrl):
+    def __get_capture_data(self, cap_ctrl, cls_result):
         capture_unit_to_capture_data = {}
         for capture_unit_id in self.__cap_units_to_test:
             num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-            capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+            if cls_result:
+                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
+            else:
+                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
         return capture_unit_to_capture_data
 
     def __calc_exp_data(self, awg_to_wave_sequence, capture_unit_to_capture_param):
@@ -190,7 +204,8 @@ class CaptureTestDsp(object):
             cap_ctrl.wait_for_capture_units_to_stop(1200, *self.__cap_units_to_test)
             # キャプチャデータ取得
             print('get capture data')
-            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
+            cls_result = DspUnit.CLASSIFICATION in dsp_units
+            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl, cls_result)
             # エラーチェック
             awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
             cap_errs = cap_ctrl.check_err(*self.__cap_units_to_test)

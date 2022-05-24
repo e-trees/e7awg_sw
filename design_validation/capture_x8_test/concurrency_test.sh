@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd `dirname $0`
 num=0
 num_repeats=20
