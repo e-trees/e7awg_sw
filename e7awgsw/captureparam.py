@@ -578,4 +578,12 @@ class CaptureParam(object):
         for i in range(len(self.__comp_window_coefs)):
             retstr.append('    {} : {}\n'.format(i, self.__comp_window_coefs[i]))
 
+        retstr.append('\nclassification params\n')
+        for i in range(len(self.__decision_func_params)):
+            for j in range(len(self.__decision_func_params[i])):
+                idx = i * len(self.__decision_func_params[i]) + j
+                fval = self.__decision_func_params[i][j]
+                rawbits = int.from_bytes(fval.tobytes(), 'little')
+                retstr.append('    {} : {} ({:08x})\n'.format(idx, fval, rawbits))
+
         return ''.join(retstr)

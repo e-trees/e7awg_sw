@@ -116,6 +116,18 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _get_classification_results(self, capture_unit_id, num_samples):
+        try:
+            capture_unit_id = int(capture_unit_id)
+            num_samples = pickle.dumps(num_samples)
+            result = self.__server.get_classification_results(
+                self.__handler, capture_unit_id, num_samples)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _num_captured_samples(self, capture_unit_id):
         try:
             capture_unit_id = int(capture_unit_id)

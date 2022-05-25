@@ -10,6 +10,7 @@ from .captureparam import *
 from .exception import *
 from .logger import *
 from .lock import *
+from .classification import ClassificationResult
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: 1 キャプチャモジュールが保存可能なサンプル数
@@ -96,7 +97,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             num_results (int): 取得する四値化結果の個数
 
         Returns:
-            list of int: 四値化結果のリスト. 各データは 0 ～ 3 の整数.
+            readonly list of int: 四値化結果のリスト. 各データは 0 ～ 3 の整数.
         """
         if self._validate_args:
             try:
@@ -548,12 +549,7 @@ class CaptureCtrl(CaptureCtrlBase):
         num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE
         num_bytes *= self.__CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
-        classification_results = []
-        for byte in rd_data:
-            for shift in [0, 2, 4, 6]:
-                classification_results.append((byte >> shift) & 3)
-
-        return classification_results[0:num_results]
+        return ClassificationResult(rd_data, num_results)
 
 
     def _num_captured_samples(self, capture_unit_id):

@@ -525,7 +525,19 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AwgCaptureServer.get_classification_results"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_classification_results">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">214</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_classification_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">num_samples</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+            <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+            <span class="n">cap_data</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">get_classification_results</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_data</span><span class="p">)</span></div></div>
 
 
 <span class="n">__server__</span> <span class="o">=</span> <span class="n">AwgCaptureServer</span><span class="p">()</span>

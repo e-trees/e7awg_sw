@@ -3,15 +3,23 @@ from capturetest import *
 
 
 def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
+    random.seed(10)
 
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
-        res_dir = '{}/{:03d}'.format(res_root_dir, test_id)
-        result = CaptureTest(res_dir, ip_addr, use_labrad, server_ip_addr).run_test()
+
+        res_dir = '{}/{:03d}/classification'.format(res_root_dir, test_id)
+        result = CaptureTest(res_dir, ip_addr, use_labrad, server_ip_addr).run_test(True)
         if not result:
-            print('failure')
-            failed_tests.append(test_id)
+            print('failure classification\n')
+            failed_tests.append('classification {}'.format(test_id))
+
+        res_dir = '{}/{:03d}/no_dsp'.format(res_root_dir, test_id)
+        result = CaptureTest(res_dir, ip_addr, use_labrad, server_ip_addr).run_test(False)
+        if not result:
+            print('failure no dsp\n')
+            failed_tests.append('no dsp {}'.format(test_id))
 
     if failed_tests:
         for test_id in failed_tests:

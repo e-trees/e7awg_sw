@@ -333,6 +333,18 @@ class AwgCaptureServer(ThreadedServer):
         return pickle.dumps(version)
 
 
+    @setting(214, handle='s', capture_unit_id='w', num_samples='y', returns='y')
+    def get_classification_results(self, c, handle, capture_unit_id, num_samples):
+        try:
+            num_samples = pickle.loads(num_samples)
+            capturectrl = self.__get_capturectrl(handle)
+            cap_data = capturectrl.get_classification_results(capture_unit_id, num_samples)
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(cap_data)
+
+
 __server__ = AwgCaptureServer()
 
 if __name__ == '__main__':
