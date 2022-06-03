@@ -9,10 +9,10 @@ import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.memorymap import *
-from e7awgsw.hwparam import *
-from e7awgsw.logger import *
+from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw.memorymap import CaptureParamRegs
+from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
 
 
 class CaptureUnit(object):
@@ -189,7 +189,7 @@ class CaptureUnit(object):
             # 積算ベクトルの要素数 = 1 積算区間当たりのサンプル数となる
             num_integ_vec_elems = num_capture_samples
         else:
-            num_integ_vec_elems = num_capture_samples // NUM_SAMPLES_IN_ADC_WORD
+            num_integ_vec_elems = num_capture_samples // CaptureParam.NUM_SAMPLES_IN_ADC_WORD
 
         if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
             msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
@@ -220,7 +220,7 @@ class CaptureUnit(object):
         """総和結果がオーバーフローしないかチェックする"""
         for sum_sec_no in range(param.num_sum_sections):
             num_words_to_sum = param.num_samples_to_sum(sum_sec_no)
-            if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN * NUM_SAMPLES_IN_ADC_WORD:
+            if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN * CaptureParam.NUM_SAMPLES_IN_ADC_WORD:
                 msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
                        .format(sum_sec_no, self.__id))
                 msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'

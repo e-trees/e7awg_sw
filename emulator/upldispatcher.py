@@ -2,17 +2,15 @@ import sys
 import socket
 import pathlib
 from concurrent.futures import ThreadPoolExecutor
-from awg import *
+from awg import Awg
 import capture as cap
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.uplpacket import *
-from e7awgsw.logger import *
-from e7awgsw.hwparam import *
+from e7awgsw.uplpacket import UplPacket
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
+from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
 
-import traceback
 
 class UplDispatcher:
 

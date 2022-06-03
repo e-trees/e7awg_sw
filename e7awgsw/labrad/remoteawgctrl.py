@@ -5,9 +5,8 @@ import pickle
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
 from e7awgsw.awgctrl import AwgCtrlBase
-from e7awgsw.logger import *
+from e7awgsw.logger import get_null_logger, log_error
 
 
 class RemoteAwgCtrl(AwgCtrlBase):

@@ -15,8 +15,9 @@ import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.labrad import *
+from e7awgsw import DspUnit, CaptureModule, DecisionFunc, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw import SinWave, IqWave, plot_graph
+from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 SAVE_DIR = "result_send_recv_classification/"
 IP_ADDR = '10.0.0.16'

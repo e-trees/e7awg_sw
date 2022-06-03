@@ -1,8 +1,7 @@
 import socket
 import select
-from .uplpacket import *
-from .hwdefs import *
-from .logger import *
+from .uplpacket import UplPacket
+from .logger import log_error
 
 class RegAccess(object):
     
@@ -132,7 +131,7 @@ class UdpRw(object):
     BUFSIZE = 16384 # bytes
     #MAX_RW_SIZE = 3616 # bytes
     MAX_RW_SIZE = 1440 # bytes
-    TIMEOUT = 12 # sec
+    TIMEOUT = 25 # sec
 
     def __init__(self, ip_addr, port, min_rw_size, wr_mode_id, rd_mode_id, *loggers):
         self.__dest_addr = (ip_addr, port)

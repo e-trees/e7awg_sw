@@ -1,8 +1,8 @@
-from .hwparam import *
-from .hwdefs import *
 import copy
-from .logger import *
 import numpy as np
+from .hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS
+from .hwdefs import DspUnit, DecisionFunc
+from .logger import get_file_logger, get_null_logger, log_error
 
 class CaptureParam(object):
     """ キャプチャパラメータを保持するクラス"""

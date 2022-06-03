@@ -1,14 +1,12 @@
 import sys
 import pathlib
-import awg
-import capture
-from register import *
+from register import RwRegister, RoRegister
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.memorymap import *
-from e7awgsw.hwparam import *
+from e7awgsw import CaptureUnit, CaptureModule
+from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
 
 
 class CaptureController(object):

@@ -8,7 +8,7 @@ import math
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
+from e7awgsw import AwgCtrl, SinWave, SawtoothWave, SquareWave, GaussianPulse, plot_graph
 
 def to_degree(val):
     return 180 * val / math.pi

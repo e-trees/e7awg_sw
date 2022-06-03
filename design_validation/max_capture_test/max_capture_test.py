@@ -1,5 +1,7 @@
 import argparse
-from capturetest import *
+import random
+import sys
+from capturetest import CaptureTest
 
 
 def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     if args.num_tests is not None:
         num_tests = int(args.num_tests)
 
-    ip_addr = '10.0.0.16'
+    ip_addr = '10.1.0.255'
     if args.ipaddr is not None:
         ip_addr = args.ipaddr
 

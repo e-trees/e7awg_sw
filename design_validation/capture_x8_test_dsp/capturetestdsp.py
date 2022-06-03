@@ -2,14 +2,15 @@ import sys
 import os
 import random
 import pathlib
-from testutil import *
+from testutil import gen_random_int_list
 import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.labrad import *
-from emulator.dspmodule import *
+from e7awgsw import AWG, AwgCtrl, WaveSequence
+from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc
+from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
+from emulator.dspmodule import dsp
 
 class CaptureTestDsp(object):
 
@@ -201,7 +202,7 @@ class CaptureTestDsp(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(1200, *self.__cap_units_to_test)
+            cap_ctrl.wait_for_capture_units_to_stop(2400, *self.__cap_units_to_test)
             # キャプチャデータ取得
             print('get capture data')
             cls_result = DspUnit.CLASSIFICATION in dsp_units

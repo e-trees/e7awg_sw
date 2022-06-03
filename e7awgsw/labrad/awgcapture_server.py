@@ -8,7 +8,7 @@ from labrad import util
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
+from e7awgsw import AwgCtrl, CaptureCtrl
 
 class AwgCaptureServer(ThreadedServer):
 

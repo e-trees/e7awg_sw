@@ -1,7 +1,12 @@
-import sys
-from capturetestdsp import *
-import random
 import argparse
+import pathlib
+import sys
+import random
+from capturetestdsp import CaptureTestDsp
+
+lib_path = str(pathlib.Path(__file__).resolve().parents[2])
+sys.path.append(lib_path)
+from e7awgsw import CaptureModule, DspUnit
 
 def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr):
     random.seed(10)
@@ -102,7 +107,7 @@ if __name__ == "__main__":
     if args.num_tests is not None:
         num_tests = int(args.num_tests)
 
-    ip_addr = '10.0.0.16'
+    ip_addr = '10.1.0.255'
     if args.ipaddr is not None:
         ip_addr = args.ipaddr
 

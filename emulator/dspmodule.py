@@ -4,9 +4,9 @@ import numpy as np
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
+from e7awgsw import DspUnit, DecisionFunc, CaptureParam
 
-def dsp(samples, capture_param):
+def dsp(samples, capture_param, ):
     if len(samples) < capture_param.num_samples_to_process:
         samples.extend([(0, 0)] * (capture_param.num_samples_to_process - len(samples)))
     else:

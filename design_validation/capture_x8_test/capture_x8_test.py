@@ -1,5 +1,11 @@
 import argparse
-from capturetest import *
+import pathlib
+import sys
+from capturetest import CaptureTest
+
+lib_path = str(pathlib.Path(__file__).resolve().parents[2])
+sys.path.append(lib_path)
+from e7awgsw import CaptureModule
 
 
 def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, res_root_dir):
@@ -37,7 +43,7 @@ if __name__ == "__main__":
     if args.num_tests is not None:
         num_tests = int(args.num_tests)
 
-    ip_addr = '10.0.0.16'
+    ip_addr = '10.1.0.255'
     if args.ipaddr is not None:
         ip_addr = args.ipaddr
 

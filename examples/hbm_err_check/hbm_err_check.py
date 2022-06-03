@@ -4,16 +4,16 @@ import argparse
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw import WaveRamAccess
-from e7awgsw import logger
+
+from e7awgsw.udpaccess import WaveRamAccess
+from e7awgsw.logger import get_file_logger
 
 IP_ADDR = '10.0.0.16'
 
 def main():
 
     WAVE_RAM_PORT = 0x4000
-    wave_ram_access = WaveRamAccess(IP_ADDR, WAVE_RAM_PORT, logger.get_file_logger())
+    wave_ram_access = WaveRamAccess(IP_ADDR, WAVE_RAM_PORT, get_file_logger())
     
     wr_data = bytearray(b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F')
     wave_ram_access.write(0x000000000, wr_data)

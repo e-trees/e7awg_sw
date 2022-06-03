@@ -4,8 +4,7 @@ import pathlib
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
-from e7awgsw import *
-from e7awgsw.logger import *
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 class Hbm(object):
     """HBM をエミュレートするクラス"""
