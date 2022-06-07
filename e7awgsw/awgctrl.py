@@ -461,13 +461,15 @@ class AwgCtrl(AwgCtrlBase):
 
 
     def _reset_awgs(self, *awg_id_list):
-        for awg_id in awg_id_list:
+        with self.__flock:
+            self.__select_ctrl_target(*awg_id_list)
             self.__reg_access.write_bits(
-                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_RESET, 1, 1)
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESET, 1, 1)
             time.sleep(10e-6)
             self.__reg_access.write_bits(
-                AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_RESET, 1, 0)
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
+            self.__deselect_ctrl_target(*awg_id_list)
 
 
     def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):

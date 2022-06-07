@@ -22,9 +22,8 @@ from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 SAVE_DIR = "result_send_recv_classification/"
 IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 100
-NUM_WAVE_CYCLES = 100
-NUM_WAVE_SEQ_REPEATS = 1
-NUM_CAPTURE_WORDS = 125
+NUM_WAVE_CYCLES = 40
+NUM_CHUNK_REPEATS = 4
 
 def set_trigger_awg(cap_ctrl, awg, capture_modules):
     for cap_mod_id in capture_modules:
@@ -44,16 +43,15 @@ def gen_cos_wave(freq, num_cycles, amp):
 def gen_wave_seq():
     wave_seq = WaveSequence(
         num_wait_words = 16,
-        num_repeats = NUM_WAVE_SEQ_REPEATS)
+        num_repeats = 1)
 
     num_chunks = 1
     samples = gen_cos_wave(42e6, NUM_WAVE_CYCLES, 32760)
-    print(len(samples))
     for _ in range(num_chunks):
         wave_seq.add_chunk(
             iq_samples = samples,
             num_blank_words = 0, 
-            num_repeats = 1)
+            num_repeats = NUM_CHUNK_REPEATS)
     return wave_seq
  
 
@@ -66,19 +64,23 @@ def set_wave_sequence(awg_ctrl):
     return awg_to_wave_sequence
 
 
-def set_capture_params(cap_ctrl, wave_seq, capture_units):
-    capture_param = gen_capture_param(wave_seq)
+def set_capture_params(cap_ctrl, wave_seq, capture_units, use_integ):
+    capture_param = gen_capture_param(wave_seq, use_integ)
     for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
 
-def gen_capture_param(wave_seq):
+def gen_capture_param(wave_seq, use_integ):
     capture_param = CaptureParam()
     capture_param.capture_delay = CAPTURE_DELAY
-    capture_param.num_integ_sections = 1
-    capture_param.add_sum_section(NUM_CAPTURE_WORDS, 1)
+    capture_param.num_integ_sections = NUM_CHUNK_REPEATS - 1
+    # 積算区間長を出力波形の 1 チャンク分と同じ長さになるように設定する
+    capture_param.add_sum_section(wave_seq.chunk(0).num_wave_words - 1, 1)
 
-    capture_param.sel_dsp_units_to_enable(DspUnit.CLASSIFICATION)
+    if use_integ:
+        capture_param.sel_dsp_units_to_enable(DspUnit.INTEGRATION, DspUnit.CLASSIFICATION)
+    else:
+        capture_param.sel_dsp_units_to_enable(DspUnit.CLASSIFICATION)
     capture_param.set_decision_func_params(
         DecisionFunc.U0, np.float32(1), np.float32(1), np.float32(0))
     capture_param.set_decision_func_params(
@@ -168,7 +170,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
         return CaptureCtrl(IP_ADDR)
 
 
-def main(awgs, capture_modules, use_labrad, server_ip_addr):
+def main(awgs, capture_modules, use_labrad, server_ip_addr, use_integ):
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
         create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         capture_units = CaptureModule.get_units(*capture_modules)
@@ -180,7 +182,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         # 波形シーケンスの設定
         awg_to_wave_sequence = set_wave_sequence(awg_ctrl)
         # キャプチャパラメータの設定
-        set_capture_params(cap_ctrl, awg_to_wave_sequence[awgs[0]], capture_units)
+        set_capture_params(cap_ctrl, awg_to_wave_sequence[awgs[0]], capture_units, use_integ)
         # 波形送信スタート
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
@@ -206,6 +208,7 @@ if __name__ == "__main__":
     parser.add_argument('--capture-module')
     parser.add_argument('--server-ipaddr')
     parser.add_argument('--labrad', action='store_true')
+    parser.add_argument('--integ', action='store_true')
     args = parser.parse_args()
 
     if args.ipaddr is not None:
@@ -223,4 +226,4 @@ if __name__ == "__main__":
     if args.server_ipaddr is not None:
         server_ip_addr = args.server_ipaddr
 
-    main(awgs, capture_modules, args.labrad, server_ip_addr)
+    main(awgs, capture_modules, args.labrad, server_ip_addr, args.integ)

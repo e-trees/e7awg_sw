@@ -1,5 +1,5 @@
 """
-AWG から 4.8MHz の余弦波を出力して, 信号処理モジュールを全て有効にしてキャプチャします.
+AWG から 4.8MHz の余弦波を出力して, 四値化以外の信号処理モジュールを全て有効にしてキャプチャします.
 フィルタおよび窓関数の係数の設定方法は, gen_capture_param() を参照してください.
 
 総和区間 = 12 キャプチャワード
@@ -85,7 +85,13 @@ def gen_capture_param(wave_seq):
     capture_param.sum_start_word_no = 0
     capture_param.num_words_to_sum = CaptureParam.MAX_SUM_SECTION_LEN
 
-    capture_param.sel_dsp_units_to_enable(*DspUnit.all())
+    capture_param.sel_dsp_units_to_enable(
+        DspUnit.COMPLEX_FIR,
+        DspUnit.DECIMATION,
+        DspUnit.REAL_FIR,
+        DspUnit.COMPLEX_WINDOW,
+        DspUnit.SUM,
+        DspUnit.INTEGRATION)
     capture_param.complex_fir_coefs = [1 + 0j] + [0] * (CaptureParam.NUM_COMPLEX_FIR_COEFS - 1)
     capture_param.real_fir_i_coefs = [1] + [0] * (CaptureParam.NUM_REAL_FIR_COEFS - 1)
     capture_param.real_fir_q_coefs = capture_param.real_fir_i_coefs

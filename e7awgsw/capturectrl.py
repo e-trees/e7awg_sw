@@ -572,14 +572,15 @@ class CaptureCtrl(CaptureCtrlBase):
 
 
     def _reset_capture_units(self, *capture_unit_id_list):
-        for capture_unit_id in capture_unit_id_list:
-            base_addr = CaptureCtrlRegs.Addr.capture(capture_unit_id)
+        with self.__flock:
+            self.__select_ctrl_target(*capture_unit_id_list)
             self.__reg_access.write_bits(
-                base_addr, CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 1)
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_RESET, 1, 1)
             time.sleep(10e-6)
             self.__reg_access.write_bits(
-                base_addr, CaptureCtrlRegs.Offset.CTRL, CaptureCtrlRegs.Bit.CTRL_RESET, 1, 0)
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
+            self.__deselect_ctrl_target(*capture_unit_id_list)
 
 
     def __select_ctrl_target(self, *capture_unit_id_list):
