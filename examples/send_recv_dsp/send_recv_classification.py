@@ -98,7 +98,7 @@ def get_capture_data(cap_ctrl, capture_units):
     return capture_unit_to_capture_data
 
 
-def save_sample_data(prefix, sampling_rate, id_to_samples):
+def save_wave_data(prefix, sampling_rate, id_to_samples):
     for id, samples in id_to_samples.items():
         dir = SAVE_DIR + '/{}_{}'.format(prefix, id)
         os.makedirs(dir, exist_ok = True)
@@ -196,7 +196,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr, use_integ):
 
         # 波形保存
         # awg_to_wave_data = {awg: wave_seq.all_samples(False) for awg, wave_seq in awg_to_wave_sequence.items()}
-        # save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data) # 時間がかかるので削除
+        # save_wave_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data) # 時間がかかるので削除
         save_classification_results('capture', capture_unit_to_capture_data)
         print('end')
 

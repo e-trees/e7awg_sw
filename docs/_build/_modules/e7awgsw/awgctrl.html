@@ -194,14 +194,16 @@
             
   <h1>e7awgsw.awgctrl のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">.wavesequence</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.wavesequence</span> <span class="kn">import</span> <span class="n">WaveSequence</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="n">AWG_REG_PORT</span>
+<span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="n">AwgMasterCtrlRegs</span><span class="p">,</span> <span class="n">AwgCtrlRegs</span><span class="p">,</span> <span class="n">WaveParamRegs</span>
+<span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="n">AwgRegAccess</span><span class="p">,</span> <span class="n">WaveRamAccess</span>
+<span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="n">AwgTimeoutError</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
+<span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="n">ReentrantFileLock</span>
+<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">AWG</span>
 
 <div class="viewcode-block" id="AwgCtrlBase"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgCtrlBase</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span> <span class="o">=</span> <span class="n">ABCMeta</span><span class="p">):</span>
     <span class="c1">#: AWG のサンプリングレート (単位=サンプル数/秒)</span>
@@ -654,13 +656,15 @@
 
 
     <span class="k">def</span> <span class="nf">_reset_awgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="n">awg_id_list</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">awg</span><span class="p">(</span><span class="n">awg_id</span><span class="p">),</span> <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_wait_for_awgs_to_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>

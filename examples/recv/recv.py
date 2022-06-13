@@ -38,7 +38,7 @@ def get_capture_data(cap_ctrl, capture_units):
     return capture_unit_to_capture_data
 
 
-def save_sample_data(prefix, sampling_rate, id_to_samples):
+def save_wave_data(prefix, sampling_rate, id_to_samples):
     for id, samples in id_to_samples.items():
         dir = SAVE_DIR + '/{}_{}'.format(prefix, id)
         os.makedirs(dir, exist_ok = True)
@@ -100,7 +100,7 @@ def main(num_capture_words, capture_modules, use_labrad, server_ip_addr):
         # キャプチャデータ取得
         capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
         # 波形保存
-        save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
+        save_wave_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
         print('end')
 
 

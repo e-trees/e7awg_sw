@@ -197,14 +197,14 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.captureparam</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span><span class="p">,</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span><span class="p">,</span> <span class="n">MAX_CAPTURE_SIZE</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="n">CAPTURE_REG_PORT</span>
+<span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="n">CaptureMasterCtrlRegs</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="p">,</span> <span class="n">CaptureParamRegs</span>
+<span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="n">CaptureRegAccess</span><span class="p">,</span> <span class="n">WaveRamAccess</span>
+<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">DspUnit</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="p">,</span> <span class="n">CaptureModule</span><span class="p">,</span> <span class="n">AWG</span><span class="p">,</span> <span class="n">CaptureErr</span>
+<span class="kn">from</span> <span class="nn">.captureparam</span> <span class="kn">import</span> <span class="n">CaptureParam</span>
+<span class="kn">from</span> <span class="nn">.exception</span> <span class="kn">import</span> <span class="n">CaptureUnitTimeoutError</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span><span class="p">,</span> <span class="n">log_warning</span>
+<span class="kn">from</span> <span class="nn">.lock</span> <span class="kn">import</span> <span class="n">ReentrantFileLock</span>
 <span class="kn">from</span> <span class="nn">.classification</span> <span class="kn">import</span> <span class="n">ClassificationResult</span>
 
 <div class="viewcode-block" id="CaptureCtrlBase"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureCtrlBase</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span> <span class="o">=</span> <span class="n">ABCMeta</span><span class="p">):</span>
@@ -767,14 +767,15 @@
 
 
     <span class="k">def</span> <span class="nf">_reset_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
-            <span class="n">base_addr</span> <span class="o">=</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                <span class="n">base_addr</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">__select_ctrl_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>

@@ -16,7 +16,7 @@ import argparse
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import DspUnit, CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
-from e7awgsw import IqWave, plot_graph
+from e7awgsw import IqWave, plot_graph, plot_samples
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 SAVE_DIR = "result_send_recv_dsp/"
@@ -108,17 +108,21 @@ def get_capture_data(cap_ctrl, capture_units):
     return capture_unit_to_capture_data
 
 
-def save_sample_data(prefix, sampling_rate, id_to_samples):
+def save_as_text(dir, prefix, id, samples):
+    filepath = dir + '/{}_{}.txt'.format(prefix, id)
+    with open(filepath, 'w') as txt_file:
+        for i_data, q_data in samples:
+            txt_file.write("{}  ,  {}\n".format(i_data, q_data))
+
+
+def save_wave_data(prefix, sampling_rate, id_to_samples):
     for id, samples in id_to_samples.items():
+        print('save {} {} data'.format(prefix, id))
         dir = SAVE_DIR + '/{}_{}'.format(prefix, id)
         os.makedirs(dir, exist_ok = True)
-        print('save {} {} data'.format(prefix, id))
 
         # I/Q データテキストファイル保存
-        filepath = dir + '/{}_{}.txt'.format(prefix, id)
-        with open(filepath, 'w') as txt_file:
-            for i_data, q_data in samples:
-                txt_file.write("{}  ,  {}\n".format(i_data, q_data))
+        save_as_text(dir, prefix, id, samples)
 
         # I データグラフ保存
         i_data = [sample[0] for sample in samples]
@@ -133,6 +137,32 @@ def save_sample_data(prefix, sampling_rate, id_to_samples):
         q_data = [sample[1] for sample in samples]
         plot_graph(
             sampling_rate, 
+            q_data, 
+            '{}_{}_Q'.format(prefix, id), 
+            dir + '/{}_{}_Q.png'.format(prefix, id),
+            '#00a497')
+
+
+def save_sample_data(prefix, id_to_samples):
+    for id, samples in id_to_samples.items():
+        print('save {} {} data'.format(prefix, id))
+        dir = SAVE_DIR + '/{}_{}'.format(prefix, id)
+        os.makedirs(dir, exist_ok = True)
+
+        # I/Q データテキストファイル保存
+        save_as_text(dir, prefix, id, samples)
+
+        # I データグラフ保存
+        i_data = [sample[0] for sample in samples]
+        plot_samples(
+            i_data, 
+            '{}_{}_I'.format(prefix, id), 
+            dir + '/{}_{}_I.png'.format(prefix, id),
+            '#b44c97')
+
+        # Q データグラフ保存
+        q_data = [sample[1] for sample in samples]
+        plot_samples(
             q_data, 
             '{}_{}_Q'.format(prefix, id), 
             dir + '/{}_{}_Q.png'.format(prefix, id),
@@ -193,8 +223,8 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
 
         # 波形保存
         #awg_to_wave_data = {awg: wave_seq.all_samples(False) for awg, wave_seq in awg_to_wave_sequence.items()}
-        #save_sample_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data) # 時間がかかるので削除
-        save_sample_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
+        #save_wave_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data) # 時間がかかるので削除
+        save_sample_data('capture', capture_unit_to_capture_data)
         print('end')
 
 

@@ -193,11 +193,11 @@
           <div class="body">
             
   <h1>e7awgsw.captureparam のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span>
+<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">DspUnit</span><span class="p">,</span> <span class="n">DecisionFunc</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
 
 <div class="viewcode-block" id="CaptureParam"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureParam</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; キャプチャパラメータを保持するクラス&quot;&quot;&quot;</span>

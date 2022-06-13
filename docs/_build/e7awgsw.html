@@ -2246,8 +2246,8 @@
 <span id="e7awgsw-utiltool-module"></span><h2>e7awgsw.utiltool module<a class="headerlink" href="#module-e7awgsw.utiltool" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="e7awgsw.utiltool.plot_graph">
-<code class="sig-prename descclassname"><span class="pre">e7awgsw.utiltool.</span></code><code class="sig-name descname"><span class="pre">plot_graph</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em>, <em><span class="n"><span class="pre">samples</span></span></em>, <em><span class="n"><span class="pre">title</span></span></em>, <em><span class="n"><span class="pre">filepath</span></span></em>, <em><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#b44c97'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/utiltool.html#plot_graph"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.utiltool.plot_graph" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>サンプル値をグラフとしてファイルに保存する</p>
+<code class="sig-prename descclassname"><span class="pre">e7awgsw.utiltool.</span></code><code class="sig-name descname"><span class="pre">plot_graph</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">sampling_rate</span></span></em>, <em><span class="n"><span class="pre">samples</span></span></em>, <em><span class="n"><span class="pre">title</span></span></em>, <em><span class="n"><span class="pre">filepath</span></span></em>, <em><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#b44c97'</span></span></em>, <em><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/utiltool.html#plot_graph"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.utiltool.plot_graph" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>時刻とサンプル値のグラフをファイルに保存する</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2258,6 +2258,29 @@
 <li><strong>title</strong> (<em>string</em>) -- グラフのタイトル.</li>
 <li><strong>filepath</strong> (<em>string</em>) -- グラフを保存するファイルのパス.</li>
 <li><strong>color</strong> (<em>string</em>) -- グラフの線の色. 16進RGB値で指定する. (例: '#102030')</li>
+<li><strong>marker</strong> (<em>string</em>) -- グラフに描画される点の種類</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="e7awgsw.utiltool.plot_samples">
+<code class="sig-prename descclassname"><span class="pre">e7awgsw.utiltool.</span></code><code class="sig-name descname"><span class="pre">plot_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">samples</span></span></em>, <em><span class="n"><span class="pre">title</span></span></em>, <em><span class="n"><span class="pre">filepath</span></span></em>, <em><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#b44c97'</span></span></em>, <em><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em><span class="n"><span class="pre">x_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Sample</span> <span class="pre">No'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/utiltool.html#plot_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.utiltool.plot_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>サンプル値をグラフとしてファイルに保存する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>samples</strong> (<em>list of</em><em> [</em><em>float</em><em> | </em><em>int</em><em>]</em>) -- グラフに出力するサンプル値のリスト.</li>
+<li><strong>title</strong> (<em>string</em>) -- グラフのタイトル.</li>
+<li><strong>filepath</strong> (<em>string</em>) -- グラフを保存するファイルのパス.</li>
+<li><strong>color</strong> (<em>string</em>) -- グラフの線の色. 16進RGB値で指定する. (例: '#102030')</li>
+<li><strong>marker</strong> (<em>string</em>) -- グラフに描画される点の種類</li>
+<li><strong>x_label</strong> (<em>string</em>) -- 横軸のラベル</li>
 </ul>
 </td>
 </tr>

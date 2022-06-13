@@ -193,10 +193,10 @@
           <div class="body">
             
   <h1>e7awgsw.wavesequence のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">copy</span>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">WAVE_SAMPLE_SIZE</span><span class="p">,</span> <span class="n">AWG_WORD_SIZE</span><span class="p">,</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">,</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span>
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
 
 <div class="viewcode-block" id="WaveSequence"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveSequence</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; 波形シーケンスの情報を保持するクラス&quot;&quot;&quot;</span>
