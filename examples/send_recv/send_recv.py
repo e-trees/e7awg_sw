@@ -144,7 +144,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
         return CaptureCtrl(IP_ADDR)
 
 
-def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words):
+def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words, timeout=5, use_sequencer=False):
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         capture_units = CaptureModule.get_units(*capture_modules)
@@ -157,12 +157,15 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words):
         awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words)
         # キャプチャパラメータの設定
         set_capture_params(cap_ctrl, awg_to_wave_sequence[awgs[0]], capture_units)
-        # 波形送信スタート
-        awg_ctrl.start_awgs(*awgs)
+        if use_sequencer == False:
+            # 波形送信スタート
+            awg_ctrl.start_awgs(*awgs)
+        else:
+            print("wait for started by sequencer")
         # 波形送信完了待ち
-        awg_ctrl.wait_for_awgs_to_stop(5, *awgs)
+        awg_ctrl.wait_for_awgs_to_stop(timeout, *awgs)
         # キャプチャ完了待ち
-        cap_ctrl.wait_for_capture_units_to_stop(5, *capture_units)
+        cap_ctrl.wait_for_capture_units_to_stop(timeout, *capture_units)
         # エラーチェック
         check_err(awg_ctrl, cap_ctrl, awgs, capture_units)
         # キャプチャデータ取得
@@ -182,6 +185,8 @@ if __name__ == "__main__":
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
     parser.add_argument('--num-wait-words', default=16, type=int)
+    parser.add_argument('--use-sequencer', action='store_true')
+    parser.add_argument('--timeout', default=5, type=int)
     args = parser.parse_args()
 
     if args.ipaddr is not None:
@@ -195,4 +200,5 @@ if __name__ == "__main__":
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    main(awgs, capture_modules, args.labrad, args.server_ipaddr, args.num_wait_words)
+    main(awgs, capture_modules, args.labrad, args.server_ipaddr, args.num_wait_words, timeout=args.timeout, use_sequencer=args.use_sequencer)
+    
