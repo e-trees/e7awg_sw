@@ -85,9 +85,9 @@ def get_capture_data(cap_ctrl, capture_units):
     return capture_unit_to_capture_data
 
 
-def save_wave_data(prefix, sampling_rate, id_to_samples):
+def save_wave_data(prefix, sampling_rate, id_to_samples, save_dir=SAVE_DIR):
     for id, samples in id_to_samples.items():
-        dir = SAVE_DIR + '/{}_{}'.format(prefix, id)
+        dir = save_dir + '/{}_{}'.format(prefix, id)
         os.makedirs(dir, exist_ok = True)
         print('save {} {} data'.format(prefix, id))
 
@@ -144,7 +144,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
         return CaptureCtrl(IP_ADDR)
 
 
-def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words, timeout=5, use_sequencer=False):
+def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words, save_dir=SAVE_DIR, timeout=5, use_sequencer=False):
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         capture_units = CaptureModule.get_units(*capture_modules)
@@ -172,8 +172,8 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr, num_wait_words, time
         capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
         # 波形保存
         awg_to_wave_data = {awg: wave_seq.all_samples(False) for awg, wave_seq in awg_to_wave_sequence.items()}
-        save_wave_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data)
-        save_wave_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
+        save_wave_data('awg', AwgCtrl.SAMPLING_RATE, awg_to_wave_data, save_dir)
+        save_wave_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data, save_dir)
         print('end')
 
 
@@ -187,6 +187,7 @@ if __name__ == "__main__":
     parser.add_argument('--num-wait-words', default=16, type=int)
     parser.add_argument('--use-sequencer', action='store_true')
     parser.add_argument('--timeout', default=5, type=int)
+    parser.add_argument('--save-dir', default=SAVE_DIR)
     args = parser.parse_args()
 
     if args.ipaddr is not None:
@@ -200,5 +201,5 @@ if __name__ == "__main__":
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    main(awgs, capture_modules, args.labrad, args.server_ipaddr, args.num_wait_words, timeout=args.timeout, use_sequencer=args.use_sequencer)
+    main(awgs, capture_modules, args.labrad, args.server_ipaddr, args.num_wait_words, save_dir=args.save_dir, timeout=args.timeout, use_sequencer=args.use_sequencer)
     
