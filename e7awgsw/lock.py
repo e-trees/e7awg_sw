@@ -1,19 +1,34 @@
 import os
+import pwd
 import stat
 import fcntl
 import threading
+import time
 
 class ReentrantFileLock(object):
     """スレッド間, プロセス間排他可能なファイルロック"""
 
     def __init__(self, filepath):
         dirname = os.path.dirname(filepath)
-        os.makedirs(dirname, exist_ok = True)
-        self.__lock_fp = open(filepath, 'w')
-        s = stat.S_IREAD | stat.S_IWRITE | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH
-        os.chmod(filepath, s)
+        os.makedirs(dirname, exist_ok = True)        
+        self.__lock_fp = self.__get_fp(filepath)
+        file_owner = os.stat(filepath).st_uid
+        if file_owner == os.getuid():
+            s = stat.S_IREAD | stat.S_IWRITE | stat.S_IRGRP | stat.S_IWGRP | stat.S_IROTH | stat.S_IWOTH
+            os.chmod(filepath, s)
+
         self.__num_holds = 0
         self.__rlock = threading.RLock()
+
+
+    def __get_fp(self, filepath):
+        for i in range(80):
+            try:
+                return open(filepath, 'w')
+            except:
+                time.sleep(0.1)
+
+        raise TimeoutError('[ReentrantFileLock]  open file timeout')
 
 
     def acquire(self):
