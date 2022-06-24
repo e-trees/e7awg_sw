@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument('targets', nargs='*')
     args = parser.parse_args()
 
-    for a in targets:
+    for a in args.targets:
         client = SequencerClient(a, int(args.port))
         r, a = client.add_sequencer(args.sec*125000000) # 125M = 1sec
         print(r, a)
