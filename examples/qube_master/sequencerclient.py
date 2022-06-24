@@ -39,11 +39,13 @@ class SequencerClient(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ipaddr', default='10.2.0.255')
     parser.add_argument('--port', type=int, default='16384')
     parser.add_argument('--sec', type=int, default=10) 
+    parser.add_argument('targets', nargs='*')
     args = parser.parse_args()
 
-    client = SequencerClient(args.ipaddr, int(args.port))
-    r, a = client.add_sequencer(args.sec*125000000) # 125M = 1sec
-    print(r, a)
+    for a in targets:
+        client = SequencerClient(a, int(args.port))
+        r, a = client.add_sequencer(args.sec*125000000) # 125M = 1sec
+        print(r, a)
+        
