@@ -294,6 +294,8 @@
 <div class="viewcode-block" id="AwgCtrlBase.reset_awgs"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">reset_awgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;引数で指定したAWGをリセットする</span>
 
+<span class="sd">        | JESD204C の送信カウンタと AWG の SOF カウンタがずれる可能性があるため, HW で対処するまでは呼んではならない. (2022/07/06)</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            *awg_id_list (list of AWG): リセットする AWG の ID</span>
 <span class="sd">        &quot;&quot;&quot;</span>

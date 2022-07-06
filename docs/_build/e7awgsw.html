@@ -360,6 +360,9 @@
 <dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.reset_awgs">
 <code class="sig-name descname"><span class="pre">reset_awgs</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.reset_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>引数で指定したAWGをリセットする</p>
+<div class="line-block">
+<div class="line">JESD204C の送信カウンタと AWG の SOF カウンタがずれる可能性があるため, HW で対処するまでは呼んではならない. (2022/07/06)</div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

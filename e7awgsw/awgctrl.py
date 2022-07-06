@@ -99,6 +99,8 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     def reset_awgs(self, *awg_id_list):
         """引数で指定したAWGをリセットする
 
+        | JESD204C の送信カウンタと AWG の SOF カウンタがずれる可能性があるため, HW で対処するまでは呼んではならない. (2022/07/06)
+
         Args:
             *awg_id_list (list of AWG): リセットする AWG の ID
         """
