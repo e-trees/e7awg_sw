@@ -44,13 +44,23 @@ class QuBEMasterClient(object):
         print(data)
         return self.send_recv(data)
 
+def conv2addr(addr_str):
+    addr_arry = [int(s) for s in addr_str.split(".")]
+    a = 0
+    for v in addr_arry:
+        a = (a << 8) | v
+    return a
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr', default='10.3.0.255')
     parser.add_argument('--port', type=int, default='16384')
     parser.add_argument('--command', default='')
     parser.add_argument('--value', type=int, default=0)
+    parser.add_argument('destinations', nargs='*')
     args = parser.parse_args()
+
+    addrs = [conv2addr(a) for a in args.destinations]
 
     client = QuBEMasterClient(args.ipaddr, int(args.port))
     if args.command == 'clear':
@@ -59,10 +69,9 @@ if __name__ == "__main__":
     elif args.command == 'start':
         r, a = client.clear_clock(value=0x1000000000000000)
         print(r, a)
-    elif args.command == 'kick':
-        r, a = client.kick_clock_synch([[0x0a020013, 0x4001], [0x0a020014, 0x4001]])
-        #r, a = client.kick_clock_synch([[0x0a020013, 0x4001]])
-        #r, a = client.kick_clock_synch([[0x0a020014, 0x4001]])
+    elif args.command == 'kick' and len(addrs) > 0:
+        targets = [[a, 0x4001] for a in addrs]
+        r, a = client.kick_clock_synch(targets)
         print(r, a)
     else:
         parser.print_help()
