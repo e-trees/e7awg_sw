@@ -59,6 +59,13 @@ class CaptureUnit(object):
                 self.__state = CaptureUnitState.COMPLETE
 
 
+    def setToIdle(self):
+        """キャプチャユニット が complete 状態のとき IDLE 状態にする"""
+        with self.__state_lock:
+            if (self.__state == CaptureUnitState.COMPLETE):
+                self.__state = CaptureUnitState.IDLE
+
+
     def capture_wave(self, wave_data, *, is_async = False):
         """波形をキャプチャする"""
         with self.__state_lock:

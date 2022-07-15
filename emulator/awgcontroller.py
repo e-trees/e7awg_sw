@@ -108,6 +108,10 @@ class AwgController(object):
             lambda old_bits, new_bits: self.__ctrl_prepare(awg, True, old_bits[0], new_bits[0]),
             AwgCtrlRegs.Bit.CTRL_PREPARE
         )
+        ctrl_reg.add_on_change(
+            lambda old_bits, new_bits: self.__ctrl_done_clr(awg, True, old_bits[0], new_bits[0]),
+            AwgCtrlRegs.Bit.CTRL_DONE_CLR
+        )
         return ctrl_reg
 
 
@@ -152,6 +156,11 @@ class AwgController(object):
             lambda old_bits, new_bits: self.__ctrl_prepare(
                 awg, ctrl_target_sel_reg.get_bit(bit_idx), old_bits[0], new_bits[0]),
             AwgMasterCtrlRegs.Bit.CTRL_PREPARE
+        )
+        master_ctrl_reg.add_on_change(
+            lambda old_bits, new_bits: self.__ctrl_done_clr(
+                awg, ctrl_target_sel_reg.get_bit(bit_idx), old_bits[0], new_bits[0]),
+            AwgMasterCtrlRegs.Bit.CTRL_DONE_CLR
         )
 
 
@@ -222,6 +231,11 @@ class AwgController(object):
             awg.preload()
 
 
+    def __ctrl_done_clr(self, awg, is_ctrl_target, old_val, new_val):
+        if is_ctrl_target and (old_val == 0) and (new_val == 1):
+            awg.setToIdle()
+
+
     def __gen_version_reg(self):
         char = 'K'
         year = 22
@@ -243,6 +257,7 @@ class AwgController(object):
             AwgMasterCtrlRegs.Bit.CTRL_START
         )
         return master_ctrl_reg
+
 
     def __write_wave_param(self, addr, val):
         """波形パラメータ書き込み"""

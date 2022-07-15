@@ -114,6 +114,22 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._reset_awgs(*awg_id_list)
 
 
+    def clear_awg_stop_flags(self, *awg_id_list):
+        """引数で指定した全ての AWG の波形出力終了フラグを下げる
+
+        Args:
+            *awg_id_list (list of CaptureUnit): 波形出力終了フラグを下げる AWG の ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_awg_id(*awg_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._clear_awg_stop_flags(*awg_id_list)
+
+
     def wait_for_awgs_to_stop(self, timeout, *awg_id_list):
         """引数で指定した全ての AWG の波形の送信が終了するのを待つ
 
@@ -264,6 +280,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _reset_awgs(self, *awg_id_list):
+        pass
+
+    @abstractmethod
+    def _clear_awg_stop_flags(self, *awg_id_list):
         pass
 
     @abstractmethod
@@ -471,6 +491,18 @@ class AwgCtrl(AwgCtrlBase):
             self.__reg_access.write_bits(
                 AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
+            self.__deselect_ctrl_target(*awg_id_list)
+
+
+    def _clear_awg_stop_flags(self, *awg_id_list):
+        with self.__flock:
+            self.__select_ctrl_target(*awg_id_list)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 0)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 1)
+            self.__reg_access.write_bits(
+                AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 0)
             self.__deselect_ctrl_target(*awg_id_list)
 
 

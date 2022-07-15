@@ -133,6 +133,16 @@ class RemoteAwgCtrl(AwgCtrlBase):
             raise
 
 
+    def _clear_awg_stop_flags(self, *awg_id_list):
+        try:
+            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.clear_awg_stop_flags(self.__handler, awg_id_list)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
         try:
             timeout = pickle.dumps(timeout)

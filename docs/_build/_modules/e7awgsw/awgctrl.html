@@ -309,6 +309,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_awgs</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="AwgCtrlBase.clear_awg_stop_flags"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.clear_awg_stop_flags">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">clear_awg_stop_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定した全ての AWG の波形出力終了フラグを下げる</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *awg_id_list (list of CaptureUnit): 波形出力終了フラグを下げる AWG の ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_awg_id</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clear_awg_stop_flags</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="AwgCtrlBase.wait_for_awgs_to_stop"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.wait_for_awgs_to_stop">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">wait_for_awgs_to_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;引数で指定した全ての AWG の波形の送信が終了するのを待つ</span>
 
@@ -459,6 +475,10 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_reset_awgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_clear_awg_stop_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
@@ -666,6 +686,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
                 <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_RESET</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">10e-6</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_clear_awg_stop_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_DONE_CLR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_DONE_CLR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> <span class="n">AwgMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_DONE_CLR</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
 
 

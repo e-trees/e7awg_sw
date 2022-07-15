@@ -58,6 +58,13 @@ class Awg:
                 self.__state = AwgState.COMPLETE
 
 
+    def setToIdle(self):
+        """AWG が complete 状態のとき IDLE 状態にする"""
+        with self.__state_lock:
+            if (self.__state == AwgState.COMPLETE):
+                self.__state = AwgState.IDLE
+
+
     def generate_wave(self):
         """波形を生成する"""
         with self.__state_lock:

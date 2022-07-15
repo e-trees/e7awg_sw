@@ -158,6 +158,22 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._reset_capture_units(*capture_unit_id_list)
 
 
+    def clear_capture_stop_flags(self, *capture_unit_id_list):
+        """引数で指定した全てのキャプチャユニットのキャプチャ終了フラグを下げる
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): キャプチャ終了フラグを下げるキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._clear_capture_stop_flags(*capture_unit_id_list)
+
+
     def select_trigger_awg(self, capture_module_id, awg_id):
         """キャプチャモジュールをスタートする AWG を選択する
 
@@ -218,7 +234,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
 
     def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
-        """引数で指定した全てのキャプチャユニットの波形の送信が終了するのを待つ
+        """引数で指定した全てのキャプチャユニットの波形の保存が終了するのを待つ
 
         Args:
             timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
@@ -340,6 +356,10 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _reset_capture_units(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _clear_capture_stop_flags(*capture_unit_id_list):
         pass
 
     @abstractmethod
@@ -580,6 +600,18 @@ class CaptureCtrl(CaptureCtrlBase):
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_RESET, 1, 0)
             time.sleep(10e-6)
+            self.__deselect_ctrl_target(*capture_unit_id_list)
+
+
+    def _clear_capture_stop_flags(self, *capture_unit_id_list):
+        with self.__flock:
+            self.__select_ctrl_target(*capture_unit_id_list)
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 0)
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 1)
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_DONE_CLR, 1, 0)
             self.__deselect_ctrl_target(*capture_unit_id_list)
 
 

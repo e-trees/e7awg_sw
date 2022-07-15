@@ -18,6 +18,7 @@ class AwgMasterCtrlRegs(object):
         CTRL_PREPARE   = 1
         CTRL_START     = 2
         CTRL_TERMINATE = 3
+        CTRL_DONE_CLR  = 4
         AWG_0  = 0
         AWG_1  = 1
         AWG_2  = 2
@@ -82,6 +83,7 @@ class AwgCtrlRegs(object):
         CTRL_PREPARE        = 1
         CTRL_START          = 2
         CTRL_TERMINATE      = 3
+        CTRL_DONE_CLR       = 4
         STATUS_WAKEUP       = 0
         STATUS_BUSY         = 1
         STATUS_READY        = 2
@@ -175,6 +177,7 @@ class CaptureMasterCtrlRegs(object):
         CTRL_RESET     = 0
         CTRL_START     = 1
         CTRL_TERMINATE = 2
+        CTRL_DONE_CLR  = 3
         CAPTURE_0      = 0
         CAPTURE_1      = 1
         CAPTURE_2      = 2
@@ -220,6 +223,7 @@ class CaptureCtrlRegs(object):
         CTRL_RESET     = 0
         CTRL_START     = 1
         CTRL_TERMINATE = 2
+        CTRL_DONE_CLR  = 3
         STATUS_WAKEUP  = 0
         STATUS_BUSY    = 1
         STATUS_DONE    = 2

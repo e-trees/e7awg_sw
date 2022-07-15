@@ -157,6 +157,16 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _clear_capture_stop_flags(self, *capture_unit_id_list):
+        try:
+            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.clear_capture_stop_flags(self.__handler, capture_unit_id_list)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _select_trigger_awg(self, capture_module_id, awg_id):
         try:
             capture_module_id = int(capture_module_id)

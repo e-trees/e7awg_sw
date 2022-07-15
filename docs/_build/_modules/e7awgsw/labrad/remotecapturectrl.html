@@ -352,6 +352,16 @@
             <span class="k">raise</span>
 
 
+    <span class="k">def</span> <span class="nf">_clear_capture_stop_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server</span><span class="o">.</span><span class="n">clear_capture_stop_flags</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handler</span><span class="p">,</span> <span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__decode_and_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+
     <span class="k">def</span> <span class="nf">_select_trigger_awg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_module_id</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capture_module_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">capture_module_id</span><span class="p">)</span>

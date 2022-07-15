@@ -128,6 +128,10 @@ class CaptureController(object):
             lambda old_bits, new_bits: self.__ctrl_start(cap_unit, True, old_bits[0], new_bits[0]),
             CaptureCtrlRegs.Bit.CTRL_START
         )
+        ctrl_reg.add_on_change(
+            lambda old_bits, new_bits: self.__ctrl_done_clr(cap_unit, True, old_bits[0], new_bits[0]),
+            CaptureCtrlRegs.Bit.CTRL_DONE_CLR
+        )
         return ctrl_reg
 
 
@@ -168,6 +172,11 @@ class CaptureController(object):
                 cap_unit, ctrl_target_sel_reg.get_bit(bit_idx), old_bits[0], new_bits[0]),
             CaptureMasterCtrlRegs.Bit.CTRL_START
         )
+        master_ctrl_reg.add_on_change(
+            lambda old_bits, new_bits: self.__ctrl_done_clr(
+                cap_unit, ctrl_target_sel_reg.get_bit(bit_idx), old_bits[0], new_bits[0]),
+            CaptureMasterCtrlRegs.Bit.CTRL_DONE_CLR
+        )
 
 
     def __add_on_master_status_read(self, cap_unit_id, cap_unit):
@@ -207,6 +216,11 @@ class CaptureController(object):
     def __ctrl_start(self, cap_unit, is_ctrl_target, old_val, new_val):
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             cap_unit.capture_wave([], is_async = True)
+
+
+    def __ctrl_done_clr(self, cap_unit, is_ctrl_target, old_val, new_val):
+        if is_ctrl_target and (old_val == 0) and (new_val == 1):
+            cap_unit.setToIdle()
 
 
     def __gen_version_reg(self):

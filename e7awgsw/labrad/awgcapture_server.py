@@ -173,6 +173,17 @@ class AwgCaptureServer(ThreadedServer):
         return pickle.dumps(version)
 
 
+    @setting(112, handle='s', awg_id_list='*w', returns='y')
+    def clear_awg_stop_flags(self, c, handle, awg_id_list):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            awgctrl.clear_awg_stop_flags(*awg_id_list)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+        return pickle.dumps(None)
+
+
     @setting(200, returns='y')
     def create_capturectrl(self, c, ipaddr):
         try:
@@ -343,6 +354,17 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
         return pickle.dumps(cap_data)
+
+
+    @setting(215, handle='s', capture_unit_id_list='*w', returns='y')
+    def clear_capture_stop_flags(self, c, handle, capture_unit_id_list):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.clear_capture_stop_flags(*capture_unit_id_list)
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(None)
 
 
 __server__ = AwgCaptureServer()
