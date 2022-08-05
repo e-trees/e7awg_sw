@@ -333,3 +333,45 @@ class CaptureParamRegs(object):
                 raise ValueError("decision func param addr offset error")
             DECISION_FUNC_PARAMS_OFFSET = 0xF000
             return 4 * idx + DECISION_FUNC_PARAMS_OFFSET
+
+
+class SequencerCtrlRegs(object):
+    ADDR = 0x0
+
+    class Offset(object):
+        VERSION               = 0x0
+        CTRL                  = 0x4
+        DEST_UDP_PORT         = 0x8
+        DEST_IP_ADDR          = 0xC
+        STATUS                = 0x10
+        ERR                   = 0x14
+        NUM_UNPROCESSED_CMDS  = 0x18
+        NUM_SUCCEEDED_CMDS    = 0x1C
+        NUM_ERR_CMDS          = 0x20
+        CMD_FIFO_FREE_SPACE   = 0x24
+        NUM_ERR_REPORTS       = 0x28
+
+    class Bit(object):
+        CTRL_RESET                  = 0
+        CTRL_START                  = 1
+        CTRL_TERMINATE              = 2
+        CTRL_CMD_CLR                = 3
+        CTRL_ERR_REPORT_CLR         = 4
+        CTRL_DONE_CLR               = 5
+        CTRL_ERR_REPORT_SEND_ENABLE = 6
+
+        STATUS_WAKEUP                 = 0
+        STATUS_BUSY                   = 1
+        STATUS_DONE                   = 2
+        STATUS_ERR_REPORT_SEND_ACTIVE = 3
+
+        ERR_CMD_FIFO_OVERFLOW = 0
+        ERR_ERR_FIFO_OVERFLOW = 1
+        
+        @classmethod
+        def capture(cls, idx):
+            capture_units = [
+                cls.CAPTURE_0,  cls.CAPTURE_1,  cls.CAPTURE_2,  cls.CAPTURE_3,
+                cls.CAPTURE_4,  cls.CAPTURE_5,  cls.CAPTURE_6,  cls.CAPTURE_7]
+            return capture_units[idx]
+            

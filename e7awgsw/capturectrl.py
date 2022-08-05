@@ -2,9 +2,9 @@ import socket
 import time
 import struct
 from abc import ABCMeta, abstractmethod
-from .hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT
+from .hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
 from .memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
-from .udpaccess import CaptureRegAccess, WaveRamAccess
+from .udpaccess import CaptureRegAccess, WaveRamAccess, ParamRegistryAccess
 from .hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr
 from .captureparam import CaptureParam
 from .exception import CaptureUnitTimeoutError
@@ -18,7 +18,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: 1 キャプチャモジュールが保存可能な四値化結果の数
     MAX_CLASSIFICATION_RESULTS = MAX_CAPTURE_SIZE * 8 // CLASSIFICATION_RESULT_SIZE
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
-    SAMPLING_RATE = 500000000
+    SAMPLING_RATE = 50000000
+    #: 波形レジストリの最大エントリ数
+    MAX_CAPTURE_PARAM_REGISTRY_ENTRIES = MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
+    #: キャプチャデータのアライメントサイズ (bytes)
+    CAPTURE_DATA_ALIGNMENT_SIZE = CAPTURE_DATA_ALIGNMENT_SIZE
 
     def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
         self._validate_args = validate_args
@@ -50,6 +54,24 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 raise
 
         self._set_capture_params(capture_unit_id, param)
+
+
+    def register_capture_params(self, key, param):
+        """キャプチャパラメータを専用のレジストリに登録する
+        
+        Args:
+            key (int): キャプチャパラメータレジストリの登録場所を示すキー (0 ~ 511).
+            param (CaptureParam): 設定するキャプチャパラメータ
+        """
+        if self._validate_args:
+            try:
+                self._validate_cap_param_registry_key(key)
+                self._validate_capture_param(param)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._register_capture_params(key, param)
 
 
     def initialize(self, *capture_unit_id_list):
@@ -262,7 +284,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Args:
             *capture_unit_id_list (list of CaptureUnit): エラーを調べるキャプチャユニットの ID
         Returns:
-            {CaptureUnit -> list of CaptureErr} or None:
+            {CaptureUnit -> list of CaptureErr}:
             | key = Capture Unit ID
             | value = 発生したエラーのリスト
             | エラーが無かった場合は空の Dict.
@@ -329,6 +351,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
 
+    def _validate_cap_param_registry_key(self, key):
+        if (not isinstance(key, int)) and (key is not None):
+            raise ValueError(
+                "The capture parameter registry key must be an integer between {} and {} inclusive.  '{}' was set."
+                .format(0, self.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES -1, key))
 
     @abstractmethod
     def _set_capture_params(self, capture_unit_id, param):
@@ -392,8 +419,10 @@ class CaptureCtrl(CaptureCtrlBase):
     __CAPTURE_ADDR = [
         0x10000000,  0x30000000,  0x50000000,  0x70000000,
         0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
-    # キャプチャ RAM のワードサイズ (bytes)
-    __CAPTURE_RAM_WORD_SIZE = 32 # bytes
+    # キャプチャパラメータレジストリの先頭アドレス
+    __CAP_PARAM_REGISTRY_ADDR = 0x1F0000000
+    # キャプチャパラメータ 1つ当たりのレジストリのサイズ (bytes)
+    __CAP_PARAM_REGISTRY_SIZE = 0x10000
 
     def __init__(
         self,
@@ -416,6 +445,7 @@ class CaptureCtrl(CaptureCtrlBase):
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        self.__registry_access = ParamRegistryAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
             ip_addr = '127.0.0.1'
         filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
@@ -442,103 +472,113 @@ class CaptureCtrl(CaptureCtrlBase):
         except Exception as e:
             log_error(e, *self._loggers)
         self.__flock = None
+        self.__reg_access.close()
+        self.__registry_access.close()
 
 
     def _set_capture_params(self, capture_unit_id, param):
-        self.__check_capture_size(capture_unit_id, param)
-        self.__set_sum_sec_len(capture_unit_id, param.sum_section_list)
-        self.__set_num_integ_sectinos(capture_unit_id, param.num_integ_sections)
-        self.__enable_dsp_units(capture_unit_id, param.dsp_units_enabled)
-        self.__set_capture_delay(capture_unit_id, param.capture_delay)
-        self.__set_capture_addr(capture_unit_id)
-        self.__set_comp_fir_coefs(capture_unit_id, param.complex_fir_coefs)
-        self.__set_real_fir_coefs(capture_unit_id, param.real_fir_i_coefs, param.real_fir_q_coefs)
-        self.__set_comp_window_coefs(capture_unit_id, param.complex_window_coefs)
-        self.__set_sum_range(capture_unit_id, param.sum_start_word_no, param.num_words_to_sum)
+        self.__check_capture_size('Capture unit {}'.format(capture_unit_id), param)
+        addr = CaptureParamRegs.Addr.capture(capture_unit_id)
+        self.__set_sum_sec_len(self.__reg_access, addr, param.sum_section_list)
+        self.__set_num_integ_sectinos(self.__reg_access, addr, param.num_integ_sections)
+        self.__enable_dsp_units(self.__reg_access, addr, param.dsp_units_enabled)
+        self.__set_capture_delay(self.__reg_access, addr, param.capture_delay)
+        self.__set_capture_addr(self.__reg_access, addr, self.__CAPTURE_ADDR[capture_unit_id])
+        self.__set_comp_fir_coefs(self.__reg_access, addr, param.complex_fir_coefs)
+        self.__set_real_fir_coefs(self.__reg_access, addr, param.real_fir_i_coefs, param.real_fir_q_coefs)
+        self.__set_comp_window_coefs(self.__reg_access, addr, param.complex_window_coefs)
+        self.__set_sum_range(self.__reg_access, addr, param.sum_start_word_no, param.num_words_to_sum)
         self.__set_decision_func_params(
-            capture_unit_id, [*param.get_decision_func_params(0), *param.get_decision_func_params(1)])
+            self.__reg_access,
+            addr,
+            [*param.get_decision_func_params(0), *param.get_decision_func_params(1)])
 
 
-    def __set_sum_sec_len(self, capture_unit_id, sum_sec_list):
+    def _register_capture_params(self, key, param):
+        self.__check_capture_size('Capture param entry {}'.format(key), param)
+        addr = self.__CAP_PARAM_REGISTRY_ADDR + self.__CAP_PARAM_REGISTRY_SIZE * key
+        self.__set_sum_sec_len(self.__registry_access, addr, param.sum_section_list)
+        self.__set_num_integ_sectinos(self.__registry_access, addr, param.num_integ_sections)
+        self.__enable_dsp_units(self.__registry_access, addr, param.dsp_units_enabled)
+        self.__set_capture_delay(self.__registry_access, addr, param.capture_delay)
+        self.__set_comp_fir_coefs(self.__registry_access, addr, param.complex_fir_coefs)
+        self.__set_real_fir_coefs(
+            self.__registry_access, addr, param.real_fir_i_coefs, param.real_fir_q_coefs)
+        self.__set_comp_window_coefs(self.__registry_access, addr, param.complex_window_coefs)
+        self.__set_sum_range(self.__registry_access, addr, param.sum_start_word_no, param.num_words_to_sum)
+        self.__set_decision_func_params(
+            self.__registry_access,
+            addr,
+            [*param.get_decision_func_params(0), *param.get_decision_func_params(1)])
+
+
+    def __set_sum_sec_len(self, accessor, addr, sum_sec_list):
         """総和区間長とポストブランク長の設定"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         num_sum_secs = len(sum_sec_list)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.NUM_SUM_SECTIONS, num_sum_secs)
+        accessor.write(addr, CaptureParamRegs.Offset.NUM_SUM_SECTIONS, num_sum_secs)
         sum_sec_len_list = [sum_sec[0] for sum_sec in sum_sec_list]
-        self.__reg_access.multi_write(
-            base_addr, CaptureParamRegs.Offset.sum_section_length(0), *sum_sec_len_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.sum_section_length(0), *sum_sec_len_list)
         post_blank_len_list = [sum_sec[1] for sum_sec in sum_sec_list]
-        self.__reg_access.multi_write(
-            base_addr, CaptureParamRegs.Offset.post_blank_length(0), *post_blank_len_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.post_blank_length(0), *post_blank_len_list)
 
 
-    def __set_num_integ_sectinos(self, capture_unit_id, num_integ_sectinos):
+    def __set_num_integ_sectinos(self, accessor, addr, num_integ_sectinos):
         """統合区間数の設定"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.NUM_INTEG_SECTIONS, num_integ_sectinos)
+        accessor.write(addr, CaptureParamRegs.Offset.NUM_INTEG_SECTIONS, num_integ_sectinos)
 
 
-    def __enable_dsp_units(self, capture_unit_id, dsp_units):
-        """DSP ユニットの有効化"""
+    def __enable_dsp_units(self, accessor, addr, dsp_units):
+        """DSP ユニットの有効化フラグの設定"""
         reg_val = 0
         for dsp_unit in dsp_units:
             reg_val |= 1 << dsp_unit
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.DSP_MODULE_ENABLE, reg_val)
+        accessor.write(addr, CaptureParamRegs.Offset.DSP_MODULE_ENABLE, reg_val)
 
 
-    def __set_capture_delay(self, capture_unit_id, capture_delay):
+    def __set_capture_delay(self, accessor, addr, capture_delay):
         """キャプチャディレイの設定"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.CAPTURE_DELAY, capture_delay)
+        accessor.write(addr, CaptureParamRegs.Offset.CAPTURE_DELAY, capture_delay)
 
 
-    def __set_capture_addr(self, capture_unit_id):
+    def __set_capture_addr(self, accessor, addr, capture_addr):
         """キャプチャアドレスの設定"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.CAPTURE_ADDR, self.__CAPTURE_ADDR[capture_unit_id] // 32)
+        accessor.write(
+            addr, CaptureParamRegs.Offset.CAPTURE_ADDR, capture_addr // 32)
 
 
-    def __set_comp_fir_coefs(self, capture_unit_id, comp_fir_coefs):
+    def __set_comp_fir_coefs(self, accessor, addr, comp_fir_coefs):
         """複素 FIR フィルタの係数を設定する"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         coef_list = [int(coef.real) for coef in reversed(comp_fir_coefs)]
-        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.comp_fir_re_coef(0), *coef_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.comp_fir_re_coef(0), *coef_list)
         coef_list = [int(coef.imag) for coef in reversed(comp_fir_coefs)]
-        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.comp_fir_im_coef(0), *coef_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.comp_fir_im_coef(0), *coef_list)
 
 
-    def __set_real_fir_coefs(self, capture_unit_id, real_fir_i_coefs, real_fir_q_coefs):
+    def __set_real_fir_coefs(self, accessor, addr, real_fir_i_coefs, real_fir_q_coefs):
         """実数 FIR フィルタの係数を設定する"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.multi_write(
-            base_addr, CaptureParamRegs.Offset.real_fir_i_coef(0), *reversed(real_fir_i_coefs))
-        self.__reg_access.multi_write(
-            base_addr, CaptureParamRegs.Offset.real_fir_q_coef(0), *reversed(real_fir_q_coefs))
+        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_i_coef(0), *reversed(real_fir_i_coefs))
+        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_q_coef(0), *reversed(real_fir_q_coefs))
 
 
-    def __set_comp_window_coefs(self, capture_unit_id, complex_window_coefs):
+    def __set_comp_window_coefs(self, accessor, addr, complex_window_coefs):
         """複素窓関数の係数を設定する"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         coef_list = [int(coef.real) for coef in complex_window_coefs]
-        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.comp_window_re_coef(0), *coef_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.comp_window_re_coef(0), *coef_list)
         coef_list = [int(coef.imag) for coef in complex_window_coefs]
-        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.comp_window_im_coef(0), *coef_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.comp_window_im_coef(0), *coef_list)
 
 
-    def __set_sum_range(self, capture_unit_id, sum_start_word_no, num_words_to_sum):
+    def __set_sum_range(self, accessor, addr, sum_start_word_no, num_words_to_sum):
         """総和区間内の総和範囲を設定する"""
         end_start_word_no = min(sum_start_word_no + num_words_to_sum - 1, CaptureParam.MAX_SUM_SECTION_LEN)
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.SUM_START_TIME, sum_start_word_no)
-        self.__reg_access.write(base_addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
+        accessor.write(addr, CaptureParamRegs.Offset.SUM_START_TIME, sum_start_word_no)
+        accessor.write(addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
 
 
-    def __set_decision_func_params(self, capture_unit_id, params):
+    def __set_decision_func_params(self, accessor, addr, params):
         """四値化判定式のパラメータを設定する"""
-        base_addr = CaptureParamRegs.Addr.capture(capture_unit_id)
         coef_list = [int.from_bytes(param.tobytes(), 'little') for param in params]
-        self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.decision_func_params(0), *coef_list)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.decision_func_params(0), *coef_list)
 
 
     def _initialize(self, *capture_unit_id_list):
@@ -554,8 +594,8 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def _get_capture_data(self, capture_unit_id, num_samples):
         num_bytes = num_samples * CAPTURED_SAMPLE_SIZE
-        num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE
-        num_bytes *= self.__CAPTURE_RAM_WORD_SIZE
+        num_bytes = (num_bytes + CAPTURE_RAM_WORD_SIZE - 1) // CAPTURE_RAM_WORD_SIZE
+        num_bytes *= CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
         part_size = CAPTURED_SAMPLE_SIZE // 2
         samples = [rd_data[i : i + part_size] for i in range(0, num_bytes, part_size)]
@@ -566,8 +606,8 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def _get_classification_results(self, capture_unit_id, num_results):
         num_bytes = (num_results * CLASSIFICATION_RESULT_SIZE + 7) // 8
-        num_bytes = (num_bytes + self.__CAPTURE_RAM_WORD_SIZE - 1) // self.__CAPTURE_RAM_WORD_SIZE
-        num_bytes *= self.__CAPTURE_RAM_WORD_SIZE
+        num_bytes = (num_bytes + CAPTURE_RAM_WORD_SIZE - 1) // CAPTURE_RAM_WORD_SIZE
+        num_bytes *= CAPTURE_RAM_WORD_SIZE
         rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
         return ClassificationResult(rd_data, num_results)
 
@@ -706,25 +746,25 @@ class CaptureCtrl(CaptureCtrlBase):
         return capture_unit_to_err
 
 
-    def __check_capture_size(self, capture_unit_id, param):
+    def __check_capture_size(self, target_name, param):
         """キャプチャデータ量が正常かどうか調べる"""
         dsp_units_enabled = param.dsp_units_enabled
         num_cap_samples = param.calc_capture_samples()
         if DspUnit.INTEGRATION in dsp_units_enabled:
-            self.__check_num_integration_samples(capture_unit_id, dsp_units_enabled, num_cap_samples)
+            self.__check_num_integration_samples(target_name, dsp_units_enabled, num_cap_samples)
         
         if DspUnit.CLASSIFICATION in dsp_units_enabled:
-            self.__check_num_classification_samples(capture_unit_id, num_cap_samples)
+            self.__check_num_classification_samples(target_name, num_cap_samples)
 
         if ((DspUnit.INTEGRATION not in dsp_units_enabled) and
             (DspUnit.CLASSIFICATION not in dsp_units_enabled)):
-            self.__check_num_capture_samples(capture_unit_id, num_cap_samples)
+            self.__check_num_capture_samples(target_name, num_cap_samples)
 
         if DspUnit.SUM in dsp_units_enabled:
-            self.__check_num_sum_samples(capture_unit_id, param)
+            self.__check_num_sum_samples(target_name, param)
 
 
-    def __check_num_integration_samples(self, capture_unit_id, dsp_units_enabled, num_capture_samples):
+    def __check_num_integration_samples(self, target_name, dsp_units_enabled, num_capture_samples):
         """積算ユニットが保持できる積算値の数をオーバーしていないかチェックする"""
         if DspUnit.SUM in dsp_units_enabled:
             # 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, 
@@ -734,37 +774,37 @@ class CaptureCtrl(CaptureCtrlBase):
             num_integ_vec_elems = num_capture_samples // NUM_SAMPLES_IN_ADC_WORD
 
         if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
-            msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
-                    .format(capture_unit_id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
+            msg = ("{} has too many elements in the integration result vector.  (max = {}, setting = {})"
+                    .format(target_name, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
 
-    def __check_num_classification_samples(self, capture_unit_id, num_capture_samples):
+    def __check_num_classification_samples(self, target_name, num_capture_samples):
         """四値化結果が保存領域に納まるかチェックする"""
         if num_capture_samples > self.MAX_CLASSIFICATION_RESULTS:
-            msg = ('Capture unit {} has too many classification results.  (max = {}, setting = {})'
-                .format(capture_unit_id, self.MAX_CLASSIFICATION_RESULTS, num_capture_samples))
+            msg = ('{} has too many classification results.  (max = {}, setting = {})'
+                .format(target_name, self.MAX_CLASSIFICATION_RESULTS, num_capture_samples))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
 
-    def __check_num_capture_samples(self, capture_unit_id, num_capture_samples):
+    def __check_num_capture_samples(self, target_name, num_capture_samples):
         """キャプチャサンプルが保存領域に納まるかチェックする"""
         if num_capture_samples > self.MAX_CAPTURE_SAMPLES:
-            msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
-                .format(capture_unit_id, self.MAX_CAPTURE_SAMPLES, num_capture_samples))
+            msg = ('{} has too many capture samples.  (max = {}, setting = {})'
+                .format(target_name, self.MAX_CAPTURE_SAMPLES, num_capture_samples))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
 
-    def __check_num_sum_samples(self, capture_unit_id, param):
+    def __check_num_sum_samples(self, target_name, param):
         """総和結果がオーバーフローしないかチェックする"""
         for sum_sec_no in range(param.num_sum_sections):
             num_words_to_sum = param.num_samples_to_sum(sum_sec_no)
             if num_words_to_sum > CaptureParam.MAX_SUM_RANGE_LEN * NUM_SAMPLES_IN_ADC_WORD:
-                msg = ('The size of the sum range in sum section {} on capture unit {} is too large.\n'
-                       .format(sum_sec_no, capture_unit_id))
+                msg = ('The size of the sum range in sum section {} on {} is too large.\n'
+                       .format(sum_sec_no, target_name.lower()))
                 msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
                         .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
                 log_warning(msg, *self._loggers)

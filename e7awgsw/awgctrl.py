@@ -2,9 +2,9 @@ import time
 import socket
 from abc import ABCMeta, abstractmethod
 from .wavesequence import WaveSequence
-from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT
+from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES
 from .memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
-from .udpaccess import AwgRegAccess, WaveRamAccess
+from .udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
 from .exception import AwgTimeoutError
 from .logger import get_file_logger, get_null_logger, log_error
 from .lock import ReentrantFileLock
@@ -13,6 +13,8 @@ from .hwdefs import AWG
 class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
+    #: 波形レジストリの最大エントリ数
+    MAX_WAVE_REGISTRY_ENTRIES = MAX_WAVE_REGISTRY_ENTRIES
 
     def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
         self._validate_args = validate_args
@@ -26,10 +28,12 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
-    
+
 
     def set_wave_sequence(self, awg_id, wave_seq):
         """波形シーケンスを AWG に設定する.
+
+        | この関数を呼んだ後で register_wave_sequences を呼ぶと, AWG に設定したデータが消えることに注意.
 
         Args:
             awg_id (AWG): 波形シーケンスを設定する AWG の ID
@@ -44,6 +48,35 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 raise
 
         self._set_wave_sequence(awg_id, wave_seq)
+
+
+    def register_wave_sequences(self, awg_id, key_to_wave_seq):
+        """awg_id で指定した AWG が持つ波形レジストリに波形シーケンスを登録する
+
+        | 同じ awg_id で複数回呼ぶと, 前回レジストリに登録したデータが消えることに注意.
+        | この関数を呼んだ後で set_wave_sequence を呼ぶと, レジストリに登録データが消えることに注意.
+
+        Args:
+            awg_id (AWG): 登録先の波形レジストリを持つ AWG の ID
+            key_to_wave_seq ({int -> WaveSequence}):
+                | 波形レジストリの登録位置を示すキーと登録する波形シーケンスの dict.
+                | キーは 0 ~ 511 まで指定可能.
+                | キーを None にした場合, 対応する波形シーケンスはレジストリではなく, AWG に直接セットされる.
+        """
+        if self._validate_args:
+            try:
+                if not isinstance(key_to_wave_seq, dict):
+                    raise ValueError("'key_to_wave_seq' must be a dict.")
+                self._validate_awg_id(awg_id)
+                for key in key_to_wave_seq.keys():
+                    self._validate_wave_registry_key(key)
+                for wave_seq in key_to_wave_seq.values():
+                    self._validate_wave_sequence(wave_seq)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._register_wave_sequences(awg_id, key_to_wave_seq)
 
 
     def initialize(self, *awg_id_list):
@@ -258,12 +291,23 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     def _validate_wave_start_interval(self, interval):
         if not (isinstance(interval, int) and (1 <= interval and interval <= 0xFFFFFFFF)):
             raise ValueError(
-                "The interval must be an integer between {} and {} inclusive.  '{}' was set."
+                "The wave start interval must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(1, 0xFFFFFFFF, interval))
+
+
+    def _validate_wave_registry_key(self, key):
+        if (not isinstance(key, int)) and (key is not None):
+            raise ValueError(
+                "The wave registry key must be 'None' or an integer between {} and {} inclusive.  '{}' was set."
+                .format(0, self.MAX_WAVE_REGISTRY_ENTRIES -1, key))
 
 
     @abstractmethod
     def _set_wave_sequence(self, awg_id, wave_seq):
+        pass
+
+    @abstractmethod
+    def _register_wave_sequences(self, awg_id, key_to_wave_seq):
         pass
 
     @abstractmethod
@@ -319,6 +363,13 @@ class AwgCtrl(AwgCtrlBase):
     __WAVE_RAM_WORD_SIZE = 32
     # 1 波形シーケンスのサンプルデータに割り当てられる最大 RAM サイズ (bytes)
     __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE = 256 * 1024 * 1024
+    # 波形レジストリの先頭アドレス
+    __WAVE_REGISTRY_ADDR = 0x1F2000000
+    # AWG 1つ当たりのレジストリのサイズ (bytes)
+    __AWG_REGISTRY_SIZE = 0x80000
+    # 波形シーケンス 1 つ当たりのレジストリのサイズ (bytes)
+    __WAVE_SEQ_REGISTRY_SIZE = 0x400
+
 
     def __init__(
         self,
@@ -341,6 +392,7 @@ class AwgCtrl(AwgCtrlBase):
         super().__init__(ip_addr, validate_args, enable_lib_log, logger)
         self.__reg_access = AwgRegAccess(ip_addr, AWG_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
+        self.__registry_access = ParamRegistryAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
             ip_addr = '127.0.0.1'
         filepath = '/tmp/e7awg_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr)))
@@ -367,29 +419,49 @@ class AwgCtrl(AwgCtrlBase):
         except Exception as e:
             log_error(e, *self._loggers)
         self.__flock = None
+        self.__reg_access.close()
+        self.__registry_access.close()
 
 
     def _set_wave_sequence(self, awg_id, wave_seq):
-        chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq)
-        self.__check_wave_seq_data_size(awg_id, wave_seq, chunk_addr_list)
-        self.__set_wave_params(awg_id, wave_seq, chunk_addr_list)
+        self.__check_wave_seq_data_size(awg_id, wave_seq)
+        chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq, 0)
+        addr = WaveParamRegs.Addr.awg(awg_id)
+        self.__set_wave_params(self.__reg_access, addr, wave_seq, chunk_addr_list)
         self.__send_wave_samples(wave_seq, chunk_addr_list)
 
+    
+    def _register_wave_sequences(self, awg_id, key_to_wave_seq):
+        self.__check_wave_seq_data_size(awg_id, *key_to_wave_seq.values())
+        addr_offset = 0
+        for key, wave_seq in key_to_wave_seq.items():
+            if key is None:
+                self._set_wave_sequence(awg_id, wave_seq)
+                continue
+            
+            chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq, addr_offset)
+            addr = (self.__WAVE_REGISTRY_ADDR +
+                    self.__AWG_REGISTRY_SIZE * awg_id +
+                    self.__WAVE_SEQ_REGISTRY_SIZE * key)
+            self.__set_wave_params(self.__registry_access, addr, wave_seq, chunk_addr_list)
+            self.__send_wave_samples(wave_seq, chunk_addr_list)
+            addr_offset += self.__calc_wave_seq_data_size(wave_seq)
 
-    def __set_wave_params(self, awg_id, wave_seq, chunk_addr_list):
-        awg_reg_base = WaveParamRegs.Addr.awg(awg_id)
-        self.__reg_access.write(awg_reg_base, WaveParamRegs.Offset.NUM_WAIT_WORDS, wave_seq.num_wait_words)
-        self.__reg_access.write(awg_reg_base, WaveParamRegs.Offset.NUM_REPEATS, wave_seq.num_repeats)
-        self.__reg_access.write(awg_reg_base, WaveParamRegs.Offset.NUM_CHUNKS, wave_seq.num_chunks)
+
+    def __set_wave_params(self, accessor, addr, wave_seq, chunk_addr_list):
+        accessor.write(addr, WaveParamRegs.Offset.NUM_WAIT_WORDS, wave_seq.num_wait_words)
+        accessor.write(addr, WaveParamRegs.Offset.NUM_REPEATS, wave_seq.num_repeats)
+        accessor.write(addr, WaveParamRegs.Offset.NUM_CHUNKS, wave_seq.num_chunks)
 
         for chunk_idx in range(wave_seq.num_chunks):
             chunk_offs = WaveParamRegs.Offset.chunk(chunk_idx)
             chunk = wave_seq.chunk(chunk_idx)
-            self.__reg_access.write(awg_reg_base, chunk_offs + WaveParamRegs.Offset.CHUNK_START_ADDR, chunk_addr_list[chunk_idx] >> 4)
-            self.__reg_access.write(
-                awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_WAVE_PART_WORDS, chunk.num_words - chunk.num_blank_words)
-            self.__reg_access.write(awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_BLANK_WORDS, chunk.num_blank_words)
-            self.__reg_access.write(awg_reg_base, chunk_offs + WaveParamRegs.Offset.NUM_CHUNK_REPEATS, chunk.num_repeats)
+            accessor.write(
+                addr, chunk_offs + WaveParamRegs.Offset.CHUNK_START_ADDR, chunk_addr_list[chunk_idx] >> 4)
+            wave_part_words = chunk.num_words - chunk.num_blank_words
+            accessor.write(addr, chunk_offs + WaveParamRegs.Offset.NUM_WAVE_PART_WORDS, wave_part_words)
+            accessor.write(addr, chunk_offs + WaveParamRegs.Offset.NUM_BLANK_WORDS, chunk.num_blank_words)
+            accessor.write(addr, chunk_offs + WaveParamRegs.Offset.NUM_CHUNK_REPEATS, chunk.num_repeats)
 
 
     def __send_wave_samples(self, wave_seq, chunk_addr_list):
@@ -398,23 +470,31 @@ class AwgCtrl(AwgCtrlBase):
             self.__wave_ram_access.write(chunk_addr_list[chunk_idx], wave_data.serialize())
 
 
-    def __calc_chunk_addr(self, awg_id, wave_seq):
+    def __calc_chunk_addr(self, awg_id, wave_seq, addr_offset):
         addr_list = []
-        addr_offset = 0
         for chunk in wave_seq.chunk_list:
             addr_list.append(self.__AWG_WAVE_SRC_ADDR[awg_id] + addr_offset)
-            addr_offset = addr_offset + ((chunk.wave_data.num_bytes + self.__WAVE_RAM_WORD_SIZE - 1) // self.__WAVE_RAM_WORD_SIZE) * self.__WAVE_RAM_WORD_SIZE
+            addr_offset += self.__calc_wave_chunk_data_size(chunk)
         return addr_list
 
 
-    def __check_wave_seq_data_size(self, awg_id, wave_seq, chunk_addr_list):
-        """波形シーケンスのサンプルデータが格納領域に収まるかチェック"""
-        last_chunk_idx = wave_seq.num_chunks - 1
-        end_addr = chunk_addr_list[last_chunk_idx] + wave_seq.chunk(last_chunk_idx).wave_data.num_bytes
-        if end_addr > self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE + self.__AWG_WAVE_SRC_ADDR[awg_id]:
-            ram_size = end_addr - self.__AWG_WAVE_SRC_ADDR[awg_id]
-            msg = ("Too much RAM space is required for the wave sequence for AWG {}.  ({} bytes)\n".format(awg_id, ram_size) +
-                   "The maximum RAM size for a wave sequence is {} bytes.".format(self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE))
+    def __calc_wave_seq_data_size(self, wave_seq):
+        size = 0
+        for chunk in wave_seq.chunk_list:
+            size += self.__calc_wave_chunk_data_size(chunk)
+        return size
+
+
+    def __calc_wave_chunk_data_size(self, chunk):
+        return ((chunk.wave_data.num_bytes + self.__WAVE_RAM_WORD_SIZE - 1) // self.__WAVE_RAM_WORD_SIZE) * self.__WAVE_RAM_WORD_SIZE
+
+
+    def __check_wave_seq_data_size(self, awg_id, *wave_seq_list):
+        """波形シーケンスのサンプルデータが格納領域に収まるかチェックする"""
+        size = sum([self.__calc_wave_seq_data_size(wave_seq) for wave_seq in wave_seq_list])
+        if size > self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE:
+            msg = ("Too much RAM space is required for the wave sequence(s) for AWG {}.  ({} bytes)\n".format(awg_id, size) +
+                   "The maximum RAM size for wave sequence(s) is {} bytes.".format(self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 

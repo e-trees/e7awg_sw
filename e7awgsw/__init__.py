@@ -8,6 +8,7 @@ __all__ = [
     'CaptureUnit', 
     'CaptureModule',
     'DecisionFunc',
+    'CaptureParamElem',
     'AWG',
     'AwgErr',
     'CaptureErr',
@@ -18,14 +19,31 @@ __all__ = [
     'SquareWave',
     'GaussianPulse',
     'IqWave',
+    'AwgStartCmd',
+    'CaptureEndFenceCmd',
+    'WaveSequenceSetCmd',
+    'CaptureParamSetCmd',
+    'CaptureAddrSetCmd',
+    'FeedbackCalcOnClassificationCmd',
+    'AwgStartCmdErr',
+    'CaptureEndFenceCmdErr',
+    'WaveSequenceSetCmdErr',
+    'CaptureParamSetCmdErr',
+    'CaptureAddrSetCmdErr',
+    'FeedbackCalcOnClassificationCmdErr',
+    'SequencerCtrl',
     'plot_graph',
-    'plot_samples']
+    'plot_samples',
+    'calc_required_capture_mem_size']
 
-from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, AWG, AwgErr, CaptureErr
+from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureParamElem, AWG, FeedbackChannel, AwgErr, CaptureErr
 from .awgctrl import AwgCtrl
 from .capturectrl import CaptureCtrl
 from .wavesequence import WaveSequence
 from .captureparam import CaptureParam
-from .utiltool import plot_graph, plot_samples
+from .utiltool import plot_graph, plot_samples, calc_required_capture_mem_size
 from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
+from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
+from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
+from .sequencer import SequencerCtrl
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError

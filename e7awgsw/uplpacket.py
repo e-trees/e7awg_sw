@@ -16,6 +16,16 @@ class UplPacket(object):
     MODE_CAPTURE_REG_WRITE      = 0x42
     MODE_CAPTURE_REG_WRITE_ACK  = 0x43
 
+    MODE_SEQUENCER_REG_READ       = 0x20
+    MODE_SEQUENCER_REG_READ_REPLY = 0x21
+    MODE_SEQUENCER_REG_WRITE      = 0x22
+    MODE_SEQUENCER_REG_WRITE_ACK  = 0x23
+    MODE_SEQUENCER_CMD_WRITE      = 0x24
+    MODE_SEQUENCER_CMD_WRITE_ACK  = 0x25
+    MODE_SEQUENCER_CMD_ERR_REPORT = 0x27
+
+    MODE_OTHERS = 0xFF
+
     def __init__(
         self,
         mode,
@@ -83,12 +93,19 @@ class UplPacket(object):
         num_bytes = int.from_bytes(data[6:8], 'big')
         payload = b''
         if ((num_bytes != 0) and 
-            ((mode == cls.MODE_AWG_REG_READ_REPLY)     or
-             (mode == cls.MODE_CAPTURE_REG_READ_REPLY) or
-             (mode == cls.MODE_WAVE_RAM_READ_REPLY)    or
-             (mode == cls.MODE_AWG_REG_WRITE)          or 
-             (mode == cls.MODE_CAPTURE_REG_WRITE)      or 
-             (mode == cls.MODE_WAVE_RAM_WRITE))):
+            ((mode == cls.MODE_AWG_REG_READ_REPLY)       or
+             (mode == cls.MODE_CAPTURE_REG_READ_REPLY)   or
+             (mode == cls.MODE_WAVE_RAM_READ_REPLY)      or
+             (mode == cls.MODE_AWG_REG_WRITE)            or 
+             (mode == cls.MODE_CAPTURE_REG_WRITE)        or 
+             (mode == cls.MODE_WAVE_RAM_WRITE)           or
+             (mode == cls.MODE_SEQUENCER_REG_READ_REPLY) or
+             (mode == cls.MODE_SEQUENCER_REG_WRITE)      or
+             (mode == cls.MODE_SEQUENCER_CMD_WRITE)      or
+             (mode == cls.MODE_SEQUENCER_CMD_ERR_REPORT))):
             payload = data[8 : 8 + num_bytes]
+
+        if mode == cls.MODE_SEQUENCER_CMD_ERR_REPORT:
+            payload = data[8 : 16 + num_bytes]
 
         return UplPacket(mode, addr, num_bytes, payload)
