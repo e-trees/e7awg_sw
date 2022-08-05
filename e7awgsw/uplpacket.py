@@ -105,7 +105,4 @@ class UplPacket(object):
              (mode == cls.MODE_SEQUENCER_CMD_ERR_REPORT))):
             payload = data[8 : 8 + num_bytes]
 
-        if mode == cls.MODE_SEQUENCER_CMD_ERR_REPORT:
-            payload = data[8 : 16 + num_bytes]
-
         return UplPacket(mode, addr, num_bytes, payload)
