@@ -1,6 +1,4 @@
 import numpy as np
-from .hwdefs import DspUnit
-from .hwparam import CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
 
 try:
     import matplotlib
@@ -50,22 +48,3 @@ def plot_samples(samples, title, filepath, color = '#b44c97', marker = None, x_l
     plt.savefig(filepath)
     plt.close()
     return
-
-
-def calc_required_capture_mem_size(capture_param):
-    """引数で指定したキャプチャパラメータを使ったキャプチャに必要な RAM のサイズを計算する
-
-    Args:
-        capture_param (CaptureParam): このパラメータを使ったキャプチャに必要な RAM のサイズを計算する
-
-    Returns:
-        int: キャプチャに必要な RAM のサイズ
-    """
-    print(capture_param.calc_capture_samples())
-    if DspUnit.CLASSIFICATION in capture_param.dsp_units_enabled:
-        num_bits = capture_param.calc_capture_samples() * CLASSIFICATION_RESULT_SIZE
-        print('num_bits ', num_bits)
-        return -(-num_bits // (CAPTURE_DATA_ALIGNMENT_SIZE * 8)) * CAPTURE_DATA_ALIGNMENT_SIZE
-
-    num_bytes = capture_param.calc_capture_samples() * CAPTURED_SAMPLE_SIZE
-    return -(-num_bytes // CAPTURE_DATA_ALIGNMENT_SIZE) * CAPTURE_DATA_ALIGNMENT_SIZE

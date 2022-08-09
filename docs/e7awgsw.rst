@@ -70,6 +70,22 @@ e7awgsw.lock module
    :undoc-members:
    :show-inheritance:
 
+e7awgsw.sequencer module
+------------------------
+
+.. automodule:: e7awgsw.sequencer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+e7awgsw.sequencercmd module
+---------------------------
+
+.. automodule:: e7awgsw.sequencercmd
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 e7awgsw.utiltool module
 -----------------------
 

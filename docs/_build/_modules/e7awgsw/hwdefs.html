@@ -146,6 +146,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -182,6 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -215,6 +219,7 @@
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
         <span class="n">units</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">units</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+
 
 <div class="viewcode-block" id="CaptureUnit"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureUnit">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureUnit</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;キャプチャユニットの ID&quot;&quot;&quot;</span>
@@ -289,8 +294,49 @@
 <div class="viewcode-block" id="DecisionFunc"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc">[ドキュメント]</a><span class="k">class</span> <span class="nc">DecisionFunc</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;四値化処理の判定式の ID&quot;&quot;&quot;</span>
     <span class="n">U0</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#: 判定式 0</span>
-    <span class="n">U1</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">#: 判定式 1</span></div>
+    <span class="n">U1</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">#: 判定式 1</span>
     
+<div class="viewcode-block" id="DecisionFunc.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;全ての四値化処理の判定式の IDをリストとして返す&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">DecisionFunc</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DecisionFunc.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;connot convert </span><span class="si">{}</span><span class="s2"> to DecisionFunc&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="n">val</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="DecisionFunc.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">funcs</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="CaptureParamElem"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureParamElem">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureParamElem</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;キャプチャパラメータの要素&quot;&quot;&quot;</span>
+    <span class="n">DSP_UNITS</span>           <span class="o">=</span> <span class="mi">0</span>  <span class="c1">#: 有効化する DSP ユニット</span>
+    <span class="n">CAPTURE_DELAY</span>       <span class="o">=</span> <span class="mi">1</span>  <span class="c1">#: キャプチャディレイ</span>
+    <span class="n">NUM_INTEG_SECTIONS</span>  <span class="o">=</span> <span class="mi">2</span>  <span class="c1">#: 積算区間数</span>
+    <span class="n">NUM_SUM_SECTIONS</span>    <span class="o">=</span> <span class="mi">3</span>  <span class="c1">#: 総和区間数</span>
+    <span class="n">SUM_TARGET_INTERVAL</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1">#: 総和区間内で総和の対象となる部分の開始位置とワード数</span>
+    <span class="n">SUM_SECTION_LEN</span>     <span class="o">=</span> <span class="mi">5</span>  <span class="c1">#: 総和区間長</span>
+    <span class="n">POST_BLANK_LEN</span>      <span class="o">=</span> <span class="mi">6</span>  <span class="c1">#: ポストブランク長</span>
+    <span class="n">COMP_FIR_COEF</span>       <span class="o">=</span> <span class="mi">7</span>  <span class="c1">#: 複素 FIR フィルタの係数</span>
+    <span class="n">REAL_FIR_COEF</span>       <span class="o">=</span> <span class="mi">8</span>  <span class="c1">#: 実数 FIR フィルタの係数</span>
+    <span class="n">COMP_WINDOW_COEF</span>    <span class="o">=</span> <span class="mi">9</span>  <span class="c1">#: 複素窓関数の係数</span>
+    <span class="n">DICISION_FUNC_PARAM</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1">#: 四値化処理の判別式のパラメータ</span>
+    
+<div class="viewcode-block" id="CaptureParamElem.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureParamElem.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャパラメータの全要素をリストとして返す&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureParamElem</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CaptureParamElem.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureParamElem.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">params</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+
 
 <div class="viewcode-block" id="AWG"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AWG">[ドキュメント]</a><span class="k">class</span> <span class="nc">AWG</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AWG の ID&quot;&quot;&quot;</span>
@@ -328,6 +374,34 @@
         <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">awgs</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
 
 
+<div class="viewcode-block" id="FeedbackChannel"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel">[ドキュメント]</a><span class="k">class</span> <span class="nc">FeedbackChannel</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;フィードバックチャネル (フィードバック値を読み書きするチャネル) の ID&quot;&quot;&quot;</span>
+    <span class="n">U0</span>  <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">U1</span>  <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">U2</span>  <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">U3</span>  <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">U4</span>  <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">U5</span>  <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">U6</span>  <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">U7</span>  <span class="o">=</span> <span class="mi">7</span>
+
+<div class="viewcode-block" id="FeedbackChannel.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;全フィードバックチャネル の ID をリストとして返す&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">FeedbackChannel</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FeedbackChannel.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;connot convert </span><span class="si">{}</span><span class="s2"> to FeedbackChannel&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="n">val</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FeedbackChannel.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">channels</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+
+
 <div class="viewcode-block" id="AwgErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AwgErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgErr</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;AWG エラーの列挙型&quot;&quot;&quot;</span>
 
@@ -357,6 +431,23 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureErr</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="CaptureErr.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureErr.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
+        <span class="n">errs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">errs</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="SequencerErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.SequencerErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">SequencerErr</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;シーケンサエラーの列挙型&quot;&quot;&quot;</span>
+
+    <span class="n">CMD_FIFO_OVERFLOW</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ERR_FIFO_OVERFLOW</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="SequencerErr.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.SequencerErr.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;全キャプチャユニットエラーの列挙子をリストとして返す&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">SequencerErr</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SequencerErr.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.SequencerErr.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
         <span class="n">errs</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">errs</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>

@@ -97,6 +97,22 @@ class DecisionFunc(IntEnum):
     U0 = 0 #: 判定式 0
     U1 = 1 #: 判定式 1
     
+    @classmethod
+    def all(cls):
+        """全ての四値化処理の判定式の IDをリストとして返す"""
+        return [item for item in DecisionFunc]
+
+    @classmethod
+    def of(cls, val):
+        if not cls.includes(val):
+            raise ValueError("connot convert {} to DecisionFunc".format(val))
+        return cls.all()[val]
+
+    @classmethod
+    def includes(cls, *vals):
+        funcs = cls.all()
+        return all([val in funcs for val in vals])
+
 
 class CaptureParamElem(IntEnum):
     """キャプチャパラメータの要素"""

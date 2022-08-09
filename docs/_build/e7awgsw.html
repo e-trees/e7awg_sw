@@ -167,6 +167,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -203,6 +205,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -281,6 +285,12 @@
 <dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.awgctrl.</span></code><code class="sig-name descname"><span class="pre">AwgCtrlBase</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.MAX_WAVE_REGISTRY_ENTRIES">
+<code class="sig-name descname"><span class="pre">MAX_WAVE_REGISTRY_ENTRIES</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.MAX_WAVE_REGISTRY_ENTRIES" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>波形レジストリの最大エントリ数</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.SAMPLING_RATE">
 <code class="sig-name descname"><span class="pre">SAMPLING_RATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500000000</span></em><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.SAMPLING_RATE" title="この定義へのパーマリンク">¶</a></dt>
@@ -371,6 +381,33 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.register_wave_sequences">
+<code class="sig-name descname"><span class="pre">register_wave_sequences</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">awg_id</span></span></em>, <em><span class="n"><span class="pre">key_to_wave_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.register_wave_sequences"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.register_wave_sequences" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>awg_id で指定した AWG が持つ波形レジストリに波形シーケンスを登録する</p>
+<div class="line-block">
+<div class="line">同じ awg_id で複数回呼ぶと, 前回レジストリに登録したデータが消えることに注意.</div>
+<div class="line">この関数を呼んだ後で set_wave_sequence を呼ぶと, レジストリに登録したデータが消えることに注意.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>awg_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em>AWG</em></a>) -- 登録先の波形レジストリを持つ AWG の ID</li>
+<li><strong>key_to_wave_seq</strong> (<em>{int -&gt; WaveSequence}</em>) -- <div class="line-block">
+<div class="line">波形レジストリの登録位置を示すキーと登録する波形シーケンスの dict.</div>
+<div class="line">キーは 0 ~ 511 まで指定可能.</div>
+<div class="line">キーを None にした場合, 対応する波形シーケンスはレジストリではなく, AWG に直接セットされる.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.reset_awgs">
 <code class="sig-name descname"><span class="pre">reset_awgs</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.reset_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>引数で指定したAWGをリセットする</p>
@@ -391,6 +428,9 @@
 <dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence">
 <code class="sig-name descname"><span class="pre">set_wave_sequence</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">awg_id</span></span></em>, <em><span class="n"><span class="pre">wave_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.set_wave_sequence"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>波形シーケンスを AWG に設定する.</p>
+<div class="line-block">
+<div class="line">この関数を呼んだ後で register_wave_sequences を呼ぶと, AWG に設定したデータが消えることに注意.</div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1039,6 +1079,18 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.capturectrl.</span></code><code class="sig-name descname"><span class="pre">CaptureCtrlBase</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.CAPTURE_DATA_ALIGNMENT_SIZE">
+<code class="sig-name descname"><span class="pre">CAPTURE_DATA_ALIGNMENT_SIZE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.CAPTURE_DATA_ALIGNMENT_SIZE" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャデータのアライメントサイズ (bytes)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES">
+<code class="sig-name descname"><span class="pre">MAX_CAPTURE_PARAM_REGISTRY_ENTRIES</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">512</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>波形レジストリの最大エントリ数</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_SAMPLES">
 <code class="sig-name descname"><span class="pre">MAX_CAPTURE_SAMPLES</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">33554432</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.MAX_CAPTURE_SAMPLES" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>1 キャプチャモジュールが保存可能なサンプル数</p>
@@ -1052,7 +1104,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE">
-<code class="sig-name descname"><span class="pre">SAMPLING_RATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500000000</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SAMPLING_RATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50000000</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>キャプチャユニットのサンプリングレート (単位=サンプル数/秒)</p>
 </dd></dl>
 
@@ -1079,7 +1131,7 @@
 </div>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">{CaptureUnit -&gt; list of CaptureErr} or None</td>
+<tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">{CaptureUnit -&gt; list of CaptureErr}</td>
 </tr>
 </tbody>
 </table>
@@ -1135,7 +1187,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data">
-<code class="sig-name descname"><span class="pre">get_capture_data</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_capture_data"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_capture_data</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em>, <em><span class="n"><span class="pre">addr_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_capture_data"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>引数で指定したキャプチャユニットが保存したサンプルデータを取得する.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1144,6 +1196,7 @@
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
 <li><strong>capture_unit_id</strong> (<em>int</em>) -- この ID のキャプチャユニットが保存したサンプルデータを取得する</li>
 <li><strong>num_samples</strong> (<em>int</em>) -- 取得するサンプル数 (I と Q はまとめて 1 サンプル)</li>
+<li><strong>addr_offset</strong> (<em>int</em>) -- 取得するサンプルデータのバイトアドレスオフセット</li>
 </ul>
 </td>
 </tr>
@@ -1159,7 +1212,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results">
-<code class="sig-name descname"><span class="pre">get_classification_results</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_classification_results"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_classification_results</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_results</span></span></em>, <em><span class="n"><span class="pre">addr_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_classification_results"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>引数で指定したキャプチャユニットが保存した四値化結果を取得する.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1168,6 +1221,7 @@
 <tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first simple">
 <li><strong>capture_unit_id</strong> (<em>int</em>) -- この ID のキャプチャユニットが保存した四値化結果を取得する</li>
 <li><strong>num_results</strong> (<em>int</em>) -- 取得する四値化結果の個数</li>
+<li><strong>addr_offset</strong> (<em>int</em>) -- 取得する四値化結果のバイトアドレスオフセット</li>
 </ul>
 </td>
 </tr>
@@ -1206,6 +1260,24 @@
 <tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">保存されたサンプル数</td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.register_capture_params">
+<code class="sig-name descname"><span class="pre">register_capture_params</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">key</span></span></em>, <em><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.register_capture_params"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.register_capture_params" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャパラメータを専用のレジストリに登録する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<em>int</em>) -- キャプチャパラメータレジストリの登録場所を示すキー (0 ~ 511).</li>
+<li><strong>param</strong> (<a class="reference internal" href="#e7awgsw.captureparam.CaptureParam" title="e7awgsw.captureparam.CaptureParam"><em>CaptureParam</em></a>) -- 設定するキャプチャパラメータ</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1496,6 +1568,24 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">現在のキャプチャパラメータで保存されるサンプル数</td>
 </tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.calc_required_capture_mem_size">
+<code class="sig-name descname"><span class="pre">calc_required_capture_mem_size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.calc_required_capture_mem_size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.calc_required_capture_mem_size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>現在のキャプチャパラメータでのキャプチャに必要な RAM のサイズを計算する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">キャプチャに必要な RAM のサイズ (bytes)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -1526,6 +1616,12 @@
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.clear_sum_sections">
+<code class="sig-name descname"><span class="pre">clear_sum_sections</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.clear_sum_sections"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.clear_sum_sections" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>登録済みの全ての総和区間を削除する</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1569,6 +1665,20 @@
 <tr class="field-even field"><th class="field-name">戻り値:</th><td class="field-body">複素窓関数の係数リスト</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">戻り値の型:</th><td class="field-body">list of complex</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.del_sum_section">
+<code class="sig-name descname"><span class="pre">del_sum_section</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.del_sum_section"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.del_sum_section" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>引数で指定したインデックスの総和区間を削除する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>index</strong> (<em>int</em>) -- 削除する総和区間のインデックス (0 ~ 登録済みの総和区間数 - 1)</td>
 </tr>
 </tbody>
 </table>
@@ -1887,6 +1997,18 @@
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="e7awgsw.exception.SequencerTimeoutError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.exception.</span></code><code class="sig-name descname"><span class="pre">SequencerTimeoutError</span></code><a class="reference internal" href="_modules/e7awgsw/exception.html#SequencerTimeoutError"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.exception.SequencerTimeoutError" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.exception.</span></code><code class="sig-name descname"><span class="pre">TooLittleFreeSpaceInCmdFifoError</span></code><a class="reference internal" href="_modules/e7awgsw/exception.html#TooLittleFreeSpaceInCmdFifoError"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
 </div>
 <div class="section" id="module-e7awgsw.hwdefs">
 <span id="e7awgsw-hwdefs-module"></span><h2>e7awgsw.hwdefs module<a class="headerlink" href="#module-e7awgsw.hwdefs" title="このヘッドラインへのパーマリンク">¶</a></h2>
@@ -2101,6 +2223,90 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">CaptureParamElem</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureParamElem"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>キャプチャパラメータの要素</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.CAPTURE_DELAY">
+<code class="sig-name descname"><span class="pre">CAPTURE_DELAY</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.CAPTURE_DELAY" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャディレイ</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.COMP_FIR_COEF">
+<code class="sig-name descname"><span class="pre">COMP_FIR_COEF</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.COMP_FIR_COEF" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>複素 FIR フィルタの係数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.COMP_WINDOW_COEF">
+<code class="sig-name descname"><span class="pre">COMP_WINDOW_COEF</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.COMP_WINDOW_COEF" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>複素窓関数の係数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.DICISION_FUNC_PARAM">
+<code class="sig-name descname"><span class="pre">DICISION_FUNC_PARAM</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.DICISION_FUNC_PARAM" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化処理の判別式のパラメータ</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.DSP_UNITS">
+<code class="sig-name descname"><span class="pre">DSP_UNITS</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.DSP_UNITS" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>有効化する DSP ユニット</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.NUM_INTEG_SECTIONS">
+<code class="sig-name descname"><span class="pre">NUM_INTEG_SECTIONS</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.NUM_INTEG_SECTIONS" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>積算区間数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.NUM_SUM_SECTIONS">
+<code class="sig-name descname"><span class="pre">NUM_SUM_SECTIONS</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.NUM_SUM_SECTIONS" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>総和区間数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.POST_BLANK_LEN">
+<code class="sig-name descname"><span class="pre">POST_BLANK_LEN</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.POST_BLANK_LEN" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ポストブランク長</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.REAL_FIR_COEF">
+<code class="sig-name descname"><span class="pre">REAL_FIR_COEF</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.REAL_FIR_COEF" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>実数 FIR フィルタの係数</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.SUM_SECTION_LEN">
+<code class="sig-name descname"><span class="pre">SUM_SECTION_LEN</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.SUM_SECTION_LEN" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>総和区間長</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.SUM_TARGET_INTERVAL">
+<code class="sig-name descname"><span class="pre">SUM_TARGET_INTERVAL</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.SUM_TARGET_INTERVAL" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>総和区間内で総和の対象となる部分の開始位置とワード数</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.all">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureParamElem.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.all" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャパラメータの全要素をリストとして返す</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureParamElem.includes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureParamElem.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureParamElem.includes" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">CaptureUnit</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureUnit"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
@@ -2180,6 +2386,22 @@
 <dd><p>判定式 1</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc.all">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#DecisionFunc.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc.all" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>全ての四値化処理の判定式の IDをリストとして返す</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc.includes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#DecisionFunc.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc.includes" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.DecisionFunc.of">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">of</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#DecisionFunc.of"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.DecisionFunc.of" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -2242,6 +2464,97 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">FeedbackChannel</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#FeedbackChannel"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>フィードバックチャネル (フィードバック値を読み書きするチャネル) の ID</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U0">
+<code class="sig-name descname"><span class="pre">U0</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U0" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U1">
+<code class="sig-name descname"><span class="pre">U1</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U1" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U2">
+<code class="sig-name descname"><span class="pre">U2</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U2" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U3">
+<code class="sig-name descname"><span class="pre">U3</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U3" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U4">
+<code class="sig-name descname"><span class="pre">U4</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U4" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U5">
+<code class="sig-name descname"><span class="pre">U5</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U5" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U6">
+<code class="sig-name descname"><span class="pre">U6</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U6" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.U7">
+<code class="sig-name descname"><span class="pre">U7</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.U7" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.all">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#FeedbackChannel.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.all" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>全フィードバックチャネル の ID をリストとして返す</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.includes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#FeedbackChannel.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.includes" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.FeedbackChannel.of">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">of</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#FeedbackChannel.of"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.FeedbackChannel.of" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.hwdefs.</span></code><code class="sig-name descname"><span class="pre">SequencerErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#SequencerErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>シーケンサエラーの列挙型</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr.CMD_FIFO_OVERFLOW">
+<code class="sig-name descname"><span class="pre">CMD_FIFO_OVERFLOW</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr.CMD_FIFO_OVERFLOW" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr.ERR_FIFO_OVERFLOW">
+<code class="sig-name descname"><span class="pre">ERR_FIFO_OVERFLOW</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr.ERR_FIFO_OVERFLOW" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr.all">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#SequencerErr.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr.all" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>全キャプチャユニットエラーの列挙子をリストとして返す</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr.includes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#SequencerErr.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr.includes" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-e7awgsw.lock">
 <span id="e7awgsw-lock-module"></span><h2>e7awgsw.lock module<a class="headerlink" href="#module-e7awgsw.lock" title="このヘッドラインへのパーマリンク">¶</a></h2>
@@ -2269,6 +2582,1092 @@
 <dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.release">
 <code class="sig-name descname"><span class="pre">release</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.release"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.release" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.sequencer">
+<span id="e7awgsw-sequencer-module"></span><h2>e7awgsw.sequencer module<a class="headerlink" href="#module-e7awgsw.sequencer" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencer.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencer.SequencerCtrlBase" title="e7awgsw.sequencer.SequencerCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencer.SequencerCtrlBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ip_addr</strong> (<em>string</em>) -- シーケンサに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>validate_args</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; 引数のチェックを行う</div>
+<div class="line">False -&gt; 引数のチェックを行わない</div>
+</div>
+</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl.close"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl.close" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencer.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrlBase</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.check_err">
+<code class="sig-name descname"><span class="pre">check_err</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.check_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.check_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのエラーをチェックし, エラーに応じた列挙子のリストを返す.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">発生したエラーのリスト. エラーが無かった場合は空のリスト.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of SequencerErr</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_suquencer_stop_flag">
+<code class="sig-name descname"><span class="pre">clear_suquencer_stop_flag</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_suquencer_stop_flag"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_suquencer_stop_flag" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンド処理終了フラグを下げる</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">clear_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未実行のコマンドをすべて削除する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_unsent_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">clear_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未送信のコマンドエラーレポートをすべて削除する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.cmd_fifo_free_space">
+<code class="sig-name descname"><span class="pre">cmd_fifo_free_space</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.cmd_fifo_free_space"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.cmd_fifo_free_space" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドキューの空き領域を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドキューの空き領域 (Bytes)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.disable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">disable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.disable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.disable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドエラーの送信機能を無効化する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.enable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">enable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.enable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.enable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドエラーの送信機能を有効化する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.initialize">
+<code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.initialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.initialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサを初期化する</p>
+<div class="line-block">
+<div class="line">このクラスの他のメソッドを呼び出す前に呼ぶこと.</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">num_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>未送信のコマンドエラーレポートの数を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">未送信のコマンドエラーレポートの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_err_commands">
+<code class="sig-name descname"><span class="pre">num_err_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_err_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_err_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に失敗したコマンドの数を取得する</p>
+<div class="line-block">
+<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に失敗したコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_succeeded_commands">
+<code class="sig-name descname"><span class="pre">num_succeeded_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_succeeded_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_succeeded_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する</p>
+<div class="line-block">
+<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に成功したコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">num_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未実行のコマンドの数を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサにある未実行のコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.pop_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">pop_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.pop_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.pop_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサから送られたコマンドエラーレポートを取得する.</p>
+<div class="line-block">
+<div class="line">古いレポートから順に戻り値のリストに格納される.</div>
+<div class="line">取得したレポートは, このオブジェクトの管理から外れる.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
+<div class="line">シーケンサから送られたコマンドエラーレポートのリスト.</div>
+<div class="line">コマンドエラーレポートがない場合は, 空のリスト</div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">cmd_list (list of SequencerCmdErr)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.push_commands">
+<code class="sig-name descname"><span class="pre">push_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.push_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.push_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにコマンドを追加する</p>
+<div class="line-block">
+<div class="line">コマンドキューに cmd_list のための十分な空き領域がない場合, 例外を投げる.</div>
+<div class="line">このとき cmd_list のコマンドは 1 つも追加されない.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>cmd_list</strong> (<em>list of SequencerCmd</em>) -- シーケンサに追加するコマンド</td>
+</tr>
+<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError" title="e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError"><strong>TooLittleFreeSpaceInCmdFifoError</strong></a> -- コマンドキューの空き領域が足りない</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.start_sequencer">
+<code class="sig-name descname"><span class="pre">start_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.start_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.start_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理を開始する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.terminate_sequencer">
+<code class="sig-name descname"><span class="pre">terminate_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.terminate_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.terminate_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサを強制停止させる</p>
+<div class="line-block">
+<div class="line">実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.version">
+<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.version" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのバージョンを取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">バージョンを表す文字列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.wait_for_sequencer_to_stop">
+<code class="sig-name descname"><span class="pre">wait_for_sequencer_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.wait_for_sequencer_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.wait_for_sequencer_to_stop" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理が終了するのを待つ</p>
+<div class="line-block">
+<div class="line">シーケンサのコマンドの処理が終了するのは, シーケンサ停止フラグが有効なコマンドを実行した場合と,</div>
+<div class="line">シーケンサを強制停止した場合である.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>timeout</strong> (<em>int</em><em> or </em><em>float</em>) -- タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.SequencerTimeoutError" title="e7awgsw.exception.SequencerTimeoutError"><strong>SequencerTimeoutError</strong></a> -- タイムアウトした場合</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.sequencercmd">
+<span id="e7awgsw-sequencercmd-module"></span><h2>e7awgsw.sequencercmd module<a class="headerlink" href="#module-e7awgsw.sequencercmd" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">AwgStartCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.MAX_START_TIME">
+<code class="sig-name descname"><span class="pre">MAX_START_TIME</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9223372036854775807</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.MAX_START_TIME" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG スタート時刻に指定可能な最大値</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG を指定した時刻にスタートするコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>awg_id_list</strong> (<em>list of AWG</em>) -- 波形の出力を開始する AWG のリスト</li>
+<li><strong>start_time</strong> (<em>int</em>) -- <div class="line-block">
+<div class="line">AWG をスタートする時刻.</div>
+<div class="line">シーケンサがコマンドの処理を始めた時点を 0 として, start_time * 8[ns] 後に AWG がスタートされる.</div>
+</div>
+</li>
+<li><strong>wait</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する</div>
+<div class="line">False -&gt; AWG をスタートした後, このコマンドを終了する.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.awg_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">awg_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.awg_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.start_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">start_time</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.start_time" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">AwgStartCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG スタートコマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmdErr.awg_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">awg_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmdErr.awg_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定した時刻にスタートできなかった AWG の ID のリスト</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">指定した時刻にスタートできなかった AWG の ID のリスト</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of AWG</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureAddrSetCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">byte_offset</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">byte_offset</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャアドレスをセットするコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- キャプチャアドレスをセットするキャプチャユニットのリスト.</li>
+<li><strong>byte_offset</strong> (<em>int</em>) -- <div class="line-block">
+<div class="line">各キャプチャユニットのキャプチャ領域の先頭アドレス + byte_offset を, 次のキャプチャのデータの格納先とする.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.byte_offset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">byte_offset</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.byte_offset" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.capture_unit_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">capture_unit_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.capture_unit_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureAddrSetCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureAddrSetCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャアドレスセットコマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureAddrSetCmdErr.write_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">write_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureAddrSetCmdErr.write_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>書き込みエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中にキャプチャアドレスの書き込みエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureEndFenceCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">end_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">terminate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.MAX_END_TIME">
+<code class="sig-name descname"><span class="pre">MAX_END_TIME</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9223372036854775807</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.MAX_END_TIME" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャ完了確認時刻に指定可能な最大値</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">end_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">terminate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定した時刻まで待ってからキャプチャが完了しているかを調べるコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- キャプチャの完了を調べるキャプチャユニットのリスト.</li>
+<li><strong>end_time</strong> (<em>int</em>) -- <div class="line-block">
+<div class="line">キャプチャが完了しているかを調べる時刻.</div>
+<div class="line">シーケンサがコマンドの処理を始めた時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</div>
+</div>
+</li>
+<li><strong>wait</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; end_time の後もキャプチャが完了していないキャプチャユニットの終了を待つ.</div>
+<div class="line">False -&gt; end_time の後, キャプチャの完了を待たずにコマンドを終了する.</div>
+</div>
+</li>
+<li><strong>terminate</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">キャプチャユニット停止フラグ.</div>
+<div class="line">True の場合 end_time の時点でキャプチャが完了していないキャプチャユニットを強制停止する.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.capture_unit_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">capture_unit_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.capture_unit_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.end_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">end_time</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.end_time" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.terminate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">terminate</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.terminate" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmd.wait">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">wait</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmd.wait" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureEndFenceCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureEndFenceCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャ完了確認コマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureEndFenceCmdErr.capture_unit_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">capture_unit_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureEndFenceCmdErr.capture_unit_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of CaptureUnit</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureParamSetCmd</span></code><span class="sig-paren">(</span><em><span class="pre">cmd_no,</span> <span class="pre">capture_unit_id_list,</span> <span class="pre">key_table,</span> <span class="pre">feedback_channel_id=FeedbackChannel.U0,</span> <span class="pre">param_elems=[&lt;CaptureParamElem.DSP_UNITS:</span> <span class="pre">0&gt;,</span> <span class="pre">&lt;CaptureParamElem.CAPTURE_DELAY:</span> <span class="pre">1&gt;,</span> <span class="pre">&lt;CaptureParamElem.NUM_INTEG_SECTIONS:</span> <span class="pre">2&gt;,</span> <span class="pre">&lt;CaptureParamElem.NUM_SUM_SECTIONS:</span> <span class="pre">3&gt;,</span> <span class="pre">&lt;CaptureParamElem.SUM_TARGET_INTERVAL:</span> <span class="pre">4&gt;,</span> <span class="pre">&lt;CaptureParamElem.SUM_SECTION_LEN:</span> <span class="pre">5&gt;,</span> <span class="pre">&lt;CaptureParamElem.POST_BLANK_LEN:</span> <span class="pre">6&gt;,</span> <span class="pre">&lt;CaptureParamElem.COMP_FIR_COEF:</span> <span class="pre">7&gt;,</span> <span class="pre">&lt;CaptureParamElem.REAL_FIR_COEF:</span> <span class="pre">8&gt;,</span> <span class="pre">&lt;CaptureParamElem.COMP_WINDOW_COEF:</span> <span class="pre">9&gt;,</span> <span class="pre">&lt;CaptureParamElem.DICISION_FUNC_PARAM:</span> <span class="pre">10&gt;],</span> <span class="pre">stop_seq=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="pre">cmd_no,</span> <span class="pre">capture_unit_id_list,</span> <span class="pre">key_table,</span> <span class="pre">feedback_channel_id=FeedbackChannel.U0,</span> <span class="pre">param_elems=[&lt;CaptureParamElem.DSP_UNITS:</span> <span class="pre">0&gt;,</span> <span class="pre">&lt;CaptureParamElem.CAPTURE_DELAY:</span> <span class="pre">1&gt;,</span> <span class="pre">&lt;CaptureParamElem.NUM_INTEG_SECTIONS:</span> <span class="pre">2&gt;,</span> <span class="pre">&lt;CaptureParamElem.NUM_SUM_SECTIONS:</span> <span class="pre">3&gt;,</span> <span class="pre">&lt;CaptureParamElem.SUM_TARGET_INTERVAL:</span> <span class="pre">4&gt;,</span> <span class="pre">&lt;CaptureParamElem.SUM_SECTION_LEN:</span> <span class="pre">5&gt;,</span> <span class="pre">&lt;CaptureParamElem.POST_BLANK_LEN:</span> <span class="pre">6&gt;,</span> <span class="pre">&lt;CaptureParamElem.COMP_FIR_COEF:</span> <span class="pre">7&gt;,</span> <span class="pre">&lt;CaptureParamElem.REAL_FIR_COEF:</span> <span class="pre">8&gt;,</span> <span class="pre">&lt;CaptureParamElem.COMP_WINDOW_COEF:</span> <span class="pre">9&gt;,</span> <span class="pre">&lt;CaptureParamElem.DICISION_FUNC_PARAM:</span> <span class="pre">10&gt;],</span> <span class="pre">stop_seq=False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>フィードバック値に応じてキャプチャパラメータをキャプチャユニットにセットするコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- 波形シーケンスをセットするキャプチャユニットのリスト.</li>
+<li><strong>key_table</strong> (<em>list of int</em><em>, </em><em>int</em>) -- <div class="line-block">
+<div class="line">キャプチャパラメータを登録したレジストリのキーのリスト.</div>
+<div class="line">key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー</div>
+<div class="line">となるように設定する.</div>
+<div class="line">レジストリキーに int 値 1 つを指定すると, フィードバック値によらず,</div>
+<div class="line">そのキーに登録されたキャプチャパラメータを設定する.</div>
+</div>
+</li>
+<li><strong>feedback_channel_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.FeedbackChannel" title="e7awgsw.hwdefs.FeedbackChannel"><em>FeedbackChannel</em></a>) -- <div class="line-block">
+<div class="line">参照するフィードバックチャネルの ID.</div>
+</div>
+</li>
+<li><strong>param_elems</strong> (<em>list of CaptureParamElem</em>) -- <div class="line-block">
+<div class="line">キャプチャパラメータの中の設定したい要素のリスト.</div>
+<div class="line">ここに指定しなかった要素は, キャプチャユニットに設定済みの値のまま更新されない.</div>
+<div class="line">特に, 「総和区間数」「総和区間長」「ポストブランク長」の 3 つは, セットで更新しない場合,</div>
+<div class="line">キャプチャユニットが保持するパラメータと不整合を起こす可能性がある点に注意.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.capture_unit_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">capture_unit_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.capture_unit_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.feedback_channel_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">feedback_channel_id</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.feedback_channel_id" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.key_table">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">key_table</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.key_table" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.param_elems">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">param_elems</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.param_elems" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">CaptureParamSetCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#CaptureParamSetCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>キャプチャパラメータセットコマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmdErr.read_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">read_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmdErr.read_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>読み出しエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中にキャプチャパラメータの読み出しエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.CaptureParamSetCmdErr.write_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">write_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.CaptureParamSetCmdErr.write_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>書き込みエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中にキャプチャパラメータの書き込みエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">FeedbackCalcOnClassificationCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">byte_offset</span></span></em>, <em><span class="n"><span class="pre">elem_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em>, <em><span class="n"><span class="pre">byte_offset</span></span></em>, <em><span class="n"><span class="pre">elem_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化結果をフィードバック値とするフィードバック値計算コマンド</p>
+<div class="line-block">
+<div class="line">フィードバックチャネル i のフィードバック値 (FB_VAL(i)) は, 以下の式で求まる.</div>
+<div class="line">FB_VAL(i) = ビットアドレスが FB_BIT_ADDR(i) のビットとその次のビットを並べた 2 bits の値</div>
+<div class="line">FB_BIT_ADDR(i) = (CaptureUnitAddr(i) + byte_offset) * 8 + elem_offset * 2 (= 四値化結果のビットアドレス)</div>
+<div class="line">CaptureUnitAddr(i) = キャプチャユニット i に割り当てられたキャプチャ領域の先頭アドレス</div>
+<div class="line">i ∈ capture_unit_id_list</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- <div class="line-block">
+<div class="line">フィードバック値とする四値化結果が格納されたキャプチャ領域を持つキャプチャユニットの ID のリスト.</div>
+<div class="line">更新されるフィードバックチャネルの ID のリストでもある.</div>
+</div>
+</li>
+<li><strong>byte_offset</strong> (<em>int</em>) -- フィードバック値とするデータのバイト単位での位置</li>
+<li><strong>elem_offset</strong> (<em>int</em>) -- フィードバック値とするデータの四値化結果単位での位置</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.byte_offset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">byte_offset</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.byte_offset" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.capture_unit_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">capture_unit_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.capture_unit_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.elem_offset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">elem_offset</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.elem_offset" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">FeedbackCalcOnClassificationCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#FeedbackCalcOnClassificationCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>四値化結果をフィードバック値とするフィードバック値計算コマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr.read_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">read_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr.read_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>読み出しエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中に四値化結果の読み出しエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">SequencerCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_id</span></span></em>, <em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.MAX_CMD_NO">
+<code class="sig-name descname"><span class="pre">MAX_CMD_NO</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">65535</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.MAX_CMD_NO" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定可能なコマンド番号の最大値</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_id</span></span></em>, <em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.cmd_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">cmd_id</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.cmd_id" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このコマンドの種類を表す ID</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">このコマンドの種類を表す ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.cmd_no">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">cmd_no</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.cmd_no" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このコマンドのコマンド番号</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">このコマンドのコマンド番号</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.serialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.size">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmd.stop_seq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">stop_seq</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmd.stop_seq" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサ停止フラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサ停止フラグ</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">SequencerCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_id</span></span></em>, <em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_id</span></span></em>, <em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#SequencerCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmdErr.cmd_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">cmd_id</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmdErr.cmd_id" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このエラーを起こしたコマンドの種類を表す ID</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">このエラーを起こしたコマンドの種類を表す ID</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmdErr.cmd_no">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">cmd_no</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmdErr.cmd_no" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このエラーを起こしたコマンドのコマンド番号</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">このエラーを起こしたコマンドのコマンド番号</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.SequencerCmdErr.is_terminated">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">is_terminated</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.SequencerCmdErr.is_terminated" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このエラーを起こしたコマンドが実行中に強制終了させられたかどうか</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
+<div class="line">True -&gt; コマンドが実行中に強制終了させられた</div>
+<div class="line">False -&gt; コマンドは実行中に強制終了させれていない</div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">WaveSequenceSetCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">key_table</span></span></em>, <em><span class="n"><span class="pre">feedback_channel_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FeedbackChannel.U0</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">key_table</span></span></em>, <em><span class="n"><span class="pre">feedback_channel_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">FeedbackChannel.U0</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>フィードバック値に応じて波形シーケンスを AWG にセットするコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>awg_id_list</strong> (<em>list of AWG</em>) -- 波形シーケンスをセットする AWG のリスト.</li>
+<li><strong>key_table</strong> (<em>list of int</em><em>, </em><em>int</em>) -- <div class="line-block">
+<div class="line">波形シーケンスを登録したレジストリのキーのリスト.</div>
+<div class="line">key_table[フィードバック値] = 設定したい波形シーケンスを登録したレジストリのキー</div>
+<div class="line">となるように設定する.</div>
+<div class="line">レジストリキーに int 値 1 つを指定すると, フィードバック値によらず,</div>
+<div class="line">そのキーに登録された波形シーケンスを設定する.</div>
+</div>
+</li>
+<li><strong>feedback_channel_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.FeedbackChannel" title="e7awgsw.hwdefs.FeedbackChannel"><em>FeedbackChannel</em></a>) -- <div class="line-block">
+<div class="line">参照するフィードバックチャネルの ID.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.awg_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">awg_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.awg_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.feedback_channel_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">feedback_channel_id</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.feedback_channel_id" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.key_table">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">key_table</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.key_table" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">WaveSequenceSetCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">read_err</span></span></em>, <em><span class="n"><span class="pre">write_err</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveSequenceSetCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>波形シーケンスセットコマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmdErr.read_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">read_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmdErr.read_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>読み出しエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中に波形シーケンスの読み出しエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveSequenceSetCmdErr.write_err">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">write_err</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveSequenceSetCmdErr.write_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>書き込みエラーフラグ</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 

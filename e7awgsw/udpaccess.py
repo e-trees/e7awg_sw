@@ -245,6 +245,7 @@ class CmdErrReceiver(threading.Thread):
     @classmethod
     def __gen_seq_cmd_err_from_bytes(cls, data):
         bit_field = int.from_bytes(data, byteorder='little')
+        is_terminated = bit_field & 0x1
         cmd_id = (bit_field >> 1) & 0x7F
         cmd_no = (bit_field >> 8) & 0xFFFF
         read_err = bool((bit_field >> 24) & 0x1)
@@ -256,17 +257,17 @@ class CmdErrReceiver(threading.Thread):
             lambda cap_unit_id: cap_unit_id_bits & (1 << cap_unit_id), CaptureUnit.all()))
 
         if cmd_id == AwgStartCmd.ID:
-            return AwgStartCmdErr(cmd_no, awg_id_list)
+            return AwgStartCmdErr(cmd_no, is_terminated, awg_id_list)
         elif cmd_id == CaptureEndFenceCmd.ID:
-            return CaptureEndFenceCmdErr(cmd_no, cap_unit_id_list)
+            return CaptureEndFenceCmdErr(cmd_no, is_terminated, cap_unit_id_list)
         elif cmd_id == WaveSequenceSetCmd.ID:
-            return WaveSequenceSetCmdErr(cmd_no, read_err, write_err)
+            return WaveSequenceSetCmdErr(cmd_no, is_terminated, read_err, write_err)
         elif cmd_id == CaptureParamSetCmd.ID:
-            return CaptureParamSetCmdErr(cmd_no, read_err, write_err)
+            return CaptureParamSetCmdErr(cmd_no, is_terminated, read_err, write_err)
         elif cmd_id == CaptureAddrSetCmd.ID:
-            return CaptureAddrSetCmdErr(cmd_no, write_err)
+            return CaptureAddrSetCmdErr(cmd_no, is_terminated, write_err)
         elif cmd_id == FeedbackCalcOnClassificationCmd.ID:
-            return FeedbackCalcOnClassificationCmdErr(cmd_no, read_err)
+            return FeedbackCalcOnClassificationCmdErr(cmd_no, is_terminated, read_err)
 
         assert False, ('Invalid cmd err.  cmd_id = {}'.format(cmd_id))
 
@@ -428,9 +429,9 @@ class UdpRw(object):
         # 端数調整
         rd_addr = addr // self.__min_rw_size * self.__min_rw_size
         rd_offset = addr - rd_addr
-        size += rd_offset
-        rd_size = (size + self.__min_rw_size - 1) // self.__min_rw_size * self.__min_rw_size
-        
+        ext_size = size + rd_offset
+        rd_size = (ext_size + self.__min_rw_size - 1) // self.__min_rw_size * self.__min_rw_size
+
         try:
             send_packet = UplPacket(self.__rd_mode_id, rd_addr, rd_size)
             self.__sock.sendto(send_packet.serialize(), self.__dest_addr)

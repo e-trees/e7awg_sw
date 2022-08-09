@@ -8,7 +8,7 @@ from .udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
 from .exception import AwgTimeoutError
 from .logger import get_file_logger, get_null_logger, log_error
 from .lock import ReentrantFileLock
-from .hwdefs import AWG
+from .hwdefs import AWG, AwgErr
 
 class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)
@@ -54,7 +54,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         """awg_id で指定した AWG が持つ波形レジストリに波形シーケンスを登録する
 
         | 同じ awg_id で複数回呼ぶと, 前回レジストリに登録したデータが消えることに注意.
-        | この関数を呼んだ後で set_wave_sequence を呼ぶと, レジストリに登録データが消えることに注意.
+        | この関数を呼んだ後で set_wave_sequence を呼ぶと, レジストリに登録したデータが消えることに注意.
 
         Args:
             awg_id (AWG): 登録先の波形レジストリを持つ AWG の ID

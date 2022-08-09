@@ -185,6 +185,15 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         return self._pop_cmd_err_reports()
 
 
+    def version(self):
+        """シーケンサのバージョンを取得する
+
+        Returns:
+            string: バージョンを表す文字列
+        """
+        return self._version()
+
+
     def _validate_ip_addr(self, ip_addr):
         try:
             if ip_addr != 'localhost':
@@ -277,6 +286,11 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
     @abstractmethod
     def _pop_cmd_err_reports(self):
         pass
+
+    @abstractmethod
+    def _version(self):
+        pass
+
 
 class SequencerCtrl(SequencerCtrlBase):
     def __init__(
@@ -371,9 +385,9 @@ class SequencerCtrl(SequencerCtrlBase):
 
     def __reset_sequencer(self):
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_RESET, 1, 1)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_RESET, 1, 0)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
 
 
     def _push_commands(self, cmd_list):
@@ -402,18 +416,18 @@ class SequencerCtrl(SequencerCtrlBase):
 
     def _clear_unprocessed_commands(self):
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_CLR, 1, 1)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_CLR, 1, 0)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
 
 
     def _clear_unsent_cmd_err_reports(self):
         self.__reg_access.write_bits(
             SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_ERR_REPORT_CLR, 1, 1)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
         self.__reg_access.write_bits(
             SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_ERR_REPORT_CLR, 1, 0)
-        time.sleep(10e-4)
+        time.sleep(1e-4)
 
 
     def _clear_suquencer_stop_flag(self):
@@ -525,3 +539,13 @@ class SequencerCtrl(SequencerCtrlBase):
             return []
 
         return self.__err_receiver.pop_err_reports()
+
+
+    def _version(self):
+        data = self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.VERSION)
+        ver_char = chr(0xFF & (data >> 24))
+        ver_year = 0xFF & (data >> 16)
+        ver_month = 0xF & (data >> 12)
+        ver_day = 0xFF & (data >> 4)
+        ver_id = 0xF & data
+        return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)

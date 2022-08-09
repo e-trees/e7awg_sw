@@ -51,7 +51,7 @@ class CaptureTest(object):
             q_data = gen_random_int_list(num_samples, -32768, 32767)
             wave_seq.add_chunk(
                 iq_samples = list(zip(i_data, q_data)),
-                num_blank_words = random.randint(0, 32), 
+                num_blank_words = random.randint(0, 16), 
                 num_repeats = random.randint(1, 4))
 
         return wave_seq

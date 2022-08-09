@@ -146,6 +146,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -182,6 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -195,9 +199,10 @@
   <h1>e7awgsw.captureparam のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span><span class="p">,</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span>
 <span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">DspUnit</span><span class="p">,</span> <span class="n">DecisionFunc</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
+
 
 <div class="viewcode-block" id="CaptureParam"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureParam</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; キャプチャパラメータを保持するクラス&quot;&quot;&quot;</span>
@@ -304,6 +309,24 @@
             <span class="k">raise</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__sumsections</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">num_words</span><span class="p">,</span> <span class="n">num_post_blank_words</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CaptureParam.del_sum_section"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.del_sum_section">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">del_sum_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;引数で指定したインデックスの総和区間を削除する</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): 削除する総和区間のインデックス (0 ~ 登録済みの総和区間数 - 1)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sumsections</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Invalid index  (</span><span class="si">{}</span><span class="s2">).  This capture parameter has only </span><span class="si">{}</span><span class="s2"> sum sections.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">index</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sumsections</span><span class="p">))</span>
+            <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sumsections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="CaptureParam.clear_sum_sections"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.clear_sum_sections">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">clear_sum_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;登録済みの全ての総和区間を削除する&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sumsections</span> <span class="o">=</span> <span class="p">[]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_sum_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -505,7 +528,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of real FIR coefficients must be &#39;int&#39; or &#39;float&#39;.&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">val</span><span class="p">]):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Real FIR coefficients must be an integer.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Real FIR coefficients must be integers.&#39;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_in_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_FIR_COEF_VAL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_FIR_COEF_VAL</span><span class="p">,</span> <span class="n">coef</span><span class="p">)</span> <span class="k">for</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">val</span><span class="p">]):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Real FIR coefficients must be </span><span class="si">{}</span><span class="s1"> ~ </span><span class="si">{}</span><span class="s1">.&#39;</span>
@@ -562,11 +585,12 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__comp_window_coefs</span> <span class="o">=</span> <span class="n">val</span>
     
+
 <div class="viewcode-block" id="CaptureParam.calc_capture_samples"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.calc_capture_samples">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">calc_capture_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            現在のキャプチャパラメータで保存されるサンプル数</span>
+<span class="sd">            int: 現在のキャプチャパラメータで保存されるサンプル数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_samples_in_integ_section</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">dsp_units_enabled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsp_units_enabled</span>
@@ -588,6 +612,20 @@
             <span class="k">return</span> <span class="n">num_samples_in_integ_section</span>
 
         <span class="k">return</span> <span class="n">num_samples_in_integ_section</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_integ_sections</span></div>
+
+
+<div class="viewcode-block" id="CaptureParam.calc_required_capture_mem_size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.calc_required_capture_mem_size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">calc_required_capture_mem_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;現在のキャプチャパラメータでのキャプチャに必要な RAM のサイズを計算する</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: キャプチャに必要な RAM のサイズ (bytes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DspUnit</span><span class="o">.</span><span class="n">CLASSIFICATION</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dsp_units_enabled</span><span class="p">:</span>
+            <span class="n">num_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_capture_samples</span><span class="p">()</span> <span class="o">*</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span>
+            <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">num_bits</span> <span class="o">//</span> <span class="p">(</span><span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">*</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span>
+
+        <span class="n">num_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_capture_samples</span><span class="p">()</span> <span class="o">*</span> <span class="n">CAPTURED_SAMPLE_SIZE</span>
+        <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="o">-</span><span class="n">num_bytes</span> <span class="o">//</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span><span class="p">)</span> <span class="o">*</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span></div>
 
 
 <div class="viewcode-block" id="CaptureParam.num_samples_to_sum"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.num_samples_to_sum">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_samples_to_sum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_no</span><span class="p">):</span>
@@ -696,7 +734,6 @@
                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_DECISION_FUNC_COEF_VAL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_DECISION_FUNC_COEF_VAL</span><span class="p">,</span> <span class="n">coef_a</span><span class="p">))</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">coef_b</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__is_in_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MIN_DECISION_FUNC_COEF_VAL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_DECISION_FUNC_COEF_VAL</span><span class="p">,</span> <span class="n">coef_b</span><span class="p">)):</span>

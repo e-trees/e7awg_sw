@@ -74,6 +74,9 @@ class SequencerCmd(object, metaclass = ABCMeta):
 
 
     def _validate_key_table(self, key_table, max_registry_key):
+        if isinstance(key_table, int) and (0 <= key_table and key_table <= max_registry_key):
+            return
+
         if not isinstance(key_table, (list, tuple)):
             raise ValueError(
                 "The type of 'key_table' must be 'list' or 'tuple'.  ({})".format(key_table))
@@ -289,19 +292,22 @@ class WaveSequenceSetCmd(SequencerCmd):
         self,
         cmd_no,
         awg_id_list,
-        feedback_channel_id,
         key_table,
+        feedback_channel_id = FeedbackChannel.U0,
         stop_seq = False):
         """フィードバック値に応じて波形シーケンスを AWG にセットするコマンド
 
         Args:
             cmd_no (int): コマンド番号
             awg_id_list (list of AWG): 波形シーケンスをセットする AWG のリスト.
-            feedback_channel_id (FeedbackChannel): 参照するフィードバックチャネルの ID
-            key_table (list of int):
+            key_table (list of int, int):
                 | 波形シーケンスを登録したレジストリのキーのリスト.
                 | key_table[フィードバック値] = 設定したい波形シーケンスを登録したレジストリのキー
                 | となるように設定する.
+                | レジストリキーに int 値 1 つを指定すると, フィードバック値によらず, 
+                | そのキーに登録された波形シーケンスを設定する.
+            feedback_channel_id (FeedbackChannel): 
+                | 参照するフィードバックチャネルの ID.
             stop_seq (bool):
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
@@ -338,9 +344,10 @@ class WaveSequenceSetCmd(SequencerCmd):
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         last_chunk_no = WaveSequence.MAX_CHUNKS - 1
 
+        key_table = ([self.__key_table] * 4) if isinstance(self.__key_table, int) else self.__key_table
         key_table_bits = 0
-        for i in range(len(self.__key_table)):
-            key_table_bits |= self.__key_table[i] << (i * 10)
+        for i in range(len(key_table)):
+            key_table_bits |= key_table[i] << (i * 10)
 
         cmd = (
             stop_seq                       |
@@ -369,8 +376,8 @@ class CaptureParamSetCmd(SequencerCmd):
         self,
         cmd_no,
         capture_unit_id_list,
-        feedback_channel_id,
         key_table,
+        feedback_channel_id = FeedbackChannel.U0,
         param_elems = CaptureParamElem.all(),
         stop_seq = False):
         """フィードバック値に応じてキャプチャパラメータをキャプチャユニットにセットするコマンド
@@ -378,14 +385,19 @@ class CaptureParamSetCmd(SequencerCmd):
         Args:
             cmd_no (int): コマンド番号
             capture_unit_id_list (list of CaptureUnit): 波形シーケンスをセットするキャプチャユニットのリスト.
-            feedback_channel_id (FeedbackChannel): 参照するフィードバックチャネルの ID
-            key_table (list of int):
+            key_table (list of int, int):
                 | キャプチャパラメータを登録したレジストリのキーのリスト.
                 | key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー
                 | となるように設定する.
+                | レジストリキーに int 値 1 つを指定すると, フィードバック値によらず, 
+                | そのキーに登録されたキャプチャパラメータを設定する.
+            feedback_channel_id (FeedbackChannel): 
+                | 参照するフィードバックチャネルの ID.
             param_elems (list of CaptureParamElem):
                 | キャプチャパラメータの中の設定したい要素のリスト.
                 | ここに指定しなかった要素は, キャプチャユニットに設定済みの値のまま更新されない.
+                | 特に, 「総和区間数」「総和区間長」「ポストブランク長」の 3 つは, セットで更新しない場合,
+                | キャプチャユニットが保持するパラメータと不整合を起こす可能性がある点に注意.
             stop_seq (bool):
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
@@ -431,9 +443,10 @@ class CaptureParamSetCmd(SequencerCmd):
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)        
         param_elem_bits = self._to_bit_field(self.__param_elems)
 
+        key_table = ([self.__key_table] * 4) if isinstance(self.__key_table, int) else self.__key_table
         key_table_bits = 0
-        for i in range(len(self.__key_table)):
-            key_table_bits |= self.__key_table[i] << (i * 10)
+        for i in range(len(key_table)):
+            key_table_bits |= key_table[i] << (i * 10)
 
         cmd = (
             stop_seq                       |
@@ -627,9 +640,10 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
 
 class SequencerCmdErr(object, metaclass = ABCMeta):
 
-    def __init__(self, cmd_id, cmd_no):
+    def __init__(self, cmd_id, cmd_no, is_terminated):
         self.__cmd_id = cmd_id
         self.__cmd_no = cmd_no
+        self.__is_terminated = is_terminated
 
 
     @property
@@ -652,11 +666,23 @@ class SequencerCmdErr(object, metaclass = ABCMeta):
         return self.__cmd_no
 
 
+    @property
+    def is_terminated(self):
+        """ このエラーを起こしたコマンドが実行中に強制終了させられたかどうか
+
+        Returns:
+            bool:
+                | True -> コマンドが実行中に強制終了させられた
+                | False -> コマンドは実行中に強制終了させれていない
+        """        
+        return self.__is_terminated
+
+
 class AwgStartCmdErr(SequencerCmdErr):
 
-    def __init__(self, cmd_no, awg_id_list):
+    def __init__(self, cmd_no, is_terminated, awg_id_list):
         """AWG スタートコマンドのエラー情報を保持するクラス"""
-        super().__init__(AwgStartCmd.ID, cmd_no)
+        super().__init__(AwgStartCmd.ID, cmd_no, is_terminated)
         self.__awg_id_list = copy.copy(awg_id_list)
 
 
@@ -674,16 +700,17 @@ class AwgStartCmdErr(SequencerCmdErr):
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
         return  (
             'AwgStartCmdErr\n' +
-            '  - command ID  : {}\n'.format(self.cmd_id) +
-            '  - command No  : {}\n'.format(self.cmd_no) +
-            '  - AWG IDs     : {}'.format(awg_id_list))
+            '  - command ID : {}\n'.format(self.cmd_id) +
+            '  - command No : {}\n'.format(self.cmd_no) +
+            '  - terminated : {}\n'.format(self.is_terminated) +
+            '  - AWG IDs    : {}'.format(awg_id_list))
 
 
 class CaptureEndFenceCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, capture_unit_id_list):
+    def __init__(self, cmd_no, is_terminated, capture_unit_id_list):
         """キャプチャ完了確認コマンドのエラー情報を保持するクラス"""
-        super().__init__(CaptureEndFenceCmd.ID, cmd_no)
+        super().__init__(CaptureEndFenceCmd.ID, cmd_no, is_terminated)
         self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
 
 
@@ -703,14 +730,15 @@ class CaptureEndFenceCmdErr(SequencerCmdErr):
             'CaptureEndFenceCmdErr\n' +
             '  - command ID       : {}\n'.format(self.cmd_id) +
             '  - command No       : {}\n'.format(self.cmd_no) +
+            '  - terminated       : {}\n'.format(self.is_terminated) +
             '  - capture unit IDs : {}'.format(capture_unit_id_list))
 
 
 class WaveSequenceSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, read_err, write_err):
+    def __init__(self, cmd_no, is_terminated, read_err, write_err):
         """波形シーケンスセットコマンドのエラー情報を保持するクラス"""
-        super().__init__(WaveSequenceSetCmd.ID, cmd_no)
+        super().__init__(WaveSequenceSetCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
         self.__write_err = write_err
 
@@ -740,15 +768,16 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
             'WaveSequenceSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
+            '  - terminated  : {}\n'.format(self.is_terminated) +
             '  - read error  : {}\n'.format(self.read_err) +
             '  - write error : {}'.format(self.write_err))
 
 
 class CaptureParamSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, read_err, write_err):
+    def __init__(self, cmd_no, is_terminated, read_err, write_err):
         """キャプチャパラメータセットコマンドのエラー情報を保持するクラス"""
-        super().__init__(CaptureParamSetCmd.ID, cmd_no)
+        super().__init__(CaptureParamSetCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
         self.__write_err = write_err
 
@@ -778,15 +807,16 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
             'CaptureParamSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
+            '  - terminated  : {}\n'.format(self.is_terminated) +
             '  - read error  : {}\n'.format(self.read_err) +
             '  - write error : {}'.format(self.write_err))
 
 
 class CaptureAddrSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, write_err):
+    def __init__(self, cmd_no, is_terminated, write_err):
         """キャプチャアドレスセットコマンドのエラー情報を保持するクラス"""
-        super().__init__(CaptureAddrSetCmd.ID, cmd_no)
+        super().__init__(CaptureAddrSetCmd.ID, cmd_no, is_terminated)
         self.__write_err = write_err
 
 
@@ -805,14 +835,15 @@ class CaptureAddrSetCmdErr(SequencerCmdErr):
             'CaptureAddrSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
+            '  - terminated  : {}\n'.format(self.is_terminated) +
             '  - write error : {}'.format(self.write_err))
 
 
 class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, read_err):
+    def __init__(self, cmd_no, is_terminated, read_err):
         """四値化結果をフィードバック値とするフィードバック値計算コマンドのエラー情報を保持するクラス"""
-        super().__init__(FeedbackCalcOnClassificationCmd.ID, cmd_no)
+        super().__init__(FeedbackCalcOnClassificationCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
 
 
@@ -831,4 +862,5 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
             'FeedbackCalcOnClassificationCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
+            '  - terminated : {}\n'.format(self.is_terminated) +
             '  - read error : {}'.format(self.read_err))

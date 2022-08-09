@@ -90,12 +90,13 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._initialize(*capture_unit_id_list)
 
 
-    def get_capture_data(self, capture_unit_id, num_samples):
+    def get_capture_data(self, capture_unit_id, num_samples, addr_offset = 0):
         """引数で指定したキャプチャユニットが保存したサンプルデータを取得する.
         
         Args:
             capture_unit_id (int): この ID のキャプチャユニットが保存したサンプルデータを取得する
             num_samples (int): 取得するサンプル数 (I と Q はまとめて 1 サンプル)
+            addr_offset (int): 取得するサンプルデータのバイトアドレスオフセット
 
         Returns:
             list of (float, float): I データと Q データのタプルのリスト.  各データは倍精度浮動小数点数.
@@ -104,19 +105,21 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             try:
                 self._validate_capture_unit_id(capture_unit_id)
                 self._validate_num_capture_samples(num_samples)
+                self._validate_addr_offset(addr_offset)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
         
-        return self._get_capture_data(capture_unit_id, num_samples)
+        return self._get_capture_data(capture_unit_id, num_samples, addr_offset)
 
 
-    def get_classification_results(self, capture_unit_id, num_results):
+    def get_classification_results(self, capture_unit_id, num_results, addr_offset = 0):
         """引数で指定したキャプチャユニットが保存した四値化結果を取得する.
 
         Args:
             capture_unit_id (int): この ID のキャプチャユニットが保存した四値化結果を取得する
             num_results (int): 取得する四値化結果の個数
+            addr_offset (int): 取得する四値化結果のバイトアドレスオフセット
 
         Returns:
             readonly list of int: 四値化結果のリスト. 各データは 0 ～ 3 の整数.
@@ -125,11 +128,12 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             try:
                 self._validate_capture_unit_id(capture_unit_id)
                 self._validate_num_classification_results(num_results)
+                self._validate_addr_offset(addr_offset)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
 
-        return self._get_classification_results(capture_unit_id, num_results)
+        return self._get_classification_results(capture_unit_id, num_results, addr_offset)
 
 
     def num_captured_samples(self, capture_unit_id):
@@ -332,6 +336,12 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 "The number of samples must be an integer.  '{}' was set.".format(num_samples))
 
 
+    def _validate_addr_offset(self, addr_offset):
+        if not isinstance(addr_offset, int):
+            raise ValueError(
+                "The address offset must be an integer.  '{}' was set.".format(addr_offset))
+
+
     def _validate_num_classification_results(self, num_results):
         if not isinstance(num_results, int):
             raise ValueError(
@@ -366,11 +376,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _get_capture_data(self, capture_unit_id, num_samples):
+    def _get_capture_data(self, capture_unit_id, num_samples, addr_offset):
         pass
 
     @abstractmethod
-    def _get_classification_results(self, capture_unit_id, num_results):
+    def _get_classification_results(self, capture_unit_id, num_results, addr_offset):
         pass
 
     @abstractmethod
@@ -592,11 +602,12 @@ class CaptureCtrl(CaptureCtrlBase):
             self.set_capture_params(cap_unit_id, CaptureParam())
 
 
-    def _get_capture_data(self, capture_unit_id, num_samples):
+    def _get_capture_data(self, capture_unit_id, num_samples, addr_offset):
         num_bytes = num_samples * CAPTURED_SAMPLE_SIZE
         num_bytes = (num_bytes + CAPTURE_RAM_WORD_SIZE - 1) // CAPTURE_RAM_WORD_SIZE
         num_bytes *= CAPTURE_RAM_WORD_SIZE
-        rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
+        rd_addr = self.__CAPTURE_ADDR[capture_unit_id] + addr_offset
+        rd_data = self.__wave_ram_access.read(rd_addr, num_bytes)
         part_size = CAPTURED_SAMPLE_SIZE // 2
         samples = [rd_data[i : i + part_size] for i in range(0, num_bytes, part_size)]
         samples = [struct.unpack('<f', sample)[0] for sample in samples]
@@ -604,11 +615,12 @@ class CaptureCtrl(CaptureCtrlBase):
         return list(zip(samples[0::2], samples[1::2]))
 
 
-    def _get_classification_results(self, capture_unit_id, num_results):
+    def _get_classification_results(self, capture_unit_id, num_results, addr_offset):
         num_bytes = (num_results * CLASSIFICATION_RESULT_SIZE + 7) // 8
         num_bytes = (num_bytes + CAPTURE_RAM_WORD_SIZE - 1) // CAPTURE_RAM_WORD_SIZE
         num_bytes *= CAPTURE_RAM_WORD_SIZE
-        rd_data = self.__wave_ram_access.read(self.__CAPTURE_ADDR[capture_unit_id], num_bytes)
+        rd_addr = self.__CAPTURE_ADDR[capture_unit_id] + addr_offset
+        rd_data = self.__wave_ram_access.read(rd_addr, num_bytes)
         return ClassificationResult(rd_data, num_results)
 
 
