@@ -153,6 +153,7 @@ class AwgStartCmd(SequencerCmd):
 
         self.__awg_id_list = copy.copy(awg_id_list)
         self.__start_time = start_time
+        self.__wait = wait
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
@@ -166,6 +167,11 @@ class AwgStartCmd(SequencerCmd):
         return self.__start_time
 
 
+    @property
+    def wait(self):
+        return self.__wait
+
+
     def __gen_cmd_bytes(self):
         stop_seq = 1 if self.stop_seq else 0
         awg_id_list = self._to_bit_field(self.__awg_id_list)
@@ -174,7 +180,8 @@ class AwgStartCmd(SequencerCmd):
             self.cmd_id              << 1   |
             self.cmd_no              << 8   |
             awg_id_list              << 24  |
-            self.start_time          << 40)
+            self.start_time          << 40  |
+            self.wait                << 104)
         return cmd.to_bytes(16, 'little')
 
 

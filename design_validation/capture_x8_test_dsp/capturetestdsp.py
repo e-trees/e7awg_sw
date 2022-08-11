@@ -151,9 +151,11 @@ class CaptureTestDsp(object):
         for capture_unit_id in self.__cap_units_to_test:
             num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
             if cls_result:
-                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
+                capture_unit_to_capture_data[capture_unit_id] = \
+                    cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
             else:
-                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+                capture_unit_to_capture_data[capture_unit_id] = \
+                    cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
         return capture_unit_to_capture_data
 
     def __calc_exp_data(self, awg_to_wave_sequence, capture_unit_to_capture_param):

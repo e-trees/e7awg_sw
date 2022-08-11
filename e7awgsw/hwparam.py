@@ -2,7 +2,7 @@
 # ---- AWG ----
 # AWG から出力するサンプルのサイズ (単位 : bytes,  I = 16 bit,  Q = 16 bit)
 WAVE_SAMPLE_SIZE = 4
-# AWG から 1 サイクルで出力されるデータのサイズ (単位 : bytes)
+# AWG から 1 サイクルで出力されるデータのサイズ (bytes)
 AWG_WORD_SIZE = 16
 # AWG から 1 サイクルで出力されるデータのサンプル数
 NUM_SAMPLES_IN_AWG_WORD = AWG_WORD_SIZE // WAVE_SAMPLE_SIZE
@@ -12,7 +12,7 @@ NUM_SAMPLES_IN_WAVE_BLOCK = NUM_SAMPLES_IN_AWG_WORD * 16
 MAX_WAVE_REGISTRY_ENTRIES = 512
 
 # ---- Capture Unit ----
-# キャプチャユニットが 1 サイクルで取得するデータのサイズ (単位 : bytes)
+# キャプチャユニットが 1 サイクルで取得するデータのサイズ (bytes)
 ADC_WORD_SIZE = 16
 # キャプチャユニットが取得するサンプルのサイズ (単位 : bytes,  I = 16 bit,  Q = 16 bit)
 ADC_SAMPLE_SIZE = 4
@@ -20,7 +20,7 @@ ADC_SAMPLE_SIZE = 4
 NUM_SAMPLES_IN_ADC_WORD = ADC_WORD_SIZE // ADC_SAMPLE_SIZE
 # メモリに保存されたサンプルのサイズ (単位 : bytes,  I = 32 bit,  Q = 32 bit)
 CAPTURED_SAMPLE_SIZE = 8
-# メモリに保存された四値化結果のサイズ (単位 : bits)
+# メモリに保存された四値化結果のサイズ (bits)
 CLASSIFICATION_RESULT_SIZE = 2
 # 1 キャプチャユニットが保存可能なデータサイズ (bytes)
 MAX_CAPTURE_SIZE = 256 * 1024 * 1024
@@ -34,7 +34,7 @@ CAPTURE_DATA_ALIGNMENT_SIZE = CAPTURE_RAM_WORD_SIZE * 16
 MAX_CAPTURE_PARAM_REGISTRY_ENTRIES = 512
 
 # ---- Sequencer ----
-# コマンドエラーのサイズ bytes
+# コマンドエラーのサイズ (bytes)
 CMD_ERR_REPORT_SIZE = 16 
 
 #UDP ポート番号
