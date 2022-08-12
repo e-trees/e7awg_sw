@@ -457,3 +457,12 @@ class UdpRw(object):
     @property
     def my_port(self):
         return self.__sock.getsockname()[1]
+
+
+def get_my_ip_addr(ip_addr):
+    """ip_addr にパケットを送る際のこのマシンの IP アドレスを取得する"""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.connect((ip_addr, 0))
+    my_ip_addr = sock.getsockname()[0]
+    sock.close()
+    return my_ip_addr

@@ -32,3 +32,11 @@ e7awgsw.labrad.remotecapturectrl module
    :members:
    :undoc-members:
    :show-inheritance:
+
+e7awgsw.labrad.remotesequencerctrl module
+-----------------------------------------
+
+.. automodule:: e7awgsw.labrad.remotesequencerctrl
+   :members:
+   :undoc-members:
+   :show-inheritance:

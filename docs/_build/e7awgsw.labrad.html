@@ -149,6 +149,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
 </ul>
 </li>
 </ul>
@@ -161,8 +162,8 @@
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -187,6 +188,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
 </ul>
 </li>
 </ul>
@@ -199,8 +201,8 @@
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -293,6 +295,46 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteSequencerCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.</span></code><code class="sig-name descname"><span class="pre">RemoteSequencerCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">sequencer_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteSequencerCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.sequencerctrl.SequencerCtrlBase" title="e7awgsw.sequencerctrl.SequencerCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencerctrl.SequencerCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通してシーケンサを制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteSequencerCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">sequencer_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteSequencerCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>sequencer_ip_addr</strong> (<em>string</em>) -- シーケンサに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.RemoteSequencerCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.RemoteSequencerCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="このヘッドラインへのパーマリンク">¶</a></h2>
 </div>
@@ -343,6 +385,11 @@ which maxes out at 10 threads.</td>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.check_sequencer_err">
+<code class="sig-name descname"><span class="pre">check_sequencer_err</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.check_sequencer_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.check_sequencer_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_awg_stop_flags">
 <code class="sig-name descname"><span class="pre">clear_awg_stop_flags</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.clear_awg_stop_flags"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_awg_stop_flags" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
@@ -353,6 +400,26 @@ which maxes out at 10 threads.</td>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_sequencer_stop_flag">
+<code class="sig-name descname"><span class="pre">clear_sequencer_stop_flag</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.clear_sequencer_stop_flag"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_sequencer_stop_flag" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">clear_unprocessed_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.clear_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_unsent_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">clear_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.clear_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.cmd_fifo_free_space">
+<code class="sig-name descname"><span class="pre">cmd_fifo_free_space</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.cmd_fifo_free_space"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.cmd_fifo_free_space" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_awgctrl">
 <code class="sig-name descname"><span class="pre">create_awgctrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">ipaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.create_awgctrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_awgctrl" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
@@ -360,6 +427,16 @@ which maxes out at 10 threads.</td>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_capturectrl">
 <code class="sig-name descname"><span class="pre">create_capturectrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">ipaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.create_capturectrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_capturectrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_sequencerctrl">
+<code class="sig-name descname"><span class="pre">create_sequencerctrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">ipaddr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.create_sequencerctrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_sequencerctrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.disable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">disable_cmd_err_report</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.disable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.disable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -378,18 +455,28 @@ which maxes out at 10 threads.</td>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_sequencerctrl">
+<code class="sig-name descname"><span class="pre">discard_sequencerctrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.discard_sequencerctrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_sequencerctrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">enable_cmd_err_report</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.enable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_start_trigger">
 <code class="sig-name descname"><span class="pre">enable_start_trigger</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.enable_start_trigger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_start_trigger" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data">
-<code class="sig-name descname"><span class="pre">get_capture_data</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.get_capture_data"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_capture_data</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em>, <em><span class="n"><span class="pre">addr_offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.get_capture_data"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_classification_results">
-<code class="sig-name descname"><span class="pre">get_classification_results</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.get_classification_results"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_classification_results" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_classification_results</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em>, <em><span class="n"><span class="pre">num_samples</span></span></em>, <em><span class="n"><span class="pre">addr_offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.get_classification_results"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_classification_results" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -407,6 +494,11 @@ which maxes out at 10 threads.</td>
 <code class="sig-name descname"><span class="pre">initialize_capture_units</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.initialize_capture_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_capture_units" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_sequencer">
+<code class="sig-name descname"><span class="pre">initialize_sequencer</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.initialize_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.name">
 <code class="sig-name descname"><span class="pre">name</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Awg</span> <span class="pre">Capture</span> <span class="pre">Server'</span></em><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.name" title="この定義へのパーマリンク">¶</a></dt>
@@ -415,6 +507,46 @@ which maxes out at 10 threads.</td>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_captured_samples">
 <code class="sig-name descname"><span class="pre">num_captured_samples</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.num_captured_samples"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_captured_samples" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_err_commands">
+<code class="sig-name descname"><span class="pre">num_err_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.num_err_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_err_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_succeeded_commands">
+<code class="sig-name descname"><span class="pre">num_succeeded_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.num_succeeded_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_succeeded_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">num_unprocessed_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.num_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_unsent_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">num_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.num_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.pop_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">pop_cmd_err_reports</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.pop_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.pop_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.push_commands">
+<code class="sig-name descname"><span class="pre">push_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">cmd_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.push_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.push_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.register_capture_params">
+<code class="sig-name descname"><span class="pre">register_capture_params</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">key</span></span></em>, <em><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.register_capture_params"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.register_capture_params" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.register_wave_sequences">
+<code class="sig-name descname"><span class="pre">register_wave_sequences</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id</span></span></em>, <em><span class="n"><span class="pre">key_to_wave_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.register_wave_sequences"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.register_wave_sequences" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -430,6 +562,11 @@ which maxes out at 10 threads.</td>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.select_trigger_awg">
 <code class="sig-name descname"><span class="pre">select_trigger_awg</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">capture_module_id</span></span></em>, <em><span class="n"><span class="pre">awg_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.select_trigger_awg"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.select_trigger_awg" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.sequencer_version">
+<code class="sig-name descname"><span class="pre">sequencer_version</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.sequencer_version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.sequencer_version" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -458,8 +595,18 @@ which maxes out at 10 threads.</td>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.start_sequencer">
+<code class="sig-name descname"><span class="pre">start_sequencer</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.start_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.start_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.terminate_awgs">
 <code class="sig-name descname"><span class="pre">terminate_awgs</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.terminate_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.terminate_awgs" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.terminate_sequencer">
+<code class="sig-name descname"><span class="pre">terminate_sequencer</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.terminate_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.terminate_sequencer" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -470,6 +617,11 @@ which maxes out at 10 threads.</td>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.wait_for_capture_units_to_stop">
 <code class="sig-name descname"><span class="pre">wait_for_capture_units_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">timeout</span></span></em>, <em><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.wait_for_capture_units_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.wait_for_capture_units_to_stop" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.wait_for_sequencer_to_stop">
+<code class="sig-name descname"><span class="pre">wait_for_sequencer_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">c</span></span></em>, <em><span class="n"><span class="pre">handle</span></span></em>, <em><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.wait_for_sequencer_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.wait_for_sequencer_to_stop" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -551,6 +703,49 @@ which maxes out at 10 threads.</td>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.disconnect">
 <code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotecapturectrl.html#RemoteCaptureCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotecapturectrl.RemoteCaptureCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.labrad.remotesequencerctrl">
+<span id="e7awgsw-labrad-remotesequencerctrl-module"></span><h2>e7awgsw.labrad.remotesequencerctrl module<a class="headerlink" href="#module-e7awgsw.labrad.remotesequencerctrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.labrad.remotesequencerctrl.</span></code><code class="sig-name descname"><span class="pre">RemoteSequencerCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">sequencer_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="e7awgsw.html#e7awgsw.sequencerctrl.SequencerCtrlBase" title="e7awgsw.sequencerctrl.SequencerCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencerctrl.SequencerCtrlBase</span></code></a></p>
+<p>LabRAD サーバを通してシーケンサを制御するためのクラス</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">remote_server_ip_addr</span></span></em>, <em><span class="n"><span class="pre">sequencer_ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>remote_server_ip_addr</strong> (<em>string</em>) -- LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')</li>
+<li><strong>sequencer_ip_addr</strong> (<em>string</em>) -- シーケンサに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl.disconnect">
+<code class="sig-name descname"><span class="pre">disconnect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/remotesequencerctrl.html#RemoteSequencerCtrl.disconnect"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl.disconnect" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.</p>
 <div class="line-block">
 <div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>

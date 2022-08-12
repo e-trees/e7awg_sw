@@ -8,7 +8,7 @@ from labrad import util
 
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
-from e7awgsw import AwgCtrl, CaptureCtrl
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 
 class AwgCaptureServer(ThreadedServer):
 
@@ -19,20 +19,24 @@ class AwgCaptureServer(ThreadedServer):
         super().__init__(pool)
         self.__awgctrls = {}
         self.__capturectrls = {}
+        self.__sequencerctrls = {}
         self.__handle = 1
         self.__lock = threading.RLock()
 
 
     def __get_awgctrl(self, handle):
         with self.__lock:
-            awgctrl = self.__awgctrls[handle]
-        return awgctrl
+            return self.__awgctrls[handle]
 
 
     def __get_capturectrl(self, handle):
         with self.__lock:
-            capturectrl = self.__capturectrls[handle]
-        return capturectrl
+            return self.__capturectrls[handle]
+
+
+    def __get_sequencerctrl(self, handle):
+        with self.__lock:
+            return self.__sequencerctrls[handle]
 
 
     @setting(100, returns='y')
@@ -42,10 +46,9 @@ class AwgCaptureServer(ThreadedServer):
                 handle = str(self.__handle)
                 self.__awgctrls[handle] = AwgCtrl(ipaddr, validate_args = False)
                 self.__handle += 1
+            return pickle.dumps(str(handle))
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(str(handle))
 
 
     @setting(101, handle='s', returns='y')
@@ -54,11 +57,10 @@ class AwgCaptureServer(ThreadedServer):
             with self.__lock:
                 ctrl = self.__awgctrls.pop(handle)
                 ctrl.close()
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
 
     @setting(102, handle='s', awg_id='w', wave_seq='y', returns='y')
     def set_wave_sequence(self, c, handle, awg_id, wave_seq):
@@ -66,54 +68,49 @@ class AwgCaptureServer(ThreadedServer):
             wave_seq = pickle.loads(wave_seq)
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.set_wave_sequence(awg_id, wave_seq)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
 
     @setting(103, handle='s', awg_id_list='*w', returns='y')
     def initialize_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.initialize(*awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
 
     @setting(104, handle='s', awg_id_list='*w', returns='y')
     def start_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.start_awgs(*awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
-
+    
     @setting(105, handle='s', awg_id_list='*w', returns='y')
     def terminate_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.terminate_awgs(*awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
 
     @setting(106, handle='s', awg_id_list='*w', returns='y')
     def reset_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.reset_awgs(*awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-        
-        return pickle.dumps(None)
 
 
     @setting(107, handle='s', timeout='y', awg_id_list='*w', returns='y')
@@ -122,10 +119,9 @@ class AwgCaptureServer(ThreadedServer):
             timeout = pickle.loads(timeout)
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.wait_for_awgs_to_stop(timeout, *awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-        
-        return pickle.dumps(None)
 
 
     @setting(108, handle='s', interval='y', awg_id_list='*w', returns='y')
@@ -134,43 +130,39 @@ class AwgCaptureServer(ThreadedServer):
             interval = pickle.loads(interval)
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.set_wave_startable_block_timing(interval, *awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
-
 
     @setting(109, handle='s', awg_id_list='*w', returns='y')
     def get_wave_startable_block_timing(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awg_id_to_interval = awgctrl.get_wave_startable_block_timing(*awg_id_list)
+            return pickle.dumps(awg_id_to_interval)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(awg_id_to_interval)
-
 
     @setting(110, handle='s', awg_id_list='*w', returns='y')
     def check_awg_err(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awg_id_to_err_list = awgctrl.check_err(*awg_id_list)
+            return pickle.dumps(awg_id_to_err_list)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(awg_id_to_err_list)
-
 
     @setting(111, handle='s', returns='y')
     def awg_version(self, c, handle):
         try:
             awgctrl = self.__get_awgctrl(handle)
             version = awgctrl.version()
+            return pickle.dumps(version)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(version)
 
 
     @setting(112, handle='s', awg_id_list='*w', returns='y')
@@ -178,11 +170,21 @@ class AwgCaptureServer(ThreadedServer):
         try:
             awgctrl = self.__get_awgctrl(handle)
             awgctrl.clear_awg_stop_flags(*awg_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
         
-        return pickle.dumps(None)
 
+    @setting(113, handle='s', awg_id='w', key_to_wave_seq='y', returns='y')
+    def register_wave_sequences(self, c, handle, awg_id, key_to_wave_seq):
+        try:
+            key_to_wave_seq = pickle.loads(key_to_wave_seq)
+            awgctrl = self.__get_awgctrl(handle)
+            awgctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
 
     @setting(200, returns='y')
     def create_capturectrl(self, c, ipaddr):
@@ -191,10 +193,9 @@ class AwgCaptureServer(ThreadedServer):
                 handle = str(self.__handle)
                 self.__capturectrls[handle] = CaptureCtrl(ipaddr, validate_args = False)
                 self.__handle += 1
+            return pickle.dumps(str(handle))
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(str(handle))
         
 
     @setting(201, handle='s', returns='y')
@@ -203,10 +204,9 @@ class AwgCaptureServer(ThreadedServer):
             with self.__lock:
                 ctrl = self.__capturectrls.pop(handle)
                 ctrl.close()
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(202, handle='s', capture_unit_id='w', param='y', returns='y')
@@ -215,10 +215,9 @@ class AwgCaptureServer(ThreadedServer):
             param = pickle.loads(param)
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.set_capture_params(capture_unit_id, param)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(203, handle='s', capture_unit_id_list='*w', returns='y')
@@ -226,22 +225,21 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.initialize(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
 
-        return pickle.dumps(None)
 
-
-    @setting(204, handle='s', capture_unit_id='w', num_samples='y', returns='y')
-    def get_capture_data(self, c, handle, capture_unit_id, num_samples):
+    @setting(204, handle='s', capture_unit_id='w', num_samples='y', addr_offset='y', returns='y')
+    def get_capture_data(self, c, handle, capture_unit_id, num_samples, addr_offset):
         try:
             num_samples = pickle.loads(num_samples)
+            addr_offset = pickle.loads(addr_offset)
             capturectrl = self.__get_capturectrl(handle)
-            cap_data = capturectrl.get_capture_data(capture_unit_id, num_samples)
+            cap_data = capturectrl.get_capture_data(capture_unit_id, num_samples, addr_offset)
+            return pickle.dumps(cap_data)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(cap_data)
 
     
     @setting(205, handle='s', capture_unit_id='w', returns='y')
@@ -249,10 +247,9 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             num_samples = capturectrl.num_captured_samples(capture_unit_id)
+            return pickle.dumps(num_samples)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(num_samples)
 
 
     @setting(206, handle='s', capture_unit_id_list='*w', returns='y')
@@ -260,10 +257,9 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.start_capture_units(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(207, handle='s', capture_unit_id_list='*w', returns='y')
@@ -271,10 +267,9 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.reset_capture_units(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(208, handle='s', capture_module_id='w', awg_id='w', returns='y')
@@ -282,10 +277,9 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.select_trigger_awg(capture_module_id, awg_id)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(209, handle='s', capture_unit_id_list='*w', returns='y')
@@ -293,21 +287,19 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.enable_start_trigger(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
 
-        return pickle.dumps(None)
-
-
+    
     @setting(210, handle='s', capture_unit_id_list='*w', returns='y')
     def disable_start_trigger(self, c, handle, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.disable_start_trigger(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(211, handle='s', timeout='y', capture_unit_id_list='*w', returns='y')
@@ -316,10 +308,9 @@ class AwgCaptureServer(ThreadedServer):
             timeout = pickle.loads(timeout)
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.wait_for_capture_units_to_stop(timeout, *capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(None)
 
 
     @setting(212, handle='s', capture_unit_id_list='*w', returns='y')
@@ -327,10 +318,9 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             cap_unit_id_to_err_list = capturectrl.check_err(*capture_unit_id_list)
+            return pickle.dumps(cap_unit_id_to_err_list)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(cap_unit_id_to_err_list)
 
 
     @setting(213, handle='s', returns='y')
@@ -338,22 +328,21 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             version = capturectrl.version()
+            return pickle.dumps(version)
         except Exception as e:
             return pickle.dumps(e)
 
-        return pickle.dumps(version)
 
-
-    @setting(214, handle='s', capture_unit_id='w', num_samples='y', returns='y')
-    def get_classification_results(self, c, handle, capture_unit_id, num_samples):
+    @setting(214, handle='s', capture_unit_id='w', num_samples='y', addr_offset='y', returns='y')
+    def get_classification_results(self, c, handle, capture_unit_id, num_samples, addr_offset):
         try:
             num_samples = pickle.loads(num_samples)
+            addr_offset = pickle.loads(addr_offset)
             capturectrl = self.__get_capturectrl(handle)
-            cap_data = capturectrl.get_classification_results(capture_unit_id, num_samples)
+            cap_data = capturectrl.get_classification_results(capture_unit_id, num_samples, addr_offset)
+            return pickle.dumps(cap_data)
         except Exception as e:
             return pickle.dumps(e)
-
-        return pickle.dumps(cap_data)
 
 
     @setting(215, handle='s', capture_unit_id_list='*w', returns='y')
@@ -361,10 +350,226 @@ class AwgCaptureServer(ThreadedServer):
         try:
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.clear_capture_stop_flags(*capture_unit_id_list)
+            return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
 
-        return pickle.dumps(None)
+
+    @setting(216, handle='s', key='y', param='y', returns='y')
+    def register_capture_params(self, c, handle, key, param):
+        try:
+            key = pickle.loads(key)
+            param = pickle.loads(param)
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.register_capture_params(key, param)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(300, returns='y')
+    def create_sequencerctrl(self, c, ipaddr):
+        try:
+            with self.__lock:
+                handle = str(self.__handle)
+                self.__sequencerctrls[handle] = SequencerCtrl(ipaddr, validate_args = False)
+                self.__handle += 1
+            return pickle.dumps(str(handle))
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(301, handle='s', returns='y')
+    def discard_sequencerctrl(self, c, handle):
+        try:
+            with self.__lock:
+                ctrl = self.__sequencerctrls.pop(handle)
+                ctrl.close()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(302, handle='s', returns='y')
+    def initialize_sequencer(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.initialize()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(303, handle='s', cmd_list='y', returns='y')
+    def push_commands(self, c, handle, cmd_list):
+        try:
+            cmd_list = pickle.loads(cmd_list)
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.push_commands(cmd_list)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(304, handle='s', returns='y')
+    def start_sequencer(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.start_sequencer()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(305, handle='s', returns='y')
+    def terminate_sequencer(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.terminate_sequencer()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(306, handle='s', returns='y')
+    def clear_unprocessed_commands(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.clear_unprocessed_commands()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(307, handle='s', returns='y')
+    def clear_unsent_cmd_err_reports(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.clear_unsent_cmd_err_reports()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(308, handle='s', returns='y')
+    def clear_sequencer_stop_flag(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.clear_sequencer_stop_flag()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(309, handle='s', returns='y')
+    def enable_cmd_err_report(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.enable_cmd_err_report()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(310, handle='s', returns='y')
+    def disable_cmd_err_report(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.disable_cmd_err_report()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(311, handle='s', timeout='y', returns='y')
+    def wait_for_sequencer_to_stop(self, c, handle, timeout):
+        try:
+            timeout = pickle.loads(timeout)
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.wait_for_sequencer_to_stop(timeout)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(312, handle='s', returns='y')
+    def num_unprocessed_commands(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            num_unprocessed_commands = seqencerctrl.num_unprocessed_commands()
+            return pickle.dumps(num_unprocessed_commands)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(313, handle='s', returns='y')
+    def num_succeeded_commands(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            num_succeeded_commands = seqencerctrl.num_succeeded_commands()
+            return pickle.dumps(num_succeeded_commands)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(314, handle='s', returns='y')
+    def num_err_commands(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            num_err_commands = seqencerctrl.num_err_commands()
+            return pickle.dumps(num_err_commands)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(315, handle='s', returns='y')
+    def num_unsent_cmd_err_reports(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            num_unsent_cmd_err_reports = seqencerctrl.num_unsent_cmd_err_reports()
+            return pickle.dumps(num_unsent_cmd_err_reports)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(316, handle='s', returns='y')
+    def cmd_fifo_free_space(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            cmd_fifo_free_space = seqencerctrl.cmd_fifo_free_space()
+            return pickle.dumps(cmd_fifo_free_space)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(317, handle='s', returns='y')
+    def check_sequencer_err(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            err_list = seqencerctrl.check_err()
+            return pickle.dumps(err_list)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(318, handle='s', returns='y')
+    def pop_cmd_err_reports(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            cmd_err_reports = seqencerctrl.pop_cmd_err_reports()
+            return pickle.dumps(cmd_err_reports)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(319, handle='s', returns='y')
+    def sequencer_version(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            version = seqencerctrl.version()
+            return pickle.dumps(version)
+        except Exception as e:
+            return pickle.dumps(e)
 
 
 __server__ = AwgCaptureServer()

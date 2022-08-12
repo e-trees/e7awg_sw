@@ -93,6 +93,17 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _register_capture_params(self, key, param):
+        try:
+            key = pickle.dumps(key)
+            param = pickle.dumps(param)
+            result = self.__server.register_capture_params(self.__handler, key, param)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _initialize(self, *capture_unit_id_list):
         try:
             capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
@@ -103,24 +114,26 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def _get_capture_data(self, capture_unit_id, num_samples):
+    def _get_capture_data(self, capture_unit_id, num_samples, addr_offset):
         try:
             capture_unit_id = int(capture_unit_id)
             num_samples = pickle.dumps(num_samples)
+            addr_offset = pickle.dumps(addr_offset)
             result = self.__server.get_capture_data(
-                self.__handler, capture_unit_id, num_samples)
+                self.__handler, capture_unit_id, num_samples, addr_offset)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _get_classification_results(self, capture_unit_id, num_samples):
+    def _get_classification_results(self, capture_unit_id, num_samples, addr_offset):
         try:
             capture_unit_id = int(capture_unit_id)
             num_samples = pickle.dumps(num_samples)
+            addr_offset = pickle.dumps(addr_offset)
             result = self.__server.get_classification_results(
-                self.__handler, capture_unit_id, num_samples)
+                self.__handler, capture_unit_id, num_samples, addr_offset)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)

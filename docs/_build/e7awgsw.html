@@ -155,6 +155,7 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
 </ul>
 </li>
 </ul>
@@ -167,8 +168,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -193,6 +194,7 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
 </ul>
 </li>
 </ul>
@@ -205,8 +207,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencer">e7awgsw.sequencer module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
 </ul>
@@ -228,6 +230,7 @@
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
 </ul>
 </li>
 </ul>
@@ -2586,299 +2589,6 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-e7awgsw.sequencer">
-<span id="e7awgsw-sequencer-module"></span><h2>e7awgsw.sequencer module<a class="headerlink" href="#module-e7awgsw.sequencer" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencer.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencer.SequencerCtrlBase" title="e7awgsw.sequencer.SequencerCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencer.SequencerCtrlBase</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
-<li><strong>ip_addr</strong> (<em>string</em>) -- シーケンサに割り当てられた IP アドレス (例 '10.0.0.16')</li>
-<li><strong>validate_args</strong> (<em>bool</em>) -- <div class="line-block">
-<div class="line">True -&gt; 引数のチェックを行う</div>
-<div class="line">False -&gt; 引数のチェックを行わない</div>
-</div>
-</li>
-<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
-<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
-<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
-</div>
-</li>
-<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrl.close">
-<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrl.close"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrl.close" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>このコントローラと関連付けられたすべてのリソースを開放する.</p>
-<div class="line-block">
-<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
-<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencer.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrlBase</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.__init__" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.check_err">
-<code class="sig-name descname"><span class="pre">check_err</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.check_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.check_err" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのエラーをチェックし, エラーに応じた列挙子のリストを返す.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">発生したエラーのリスト. エラーが無かった場合は空のリスト.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of SequencerErr</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_suquencer_stop_flag">
-<code class="sig-name descname"><span class="pre">clear_suquencer_stop_flag</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_suquencer_stop_flag"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_suquencer_stop_flag" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのコマンド処理終了フラグを下げる</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_unprocessed_commands">
-<code class="sig-name descname"><span class="pre">clear_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサにある未実行のコマンドをすべて削除する</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.clear_unsent_cmd_err_reports">
-<code class="sig-name descname"><span class="pre">clear_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.clear_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.clear_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサにある未送信のコマンドエラーレポートをすべて削除する</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.cmd_fifo_free_space">
-<code class="sig-name descname"><span class="pre">cmd_fifo_free_space</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.cmd_fifo_free_space"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.cmd_fifo_free_space" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>コマンドキューの空き領域を取得する</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドキューの空き領域 (Bytes)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.disable_cmd_err_report">
-<code class="sig-name descname"><span class="pre">disable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.disable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.disable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>コマンドエラーの送信機能を無効化する</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.enable_cmd_err_report">
-<code class="sig-name descname"><span class="pre">enable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.enable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.enable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>コマンドエラーの送信機能を有効化する</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.initialize">
-<code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.initialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.initialize" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサを初期化する</p>
-<div class="line-block">
-<div class="line">このクラスの他のメソッドを呼び出す前に呼ぶこと.</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_cmd_err_reports">
-<code class="sig-name descname"><span class="pre">num_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>未送信のコマンドエラーレポートの数を取得する</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">未送信のコマンドエラーレポートの数</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_err_commands">
-<code class="sig-name descname"><span class="pre">num_err_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_err_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_err_commands" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に失敗したコマンドの数を取得する</p>
-<div class="line-block">
-<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に失敗したコマンドの数</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_succeeded_commands">
-<code class="sig-name descname"><span class="pre">num_succeeded_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_succeeded_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_succeeded_commands" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する</p>
-<div class="line-block">
-<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に成功したコマンドの数</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.num_unprocessed_commands">
-<code class="sig-name descname"><span class="pre">num_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.num_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.num_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサにある未実行のコマンドの数を取得する</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサにある未実行のコマンドの数</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.pop_cmd_err_reports">
-<code class="sig-name descname"><span class="pre">pop_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.pop_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.pop_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサから送られたコマンドエラーレポートを取得する.</p>
-<div class="line-block">
-<div class="line">古いレポートから順に戻り値のリストに格納される.</div>
-<div class="line">取得したレポートは, このオブジェクトの管理から外れる.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
-<div class="line">シーケンサから送られたコマンドエラーレポートのリスト.</div>
-<div class="line">コマンドエラーレポートがない場合は, 空のリスト</div>
-</div>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">cmd_list (list of SequencerCmdErr)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.push_commands">
-<code class="sig-name descname"><span class="pre">push_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.push_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.push_commands" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサにコマンドを追加する</p>
-<div class="line-block">
-<div class="line">コマンドキューに cmd_list のための十分な空き領域がない場合, 例外を投げる.</div>
-<div class="line">このとき cmd_list のコマンドは 1 つも追加されない.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>cmd_list</strong> (<em>list of SequencerCmd</em>) -- シーケンサに追加するコマンド</td>
-</tr>
-<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError" title="e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError"><strong>TooLittleFreeSpaceInCmdFifoError</strong></a> -- コマンドキューの空き領域が足りない</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.start_sequencer">
-<code class="sig-name descname"><span class="pre">start_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.start_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.start_sequencer" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのコマンドの処理を開始する</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.terminate_sequencer">
-<code class="sig-name descname"><span class="pre">terminate_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.terminate_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.terminate_sequencer" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサを強制停止させる</p>
-<div class="line-block">
-<div class="line">実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.</div>
-</div>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.version">
-<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.version" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのバージョンを取得する</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">バージョンを表す文字列</td>
-</tr>
-<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">string</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.sequencer.SequencerCtrlBase.wait_for_sequencer_to_stop">
-<code class="sig-name descname"><span class="pre">wait_for_sequencer_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencer.html#SequencerCtrlBase.wait_for_sequencer_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencer.SequencerCtrlBase.wait_for_sequencer_to_stop" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>シーケンサのコマンドの処理が終了するのを待つ</p>
-<div class="line-block">
-<div class="line">シーケンサのコマンドの処理が終了するのは, シーケンサ停止フラグが有効なコマンドを実行した場合と,</div>
-<div class="line">シーケンサを強制停止した場合である.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>timeout</strong> (<em>int</em><em> or </em><em>float</em>) -- タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.SequencerTimeoutError" title="e7awgsw.exception.SequencerTimeoutError"><strong>SequencerTimeoutError</strong></a> -- タイムアウトした場合</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-e7awgsw.sequencercmd">
 <span id="e7awgsw-sequencercmd-module"></span><h2>e7awgsw.sequencercmd module<a class="headerlink" href="#module-e7awgsw.sequencercmd" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
@@ -2949,6 +2659,11 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.start_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">start_time</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.start_time" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.wait">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">wait</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.wait" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3664,6 +3379,299 @@
 <tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True</td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-e7awgsw.sequencerctrl">
+<span id="e7awgsw-sequencerctrl-module"></span><h2>e7awgsw.sequencerctrl module<a class="headerlink" href="#module-e7awgsw.sequencerctrl" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrl">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencerctrl.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrl</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrl"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrl" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencerctrl.SequencerCtrlBase" title="e7awgsw.sequencerctrl.SequencerCtrlBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencerctrl.SequencerCtrlBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrl.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">*</span></span></em>, <em><span class="n"><span class="pre">validate_args=True</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log=True</span></span></em>, <em><span class="n"><span class="pre">logger=&lt;Logger</span> <span class="pre">nullLibLog</span> <span class="pre">(WARNING)&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrl.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrl.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ip_addr</strong> (<em>string</em>) -- シーケンサに割り当てられた IP アドレス (例 '10.0.0.16')</li>
+<li><strong>validate_args</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; 引数のチェックを行う</div>
+<div class="line">False -&gt; 引数のチェックを行わない</div>
+</div>
+</li>
+<li><strong>enable_lib_log</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
+<div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
+</div>
+</li>
+<li><strong>logger</strong> (<em>logging.Logger</em>) -- ユーザ独自のログ出力に用いる Logger オブジェクト</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrl.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrl.close"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrl.close" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>このコントローラと関連付けられたすべてのリソースを開放する.</p>
+<div class="line-block">
+<div class="line">このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.</div>
+<div class="line">そうでない場合, プログラムを終了する前にこのメソッドを呼ぶこと.</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencerctrl.</span></code><code class="sig-name descname"><span class="pre">SequencerCtrlBase</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">ip_addr</span></span></em>, <em><span class="n"><span class="pre">validate_args</span></span></em>, <em><span class="n"><span class="pre">enable_lib_log</span></span></em>, <em><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.check_err">
+<code class="sig-name descname"><span class="pre">check_err</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.check_err"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.check_err" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのエラーをチェックし, エラーに応じた列挙子のリストを返す.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">発生したエラーのリスト. エラーが無かった場合は空のリスト.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of SequencerErr</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.clear_sequencer_stop_flag">
+<code class="sig-name descname"><span class="pre">clear_sequencer_stop_flag</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.clear_sequencer_stop_flag"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.clear_sequencer_stop_flag" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンド処理終了フラグを下げる</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.clear_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">clear_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.clear_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.clear_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未実行のコマンドをすべて削除する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.clear_unsent_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">clear_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.clear_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.clear_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未送信のコマンドエラーレポートをすべて削除する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.cmd_fifo_free_space">
+<code class="sig-name descname"><span class="pre">cmd_fifo_free_space</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.cmd_fifo_free_space"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.cmd_fifo_free_space" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドキューの空き領域を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">コマンドキューの空き領域 (Bytes)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.disable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">disable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.disable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.disable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドエラーの送信機能を無効化する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.enable_cmd_err_report">
+<code class="sig-name descname"><span class="pre">enable_cmd_err_report</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.enable_cmd_err_report"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.enable_cmd_err_report" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドエラーの送信機能を有効化する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.initialize">
+<code class="sig-name descname"><span class="pre">initialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.initialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.initialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサを初期化する</p>
+<div class="line-block">
+<div class="line">このクラスの他のメソッドを呼び出す前に呼ぶこと.</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.num_err_commands">
+<code class="sig-name descname"><span class="pre">num_err_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.num_err_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.num_err_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に失敗したコマンドの数を取得する</p>
+<div class="line-block">
+<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に失敗したコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.num_succeeded_commands">
+<code class="sig-name descname"><span class="pre">num_succeeded_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.num_succeeded_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.num_succeeded_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する</p>
+<div class="line-block">
+<div class="line">この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサが処理に成功したコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.num_unprocessed_commands">
+<code class="sig-name descname"><span class="pre">num_unprocessed_commands</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.num_unprocessed_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.num_unprocessed_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにある未実行のコマンドの数を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">シーケンサにある未実行のコマンドの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.num_unsent_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">num_unsent_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.num_unsent_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.num_unsent_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>未送信のコマンドエラーレポートの数を取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">未送信のコマンドエラーレポートの数</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.pop_cmd_err_reports">
+<code class="sig-name descname"><span class="pre">pop_cmd_err_reports</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.pop_cmd_err_reports"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.pop_cmd_err_reports" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサから送られたコマンドエラーレポートを取得する.</p>
+<div class="line-block">
+<div class="line">古いレポートから順に戻り値のリストに格納される.</div>
+<div class="line">取得したレポートは, このオブジェクトの管理から外れる.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body"><div class="line-block">
+<div class="line">シーケンサから送られたコマンドエラーレポートのリスト.</div>
+<div class="line">コマンドエラーレポートがない場合は, 空のリスト</div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">cmd_list (list of SequencerCmdErr)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.push_commands">
+<code class="sig-name descname"><span class="pre">push_commands</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.push_commands"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.push_commands" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサにコマンドを追加する</p>
+<div class="line-block">
+<div class="line">コマンドキューに cmd_list のための十分な空き領域がない場合, 例外を投げる.</div>
+<div class="line">このとき cmd_list のコマンドは 1 つも追加されない.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>cmd_list</strong> (<em>list of SequencerCmd</em>) -- シーケンサに追加するコマンド</td>
+</tr>
+<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError" title="e7awgsw.exception.TooLittleFreeSpaceInCmdFifoError"><strong>TooLittleFreeSpaceInCmdFifoError</strong></a> -- コマンドキューの空き領域が足りない</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.start_sequencer">
+<code class="sig-name descname"><span class="pre">start_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.start_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.start_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理を開始する</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.terminate_sequencer">
+<code class="sig-name descname"><span class="pre">terminate_sequencer</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.terminate_sequencer"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.terminate_sequencer" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサを強制停止させる</p>
+<div class="line-block">
+<div class="line">実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.</div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.version">
+<code class="sig-name descname"><span class="pre">version</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.version"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.version" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのバージョンを取得する</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">バージョンを表す文字列</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencerctrl.SequencerCtrlBase.wait_for_sequencer_to_stop">
+<code class="sig-name descname"><span class="pre">wait_for_sequencer_to_stop</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencerctrl.html#SequencerCtrlBase.wait_for_sequencer_to_stop"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencerctrl.SequencerCtrlBase.wait_for_sequencer_to_stop" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>シーケンサのコマンドの処理が終了するのを待つ</p>
+<div class="line-block">
+<div class="line">シーケンサのコマンドの処理が終了するのは, シーケンサ停止フラグが有効なコマンドを実行した場合と,</div>
+<div class="line">シーケンサを強制停止した場合である.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>timeout</strong> (<em>int</em><em> or </em><em>float</em>) -- タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">例外:</th><td class="field-body"><a class="reference internal" href="#e7awgsw.exception.SequencerTimeoutError" title="e7awgsw.exception.SequencerTimeoutError"><strong>SequencerTimeoutError</strong></a> -- タイムアウトした場合</td>
 </tr>
 </tbody>
 </table>

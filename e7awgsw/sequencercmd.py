@@ -325,6 +325,8 @@ class WaveSequenceSetCmd(SequencerCmd):
         self._validate_awg_id(awg_id_list)
         self._validate_feedback_channel_id(feedback_channel_id)
         self._validate_key_table(key_table, MAX_WAVE_REGISTRY_ENTRIES - 1)
+        if isinstance(key_table, int):
+            key_table = [key_table] * 4
 
         self.__awg_id_list = awg_id_list
         self.__feedback_channel_id = feedback_channel_id
@@ -350,11 +352,9 @@ class WaveSequenceSetCmd(SequencerCmd):
         stop_seq = 1 if self.stop_seq else 0
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         last_chunk_no = WaveSequence.MAX_CHUNKS - 1
-
-        key_table = ([self.__key_table] * 4) if isinstance(self.__key_table, int) else self.__key_table
         key_table_bits = 0
-        for i in range(len(key_table)):
-            key_table_bits |= key_table[i] << (i * 10)
+        for i in range(len(self.__key_table)):
+            key_table_bits |= self.__key_table[i] << (i * 10)
 
         cmd = (
             stop_seq                       |
@@ -415,6 +415,9 @@ class CaptureParamSetCmd(SequencerCmd):
         self._validate_capture_unit_id(capture_unit_id_list)
         self._validate_feedback_channel_id(feedback_channel_id)
         self._validate_key_table(key_table, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES - 1)
+        if isinstance(key_table, int):
+            key_table = [key_table] * 4
+
         if not (isinstance(param_elems, (list, tuple)) and CaptureParamElem.includes(*param_elems)):
             raise ValueError("Invalid capture parameter elements.  ({})".format(param_elems))
         
@@ -450,10 +453,9 @@ class CaptureParamSetCmd(SequencerCmd):
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)        
         param_elem_bits = self._to_bit_field(self.__param_elems)
 
-        key_table = ([self.__key_table] * 4) if isinstance(self.__key_table, int) else self.__key_table
         key_table_bits = 0
-        for i in range(len(key_table)):
-            key_table_bits |= key_table[i] << (i * 10)
+        for i in range(len(self.__key_table)):
+            key_table_bits |= self.__key_table[i] << (i * 10)
 
         cmd = (
             stop_seq                       |
@@ -645,7 +647,7 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
         return len(self.__cmd_bytes)
 
 
-class SequencerCmdErr(object, metaclass = ABCMeta):
+class SequencerCmdErr(object):
 
     def __init__(self, cmd_id, cmd_no, is_terminated):
         self.__cmd_id = cmd_id

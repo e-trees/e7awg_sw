@@ -3,7 +3,7 @@ import socket
 from abc import ABCMeta, abstractmethod
 from .logger import get_file_logger, get_null_logger, log_error
 from .hwparam import CMD_ERR_REPORT_SIZE, SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
-from .udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter
+from .udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter, get_my_ip_addr
 from .uplpacket import UplPacket
 from .memorymap import SequencerCtrlRegs as SeqRegs
 from .sequencercmd import SequencerCmd
@@ -46,11 +46,17 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         Raises:
             TooLittleFreeSpaceInCmdFifoError: コマンドキューの空き領域が足りない
         """
-        self._validate_seq_cmds(cmd_list)
+        if self._validate_args:
+            try:
+                self._validate_seq_cmds(cmd_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
         if isinstance(cmd_list, SequencerCmd):
             cmd_list = [cmd_list]
 
-        return self._push_commands(cmd_list)
+        self._push_commands(cmd_list)
 
     
     def start_sequencer(self):
@@ -61,7 +67,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
     def terminate_sequencer(self):
         """シーケンサを強制停止させる
 
-        | 実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.
+        | 実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.        
         """
         self._terminate_sequencer()
 
@@ -76,9 +82,9 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         self._clear_unsent_cmd_err_reports()
 
 
-    def clear_suquencer_stop_flag(self):
+    def clear_sequencer_stop_flag(self):
         """シーケンサのコマンド処理終了フラグを下げる"""
-        self._clear_suquencer_stop_flag()
+        self._clear_sequencer_stop_flag()
 
 
     def enable_cmd_err_report(self):
@@ -144,13 +150,13 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         return self._num_err_commands()
 
 
-    def num_cmd_err_reports(self):
+    def num_unsent_cmd_err_reports(self):
         """未送信のコマンドエラーレポートの数を取得する
         
         Returns:
             int: 未送信のコマンドエラーレポートの数
         """
-        return self._num_cmd_err_reports()
+        return self._num_unsent_cmd_err_reports()
 
 
     def cmd_fifo_free_space(self):
@@ -244,7 +250,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _clear_suquencer_stop_flag(self):
+    def _clear_sequencer_stop_flag(self):
         pass
 
     @abstractmethod
@@ -272,7 +278,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _num_cmd_err_reports(self):
+    def _num_unsent_cmd_err_reports(self):
         pass
 
     @abstractmethod
@@ -280,7 +286,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _check_err(self, *capture_unit_id_list):
+    def _check_err(self):
         pass
 
     @abstractmethod
@@ -348,15 +354,6 @@ class SequencerCtrl(SequencerCtrlBase):
         self.__cmd_sender.close()
 
 
-    def __get_my_ip_addr(self, ip_addr):
-        """ip_addr にパケットを送る際のこのマシンの IP アドレスを取得する"""
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.connect((ip_addr, SEQUENCER_REG_PORT))
-        my_ip_addr = sock.getsockname()[0]
-        sock.close()
-        return my_ip_addr
-
-
     def __set_dest_port(self, port):
         """シーケンサからサーバに送られるパケットの宛先ポートをシーケンサに設定する"""
         self.__reg_access.write(SeqRegs.ADDR, SeqRegs.Offset.DEST_UDP_PORT, port)
@@ -370,7 +367,7 @@ class SequencerCtrl(SequencerCtrlBase):
 
     def _initialize(self):
         self.__set_dest_port(self.__router.my_port)
-        self.__set_dest_ip_addr(self.__get_my_ip_addr(self._ip_addr))
+        self.__set_dest_ip_addr(get_my_ip_addr(self._ip_addr))
         self.__reg_access.write(SeqRegs.ADDR, SeqRegs.Offset.CTRL, 0)
         self.__reset_sequencer()
         # 古いエラーレポートを受信しないように, エラー送信を止めてリセットしてからエラーレポート受信ポートを作成する.
@@ -430,7 +427,7 @@ class SequencerCtrl(SequencerCtrlBase):
         time.sleep(1e-4)
 
 
-    def _clear_suquencer_stop_flag(self):
+    def _clear_sequencer_stop_flag(self):
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_DONE_CLR, 1, 0)
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_DONE_CLR, 1, 1)
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_DONE_CLR, 1, 0)
@@ -511,7 +508,7 @@ class SequencerCtrl(SequencerCtrlBase):
         return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_ERR_CMDS)
 
 
-    def _num_cmd_err_reports(self):
+    def _num_unsent_cmd_err_reports(self):
         return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_ERR_REPORTS)
 
 

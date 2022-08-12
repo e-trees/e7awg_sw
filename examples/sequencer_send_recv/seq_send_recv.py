@@ -17,7 +17,7 @@ from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr
 from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 from e7awgsw import SinWave, IqWave
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
+from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
 
 CAPTURE_DELAY = 0
 SAVE_DIR = "result_seq_send_recv/"
@@ -108,7 +108,7 @@ def push_commands(seq_ctrl, awgs, capture_units, key_table, addr_offset):
         
         # 1 回目の波形出力 & キャプチャ完了待ち
         AwgStartCmd(4, awgs, time, wait = False),
-        CaptureEndFenceCmd(5, capture_units, time + 2000, wait = True, stop_seq = True),
+        CaptureEndFenceCmd(5, capture_units, time + 2000, wait = True),
      
         # フィードバック値計算
         FeedbackCalcOnClassificationCmd(6, capture_units, 0),
@@ -188,6 +188,13 @@ def create_capture_ctrl(use_labrad, ip_addr, server_ip_addr):
         return CaptureCtrl(ip_addr)
 
 
+def create_sequencer_ctrl(use_labrad, ip_addr, server_ip_addr):
+    if use_labrad:
+        return RemoteSequencerCtrl(server_ip_addr, ip_addr)
+    else:
+        return SequencerCtrl(ip_addr)
+
+
 def main(
     awgs, 
     capture_modules, 
@@ -202,7 +209,7 @@ def main(
 
     with (create_awg_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as cap_ctrl,
-          SequencerCtrl(seq_ipaddr) as seq_ctrl):
+          create_sequencer_ctrl(use_labrad, seq_ipaddr, server_ip_addr) as seq_ctrl):
         
         # 初期化
         capture_units = CaptureModule.get_units(*capture_modules)

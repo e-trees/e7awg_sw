@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>e7awg Software Library - e7awgsw.sequencercmd</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha256-NuCn4IvuZXdBaFKJOAcsU2Q3ZpwbdFisd5dux4jkQ5w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.css" integrity="sha256-xOpS+e/dER8z72w+qryCieOGysQI8cELAVt3MHG0phY=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/tooltipster.bundle.min.css" integrity="sha256-Qc4lCfqZWYaHF5hgEOFrYzSIX9Rrxk0NPHRac+08QeQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-light.min.css" integrity="sha256-Wa1I4jhSXeWd3N6RhfPlkqr1WlT+zS3Vh2YGCg0129E=" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Code+Pro|Source+Sans+Pro|Source+Serif+Pro|Roboto|Roboto+Mono" rel="stylesheet">
+<link href="https://fonts.red-dove.com/iosevka-ss09-regular/webfont.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/sizzle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/sizzle.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js" integrity="sha256-G7A4JrJjJlFqP0yamznwPjAApIKPkadeHfyIwiaa9e0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/tooltipster@4.2.7/dist/js/tooltipster.bundle.min.js" integrity="sha256-NOU7KrY2aTI4PxDegqYUIknk9qfxVCS0E4JfE9aMwaA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+      $(document).data('sizzle', {on_load: []});
+    </script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/translations.js"></script>
+      <script src="../../../../app-data.js"></script>
+<link rel="index" title="索引" href="../../genindex.html" />
+<link rel="search" title="検索" href="../../search.html" />
+
+</head>
+<body class="full-height test">
+<noscript>
+  <div>
+    <div id="noscript-message">JavaScript is not enabled. It is needed for this website to work.</div>
+  </div>
+</noscript>
+<div id="whole-page" class="container-fluid content full-height">
+  <div id="header-row" class="row">
+    <div id="header-container" class="col-md-12">
+      <div id="hdr-left">
+        <i class="fa fa-bars menu-toggle"></i>
+        
+<a href="../../index.html" class="text-logo">e7awg Software Library 1.0.0 ドキュメント</a>
+
+      </div>
+      <div id="hdr-centre" class="text-center stretch">
+        <h3 title="e7awgsw.sequencercmd">e7awgsw.sequencercmd</h3>
+        <h6>e7awgsw.sequencercmd</h6>
+      </div>
+      <div id="hdr-search">
+        
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+      </div>
+
+      <div id="hdr-index">
+        <a href="../../genindex.html" class="btn btn-default" title="Go to the index"><i class="fa fa-list"></i></a>
+      </div>
+
+      <div id="hdr-right">
+        
+  
+      </div>
+      <div id="alt-hdr-right">
+
+
+        <a href="../../index.html"><i class="fa fa-home mr-8"></i></a>
+
+
+        <a href="../../search.html"><i class="fa fa-search mr-8"></i></a>
+
+
+        <a href="../../genindex.html"><i class="fa fa-list mr-8"></i></a>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="content-row" class="row">
+    <div id="page-content" class="col-md-12 flex-col">
+      <div id="content-container">
+        <div id="nav">
+          
+  <div class="navsidebar">
+    <div id="sidebar-search">
+      
+<div class="input-group" title="Enter something to search for and then either press Enter or click the magnifying glass">
+  <input type="text" class="form-control search-query" placeholder="Search docs ...">
+  <div class="input-group-addon">
+    <i class="fa fa-search"></i>
+  </div>
+</div>
+    </div>
+      <div class="sidebar-block">
+        <div class="sidebar-tocheading">
+          <div class="pull-left">
+            <h2>Table Of Contents</h2>
+          </div>
+          <div class="pull-right" title="Hide this sidebar (hover at left edge to bring it back)"><i class="fa fa-chevron-left hidetoc"></i></div>
+        </div>
+        <div class="sidebar-toc">
+      
+          <div id="toc-filter" title="Type in here to show only matching topics">
+            <input class="form-control" id="toc-filter-query" placeholder="Filter by title ...">
+          </div>
+      
+        
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw">e7awgsw namespace</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad">e7awgsw.labrad package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.awgctrl">e7awgsw.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.awgwave">e7awgsw.awgwave module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.capturectrl">e7awgsw.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+        </div>
+      </div>
+  </div>
+        </div>
+        <div id="content" tabindex="0" class="stretch">
+          <div id="mnav">
+            
+  
+    <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw">e7awgsw namespace</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad">e7awgsw.labrad package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.awgcapture_server">e7awgsw.labrad.awgcapture_server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">e7awgsw.labrad.remoteawgctrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.awgctrl">e7awgsw.awgctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.awgwave">e7awgsw.awgwave module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.capturectrl">e7awgsw.capturectrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.wavesequence">e7awgsw.wavesequence module</a></li>
+</ul>
+</li>
+</ul>
+
+  
+          </div>
+          <div class="body">
+            
+  <h1>e7awgsw.sequencercmd のソースコード</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">CaptureParamElem</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="p">,</span> <span class="n">AWG</span><span class="p">,</span> <span class="n">FeedbackChannel</span>
+<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span><span class="p">,</span> <span class="n">MAX_CAPTURE_SIZE</span><span class="p">,</span> <span class="n">CAPTURE_RAM_WORD_SIZE</span><span class="p">,</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span><span class="p">,</span> <span class="n">MAX_WAVE_REGISTRY_ENTRIES</span><span class="p">,</span> <span class="n">MAX_CAPTURE_PARAM_REGISTRY_ENTRIES</span>
+<span class="kn">from</span> <span class="nn">.wavesequence</span> <span class="kn">import</span> <span class="n">WaveSequence</span>
+
+<div class="viewcode-block" id="SequencerCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">SequencerCmd</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span> <span class="o">=</span> <span class="n">ABCMeta</span><span class="p">):</span>
+
+    <span class="n">MAX_CMD_NO</span> <span class="o">=</span> <span class="mh">0xFFFF</span> <span class="c1">#: 指定可能なコマンド番号の最大値</span>
+
+<div class="viewcode-block" id="SequencerCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_id</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd_no</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">cmd_no</span> <span class="ow">and</span> <span class="n">cmd_no</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CMD_NO</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Command number must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CMD_NO</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">))</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stop_seq</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of &#39;stop_seq&#39; must be &#39;bool&#39;.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_seq</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_id</span> <span class="o">=</span> <span class="n">cmd_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_no</span> <span class="o">=</span> <span class="n">cmd_no</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stop_seq</span> <span class="o">=</span> <span class="n">stop_seq</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;このコマンドの種類を表す ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: このコマンドの種類を表す ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_id</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd_no</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;このコマンドのコマンド番号</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: このコマンドのコマンド番号</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_no</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stop_seq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;シーケンサ停止フラグ</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: シーケンサ停止フラグ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stop_seq</span>
+
+
+    <span class="k">def</span> <span class="nf">_validate_capture_unit_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capture_unit_id_list</span><span class="p">):</span>        
+        <span class="k">if</span> <span class="p">((</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)))</span> <span class="ow">or</span> 
+            <span class="p">(</span><span class="ow">not</span> <span class="n">capture_unit_id_list</span><span class="p">)</span>                            <span class="ow">or</span>
+            <span class="p">(</span><span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid capture unit ID &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">_validate_awg_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">((</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)))</span> <span class="ow">or</span> 
+            <span class="p">(</span><span class="ow">not</span> <span class="n">awg_id_list</span><span class="p">)</span>                            <span class="ow">or</span>
+            <span class="p">(</span><span class="ow">not</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid AWG ID &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">_validate_feedback_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback_channel_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">FeedbackChannel</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">feedback_channel_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid feedback channel ID &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">feedback_channel_id</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">_validate_key_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key_table</span><span class="p">,</span> <span class="n">max_registry_key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key_table</span> <span class="ow">and</span> <span class="n">key_table</span> <span class="o">&lt;=</span> <span class="n">max_registry_key</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The type of &#39;key_table&#39; must be &#39;list&#39; or &#39;tuple&#39;.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_table</span><span class="p">))</span>
+
+        <span class="c1"># 2022/08/02 現在, フィードバック値は四値化結果だけなので, レジストリキーの数 = 4 という制約を加えておく.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key_table</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of elements in &#39;key_table&#39; must be 4.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key_table</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key_table</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">&lt;=</span> <span class="n">max_registry_key</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;The elements in &#39;key_table&#39; must be integers between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  (</span><span class="si">{}</span><span class="s2">)&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_registry_key</span><span class="p">,</span> <span class="n">key_table</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bit_pos_list</span><span class="p">):</span>
+        <span class="n">bit_field</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">bit_pos</span> <span class="ow">in</span> <span class="n">bit_pos_list</span><span class="p">:</span>
+            <span class="n">bit_field</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit_pos</span>
+        <span class="k">return</span> <span class="n">bit_field</span>
+
+
+<div class="viewcode-block" id="SequencerCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmd.serialize">[ドキュメント]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SequencerCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmd.size">[ドキュメント]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;serialize した際のコマンドのバイト数&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="AwgStartCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgStartCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1">#: AWG スタート時刻に指定可能な最大値</span>
+    <span class="n">MAX_START_TIME</span> <span class="o">=</span> <span class="mh">0x7FFFFFFF_FFFFFFFF</span>
+    
+
+<div class="viewcode-block" id="AwgStartCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">awg_id_list</span><span class="p">,</span>
+        <span class="n">start_time</span><span class="p">,</span>
+        <span class="n">wait</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;AWG を指定した時刻にスタートするコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            awg_id_list (list of AWG): 波形の出力を開始する AWG のリスト</span>
+<span class="sd">            start_time (int):</span>
+<span class="sd">                | AWG をスタートする時刻.</span>
+<span class="sd">                | シーケンサがコマンドの処理を始めた時点を 0 として, start_time * 8[ns] 後に AWG がスタートされる.</span>
+<span class="sd">            wait (bool):</span>
+<span class="sd">                | True -&gt; AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する</span>
+<span class="sd">                | False -&gt; AWG をスタートした後, このコマンドを終了する.</span>
+<span class="sd">            stop_seq (bool): </span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">):</span>
+            <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">awg_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_awg_id</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start_time</span> <span class="ow">and</span> <span class="n">start_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;start_time&#39; is must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">,</span> <span class="n">start_time</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__start_time</span> <span class="o">=</span> <span class="n">start_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span> <span class="o">=</span> <span class="n">wait</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">awg_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__start_time</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">awg_id_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                        <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>   <span class="o">|</span>
+            <span class="n">awg_id_list</span>              <span class="o">&lt;&lt;</span> <span class="mi">24</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>          <span class="o">&lt;&lt;</span> <span class="mi">40</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span>                <span class="o">&lt;&lt;</span> <span class="mi">104</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="AwgStartCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="AwgStartCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CaptureEndFenceCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureEndFenceCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="c1">#: キャプチャ完了確認時刻に指定可能な最大値</span>
+    <span class="n">MAX_END_TIME</span> <span class="o">=</span> <span class="mh">0x7FFFFFFF_FFFFFFFF</span>
+
+<div class="viewcode-block" id="CaptureEndFenceCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">capture_unit_id_list</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">wait</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">terminate</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;指定した時刻まで待ってからキャプチャが完了しているかを調べるコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            capture_unit_id_list (list of CaptureUnit): キャプチャの完了を調べるキャプチャユニットのリスト.</span>
+<span class="sd">            end_time (int):</span>
+<span class="sd">                | キャプチャが完了しているかを調べる時刻.</span>
+<span class="sd">                | シーケンサがコマンドの処理を始めた時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</span>
+<span class="sd">            wait (bool):</span>
+<span class="sd">                | True -&gt; end_time の後もキャプチャが完了していないキャプチャユニットの終了を待つ.</span>
+<span class="sd">                | False -&gt; end_time の後, キャプチャの完了を待たずにコマンドを終了する.</span>
+<span class="sd">            terminate (bool): </span>
+<span class="sd">                | キャプチャユニット停止フラグ.</span>
+<span class="sd">                | True の場合 end_time の時点でキャプチャが完了していないキャプチャユニットを強制停止する.</span>
+<span class="sd">            stop_seq (bool): </span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">capture_unit_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">end_time</span> <span class="ow">and</span> <span class="n">end_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;end_time&#39; is must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">,</span> <span class="n">end_time</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wait</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of &#39;wait&#39; must be &#39;bool&#39;.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wait</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">terminate</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of &#39;terminate&#39; must be &#39;bool&#39;.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">terminate</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span> <span class="o">=</span> <span class="n">wait</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__terminate</span> <span class="o">=</span> <span class="n">terminate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">capture_unit_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__end_time</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__terminate</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">capture_unit_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                        <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>   <span class="o">|</span>
+            <span class="n">capture_unit_id_bits</span>     <span class="o">&lt;&lt;</span> <span class="mi">24</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span>            <span class="o">&lt;&lt;</span> <span class="mi">40</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span>           <span class="o">&lt;&lt;</span> <span class="mi">104</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span>                <span class="o">&lt;&lt;</span> <span class="mi">105</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CaptureEndFenceCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="CaptureEndFenceCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WaveSequenceSetCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveSequenceSetCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">3</span>
+
+<div class="viewcode-block" id="WaveSequenceSetCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">awg_id_list</span><span class="p">,</span>
+        <span class="n">key_table</span><span class="p">,</span>
+        <span class="n">feedback_channel_id</span> <span class="o">=</span> <span class="n">FeedbackChannel</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;フィードバック値に応じて波形シーケンスを AWG にセットするコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            awg_id_list (list of AWG): 波形シーケンスをセットする AWG のリスト.</span>
+<span class="sd">            key_table (list of int, int):</span>
+<span class="sd">                | 波形シーケンスを登録したレジストリのキーのリスト.</span>
+<span class="sd">                | key_table[フィードバック値] = 設定したい波形シーケンスを登録したレジストリのキー</span>
+<span class="sd">                | となるように設定する.</span>
+<span class="sd">                | レジストリキーに int 値 1 つを指定すると, フィードバック値によらず, </span>
+<span class="sd">                | そのキーに登録された波形シーケンスを設定する.</span>
+<span class="sd">            feedback_channel_id (FeedbackChannel): </span>
+<span class="sd">                | 参照するフィードバックチャネルの ID.</span>
+<span class="sd">            stop_seq (bool):</span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">):</span>
+            <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">awg_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_awg_id</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_feedback_channel_id</span><span class="p">(</span><span class="n">feedback_channel_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_key_table</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="n">MAX_WAVE_REGISTRY_ENTRIES</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">key_table</span> <span class="o">=</span> <span class="p">[</span><span class="n">key_table</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">awg_id_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__feedback_channel_id</span> <span class="o">=</span> <span class="n">feedback_channel_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">key_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">awg_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feedback_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__feedback_channel_id</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">awg_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+        <span class="n">last_chunk_no</span> <span class="o">=</span> <span class="n">WaveSequence</span><span class="o">.</span><span class="n">MAX_CHUNKS</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">key_table_bits</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">)):</span>
+            <span class="n">key_table_bits</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                       <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>  <span class="o">|</span>
+            <span class="n">awg_id_bits</span>              <span class="o">&lt;&lt;</span> <span class="mi">24</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feedback_channel_id</span> <span class="o">&lt;&lt;</span> <span class="mi">40</span> <span class="o">|</span>
+            <span class="n">last_chunk_no</span>            <span class="o">&lt;&lt;</span> <span class="mi">44</span> <span class="o">|</span>
+            <span class="n">key_table_bits</span>           <span class="o">&lt;&lt;</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WaveSequenceSetCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="WaveSequenceSetCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CaptureParamSetCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureParamSetCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">4</span>
+
+<div class="viewcode-block" id="CaptureParamSetCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">capture_unit_id_list</span><span class="p">,</span>
+        <span class="n">key_table</span><span class="p">,</span>
+        <span class="n">feedback_channel_id</span> <span class="o">=</span> <span class="n">FeedbackChannel</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+        <span class="n">param_elems</span> <span class="o">=</span> <span class="n">CaptureParamElem</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;フィードバック値に応じてキャプチャパラメータをキャプチャユニットにセットするコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            capture_unit_id_list (list of CaptureUnit): 波形シーケンスをセットするキャプチャユニットのリスト.</span>
+<span class="sd">            key_table (list of int, int):</span>
+<span class="sd">                | キャプチャパラメータを登録したレジストリのキーのリスト.</span>
+<span class="sd">                | key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー</span>
+<span class="sd">                | となるように設定する.</span>
+<span class="sd">                | レジストリキーに int 値 1 つを指定すると, フィードバック値によらず, </span>
+<span class="sd">                | そのキーに登録されたキャプチャパラメータを設定する.</span>
+<span class="sd">            feedback_channel_id (FeedbackChannel): </span>
+<span class="sd">                | 参照するフィードバックチャネルの ID.</span>
+<span class="sd">            param_elems (list of CaptureParamElem):</span>
+<span class="sd">                | キャプチャパラメータの中の設定したい要素のリスト.</span>
+<span class="sd">                | ここに指定しなかった要素は, キャプチャユニットに設定済みの値のまま更新されない.</span>
+<span class="sd">                | 特に, 「総和区間数」「総和区間長」「ポストブランク長」の 3 つは, セットで更新しない場合,</span>
+<span class="sd">                | キャプチャユニットが保持するパラメータと不整合を起こす可能性がある点に注意.</span>
+<span class="sd">            stop_seq (bool):</span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">capture_unit_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_feedback_channel_id</span><span class="p">(</span><span class="n">feedback_channel_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_key_table</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="n">MAX_CAPTURE_PARAM_REGISTRY_ENTRIES</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key_table</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">key_table</span> <span class="o">=</span> <span class="p">[</span><span class="n">key_table</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">param_elems</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="n">CaptureParamElem</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="o">*</span><span class="n">param_elems</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid capture parameter elements.  (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param_elems</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__feedback_channel_id</span> <span class="o">=</span> <span class="n">feedback_channel_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">key_table</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__param_elems</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">param_elems</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">capture_unit_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">feedback_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__feedback_channel_id</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">key_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_elems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__param_elems</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">capture_unit_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>        
+        <span class="n">param_elem_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__param_elems</span><span class="p">)</span>
+
+        <span class="n">key_table_bits</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">)):</span>
+            <span class="n">key_table_bits</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                       <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>  <span class="o">|</span>
+            <span class="n">capture_unit_id_bits</span>     <span class="o">&lt;&lt;</span> <span class="mi">24</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">feedback_channel_id</span> <span class="o">&lt;&lt;</span> <span class="mi">40</span> <span class="o">|</span>
+            <span class="n">param_elem_bits</span>          <span class="o">&lt;&lt;</span> <span class="mi">44</span> <span class="o">|</span>
+            <span class="n">key_table_bits</span>           <span class="o">&lt;&lt;</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CaptureParamSetCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="CaptureParamSetCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CaptureAddrSetCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureAddrSetCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">5</span>
+
+<div class="viewcode-block" id="CaptureAddrSetCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">capture_unit_id_list</span><span class="p">,</span>
+        <span class="n">byte_offset</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャアドレスをセットするコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            capture_unit_id_list (list of CaptureUnit): キャプチャアドレスをセットするキャプチャユニットのリスト.</span>
+<span class="sd">            byte_offset (int): </span>
+<span class="sd">                | 各キャプチャユニットのキャプチャ領域の先頭アドレス + byte_offset を, 次のキャプチャのデータの格納先とする.</span>
+<span class="sd">            stop_seq (bool): </span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">capture_unit_id_list</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">byte_offset</span> <span class="ow">and</span> <span class="n">byte_offset</span> <span class="o">&lt;</span> <span class="n">MAX_CAPTURE_SIZE</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;byte_offset&#39; must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">byte_offset</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">byte_offset</span> <span class="o">%</span> <span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;byte_offset&#39; must be a multiple of </span><span class="si">{}</span><span class="s2">.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">CAPTURE_DATA_ALIGNMENT_SIZE</span><span class="p">,</span> <span class="n">byte_offset</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__byte_offset</span> <span class="o">=</span> <span class="n">byte_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">capture_unit_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">byte_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__byte_offset</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">capture_unit_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>          <span class="o">&lt;&lt;</span> <span class="mi">1</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>          <span class="o">&lt;&lt;</span> <span class="mi">8</span>  <span class="o">|</span>
+            <span class="n">capture_unit_id_bits</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">byte_offset</span>     <span class="o">&lt;&lt;</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CaptureAddrSetCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="CaptureAddrSetCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">FeedbackCalcOnClassificationCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">6</span>
+
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">capture_unit_id_list</span><span class="p">,</span>
+        <span class="n">byte_offset</span><span class="p">,</span>
+        <span class="n">elem_offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;四値化結果をフィードバック値とするフィードバック値計算コマンド</span>
+
+<span class="sd">        | フィードバックチャネル i のフィードバック値 (FB_VAL(i)) は, 以下の式で求まる.</span>
+<span class="sd">        | FB_VAL(i) = ビットアドレスが FB_BIT_ADDR(i) のビットとその次のビットを並べた 2 bits の値</span>
+<span class="sd">        | FB_BIT_ADDR(i) = (CaptureUnitAddr(i) + byte_offset) * 8 + elem_offset * 2 (= 四値化結果のビットアドレス)</span>
+<span class="sd">        | CaptureUnitAddr(i) = キャプチャユニット i に割り当てられたキャプチャ領域の先頭アドレス</span>
+<span class="sd">        | i ∈ capture_unit_id_list</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            capture_unit_id_list (list of CaptureUnit): </span>
+<span class="sd">                | フィードバック値とする四値化結果が格納されたキャプチャ領域を持つキャプチャユニットの ID のリスト.</span>
+<span class="sd">                | 更新されるフィードバックチャネルの ID のリストでもある.</span>
+<span class="sd">            byte_offset (int): フィードバック値とするデータのバイト単位での位置</span>
+<span class="sd">            elem_offset (int): フィードバック値とするデータの四値化結果単位での位置</span>
+<span class="sd">            stop_seq (bool): </span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">):</span>
+            <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">capture_unit_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">byte_offset</span> <span class="ow">and</span> <span class="n">byte_offset</span> <span class="o">&lt;</span> <span class="n">MAX_CAPTURE_SIZE</span><span class="p">)):</span>
+           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+               <span class="s2">&quot;&#39;byte_offset&#39; must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">byte_offset</span><span class="p">))</span>
+
+        <span class="n">max_results</span> <span class="o">=</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">//</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">elem_offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">elem_offset</span> <span class="ow">and</span> <span class="n">elem_offset</span> <span class="o">&lt;</span> <span class="n">max_results</span><span class="p">)):</span>
+           <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+               <span class="s2">&quot;&#39;elem_offset&#39; must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_results</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">elem_offset</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bit_offset</span> <span class="o">=</span> <span class="n">byte_offset</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">elem_offset</span> <span class="o">*</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bit_offset</span> <span class="o">&gt;=</span> <span class="n">MAX_CAPTURE_SIZE</span> <span class="o">*</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;The specified classification result is not in the capture data area.  &#39;</span> <span class="o">+</span> 
+                <span class="s1">&#39;byte_offset = </span><span class="si">{}</span><span class="s1">, elem_offset = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">byte_offset</span><span class="p">,</span> <span class="n">elem_offset</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__byte_offset</span> <span class="o">=</span> <span class="n">byte_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__elem_offset</span> <span class="o">=</span> <span class="n">elem_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+        
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">capture_unit_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">byte_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__byte_offset</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">elem_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elem_offset</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">byte_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bit_offset</span> <span class="o">//</span> <span class="p">(</span><span class="n">CAPTURE_RAM_WORD_SIZE</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="n">CAPTURE_RAM_WORD_SIZE</span>
+        <span class="n">elem_offset</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__bit_offset</span> <span class="o">%</span> <span class="p">(</span><span class="n">CAPTURE_RAM_WORD_SIZE</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">//</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span>
+        <span class="n">capture_unit_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>          <span class="o">&lt;&lt;</span> <span class="mi">1</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>          <span class="o">&lt;&lt;</span> <span class="mi">8</span>  <span class="o">|</span>
+            <span class="n">capture_unit_id_bits</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span> <span class="o">|</span>
+            <span class="n">byte_offset</span>          <span class="o">&lt;&lt;</span> <span class="mi">40</span> <span class="o">|</span>
+            <span class="n">elem_offset</span>          <span class="o">&lt;&lt;</span> <span class="mi">76</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SequencerCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">SequencerCmdErr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SequencerCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_id</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_id</span> <span class="o">=</span> <span class="n">cmd_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_no</span> <span class="o">=</span> <span class="n">cmd_no</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_terminated</span> <span class="o">=</span> <span class="n">is_terminated</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;このエラーを起こしたコマンドの種類を表す ID</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: このエラーを起こしたコマンドの種類を表す ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_id</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd_no</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;このエラーを起こしたコマンドのコマンド番号</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int: このエラーを起こしたコマンドのコマンド番号</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_no</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_terminated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; このエラーを起こしたコマンドが実行中に強制終了させられたかどうか</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool:</span>
+<span class="sd">                | True -&gt; コマンドが実行中に強制終了させられた</span>
+<span class="sd">                | False -&gt; コマンドは実行中に強制終了させれていない</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_terminated</span></div>
+
+
+<div class="viewcode-block" id="AwgStartCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">AwgStartCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AwgStartCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;AWG スタートコマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">AwgStartCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">awg_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;指定した時刻にスタートできなかった AWG の ID のリスト</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of AWG: 指定した時刻にスタートできなかった AWG の ID のリスト</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">awg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">]</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;AwgStartCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - AWG IDs    : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CaptureEndFenceCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureEndFenceCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="CaptureEndFenceCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureEndFenceCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">capture_unit_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャ完了確認コマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">CaptureEndFenceCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">capture_unit_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of CaptureUnit: 指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">capture_unit_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">awg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__capture_unit_id_list</span><span class="p">]</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;CaptureEndFenceCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID       : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No       : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated       : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - capture unit IDs : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capture_unit_id_list</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WaveSequenceSetCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveSequenceSetCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="WaveSequenceSetCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveSequenceSetCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">read_err</span><span class="p">,</span> <span class="n">write_err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;波形シーケンスセットコマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">WaveSequenceSetCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span> <span class="o">=</span> <span class="n">read_err</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span> <span class="o">=</span> <span class="n">write_err</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">read_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;読み出しエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中に波形シーケンスの読み出しエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">write_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;書き込みエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;WaveSequenceSetCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - read error  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_err</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - write error : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_err</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CaptureParamSetCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureParamSetCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="CaptureParamSetCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureParamSetCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">read_err</span><span class="p">,</span> <span class="n">write_err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャパラメータセットコマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">CaptureParamSetCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span> <span class="o">=</span> <span class="n">read_err</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span> <span class="o">=</span> <span class="n">write_err</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">read_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;読み出しエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中にキャプチャパラメータの読み出しエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">write_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;書き込みエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中にキャプチャパラメータの書き込みエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;CaptureParamSetCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - read error  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_err</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - write error : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_err</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="CaptureAddrSetCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureAddrSetCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="CaptureAddrSetCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.CaptureAddrSetCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">write_err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;キャプチャアドレスセットコマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">CaptureAddrSetCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span> <span class="o">=</span> <span class="n">write_err</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">write_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;書き込みエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中にキャプチャアドレスの書き込みエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__write_err</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;CaptureAddrSetCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated  : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - write error : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_err</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">FeedbackCalcOnClassificationCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="FeedbackCalcOnClassificationCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.FeedbackCalcOnClassificationCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">read_err</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;四値化結果をフィードバック値とするフィードバック値計算コマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">FeedbackCalcOnClassificationCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span> <span class="o">=</span> <span class="n">read_err</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">read_err</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;読み出しエラーフラグ</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: コマンドの実行中に四値化結果の読み出しエラーが発生した場合 True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_err</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;FeedbackCalcOnClassificationCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - read error : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_err</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="footer-row" class="row">
+
+    <div class="col-md-12">
+        <span></span><span class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0 and the
+        <a href="https://pypi.org/project/sphinx-sizzle-theme/"
+
+           title="0.0.9/821a5457 [2020-04-16T19:31:16]"
+
+        >Sizzle</a> theme.</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="tooltips" class="hidden">
+</div>
+
+<script>
+$(document).ready(function() {
+  'use strict';
+  var $search = $('.search-query');
+
+  var $filter = $('#toc-filter-query');
+  var $toclist = $('.sidebar-toc > ul').find('li');
+
+  if ($toclist.length === 0) {
+    $toclist = $('.localtoc > ul').find('li');
+  }
+
+
+  var $nav = $('#nav');
+
+  //$('#whole-page').removeClass('hidden');
+  var nav_width = $nav.width();
+
+
+  var search_url = '../../search.html';
+
+  function perform_search(e) {
+    var $elem;
+
+    if (e.type === 'keypress') {
+      $elem = $(e.target);
+    }
+    else if (e.type === 'click') {
+      $elem = $(e.target).parents('.input-group').find('input');
+    }
+    var q = $elem.val().trim();
+
+    if (q) {
+      var url = search_url + '?q=' + q + '&check_keywords=yes&area=default';
+
+      location.href = url;
+    }
+  }
+
+
+  function apply_filter() {
+    var s = $filter.val().trim().toLowerCase();
+
+    $toclist.find('a').removeClass('hidden');
+    $toclist.each(function() {
+      var $this = $(this);
+      var $link = $this.find('> a');
+      var t = $link.text().toLowerCase();
+      var show = t.indexOf(s) >= 0;
+
+      if (!show) {
+        $link.addClass('hidden');
+      }
+    });
+  }
+
+  $filter.on('keyup', function(e) {
+    apply_filter();
+  });
+
+
+
+  $search.on('keypress', function(e) {
+    if (e.which == 13) {
+      perform_search(e);
+    }
+  });
+  $search.parents('.input-group').find('.input-group-addon').on('click', perform_search);
+  $(document).on('click', '.summary .fa-caret-right', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $next = $elem.next();
+    $elem.addClass('hidden');
+    $next.removeClass('hidden');
+  });
+  $(document).on('click', '.detail .fa-caret-down', function(e) {
+    var $elem = $(e.target).parents('li');
+    var $prev = $elem.prev();
+    $elem.addClass('hidden');
+    $prev.removeClass('hidden');
+  });
+
+  $('#content').on('click', function() {
+    $('#mnav').hide();
+  });
+
+  var counter = 0;
+  var timer = null;
+
+  function show_nav() {
+    $('#content').off('mousemove', track_mouse);
+    if (timer !== null) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    $nav.show();
+  }
+
+  function track_mouse(e) {
+    var x = e.clientX;
+
+    if (x < 15) {
+      ++counter;
+      if (timer === null) {
+        timer = setTimeout(show_nav, 2000);
+      }
+    }
+    else {
+      counter = 0;
+    }
+    if (counter >= 20) {
+      show_nav();
+    }
+  };
+
+  function hide_nav() {
+    $nav.hide();
+    counter = 0;
+    $('#content').on('mousemove', track_mouse);
+  }
+
+  $('.hidetoc').on('click', hide_nav);
+
+  $(document).on('keyup', function(e) {
+    if (e.ctrlKey) {
+      if (e.which == 37) {      // Ctrl+left arrow
+        hide_nav();
+      }
+      else if (e.which == 39) { // Ctrl+right arrow
+        show_nav();
+      }
+    }
+  });
+
+  $('.menu-toggle').on('click', function(e) {
+    $('#mnav').toggle();
+  });
+
+  function scroll_nav(frag) {
+    var sel = '#nav ' + (frag ? 'a[href="' + frag + '"]' : '.toctree-l1 a.current');
+
+    var $link = $(sel);
+
+    if ($link.length > 0) {
+      $link[0].scrollIntoView({block: 'center'});
+    }
+  }
+
+  // If the navigator is long, then the item we clicked on to get here might
+  // not be in view. Try to scroll it into the view - a slight delay is needed
+  // to get it to sync properly with other stuff going on (as the page has just
+  // loaded). Hence the setTimeout with a timeout of 0.
+
+  function do_scroll() {
+    scroll_nav(window.location.hash);
+  }
+
+  setTimeout(do_scroll, 0);
+
+  function adjust_size() {
+    // we need to set the height explicitly so that scrolling regions in the
+    // content area work properly.
+    var h = $('#page-content').height();
+
+    $('#nav, #content').height(h);
+    if ($('#nav').is(':visible')) {
+      $('#mnav').hide();
+    }
+  }
+
+  adjust_size();
+
+  $(window).on('resize', adjust_size);
+
+  function focus_content() {
+    $('#content').focus();  // so that keyboard can be used to scroll, etc.
+  }
+
+  setTimeout(focus_content, 150);
+
+  var sizzle = $(document).data('sizzle');
+
+  function make_tooltip(id, h, b) {
+    var $e = $('<div>').attr('id', id);
+    var $b = $('<div>').addClass('tc-body').html(b);
+
+    if (h) {
+      var $h = $('<div>').addClass('tc-heading').html(h);
+      $e.append($h);
+    }
+    $e.append($b);
+    return $e;
+  }
+
+  var default_tt_options = {
+    theme: ['tooltipster-light', 'tooltipster-light-customized'],
+    interactive: true,
+    maxWidth: 600,
+    contentCloning: true
+  };
+
+  function activate_tooltips() {
+    var $tt = $('.tt');
+
+    //console.log('tt links:', $tt.length);
+    $tt.tooltipster(default_tt_options);
+  }
+
+
+
+  function add_glossary_tooltips() {
+    var links = $('a');  // can qualify with .reference.internal
+    var glinks = {};
+    var pat = /(.*)\.html#(term-.*)$/;
+    var found = false;  // links in this document
+
+    $.each(links, function(i, link) {
+        var $link = $(link);
+        var href = $link.attr('href');
+        var m = href.match(pat);
+
+        if (m) {
+          var s = m[1].replace(/^(\.\.\/)+/, '');
+
+          if (s === sizzle.app_data.glossary.document) {
+            var k = m[2];
+
+            if (k in glinks) {
+              glinks[k].push($link);
+            }
+            else {
+              glinks[k] = [$link];
+            }
+            found = true;
+          }
+        }
+    });
+    if (found) {
+      var $t = $('#tooltips');
+      var data = sizzle.app_data.glossary.terms;
+
+      $.each(glinks, function(k, v) {
+        var d = data[k];
+
+        if (d) {  // as a sanity check
+          var s = 'tc-'+ k;
+          var $e = make_tooltip(s, d.term, d.defn);
+          $t.append($e);
+
+          $.each(v, function(i, link) {
+            link.addClass('tt').attr('data-tooltip-content', '#' + s);
+          });
+        }
+      });
+    }
+  }
+
+  if (sizzle.app_data && sizzle.app_data.glossary &&
+      sizzle.app_data.glossary.document) {
+    add_glossary_tooltips();
+  }
+
+
+
+
+  function add_custom_tooltips() {
+    var info_tips = sizzle.app_data.custom_data['info-tips'] || {};
+
+    if ($.isEmptyObject(info_tips)) {
+      return;
+    }
+
+    var tt_options = $.extend({contentAsHTML: true}, default_tt_options);
+
+    $('.tc-info').each(function() {
+      var $elem = $(this).prev();
+      var classes = $elem.attr('class');
+      var m = /\btci-([\S]+)/.exec(classes);
+
+      if (m !== null) {
+        var key = m[1];
+
+        if (key in info_tips) {
+          var v = info_tips[key];
+          var tt = $elem.tooltipster(tt_options).tooltipster('content', v);
+        }
+      }
+    });
+  }
+
+  add_custom_tooltips();
+
+  setTimeout(activate_tooltips, 1000);
+
+
+  // Clipboard copy for code blocks with captions
+
+  $('.code-block-caption').each(function() {
+    var $cap = $(this);
+    var $btn = $('<span class="clip-copy"><span class="copied hidden">Copied!</span><i class="fa fa-clipboard" title="Copy contents"></i></span>');
+    var $code = $cap.parent().find('.highlight');
+
+    $cap.append($btn);
+    $btn.find('.fa-clipboard').data('clip-text', $code.text());
+  });
+
+  var clipboard = new ClipboardJS('.code-block-caption .fa-clipboard', {
+    'text': function(trigger) {
+      return $(trigger).data('clip-text');
+    }
+  });
+
+  clipboard.on('success', function(e) {
+    var $copied = $(e.trigger).prev();
+
+    $copied.removeClass('hidden');
+
+    setTimeout(function() {$copied.addClass('hidden'); }, 1000);
+  });
+
+  if (sizzle.on_load) {
+    sizzle.on_load.forEach(function(f) {
+      f();
+    });
+  }
+});
+</script>
+</body>
+</html>

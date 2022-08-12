@@ -44,5 +44,5 @@ from .utiltool import plot_graph, plot_samples
 from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
 from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
 from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
-from .sequencer import SequencerCtrl
+from .sequencerctrl import SequencerCtrl
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
