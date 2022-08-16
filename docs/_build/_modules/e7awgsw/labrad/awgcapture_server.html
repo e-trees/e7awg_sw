@@ -703,12 +703,12 @@
             <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AwgCaptureServer.num_succeeded_commands"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_succeeded_commands">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">313</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
+<div class="viewcode-block" id="AwgCaptureServer.num_successful_commands"><a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_successful_commands">[ドキュメント]</a>    <span class="nd">@setting</span><span class="p">(</span><span class="mi">313</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">seqencerctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_sequencerctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
-            <span class="n">num_succeeded_commands</span> <span class="o">=</span> <span class="n">seqencerctrl</span><span class="o">.</span><span class="n">num_succeeded_commands</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">num_succeeded_commands</span><span class="p">)</span>
+            <span class="n">num_successful_commands</span> <span class="o">=</span> <span class="n">seqencerctrl</span><span class="o">.</span><span class="n">num_successful_commands</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">num_successful_commands</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 

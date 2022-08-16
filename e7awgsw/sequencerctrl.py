@@ -128,7 +128,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         return self._num_unprocessed_commands()
 
 
-    def num_succeeded_commands(self):
+    def num_successful_commands(self):
         """シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する
 
         | この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.
@@ -136,7 +136,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         Returns:
             int: シーケンサが処理に成功したコマンドの数
         """
-        return self._num_succeeded_commands()
+        return self._num_successful_commands()
 
 
     def num_err_commands(self):
@@ -270,7 +270,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _num_succeeded_commands(self):
+    def _num_successful_commands(self):
         pass
 
     @abstractmethod
@@ -500,8 +500,8 @@ class SequencerCtrl(SequencerCtrlBase):
         return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_UNPROCESSED_CMDS)
 
 
-    def _num_succeeded_commands(self):
-        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_SUCCEEDED_CMDS)
+    def _num_successful_commands(self):
+        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_SUCCESSFUL_CMDS)
 
 
     def _num_err_commands(self):

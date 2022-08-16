@@ -183,9 +183,9 @@ class RemoteSequencerCtrl(SequencerCtrlBase):
             raise
 
 
-    def _num_succeeded_commands(self):
+    def _num_successful_commands(self):
         try:
-            result = self.__server.num_succeeded_commands(self.__handler)
+            result = self.__server.num_successful_commands(self.__handler)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)

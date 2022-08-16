@@ -503,11 +503,11 @@ class AwgCaptureServer(ThreadedServer):
 
 
     @setting(313, handle='s', returns='y')
-    def num_succeeded_commands(self, c, handle):
+    def num_successful_commands(self, c, handle):
         try:
             seqencerctrl = self.__get_sequencerctrl(handle)
-            num_succeeded_commands = seqencerctrl.num_succeeded_commands()
-            return pickle.dumps(num_succeeded_commands)
+            num_successful_commands = seqencerctrl.num_successful_commands()
+            return pickle.dumps(num_successful_commands)
         except Exception as e:
             return pickle.dumps(e)
 

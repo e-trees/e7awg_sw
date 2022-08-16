@@ -346,7 +346,7 @@ class SequencerCtrlRegs(object):
         STATUS                = 0x10
         ERR                   = 0x14
         NUM_UNPROCESSED_CMDS  = 0x18
-        NUM_SUCCEEDED_CMDS    = 0x1C
+        NUM_SUCCESSFUL_CMDS   = 0x1C
         NUM_ERR_CMDS          = 0x20
         CMD_FIFO_FREE_SPACE   = 0x24
         NUM_ERR_REPORTS       = 0x28

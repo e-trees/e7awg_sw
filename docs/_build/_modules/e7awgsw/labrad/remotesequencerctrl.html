@@ -384,9 +384,9 @@
             <span class="k">raise</span>
 
 
-    <span class="k">def</span> <span class="nf">_num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server</span><span class="o">.</span><span class="n">num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handler</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__server</span><span class="o">.</span><span class="n">num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handler</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decode_and_check</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>

@@ -329,7 +329,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_unprocessed_commands</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SequencerCtrlBase.num_succeeded_commands"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencerctrl.SequencerCtrlBase.num_succeeded_commands">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SequencerCtrlBase.num_successful_commands"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencerctrl.SequencerCtrlBase.num_successful_commands">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する</span>
 
 <span class="sd">        | この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.</span>
@@ -337,7 +337,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: シーケンサが処理に成功したコマンドの数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_succeeded_commands</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_successful_commands</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SequencerCtrlBase.num_err_commands"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencerctrl.SequencerCtrlBase.num_err_commands">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">num_err_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -471,7 +471,7 @@
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
     <span class="nd">@abstractmethod</span>
@@ -701,8 +701,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">SeqRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">SeqRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_UNPROCESSED_CMDS</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_num_succeeded_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">SeqRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">SeqRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_SUCCEEDED_CMDS</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_num_successful_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">SeqRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span> <span class="n">SeqRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">NUM_SUCCESSFUL_CMDS</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_num_err_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
