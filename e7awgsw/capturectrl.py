@@ -18,7 +18,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: 1 キャプチャモジュールが保存可能な四値化結果の数
     MAX_CLASSIFICATION_RESULTS = MAX_CAPTURE_SIZE * 8 // CLASSIFICATION_RESULT_SIZE
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
-    SAMPLING_RATE = 50000000
+    SAMPLING_RATE = 500000000
     #: 波形レジストリの最大エントリ数
     MAX_CAPTURE_PARAM_REGISTRY_ENTRIES = MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
     #: キャプチャデータのアライメントサイズ (bytes)
