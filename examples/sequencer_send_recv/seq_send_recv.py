@@ -118,7 +118,7 @@ def push_commands(seq_ctrl, awgs, capture_units, key_table, addr_offset):
         CaptureParamSetCmd(7, capture_units, key_table[1:], fb_channel),
         CaptureAddrSetCmd(8, capture_units, addr_offset),
      
-        # 1 回目の波形出力 & キャプチャ完了待ち
+        # 2 回目の波形出力 & キャプチャ完了待ち
         AwgStartCmd(9, awgs, 2 * time, wait = False),
         CaptureEndFenceCmd(
             10, capture_units, 2 * time + 2000, wait = True, stop_seq = True)
@@ -203,9 +203,7 @@ def main(
     server_ip_addr,
     seq_ipaddr,
     num_wait_words, 
-    save_dir=SAVE_DIR, 
-    timeout=5, 
-    use_sequencer=False):
+    save_dir=SAVE_DIR):
 
     with (create_awg_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as cap_ctrl,
@@ -268,8 +266,6 @@ if __name__ == "__main__":
     parser.add_argument('--seq-ipaddr', default='10.2.0.255')
     parser.add_argument('--labrad', action='store_true')
     parser.add_argument('--num-wait-words', default=16, type=int)
-    parser.add_argument('--use-sequencer', action='store_true')
-    parser.add_argument('--timeout', default=5, type=int)
     parser.add_argument('--save-dir', default=SAVE_DIR)
     args = parser.parse_args()
 
@@ -289,7 +285,5 @@ if __name__ == "__main__":
         args.server_ipaddr,
         args.seq_ipaddr,
         args.num_wait_words,
-        save_dir=args.save_dir,
-        timeout=args.timeout,
-        use_sequencer=args.use_sequencer)
+        save_dir=args.save_dir)
     
