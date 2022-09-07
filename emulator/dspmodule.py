@@ -26,7 +26,7 @@ def dsp(samples, capture_param):
             capture_param.num_integ_sections,
             CaptureParam.NUM_REAL_FIR_COEFS)
     else:
-        # 間引きが無効な場合, 後段の FIR ポストブランクのデータを使うので取り除かない.
+        # 間引きが無効な場合, 後段の FIR がポストブランクのデータを使うので取り除かない.
         # Real FIR 用に先頭に 0 を付加する
         samples_list = [ [(0,0)] * 7 + samples ]
 
