@@ -132,7 +132,7 @@ def main(
         res_dir = 'result/{:03d}'.format(test_id)
         test = ParamLoadTest(res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
 
-        print('-- dsp units　--')
+        print('-- dsp units --')
         result = test.run_test(
             'dsp_units',
             wave_sequences[0],

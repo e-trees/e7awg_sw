@@ -558,16 +558,16 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def __set_comp_fir_coefs(self, accessor, addr, comp_fir_coefs):
         """複素 FIR フィルタの係数を設定する"""
-        coef_list = [int(coef.real) for coef in reversed(comp_fir_coefs)]
+        coef_list = [int(coef.real) for coef in comp_fir_coefs]
         accessor.multi_write(addr, CaptureParamRegs.Offset.comp_fir_re_coef(0), *coef_list)
-        coef_list = [int(coef.imag) for coef in reversed(comp_fir_coefs)]
+        coef_list = [int(coef.imag) for coef in comp_fir_coefs]
         accessor.multi_write(addr, CaptureParamRegs.Offset.comp_fir_im_coef(0), *coef_list)
 
 
     def __set_real_fir_coefs(self, accessor, addr, real_fir_i_coefs, real_fir_q_coefs):
         """実数 FIR フィルタの係数を設定する"""
-        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_i_coef(0), *reversed(real_fir_i_coefs))
-        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_q_coef(0), *reversed(real_fir_q_coefs))
+        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_i_coef(0), *real_fir_i_coefs)
+        accessor.multi_write(addr, CaptureParamRegs.Offset.real_fir_q_coef(0), *real_fir_q_coefs)
 
 
     def __set_comp_window_coefs(self, accessor, addr, complex_window_coefs):

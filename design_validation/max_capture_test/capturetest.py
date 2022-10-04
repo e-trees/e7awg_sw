@@ -11,7 +11,7 @@ from e7awgsw import AWG, AwgCtrl, WaveSequence
 from e7awgsw import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 from e7awgsw import hwparam
-from emulator.dspmodule import classification, int_to_float
+from emulator.dspmodule import classification, fixed_to_float
 
 class CaptureTest(object):
 
@@ -138,8 +138,8 @@ class CaptureTest(object):
             i_samples = []
             q_samples = []
             for i_sample, q_sample in samples:
-                i_samples.append(int_to_float(0x40000000 * i_sample))
-                q_samples.append(int_to_float(0x40000000 * q_sample))
+                i_samples.append(fixed_to_float(i_sample, 0))
+                q_samples.append(fixed_to_float(q_sample, 0))
 
             return classification(
                 i_samples,
@@ -198,13 +198,13 @@ class CaptureTest(object):
             if cap_errs:
                 print(cap_errs)
 
-        # キャプチャサンプル数の確認
-        all_match = True
-        num_samples_to_capture = capture_param.calc_capture_samples()
-        for capture_unit in self.__capture_units:
-            if num_samples_to_capture != cap_ctrl.num_captured_samples(capture_unit):
-                all_match = False
-                break
+            # キャプチャサンプル数の確認
+            all_match = True
+            num_samples_to_capture = capture_param.calc_capture_samples()
+            for capture_unit in self.__capture_units:
+                if num_samples_to_capture != cap_ctrl.num_captured_samples(capture_unit):
+                    all_match = False
+                    break
 
         # AWG の波形データとキャプチャデータを比較
         expected = self.__calc_expected_capture_data(

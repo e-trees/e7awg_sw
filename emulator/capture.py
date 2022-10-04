@@ -123,14 +123,14 @@ class CaptureUnit(object):
         param.complex_fir_coefs = [complex(
             self.__to_int32(self.get_param(CaptureParamRegs.Offset.comp_fir_re_coef(i))),
             self.__to_int32(self.get_param(CaptureParamRegs.Offset.comp_fir_im_coef(i))))
-            for i in reversed(range(CaptureParam.NUM_COMPLEX_FIR_COEFS))]
+            for i in range(CaptureParam.NUM_COMPLEX_FIR_COEFS)]
         # 実 FIR 係数
         param.real_fir_i_coefs = [
             self.__to_int32(self.get_param(CaptureParamRegs.Offset.real_fir_i_coef(i)))
-            for i in reversed(range(CaptureParam.NUM_REAL_FIR_COEFS))]
+            for i in range(CaptureParam.NUM_REAL_FIR_COEFS)]
         param.real_fir_q_coefs = [
             self.__to_int32(self.get_param(CaptureParamRegs.Offset.real_fir_q_coef(i)))
-            for i in reversed(range(CaptureParam.NUM_REAL_FIR_COEFS))]
+            for i in range(CaptureParam.NUM_REAL_FIR_COEFS)]
         # 複素窓係数
         param.complex_window_coefs = [complex(
             self.__to_int32(self.get_param(CaptureParamRegs.Offset.comp_window_re_coef(i))),
