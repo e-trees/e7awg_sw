@@ -317,14 +317,15 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="c1">#: AWG スタート時刻に指定可能な最大値</span>
     <span class="n">MAX_START_TIME</span> <span class="o">=</span> <span class="mh">0x7FFFFFFF_FFFFFFFF</span>
-    
+    <span class="c1">#: AWG を即時スタートする場合に start_time に指定する値．</span>
+    <span class="n">IMMEDIATE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
 <div class="viewcode-block" id="AwgStartCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cmd_no</span><span class="p">,</span>
         <span class="n">awg_id_list</span><span class="p">,</span>
         <span class="n">start_time</span><span class="p">,</span>
-        <span class="n">wait</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">wait</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;AWG を指定した時刻にスタートするコマンド</span>
 
@@ -333,7 +334,9 @@
 <span class="sd">            awg_id_list (list of AWG): 波形の出力を開始する AWG のリスト</span>
 <span class="sd">            start_time (int):</span>
 <span class="sd">                | AWG をスタートする時刻.</span>
-<span class="sd">                | シーケンサがコマンドの処理を始めた時点を 0 として, start_time * 8[ns] 後に AWG がスタートされる.</span>
+<span class="sd">                | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.</span>
+<span class="sd">                | 負の値を入力した場合, AWG を即時スタートする．</span>
+<span class="sd">                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 1.92 [us] 後にスタートする.</span>
 <span class="sd">            wait (bool):</span>
 <span class="sd">                | True -&gt; AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する</span>
 <span class="sd">                | False -&gt; AWG をスタートした後, このコマンドを終了する.</span>
@@ -346,11 +349,10 @@
             <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">awg_id_list</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_awg_id</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">start_time</span> <span class="ow">and</span> <span class="n">start_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">start_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;&#39;start_time&#39; is must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">,</span> <span class="n">start_time</span><span class="p">))</span>
+                <span class="s2">&quot;&#39;start_time&#39; must be less than or equal to </span><span class="si">{}</span><span class="s2">.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MAX_START_TIME</span><span class="p">,</span> <span class="n">start_time</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__start_time</span> <span class="o">=</span> <span class="n">start_time</span>
@@ -376,13 +378,14 @@
     <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="n">awg_id_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF_FFFFFFFF</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">stop_seq</span>                        <span class="o">|</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>   <span class="o">|</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>   <span class="o">|</span>
-            <span class="n">awg_id_list</span>              <span class="o">&lt;&lt;</span> <span class="mi">24</span>  <span class="o">|</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span>          <span class="o">&lt;&lt;</span> <span class="mi">40</span>  <span class="o">|</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span>                <span class="o">&lt;&lt;</span> <span class="mi">104</span><span class="p">)</span>
+            <span class="n">stop_seq</span>                    <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>          <span class="o">&lt;&lt;</span> <span class="mi">1</span>   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>          <span class="o">&lt;&lt;</span> <span class="mi">8</span>   <span class="o">|</span>
+            <span class="n">awg_id_list</span>          <span class="o">&lt;&lt;</span> <span class="mi">24</span>  <span class="o">|</span>
+            <span class="n">start_time</span>           <span class="o">&lt;&lt;</span> <span class="mi">40</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span>            <span class="o">&lt;&lt;</span> <span class="mi">104</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
 
 
@@ -415,7 +418,7 @@
 <span class="sd">            capture_unit_id_list (list of CaptureUnit): キャプチャの完了を調べるキャプチャユニットのリスト.</span>
 <span class="sd">            end_time (int):</span>
 <span class="sd">                | キャプチャが完了しているかを調べる時刻.</span>
-<span class="sd">                | シーケンサがコマンドの処理を始めた時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</span>
+<span class="sd">                | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</span>
 <span class="sd">            wait (bool):</span>
 <span class="sd">                | True -&gt; end_time の後もキャプチャが完了していないキャプチャユニットの終了を待つ.</span>
 <span class="sd">                | False -&gt; end_time の後, キャプチャの完了を待たずにコマンドを終了する.</span>
@@ -434,7 +437,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
                 <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">end_time</span> <span class="ow">and</span> <span class="n">end_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;&#39;end_time&#39; is must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="s2">&quot;&#39;end_time&#39; must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">,</span> <span class="n">end_time</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wait</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
@@ -848,6 +851,104 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="WaveGenEndFenceCmd"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmd">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveGenEndFenceCmd</span><span class="p">(</span><span class="n">SequencerCmd</span><span class="p">):</span>
+    <span class="c1">#: コマンドの種類を表す ID</span>
+    <span class="n">ID</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="c1">#: AWG の波形出力完了を確認する時刻に指定可能な最大値</span>
+    <span class="n">MAX_END_TIME</span> <span class="o">=</span> <span class="mh">0x7FFFFFFF_FFFFFFFF</span>
+
+<div class="viewcode-block" id="WaveGenEndFenceCmd.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmd.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cmd_no</span><span class="p">,</span>
+        <span class="n">awg_id_list</span><span class="p">,</span>
+        <span class="n">end_time</span><span class="p">,</span>
+        <span class="n">wait</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">terminate</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd_no (int): コマンド番号</span>
+<span class="sd">            awg_id_list (list of AWG): 波形出力完了を調べる AWG のリスト.</span>
+<span class="sd">            end_time (int):</span>
+<span class="sd">                | AWG の波形出力が完了しているかを調べる時刻.</span>
+<span class="sd">                | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後に波形出力の完了をチェックする.</span>
+<span class="sd">            wait (bool):</span>
+<span class="sd">                | True -&gt; end_time の後も波形出力が完了していない AWG の終了を待つ.</span>
+<span class="sd">                | False -&gt; end_time の後, 波形出力の完了を待たずにコマンドを終了する.</span>
+<span class="sd">            terminate (bool): </span>
+<span class="sd">                | AWG 停止フラグ.</span>
+<span class="sd">                | True の場合 end_time の時点で波形の出力が完了していない AWG を強制停止する.</span>
+<span class="sd">            stop_seq (bool): </span>
+<span class="sd">                | シーケンサ停止フラグ.</span>
+<span class="sd">                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">stop_seq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">AWG</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">):</span>
+            <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">awg_id_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_awg_id</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">end_time</span> <span class="ow">and</span> <span class="n">end_time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;&#39;end_time&#39; must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_END_TIME</span><span class="p">,</span> <span class="n">end_time</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wait</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of &#39;wait&#39; must be &#39;bool&#39;.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">wait</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">terminate</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The type of &#39;terminate&#39; must be &#39;bool&#39;.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">terminate</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__end_time</span> <span class="o">=</span> <span class="n">end_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span> <span class="o">=</span> <span class="n">wait</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__terminate</span> <span class="o">=</span> <span class="n">terminate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_cmd_bytes</span><span class="p">()</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">awg_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__end_time</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wait</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__terminate</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_cmd_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">stop_seq</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_seq</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">awg_id_bits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_bit_field</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">stop_seq</span>                        <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span>              <span class="o">&lt;&lt;</span> <span class="mi">1</span>   <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span>              <span class="o">&lt;&lt;</span> <span class="mi">8</span>   <span class="o">|</span>
+            <span class="n">awg_id_bits</span>              <span class="o">&lt;&lt;</span> <span class="mi">24</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span>            <span class="o">&lt;&lt;</span> <span class="mi">40</span>  <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span>           <span class="o">&lt;&lt;</span> <span class="mi">104</span> <span class="o">|</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span>                <span class="o">&lt;&lt;</span> <span class="mi">105</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cmd</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;little&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WaveGenEndFenceCmd.serialize"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmd.serialize">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span></div>
+
+
+<div class="viewcode-block" id="WaveGenEndFenceCmd.size"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmd.size">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cmd_bytes</span><span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="SequencerCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">SequencerCmdErr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
 <div class="viewcode-block" id="SequencerCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.SequencerCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_id</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">):</span>
@@ -1074,6 +1175,34 @@
             <span class="s1">&#39;  - command No : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
             <span class="s1">&#39;  - terminated : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
             <span class="s1">&#39;  - read error : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_err</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="WaveGenEndFenceCmdErr"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmdErr">[ドキュメント]</a><span class="k">class</span> <span class="nc">WaveGenEndFenceCmdErr</span><span class="p">(</span><span class="n">SequencerCmdErr</span><span class="p">):</span>
+    
+<div class="viewcode-block" id="WaveGenEndFenceCmdErr.__init__"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.sequencercmd.WaveGenEndFenceCmdErr.__init__">[ドキュメント]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">,</span> <span class="n">awg_id_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;波形出力完了確認コマンドのエラー情報を保持するクラス&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">WaveGenEndFenceCmd</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="n">cmd_no</span><span class="p">,</span> <span class="n">is_terminated</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">awg_id_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;指定した時刻に波形出力が完了していなかった AWG の ID のリスト</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list of AWG: 指定した時刻に波形出力が完了していなかった AWG の ID のリスト</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">awg_id_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">awg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">awg_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_id_list</span><span class="p">]</span>
+        <span class="k">return</span>  <span class="p">(</span>
+            <span class="s1">&#39;WaveGenEndFenceCmdErr</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command ID : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_id</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - command No : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd_no</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - terminated : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_terminated</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s1">&#39;  - AWG IDs    : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">awg_id_list</span><span class="p">))</span></div>
 </pre></div>
 
           </div>

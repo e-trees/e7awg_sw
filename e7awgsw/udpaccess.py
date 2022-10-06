@@ -3,8 +3,8 @@ import threading
 import copy
 from .uplpacket import UplPacket
 from .logger import log_error
-from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
-from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
+from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
+from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from .hwparam import CMD_ERR_REPORT_SIZE
 from .hwdefs import AWG, CaptureUnit
 
@@ -268,6 +268,8 @@ class CmdErrReceiver(threading.Thread):
             return CaptureAddrSetCmdErr(cmd_no, is_terminated, write_err)
         elif cmd_id == FeedbackCalcOnClassificationCmd.ID:
             return FeedbackCalcOnClassificationCmdErr(cmd_no, is_terminated, read_err)
+        elif cmd_id == WaveGenEndFenceCmd.ID:
+            return WaveGenEndFenceCmdErr(cmd_no, is_terminated, awg_id_list)
 
         assert False, ('Invalid cmd err.  cmd_id = {}'.format(cmd_id))
 

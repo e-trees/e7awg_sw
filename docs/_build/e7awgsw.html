@@ -1107,7 +1107,7 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE">
-<code class="sig-name descname"><span class="pre">SAMPLING_RATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50000000</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">SAMPLING_RATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">500000000</span></em><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.SAMPLING_RATE" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>キャプチャユニットのサンプリングレート (単位=サンプル数/秒)</p>
 </dd></dl>
 
@@ -2593,12 +2593,18 @@
 <span id="e7awgsw-sequencercmd-module"></span><h2>e7awgsw.sequencercmd module<a class="headerlink" href="#module-e7awgsw.sequencercmd" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">AwgStartCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd" title="この定義へのパーマリンク">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">AwgStartCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.ID">
 <code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.IMMEDIATE">
+<code class="sig-name descname"><span class="pre">IMMEDIATE</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.IMMEDIATE" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG を即時スタートする場合に start_time に指定する値．</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2609,7 +2615,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.sequencercmd.AwgStartCmd.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">start_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#AwgStartCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.AwgStartCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>AWG を指定した時刻にスタートするコマンド</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2620,7 +2626,9 @@
 <li><strong>awg_id_list</strong> (<em>list of AWG</em>) -- 波形の出力を開始する AWG のリスト</li>
 <li><strong>start_time</strong> (<em>int</em>) -- <div class="line-block">
 <div class="line">AWG をスタートする時刻.</div>
-<div class="line">シーケンサがコマンドの処理を始めた時点を 0 として, start_time * 8[ns] 後に AWG がスタートされる.</div>
+<div class="line">シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.</div>
+<div class="line">負の値を入力した場合, AWG を即時スタートする．</div>
+<div class="line">このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 1.92 [us] 後にスタートする.</div>
 </div>
 </li>
 <li><strong>wait</strong> (<em>bool</em>) -- <div class="line-block">
@@ -2813,7 +2821,7 @@
 <li><strong>capture_unit_id_list</strong> (<em>list of CaptureUnit</em>) -- キャプチャの完了を調べるキャプチャユニットのリスト.</li>
 <li><strong>end_time</strong> (<em>int</em>) -- <div class="line-block">
 <div class="line">キャプチャが完了しているかを調べる時刻.</div>
-<div class="line">シーケンサがコマンドの処理を始めた時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</div>
+<div class="line">シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.</div>
 </div>
 </li>
 <li><strong>wait</strong> (<em>bool</em>) -- <div class="line-block">
@@ -3262,6 +3270,121 @@
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">WaveGenEndFenceCmd</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">end_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">terminate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmd"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmd" title="e7awgsw.sequencercmd.SequencerCmd"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmd</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.ID">
+<code class="sig-name descname"><span class="pre">ID</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.ID" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>コマンドの種類を表す ID</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.MAX_END_TIME">
+<code class="sig-name descname"><span class="pre">MAX_END_TIME</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9223372036854775807</span></em><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.MAX_END_TIME" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>AWG の波形出力完了を確認する時刻に指定可能な最大値</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em>, <em><span class="n"><span class="pre">end_time</span></span></em>, <em><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em><span class="n"><span class="pre">terminate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em><span class="n"><span class="pre">stop_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmd.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cmd_no</strong> (<em>int</em>) -- コマンド番号</li>
+<li><strong>awg_id_list</strong> (<em>list of AWG</em>) -- 波形出力完了を調べる AWG のリスト.</li>
+<li><strong>end_time</strong> (<em>int</em>) -- <div class="line-block">
+<div class="line">AWG の波形出力が完了しているかを調べる時刻.</div>
+<div class="line">シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後に波形出力の完了をチェックする.</div>
+</div>
+</li>
+<li><strong>wait</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">True -&gt; end_time の後も波形出力が完了していない AWG の終了を待つ.</div>
+<div class="line">False -&gt; end_time の後, 波形出力の完了を待たずにコマンドを終了する.</div>
+</div>
+</li>
+<li><strong>terminate</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">AWG 停止フラグ.</div>
+<div class="line">True の場合 end_time の時点で波形の出力が完了していない AWG を強制停止する.</div>
+</div>
+</li>
+<li><strong>stop_seq</strong> (<em>bool</em>) -- <div class="line-block">
+<div class="line">シーケンサ停止フラグ.</div>
+<div class="line">True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.</div>
+</div>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.awg_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">awg_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.awg_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.end_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">end_time</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.end_time" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.serialize">
+<code class="sig-name descname"><span class="pre">serialize</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmd.serialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.serialize" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.size">
+<code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmd.size"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.size" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>serialize した際のコマンドのバイト数</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.terminate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">terminate</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.terminate" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmd.wait">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">wait</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmd.wait" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmdErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.sequencercmd.</span></code><code class="sig-name descname"><span class="pre">WaveGenEndFenceCmdErr</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmdErr"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmdErr" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>ベースクラス: <a class="reference internal" href="#e7awgsw.sequencercmd.SequencerCmdErr" title="e7awgsw.sequencercmd.SequencerCmdErr"><code class="xref py py-class docutils literal notranslate"><span class="pre">e7awgsw.sequencercmd.SequencerCmdErr</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmdErr.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">cmd_no</span></span></em>, <em><span class="n"><span class="pre">is_terminated</span></span></em>, <em><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/sequencercmd.html#WaveGenEndFenceCmdErr.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmdErr.__init__" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>波形出力完了確認コマンドのエラー情報を保持するクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.sequencercmd.WaveGenEndFenceCmdErr.awg_id_list">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">awg_id_list</span></code><a class="headerlink" href="#e7awgsw.sequencercmd.WaveGenEndFenceCmdErr.awg_id_list" title="この定義へのパーマリンク">¶</a></dt>
+<dd><p>指定した時刻に波形出力が完了していなかった AWG の ID のリスト</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">戻り値:</th><td class="field-body">指定した時刻に波形出力が完了していなかった AWG の ID のリスト</td>
+</tr>
+<tr class="field-even field"><th class="field-name">戻り値の型:</th><td class="field-body">list of AWG</td>
 </tr>
 </tbody>
 </table>

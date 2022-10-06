@@ -116,14 +116,15 @@ class AwgStartCmd(SequencerCmd):
     ID = 1
     #: AWG スタート時刻に指定可能な最大値
     MAX_START_TIME = 0x7FFFFFFF_FFFFFFFF
-    
+    #: AWG を即時スタートする場合に start_time に指定する値．
+    IMMEDIATE = -1
 
     def __init__(
         self,
         cmd_no,
         awg_id_list,
         start_time,
-        wait = True,
+        wait = False,
         stop_seq = False):
         """AWG を指定した時刻にスタートするコマンド
 
@@ -132,7 +133,9 @@ class AwgStartCmd(SequencerCmd):
             awg_id_list (list of AWG): 波形の出力を開始する AWG のリスト
             start_time (int):
                 | AWG をスタートする時刻.
-                | シーケンサがコマンドの処理を始めた時点を 0 として, start_time * 8[ns] 後に AWG がスタートされる.
+                | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
+                | 負の値を入力した場合, AWG を即時スタートする．
+                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 1.92 [us] 後にスタートする.
             wait (bool):
                 | True -> AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
                 | False -> AWG をスタートした後, このコマンドを終了する.
@@ -145,11 +148,10 @@ class AwgStartCmd(SequencerCmd):
             awg_id_list = [awg_id_list]
         self._validate_awg_id(awg_id_list)
 
-        if not (isinstance(start_time, int) and
-                (0 <= start_time and start_time <= self.MAX_START_TIME)):
+        if not (isinstance(start_time, int) and (start_time <= self.MAX_START_TIME)):
             raise ValueError(
-                "'start_time' is must be an integer between {} and {} inclusive.  '{}' was set."
-                .format(0, self.MAX_START_TIME, start_time))
+                "'start_time' must be less than or equal to {}.  '{}' was set."
+                .format(self.MAX_START_TIME, start_time))
 
         self.__awg_id_list = copy.copy(awg_id_list)
         self.__start_time = start_time
@@ -175,13 +177,14 @@ class AwgStartCmd(SequencerCmd):
     def __gen_cmd_bytes(self):
         stop_seq = 1 if self.stop_seq else 0
         awg_id_list = self._to_bit_field(self.__awg_id_list)
+        start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
         cmd = (
-            stop_seq                        |
-            self.cmd_id              << 1   |
-            self.cmd_no              << 8   |
-            awg_id_list              << 24  |
-            self.start_time          << 40  |
-            self.wait                << 104)
+            stop_seq                    |
+            self.cmd_id          << 1   |
+            self.cmd_no          << 8   |
+            awg_id_list          << 24  |
+            start_time           << 40  |
+            self.wait            << 104)
         return cmd.to_bytes(16, 'little')
 
 
@@ -214,7 +217,7 @@ class CaptureEndFenceCmd(SequencerCmd):
             capture_unit_id_list (list of CaptureUnit): キャプチャの完了を調べるキャプチャユニットのリスト.
             end_time (int):
                 | キャプチャが完了しているかを調べる時刻.
-                | シーケンサがコマンドの処理を始めた時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.
+                | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.
             wait (bool):
                 | True -> end_time の後もキャプチャが完了していないキャプチャユニットの終了を待つ.
                 | False -> end_time の後, キャプチャの完了を待たずにコマンドを終了する.
@@ -233,7 +236,7 @@ class CaptureEndFenceCmd(SequencerCmd):
         if not (isinstance(end_time, int) and
                 (0 <= end_time and end_time <= self.MAX_END_TIME)):
             raise ValueError(
-                "'end_time' is must be an integer between {} and {} inclusive.  '{}' was set."
+                "'end_time' must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(0, self.MAX_END_TIME, end_time))
 
         if not isinstance(wait, bool):
@@ -647,6 +650,104 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
         return len(self.__cmd_bytes)
 
 
+class WaveGenEndFenceCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID = 7
+    #: AWG の波形出力完了を確認する時刻に指定可能な最大値
+    MAX_END_TIME = 0x7FFFFFFF_FFFFFFFF
+
+    def __init__(
+        self,
+        cmd_no,
+        awg_id_list,
+        end_time,
+        wait = True,
+        terminate = False,
+        stop_seq = False):
+        """指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド
+
+        Args:
+            cmd_no (int): コマンド番号
+            awg_id_list (list of AWG): 波形出力完了を調べる AWG のリスト.
+            end_time (int):
+                | AWG の波形出力が完了しているかを調べる時刻.
+                | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後に波形出力の完了をチェックする.
+            wait (bool):
+                | True -> end_time の後も波形出力が完了していない AWG の終了を待つ.
+                | False -> end_time の後, 波形出力の完了を待たずにコマンドを終了する.
+            terminate (bool): 
+                | AWG 停止フラグ.
+                | True の場合 end_time の時点で波形の出力が完了していない AWG を強制停止する.
+            stop_seq (bool): 
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        if AWG.includes(awg_id_list):
+            awg_id_list = [awg_id_list]
+        self._validate_awg_id(awg_id_list)
+
+        if not (isinstance(end_time, int) and
+                (0 <= end_time and end_time <= self.MAX_END_TIME)):
+            raise ValueError(
+                "'end_time' must be an integer between {} and {} inclusive.  '{}' was set."
+                .format(0, self.MAX_END_TIME, end_time))
+
+        if not isinstance(wait, bool):
+            raise ValueError("The type of 'wait' must be 'bool'.  '{}' was set.".format(wait))
+
+        if not isinstance(terminate, bool):
+            raise ValueError("The type of 'terminate' must be 'bool'.  '{}' was set.".format(terminate))
+
+        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__end_time = end_time
+        self.__wait = wait
+        self.__terminate = terminate
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def awg_id_list(self):
+        return copy.copy(self.__awg_id_list)
+
+
+    @property
+    def end_time(self):
+        return self.__end_time
+
+
+    @property
+    def wait(self):
+        return self.__wait
+
+
+    @property
+    def terminate(self):
+        return self.__terminate
+
+
+    def __gen_cmd_bytes(self):
+        stop_seq = 1 if self.stop_seq else 0
+        awg_id_bits = self._to_bit_field(self.__awg_id_list)
+        cmd = (
+            stop_seq                        |
+            self.cmd_id              << 1   |
+            self.cmd_no              << 8   |
+            awg_id_bits              << 24  |
+            self.end_time            << 40  |
+            self.terminate           << 104 |
+            self.wait                << 105)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self):
+        return self.__cmd_bytes
+
+
+    def size(self):
+        return len(self.__cmd_bytes)
+
+
 class SequencerCmdErr(object):
 
     def __init__(self, cmd_id, cmd_no, is_terminated):
@@ -873,3 +974,31 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
             '  - command No : {}\n'.format(self.cmd_no) +
             '  - terminated : {}\n'.format(self.is_terminated) +
             '  - read error : {}'.format(self.read_err))
+
+
+class WaveGenEndFenceCmdErr(SequencerCmdErr):
+    
+    def __init__(self, cmd_no, is_terminated, awg_id_list):
+        """波形出力完了確認コマンドのエラー情報を保持するクラス"""
+        super().__init__(WaveGenEndFenceCmd.ID, cmd_no, is_terminated)
+        self.__awg_id_list = copy.copy(awg_id_list)
+
+
+    @property
+    def awg_id_list(self):
+        """指定した時刻に波形出力が完了していなかった AWG の ID のリスト
+        
+        Returns:
+            list of AWG: 指定した時刻に波形出力が完了していなかった AWG の ID のリスト
+        """
+        return copy.copy(self.__awg_id_list)
+
+
+    def __str__(self):
+        awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
+        return  (
+            'WaveGenEndFenceCmdErr\n' +
+            '  - command ID : {}\n'.format(self.cmd_id) +
+            '  - command No : {}\n'.format(self.cmd_no) +
+            '  - terminated : {}\n'.format(self.is_terminated) +
+            '  - AWG IDs    : {}'.format(awg_id_list))

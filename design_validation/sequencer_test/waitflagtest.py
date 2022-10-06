@@ -10,8 +10,8 @@ import testutil
 lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
-from e7awgsw import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
-from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
+from e7awgsw import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
+from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 from e7awgsw import SinWave, IqWave
@@ -34,7 +34,7 @@ class WaitFlagTest(object):
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U15]
+        self.__awgs = [AWG.U2, AWG.U3, AWG.U15]
         self.__capture_units = CaptureUnit.all()
 
         self.__awg_ctrl = self.__create_awg_ctrl()
@@ -185,17 +185,68 @@ class WaitFlagTest(object):
         return success
 
 
+    def test_4(self):
+        success = True
+        success &= self.exec_cmds(gen_cmds_4())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 1,
+            isinstance(reports[0], AwgStartCmdErr),
+            reports[0].awg_id_list == [AWG.U3, AWG.U15],
+            reports[0].cmd_no == 20,
+            not reports[0].is_terminated])
+        return success
+
+
+    def test_5(self):
+        success = True
+        success &= self.exec_cmds(gen_cmds_5())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 2,
+            isinstance(reports[0], WaveGenEndFenceCmdErr),
+            reports[0].awg_id_list == [AWG.U3],
+            reports[0].cmd_no == 24,
+            not reports[0].is_terminated,
+
+            isinstance(reports[1], WaveGenEndFenceCmdErr),
+            reports[1].awg_id_list == [AWG.U15],
+            reports[1].cmd_no == 25,
+            not reports[1].is_terminated])
+        return success
+
+
+    def test_6(self):
+        success = True
+        success &= self.exec_cmds(gen_cmds_6())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 1,
+            isinstance(reports[0], WaveGenEndFenceCmdErr),
+            reports[0].awg_id_list == [AWG.U3],
+            reports[0].cmd_no == 29,
+            not reports[0].is_terminated])
+        return success
+
+
     def run_test(self):
         """
         テスト項目
         ・AWG スタートとキャプチャ終了モニタコマンドの wait フラグが機能する
         """
-        wave_seq = gen_wave_sequence()
+        wave_seq = [gen_wave_sequence(2048), gen_wave_sequence(1024)]
         cap_params = [gen_capture_param(2048), gen_capture_param(1024)]
         # パラメータ登録
-        self.__register_wave_sequences([0], [wave_seq])
+        self.__register_wave_sequences([0, 1], wave_seq)
         self.__register_capture_params([0, 1], cap_params)
-        return all([self.test_0(), self.test_1(), self.test_2(), self.test_3()])
+        return all([
+            self.test_0(),
+            self.test_1(),
+            self.test_2(),
+            self.test_3(),
+            self.test_4(),
+            self.test_5(),
+            self.test_6()])
 
 
 def gen_capture_param(num_sum_section_words):
@@ -205,12 +256,12 @@ def gen_capture_param(num_sum_section_words):
     return param
 
 
-def gen_wave_sequence():
+def gen_wave_sequence(num_awg_words):
     wave_seq = WaveSequence(
         num_wait_words = 16,
         num_repeats = 1)
     wave_seq.add_chunk(
-        iq_samples = [(1,2)] * 2048 * WaveSequence.NUM_SAMPLES_IN_AWG_WORD,
+        iq_samples = [(1,2)] * num_awg_words * WaveSequence.NUM_SAMPLES_IN_AWG_WORD,
         num_blank_words = 0,
         num_repeats = 1)
     return wave_seq
@@ -220,9 +271,9 @@ def gen_cmds_0():
     time = int(2e7)
     cmds = [
         # パラメータ更新
-        WaveSequenceSetCmd(0, [AWG.U2, AWG.U15], 0),
-        # AWG スタートとキャプチャ停止待ち
-        AwgStartCmd(1, [AWG.U2],  time,        wait = True),                  # エラーにならないのを期待
+        WaveSequenceSetCmd(0, [AWG.U3, AWG.U15], key_table = 0),
+        # AWG スタート
+        AwgStartCmd(1, [AWG.U3],  time,        wait = True),                  # エラーにならないのを期待
         AwgStartCmd(2, [AWG.U15], time + 1024, wait = True, stop_seq = True), # エラーになるのを期待
     ]
     return cmds
@@ -232,9 +283,9 @@ def gen_cmds_1():
     time = int(2e7)
     cmds = [
         # パラメータ更新
-        WaveSequenceSetCmd(3, [AWG.U2, AWG.U15], 0),
-        # AWG スタートとキャプチャ停止待ち
-        AwgStartCmd(4, [AWG.U2],  time,        wait = False),                 # エラーにならないのを期待
+        WaveSequenceSetCmd(3, [AWG.U3, AWG.U15], key_table = 0),
+        # AWG スタート
+        AwgStartCmd(4, [AWG.U3],  time,        wait = False),                 # エラーにならないのを期待
         AwgStartCmd(5, [AWG.U15], time + 1024, wait = True, stop_seq = True), # エラーにならないのを期待
     ]
     return cmds
@@ -244,9 +295,9 @@ def gen_cmds_2():
     time = int(2e7)
     cmds = [
         # パラメータ更新
-        WaveSequenceSetCmd(6, [AWG.U2, AWG.U15], 0),
-        CaptureParamSetCmd(7, [CaptureUnit.U0], 0),
-        CaptureParamSetCmd(8, [CaptureUnit.U1], 1),
+        WaveSequenceSetCmd(6, [AWG.U2, AWG.U15], key_table = 0),
+        CaptureParamSetCmd(7, [CaptureUnit.U0],  key_table = 0),
+        CaptureParamSetCmd(8, [CaptureUnit.U1],  key_table = 1),
         # AWG スタートとキャプチャ停止待ち
         AwgStartCmd(9, [AWG.U2], time, wait = False),
         CaptureEndFenceCmd(10, [CaptureUnit.U0], time + 512,  wait = True),                  # エラーになるのを期待
@@ -259,12 +310,52 @@ def gen_cmds_3():
     time = int(2e7)
     cmds = [
         # パラメータ更新
-        WaveSequenceSetCmd(12, [AWG.U2, AWG.U15], 0),
-        CaptureParamSetCmd(13, [CaptureUnit.U0], 0),
-        CaptureParamSetCmd(14, [CaptureUnit.U1], 1),
+        WaveSequenceSetCmd(12, [AWG.U2, AWG.U15], key_table = 0),
+        CaptureParamSetCmd(13, [CaptureUnit.U0],  key_table = 0),
+        CaptureParamSetCmd(14, [CaptureUnit.U1],  key_table = 1),
         # AWG スタートとキャプチャ停止待ち
         AwgStartCmd(15, [AWG.U2], time, wait = False),
         CaptureEndFenceCmd(16, [CaptureUnit.U0], time + 512,  wait = False),                 # エラーになるのを期待
         CaptureEndFenceCmd(17, [CaptureUnit.U1], time + 1300, wait = True, stop_seq = True), # エラーにならないのを期待
+    ]
+    return cmds
+
+
+def gen_cmds_4():
+    time = int(2e7)
+    cmds = [
+        # パラメータ更新
+        WaveSequenceSetCmd(18, [AWG.U3, AWG.U15], key_table = 0),
+        # AWG スタート
+        AwgStartCmd(19, [AWG.U3, AWG.U15], AwgStartCmd.IMMEDIATE, wait = False),                 # エラーにならないのを期待
+        AwgStartCmd(20, [AWG.U3, AWG.U15], AwgStartCmd.IMMEDIATE, wait = True, stop_seq = True), # エラーになるのを期待
+    ]
+    return cmds
+
+
+def gen_cmds_5():
+    time = int(2e7)
+    cmds = [
+        # パラメータ更新
+        WaveSequenceSetCmd(21, [AWG.U3],  key_table = 0),
+        WaveSequenceSetCmd(22, [AWG.U15], key_table = 1),
+        # AWG スタートと波形出力完了待ち
+        AwgStartCmd(23, [AWG.U3, AWG.U15], time, wait = False),
+        WaveGenEndFenceCmd(24, [AWG.U3],   time + 512,  wait = True),                  # エラーになるのを期待
+        WaveGenEndFenceCmd(25, [AWG.U15],  time + 1300, wait = True, stop_seq = True), # エラーになるのを期待
+    ]
+    return cmds
+
+
+def gen_cmds_6():
+    time = int(2e7)
+    cmds = [
+        # パラメータ更新
+        WaveSequenceSetCmd(26, [AWG.U3],  key_table = 0),
+        WaveSequenceSetCmd(27, [AWG.U15], key_table = 1),
+        # AWG スタートとキャプチャ停止待ち
+        AwgStartCmd(28, [AWG.U3, AWG.U15], time, wait = False),
+        WaveGenEndFenceCmd(29, [AWG.U3],   time + 512,  wait = False),                 # エラーになるのを期待
+        WaveGenEndFenceCmd(30, [AWG.U15],  time + 1300, wait = True, stop_seq = True), # エラーにならないのを期待
     ]
     return cmds

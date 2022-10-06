@@ -306,6 +306,7 @@ def main(
             failed_tests.append('{} - feedback val test'.format(test_id))
 
 
+        print('\n-- wait flag test --\n')
         test = WaitFlagTest(res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
         result = test.run_test()
         test.close()

@@ -25,12 +25,14 @@ __all__ = [
     'CaptureParamSetCmd',
     'CaptureAddrSetCmd',
     'FeedbackCalcOnClassificationCmd',
+    'WaveGenEndFenceCmd',
     'AwgStartCmdErr',
     'CaptureEndFenceCmdErr',
     'WaveSequenceSetCmdErr',
     'CaptureParamSetCmdErr',
     'CaptureAddrSetCmdErr',
     'FeedbackCalcOnClassificationCmdErr',
+    'WaveGenEndFenceCmdErr',
     'SequencerCtrl',
     'plot_graph',
     'plot_samples']
@@ -42,7 +44,7 @@ from .wavesequence import WaveSequence
 from .captureparam import CaptureParam
 from .utiltool import plot_graph, plot_samples
 from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
-from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
-from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
+from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
+from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from .sequencerctrl import SequencerCtrl
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
