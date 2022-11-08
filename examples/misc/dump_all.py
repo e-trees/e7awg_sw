@@ -18,7 +18,7 @@ NUM_CHUNKS = 16
 
 def _convert_to_reg_list(reg_map: Any, cond: Optional[Set[str]] = None) -> List[Tuple[int, str]]:
     return sorted([(v, k) for k, v in reg_map.Offset.__dict__.items()
-                   if k[0] != '_' and type(v) == int and (cond is None or k in cond)])
+                   if k[0] != '_' and isinstance(v, int) and (cond is None or k in cond)])
 
 
 def _dump_register_file(reg_access: RegAccess, base_addr: int, reg_list: List[Tuple[int, str]]) -> OrderedDict:
@@ -29,7 +29,8 @@ def _dump_register_file(reg_access: RegAccess, base_addr: int, reg_list: List[Tu
 
 
 def dump_awg_ctrl_master(awg_reg_access: AwgRegAccess) -> OrderedDict:
-    # TODO: Do I need to set CTRL_TARGET_SEL to 0xf before reading?
+    # Do I need to set CTRL_TARGET_SEL to 0xf before reading?
+    # --> No. this tools should not modify the contents of any registers.
     return _dump_register_file(
         cast(RegAccess, awg_reg_access),
         AwgMasterCtrlRegs.ADDR,
