@@ -30,15 +30,43 @@ CAP_PARAM_NUM_COMP_WINDOW_IMAG_COEFS = 2048
 CAP_PARAM_NUM_DECISION_FUNC_PARAMS = 6
 
 
-def _convert_to_reg_list(reg_map: Any, cond: Optional[Set[str]] = None) -> List[Tuple[int, str]]:
-    return sorted([(v, k) for k, v in reg_map.Offset.__dict__.items()
-                   if k[0] != '_' and isinstance(v, int) and (cond is None or k in cond)])
+def _convert_to_reg_list(reg_map: Any, require_bit_list: bool, cond: Optional[Set[str]] = None) \
+        -> Tuple[List[Tuple[int, str]], Dict[str, List[Tuple[int, int, str]]]]:
+    reg_list = sorted([(cast(int, offset), cast(str, name)) for name, offset in reg_map.Offset.__dict__.items()
+                       if name[0] != '_' and isinstance(offset, int) and (cond is None or name in cond)])
+
+    # MEMO: for implementing the longest match between a name of the register and the prefix of a name of bits
+    reg_names = sorted([name for _, name in reg_list], key=lambda name: -len(name))
+    bit_lists = {}
+    for name in reg_names:
+        bit_lists[name] = []
+    if require_bit_list and hasattr(reg_map, "Bit"):
+        bit_list = sorted([(cast(int, pos), cast(str, name)) for name, pos in reg_map.Bit.__dict__.items()
+                           if name[0] != '_' and isinstance(pos, int)], reverse=True)
+        for pos, bit_name in bit_list:
+            for reg_name in reg_names:
+                if bit_name.startswith(reg_name+'_'):
+                    bit_lists[reg_name].append((pos, 1, bit_name[len(reg_name)+1:]))
+                    break
+
+    return reg_list, bit_lists
 
 
-def _dump_register_file(reg_access: RegAccess, base_addr: int, reg_list: List[Tuple[int, str]]) -> OrderedDict:
+def _dump_register_file(reg_access: RegAccess,
+                        base_addr: int,
+                        reg_list: List[Tuple[int, str]],
+                        bit_lists: Optional[Dict[str, List[Tuple[int, int, str]]]]) -> OrderedDict:
+    if bit_lists is None:
+        bit_lists = {}
     reg_value = OrderedDict()
-    for offset, name in reg_list:
-        reg_value[name] = reg_access.read(base_addr, offset)
+    for offset, reg_name in reg_list:
+        v = reg_access.read(base_addr, offset)
+        if reg_name in bit_lists:
+            reg_value[reg_name] = OrderedDict()
+            for pos, bit_len, bit_name in bit_lists[reg_name]:
+                reg_value[reg_name][bit_name] = ("bit", (v >> pos) & ((1 << bit_len) - 1))
+        else:
+            reg_value[reg_name] = v
     return reg_value
 
 
@@ -51,8 +79,8 @@ def _dump_cap_parameters(cap_reg_access: CaptureRegAccess, cap_id: CaptureUnit,
     else:
         raise RuntimeError(f"unsupported element size: {elem_size:d}")
 
-    # XXX: intentionally avoid to use multi_read() before clarifying the conditions that it works well.
-    # TODO: confirm the condition and revise the code accordingly.
+    # XXX: intentionally avoided to use multi_read() before clarifying the conditions that it works well.
+    # TODO: confirm the conditions to revise the following code accordingly.
     vec = np.zeros(end - start, dtype=dtype)
     for i in range(start, end):
         # be aware that read() return signed int.
@@ -66,36 +94,50 @@ def _dump_cap_parameters(cap_reg_access: CaptureRegAccess, cap_id: CaptureUnit,
 def dump_awg_ctrl_master(awg_reg_access: AwgRegAccess) -> OrderedDict:
     # Do I need to set CTRL_TARGET_SEL to 0xf before reading?
     # --> No. this tools should not modify the contents of any registers.
+    reg_list, _ = _convert_to_reg_list(AwgMasterCtrlRegs, False)
     return _dump_register_file(
         cast(RegAccess, awg_reg_access),
         AwgMasterCtrlRegs.ADDR,
-        _convert_to_reg_list(AwgMasterCtrlRegs)
+        reg_list,
+        None
     )
 
 
 def dump_awg_ctrl(awg_reg_access: AwgRegAccess, awg_id: AWG) -> OrderedDict:
+    reg_list, bit_lists = _convert_to_reg_list(AwgCtrlRegs, True)
     return _dump_register_file(
         cast(RegAccess, awg_reg_access),
         AwgCtrlRegs.Addr.awg(awg_id),
-        _convert_to_reg_list(AwgCtrlRegs)
+        reg_list,
+        bit_lists
     )
 
 
 def dump_wave_param_whole(awg_reg_access: AwgRegAccess, awg_id: AWG) -> OrderedDict:
+    reg_list, _ = _convert_to_reg_list(
+        WaveParamRegs,
+        False,
+        {"NUM_WAIT_WORDS", "NUM_REPEATS", "NUM_CHUNKS", "WAVE_STARTABLE_BLOCK_INTERVAL"})
+
     return _dump_register_file(
         cast(RegAccess, awg_reg_access),
         WaveParamRegs.Addr.awg(awg_id),
-        _convert_to_reg_list(WaveParamRegs,
-                             {"NUM_WAIT_WORDS", "NUM_REPEATS", "NUM_CHUNKS", "WAVE_STARTABLE_BLOCK_INTERVAL"})
+        reg_list,
+        None
     )
 
 
 def dump_wave_param_chunk(awg_reg_access: AwgRegAccess, awg_id: AWG, chunk_id: int) -> OrderedDict:
+    reg_list, _ = _convert_to_reg_list(
+        WaveParamRegs,
+        False,
+        {"CHUNK_START_ADDR", "NUM_WAVE_PART_WORDS", "NUM_BLANK_WORDS", "NUM_CHUNK_REPEATS"})
+
     return _dump_register_file(
         cast(RegAccess, awg_reg_access),
         WaveParamRegs.Addr.awg(awg_id) + WaveParamRegs.Offset.chunk(chunk_id),
-        _convert_to_reg_list(WaveParamRegs,
-                             {"CHUNK_START_ADDR", "NUM_WAVE_PART_WORDS", "NUM_BLANK_WORDS", "NUM_CHUNK_REPEATS"})
+        reg_list,
+        None
     )
 
 
@@ -119,26 +161,33 @@ def dump_awg_all(awg_reg_access: AwgRegAccess,
 
 
 def dump_cap_ctrl_master(cap_reg_access: CaptureRegAccess):
+    reg_list, _ = _convert_to_reg_list(CaptureMasterCtrlRegs, False)
+
     return _dump_register_file(
         cast(RegAccess, cap_reg_access),
         CaptureMasterCtrlRegs.ADDR,
-        _convert_to_reg_list(CaptureMasterCtrlRegs)
+        reg_list,
+        None
     )
 
 
 def dump_cap_ctrl(cap_reg_access: CaptureRegAccess, cap_id: CaptureUnit) -> OrderedDict:
+    reg_list, bit_lists = _convert_to_reg_list(CaptureCtrlRegs, True)
     return _dump_register_file(
         cast(RegAccess, cap_reg_access),
         CaptureCtrlRegs.Addr.capture(cap_id),
-        _convert_to_reg_list(CaptureCtrlRegs)
+        reg_list,
+        bit_lists
     )
 
 
 def dump_cap_param_flag(cap_reg_access: CaptureRegAccess, cap_id: CaptureUnit) -> OrderedDict:
+    reg_list, _ = _convert_to_reg_list(CaptureParamRegs, False)
     return _dump_register_file(
         cast(RegAccess, cap_reg_access),
         CaptureParamRegs.Addr.capture(cap_id),
-        _convert_to_reg_list(CaptureParamRegs)
+        reg_list,
+        None
     )
 
 
@@ -200,14 +249,26 @@ def dump_cap_all(cap_reg_access: CaptureRegAccess,
     return ctrl, param, vector
 
 
-def show_registers(reg_values: OrderedDict, indent_unit: int = 4, indent_level: int = 0) -> None:
+def show_registers(reg_values: OrderedDict, aliases: Optional[Dict] = None,
+                   indent_unit: int = 4, indent_level: int = 0) -> None:
     indent = indent_unit * indent_level
+    if aliases is None:
+        aliases = {}
+
     for k, v in reg_values.items():
+        if k in aliases:
+            k = aliases[k]
         if isinstance(v, int):
             print(f"{' ' * indent:s}{k:<20s}:\t{v:08x}")
+        elif isinstance(v, tuple):
+            vt, vv = v
+            if vt == "bit":
+                print(f"{' ' * indent:s}{k:<20s}:\t{vv:d}")
+            else:
+                raise NotImplementedError
         elif isinstance(v, OrderedDict):
             print(f"{' ' * indent:s}{k + ':':<20s}")
-            show_registers(v, indent_unit, indent_level + 1)
+            show_registers(v, aliases, indent_unit, indent_level + 1)
 
 
 def show_vectors(vector_dict: OrderedDict, indent: int = 4) -> None:
@@ -293,22 +354,24 @@ if __name__ == "__main__":
         enable_cap_ctrl = True
         enable_cap_param = True
 
-    awg_reg_access_i = AwgRegAccess(args.ipaddr, AWG_REG_PORT)
-    cap_reg_access_i = CaptureRegAccess(args.ipaddr, CAPTURE_REG_PORT)
+    awg_reg_access_ = AwgRegAccess(args.ipaddr, AWG_REG_PORT)
+    cap_reg_access_ = CaptureRegAccess(args.ipaddr, CAPTURE_REG_PORT)
 
     if len(target_awgs) > 0 and (enable_awg_ctrl or enable_awg_wave):
-        awg_ctrl_reg, awg_wave_reg = dump_awg_all(awg_reg_access_i, target_awgs)
+        awg_ctrl_reg, awg_wave_reg = dump_awg_all(awg_reg_access_, target_awgs)
         if enable_awg_ctrl:
             print("---------------- AWG CTRL ----------------")
             show_registers(awg_ctrl_reg)
             print()
         if enable_awg_wave:
             print("---------------- AWG WAVE ----------------")
-            show_registers(awg_wave_reg)
+            # MEMO: some names are too long for showing...
+            aliases_ = {'WAVE_STARTABLE_BLOCK_INTERVAL': 'BLOCK_INTERVAL'}
+            show_registers(awg_wave_reg, aliases_)
             print()
 
     if len(target_caps) > 0 and (enable_cap_ctrl or enable_cap_param or enable_cap_param_vector):
-        cap_ctrl_reg, cap_param_reg, cap_param_vector = dump_cap_all(cap_reg_access_i,
+        cap_ctrl_reg, cap_param_reg, cap_param_vector = dump_cap_all(cap_reg_access_,
                                                                      target_caps,
                                                                      enable_cap_param_vector)
         if enable_cap_ctrl:
