@@ -59,7 +59,7 @@ class CaptureTestDsp(object):
 
     def __gen_wave_seq(self, num_samples):
         wave_seq = WaveSequence(
-            num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
+            num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
             num_repeats = 1)
 
         num_chunk_samples = 1024 * 1024

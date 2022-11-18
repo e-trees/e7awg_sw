@@ -41,7 +41,7 @@ class CaptureTest(object):
 
     def __gen_wave_seq(self):
         wave_seq = WaveSequence(
-            num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
+            num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
             num_repeats = random.randint(1, 8))
             
         num_chunks = random.randint(1, 16)

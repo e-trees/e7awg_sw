@@ -79,7 +79,6 @@ class FeedbackValTest(object):
 
     def __setup_modules(self):
         self.__awg_ctrl.initialize(*self.__awgs)
-        self.__awg_ctrl.reset_awgs(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
         # キャプチャモジュールをスタートする AWG の設定
@@ -144,7 +143,7 @@ class FeedbackValTest(object):
         feedback_val_addr,
         elem_offset,
         feedback_channel_id):
-        time = int(2e7)
+        time = 3000 # 24 [us]
         cmds = [
             CaptureAddrSetCmd(1, self.__capture_units, 0),
             FeedbackCalcOnClassificationCmd(2, self.__capture_units, feedback_val_addr, elem_offset),
@@ -153,7 +152,8 @@ class FeedbackValTest(object):
             CaptureParamSetCmd(4, self.__capture_units, cap_param_keys, feedback_channel_id),            
             # AWG スタートとキャプチャ停止待ち
             AwgStartCmd(5, self.__awgs, time, wait = True),
-            CaptureEndFenceCmd(6, self.__capture_units, int(time + 1e7), wait = True, stop_seq = True)
+            CaptureEndFenceCmd(
+                6, self.__capture_units, int(time + 1e3), wait = True, stop_seq = True)
         ]
         return cmds
 
@@ -279,7 +279,7 @@ def gen_wave_sequences():
     wave_sequences = []
     for i in range(4):
         wave_seq = WaveSequence(
-            num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
+            num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
             num_repeats = 1)
         wave_seq.add_chunk(
             iq_samples = gen_random_iq_words(640),

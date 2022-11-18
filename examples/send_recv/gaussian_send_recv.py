@@ -26,7 +26,7 @@ def set_trigger_awg(cap_ctrl, awg, capture_modules):
 
 def gen_wave_seq():
     wave_seq = WaveSequence(
-        num_wait_words = 16,
+        num_wait_words = 32,
         num_repeats = 1)
     
     num_chunks = 1

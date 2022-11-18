@@ -42,7 +42,7 @@ def gen_cos_wave(freq, num_cycles, amp):
 
 def gen_wave_seq():
     wave_seq = WaveSequence(
-        num_wait_words = 16,
+        num_wait_words = 32,
         num_repeats = 1)
 
     num_chunks = 1

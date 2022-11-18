@@ -1,6 +1,3 @@
-"""
-AWG から 50MHz の余弦波を出力して, 信号処理モジュールを全て無効にしてキャプチャします.
-"""
 import sys
 import os
 import pathlib
@@ -42,7 +39,7 @@ def gen_cos_wave(freq, num_cycles, phase, amp):
     return iq_samples
 
 
-def gen_wave_seq(freq, num_cycles, num_wait_words = 16, phase = 0):
+def gen_wave_seq(freq, num_cycles, num_wait_words = 32, phase = 0):
     """
     freq : MHz
     """
@@ -98,7 +95,7 @@ def push_commands(seq_ctrl, awgs, capture_units, key_table, addr_offset):
     # キャプチャユニット 0 のキャプチャデータから算出されるフィードバック値を参照してパラメータを設定する
     fb_channel = FeedbackChannel.of(capture_units[0])
     # パラメータ設定にかかるサイクル数 (1 サイクル = 8[ns])
-    time = int(1e7)
+    time = 3875  # 31[us]
     cmds = [
         # 1 回目の波形出力とキャプチャの設定.
         # フィードバック値によらず, key_table[0] に登録されたパラメータをロードする
@@ -119,9 +116,9 @@ def push_commands(seq_ctrl, awgs, capture_units, key_table, addr_offset):
         CaptureAddrSetCmd(8, capture_units, addr_offset),
      
         # 2 回目の波形出力 & キャプチャ完了待ち
-        AwgStartCmd(9, awgs, 2 * time, wait = False),
+        AwgStartCmd(9, awgs, 2 * time + 2000, wait = False),
         CaptureEndFenceCmd(
-            10, capture_units, 2 * time + 2000, wait = True, stop_seq = True)
+            10, capture_units, 2 * time + 4000, wait = True, stop_seq = True)
     ]
     seq_ctrl.push_commands(cmds)
 
@@ -265,11 +262,11 @@ if __name__ == "__main__":
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--seq-ipaddr', default='10.2.0.255')
     parser.add_argument('--labrad', action='store_true')
-    parser.add_argument('--num-wait-words', default=16, type=int)
+    parser.add_argument('--num-wait-words', default=32, type=int)
     parser.add_argument('--save-dir', default=SAVE_DIR)
     args = parser.parse_args()
 
-    awgs = AWG.all()
+    awgs =  AWG.all()
     if args.awgs is not None:
         awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
 

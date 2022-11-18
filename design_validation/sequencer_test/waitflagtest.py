@@ -79,7 +79,6 @@ class WaitFlagTest(object):
 
     def __setup_modules(self):
         self.__awg_ctrl.initialize(*self.__awgs)
-        self.__awg_ctrl.reset_awgs(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
         # キャプチャモジュールをスタートする AWG の設定
@@ -258,7 +257,7 @@ def gen_capture_param(num_sum_section_words):
 
 def gen_wave_sequence(num_awg_words):
     wave_seq = WaveSequence(
-        num_wait_words = 16,
+        num_wait_words = 32,
         num_repeats = 1)
     wave_seq.add_chunk(
         iq_samples = [(1,2)] * num_awg_words * WaveSequence.NUM_SAMPLES_IN_AWG_WORD,
@@ -268,7 +267,7 @@ def gen_wave_sequence(num_awg_words):
 
 
 def gen_cmds_0():
-    time = int(2e7)
+    time = 550 # 4.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(0, [AWG.U3, AWG.U15], key_table = 0),
@@ -280,7 +279,7 @@ def gen_cmds_0():
 
 
 def gen_cmds_1():
-    time = int(2e7)
+    time = 550 # 4.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(3, [AWG.U3, AWG.U15], key_table = 0),
@@ -292,7 +291,7 @@ def gen_cmds_1():
 
 
 def gen_cmds_2():
-    time = int(2e7)
+    time = 4500 # 36 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(6, [AWG.U2, AWG.U15], key_table = 0),
@@ -307,7 +306,7 @@ def gen_cmds_2():
 
 
 def gen_cmds_3():
-    time = int(2e7)
+    time = 4500 # 36 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(12, [AWG.U2, AWG.U15], key_table = 0),
@@ -322,7 +321,7 @@ def gen_cmds_3():
 
 
 def gen_cmds_4():
-    time = int(2e7)
+    time = 550 # 4.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(18, [AWG.U3, AWG.U15], key_table = 0),
@@ -334,7 +333,7 @@ def gen_cmds_4():
 
 
 def gen_cmds_5():
-    time = int(2e7)
+    time = 550 # 4.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(21, [AWG.U3],  key_table = 0),
@@ -348,7 +347,7 @@ def gen_cmds_5():
 
 
 def gen_cmds_6():
-    time = int(2e7)
+    time = 550 # 4.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(26, [AWG.U3],  key_table = 0),

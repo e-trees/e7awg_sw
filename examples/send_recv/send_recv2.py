@@ -35,7 +35,7 @@ def gen_cos_wave(freq, num_cycles, amp):
     return list(zip(i_data, q_data))
 
 
-def gen_wave_seq(num_wait_words=16):
+def gen_wave_seq(num_wait_words=32):
     wave_seq = WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1)
@@ -55,7 +55,7 @@ def gen_wave_seq(num_wait_words=16):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs, num_wait_words=16):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words=32):
     awg_to_wave_sequence = {}
     wave_seq = gen_wave_seq(num_wait_words)
     for awg_id in awgs:
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     parser.add_argument('--capture-module')
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
-    parser.add_argument('--num-wait-words', default=16, type=int)
+    parser.add_argument('--num-wait-words', default=32, type=int)
     parser.add_argument('--use-sequencer', action='store_true')
     parser.add_argument('--timeout', default=5, type=int)
     parser.add_argument('--save-dir', default=SAVE_DIR)

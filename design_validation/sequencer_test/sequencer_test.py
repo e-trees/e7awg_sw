@@ -24,7 +24,7 @@ def gen_random_iq_samples(num_words):
 
 def gen_wave_sequence_0():
     wave_seq = WaveSequence(
-        num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
+        num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
         num_repeats = 1)
     for i in range(16):
         wave_seq.add_chunk(
@@ -37,7 +37,7 @@ def gen_wave_sequence_0():
 
 def gen_wave_sequence_1():
     wave_seq = WaveSequence(
-        num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
+        num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
         num_repeats = 2)
     wave_seq.add_chunk(
         iq_samples = gen_random_iq_samples(128),

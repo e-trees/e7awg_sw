@@ -15,7 +15,7 @@ IP_ADDR = '10.0.0.16'
 
 def gen_wave_seq(freq, amp=32760):
     wave_seq = WaveSequence(
-        num_wait_words = 16,
+        num_wait_words = 32,
         num_repeats = 0xFFFFFFFF)
     
     num_chunks = 1

@@ -71,7 +71,6 @@ class ParamLoadTest(object):
 
     def __setup_modules(self):
         self.__awg_ctrl.initialize(*self.__awgs)
-        self.__awg_ctrl.reset_awgs(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
         # キャプチャモジュールをスタートする AWG の設定
@@ -135,7 +134,8 @@ class ParamLoadTest(object):
         cap_param_keys,
         capture_addr_offsets,
         *cap_param_elems):
-        time = int(2e7)
+        param_set_time = 4500 # 36 [us]
+        capture_time = int(1e6) # 8 [ms]
         cmds = [
             # 波形シーケンスとキャプチャパラメータの設定            
             WaveSequenceSetCmd(1, self.__awgs, wave_seq_keys[0]),
@@ -146,16 +146,17 @@ class ParamLoadTest(object):
             CaptureParamSetCmd(4, self.__capture_units, cap_param_keys[1], param_elems = cap_param_elems),
             
             # AWG スタートとキャプチャ停止待ち
-            AwgStartCmd(5, self.__awgs, time, wait = True),
-            CaptureEndFenceCmd(6, self.__capture_units, int(time + 1e7), wait = True),
+            AwgStartCmd(5, self.__awgs, param_set_time, wait = True),
+            CaptureEndFenceCmd(6, self.__capture_units, param_set_time + capture_time, wait = True),
             
             # 波形シーケンスとキャプチャアドレスの更新
             CaptureAddrSetCmd(7, self.__capture_units, capture_addr_offsets[1]),
             WaveSequenceSetCmd(8, self.__awgs, wave_seq_keys[1]),
 
             # AWG スタートとキャプチャ停止待ち
-            AwgStartCmd(9, self.__awgs, 2 * time, wait = True),
-            CaptureEndFenceCmd(10, self.__capture_units, int(2 * time + 1e7), wait = True, stop_seq = True)
+            AwgStartCmd(9, self.__awgs, 2 * param_set_time + capture_time, wait = True),
+            CaptureEndFenceCmd(
+                10, self.__capture_units, 2 * (param_set_time + capture_time), wait = True, stop_seq = True)
         ]
         return cmds
 
