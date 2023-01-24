@@ -16,14 +16,14 @@ class UplDispatcher:
 
     __BUF_SIZE = 16384
 
-    def __init__(self, hbm, awg_ctrl, cap_ctrl):
+    def __init__(self, ip_addr, hbm, awg_ctrl, cap_ctrl):
         self.__hbm = hbm
         self.__awg_ctrl = awg_ctrl
         self.__cap_ctrl = cap_ctrl
         self.__hbm_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.__hbm_sock.bind(('', WAVE_RAM_PORT))
+        self.__hbm_sock.bind((ip_addr, WAVE_RAM_PORT))
         self.__awg_cap_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.__awg_cap_sock.bind(('', AWG_REG_PORT))
+        self.__awg_cap_sock.bind((ip_addr, AWG_REG_PORT))
         self.__executor = ThreadPoolExecutor(max_workers = 2)
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 

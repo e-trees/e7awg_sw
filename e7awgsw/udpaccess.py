@@ -66,6 +66,11 @@ class RegAccess(object):
 
 
     @property
+    def my_ip_addr(self):
+        return self.__udp_rw.my_ip_addr
+
+
+    @property
     def my_port(self):
         return self.__udp_rw.my_port
 
@@ -180,6 +185,11 @@ class SequencerCmdSender(object):
 
 
     @property
+    def my_ip_addr(self):
+        return self.__udp_rw.my_ip_addr
+
+
+    @property
     def my_port(self):
         return self.__udp_rw.my_port
 
@@ -214,14 +224,15 @@ class CmdErrReceiver(threading.Thread):
 
     BUFSIZE = 16384 # bytes
 
-    def __init__(self, *loggers):
+    def __init__(self, my_ip_addr, *loggers):
         #threading.Thread.__init__(self)
         super().__init__()
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.__sock.bind(('', 0))
+        self.__sock.bind((my_ip_addr, 0))
         self.__rlock = threading.RLock()
         self.__reports = []
         self.__loggers = loggers
+        self.__my_ip_addr = my_ip_addr
 
 
     def run(self):
@@ -241,6 +252,7 @@ class CmdErrReceiver(threading.Thread):
             except Exception as e:
                 log_error(e, *self.__loggers)
                 raise
+
 
     @classmethod
     def __gen_seq_cmd_err_from_bytes(cls, data):
@@ -285,12 +297,17 @@ class CmdErrReceiver(threading.Thread):
         if self.is_alive():
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 stop_packet = UplPacket(UplPacket.MODE_OTHERS, 0, 0)
-                sock.sendto(stop_packet.serialize(), ('127.0.0.1', self.my_port))
+                sock.sendto(stop_packet.serialize(), (self.__my_ip_addr, self.my_port))
             self.join()
 
 
     def close(self):
         self.__sock.close()
+
+
+    @property
+    def my_ip_addr(self):
+        return self.__sock.getsockname()[0]
 
 
     @property
@@ -302,15 +319,16 @@ class UdpRouter(threading.Thread):
 
     BUFSIZE = 16384 # bytes
 
-    def __init__(self, table, *loggers):
+    def __init__(self, my_ip_addr, table, *loggers):
         """受信した UPL パケットをそのモードに応じて転送する"""
         #threading.Thread.__init__(self)
         super().__init__()
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.__sock.bind(('', 0))
+        self.__sock.bind((my_ip_addr, 0))
         self.__table = copy.copy(table)
         self.__rlock = threading.RLock()
         self.__loggers = loggers
+        self.__my_ip_addr = my_ip_addr
     
 
     def run(self):
@@ -327,7 +345,7 @@ class UdpRouter(threading.Thread):
                     else:
                         continue
                 
-                self.__sock.sendto(recv_data, addr)                
+                self.__sock.sendto(recv_data, addr)
             except Exception as e:
                 log_error(e, *self.__loggers)
                 raise
@@ -337,7 +355,7 @@ class UdpRouter(threading.Thread):
         if self.is_alive():
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 stop_packet = UplPacket(UplPacket.MODE_OTHERS, 0, 0)
-                sock.sendto(stop_packet.serialize(), ('127.0.0.1', self.my_port))
+                sock.sendto(stop_packet.serialize(), (self.__my_ip_addr, self.my_port))
             self.join()
 
 
@@ -348,6 +366,11 @@ class UdpRouter(threading.Thread):
 
     def close(self):
         self.__sock.close()
+
+
+    @property
+    def my_ip_addr(self):
+        return self.__sock.getsockname()[0]
 
 
     @property
@@ -366,7 +389,7 @@ class UdpRw(object):
         self.__dest_addr = (ip_addr, port)
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__sock.settimeout(self.TIMEOUT)
-        self.__sock.bind(('', 0))
+        self.__sock.bind((get_my_ip_addr(ip_addr), 0))
         self.__min_rw_size = min_rw_size
         self.__wr_mode_id = wr_mode_id
         self.__rd_mode_id = rd_mode_id
@@ -454,6 +477,11 @@ class UdpRw(object):
 
     def close(self):
         self.__sock.close()
+
+
+    @property
+    def my_ip_addr(self):
+        return self.__sock.getsockname()[0]
 
 
     @property

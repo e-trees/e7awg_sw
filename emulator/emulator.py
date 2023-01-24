@@ -1,6 +1,7 @@
 import sys
 import os
 import pathlib
+import argparse
 from awg import Awg
 import capture
 from hbm import Hbm
@@ -12,7 +13,7 @@ lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
 from e7awgsw import CaptureUnit, CaptureModule, AWG
 
-CAPTURE_START_DELAY = 15 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)
+CAPTURE_START_DELAY = 31 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)
 
 # AWG とキャプチャモジュールのデータバスの接続関係
 awg_to_capture_module = {
@@ -35,6 +36,10 @@ def on_wave_generated(awg_id_to_wave, cap_ctrl):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ipaddr', default='0.0.0.0')
+    args = parser.parse_args()
+
     hbm = Hbm(0x200000000)
     
     cap_ctrl = CaptureController()
@@ -49,7 +54,7 @@ if __name__ == "__main__":
         awg = Awg(awg_id, hbm.read)
         awg_ctrl.add_awg(awg)
 
-    upl_dispatcher = UplDispatcher(hbm, awg_ctrl, cap_ctrl)
+    upl_dispatcher = UplDispatcher(args.ipaddr, hbm, awg_ctrl, cap_ctrl)
     upl_dispatcher.start()
 
     print('The emulator has been started.')

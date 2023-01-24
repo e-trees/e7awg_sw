@@ -321,12 +321,15 @@ class SequencerCtrl(SequencerCtrlBase):
         self.__reg_access = SequencerRegAccess(ip_addr, SEQUENCER_REG_PORT, *self._loggers)
         self.__cmd_sender = SequencerCmdSender(ip_addr, SEQUENCER_CMD_PORT, *self._loggers)
         self.__err_receiver = None
+        self.__my_ip_addr = get_my_ip_addr(self._ip_addr) # シーケンサから来るパケットを受けるときの IP アドレス
+        reg_access_addr = (self.__reg_access.my_ip_addr, self.__reg_access.my_port)
+        cmd_sender_addr = (self.__cmd_sender.my_ip_addr, self.__cmd_sender.my_port)
         routing_table = {
-            UplPacket.MODE_SEQUENCER_REG_READ_REPLY  : ('127.0.0.1', self.__reg_access.my_port),
-            UplPacket.MODE_SEQUENCER_REG_WRITE_ACK : ('127.0.0.1', self.__reg_access.my_port),
-            UplPacket.MODE_SEQUENCER_CMD_WRITE_ACK : ('127.0.0.1', self.__cmd_sender.my_port)
+            UplPacket.MODE_SEQUENCER_REG_READ_REPLY : reg_access_addr,
+            UplPacket.MODE_SEQUENCER_REG_WRITE_ACK : reg_access_addr,
+            UplPacket.MODE_SEQUENCER_CMD_WRITE_ACK : cmd_sender_addr
         }
-        self.__router = UdpRouter(routing_table, *self._loggers)
+        self.__router = UdpRouter(self.__my_ip_addr, routing_table, *self._loggers)
         self.__router.start()
 
 
@@ -367,14 +370,16 @@ class SequencerCtrl(SequencerCtrlBase):
 
     def _initialize(self):
         self.__set_dest_port(self.__router.my_port)
-        self.__set_dest_ip_addr(get_my_ip_addr(self._ip_addr))
+        self.__set_dest_ip_addr(self.__my_ip_addr)
         self.__reg_access.write(SeqRegs.ADDR, SeqRegs.Offset.CTRL, 0)
         self.__reset_sequencer()
         # 古いエラーレポートを受信しないように, エラー送信を止めてリセットしてからエラーレポート受信ポートを作成する.
         if self.__err_receiver is None:
-            self.__err_receiver = CmdErrReceiver(*self._loggers)
+            self.__err_receiver = CmdErrReceiver(self.__my_ip_addr, *self._loggers)
             self.__router.add_entry(
-                UplPacket.MODE_SEQUENCER_CMD_ERR_REPORT, '127.0.0.1', self.__err_receiver.my_port)
+                UplPacket.MODE_SEQUENCER_CMD_ERR_REPORT,
+                self.__err_receiver.my_ip_addr,
+                self.__err_receiver.my_port)
             self.__err_receiver.start()
         else:
             self.__err_receiver.pop_err_reports()
