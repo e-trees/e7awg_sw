@@ -2,6 +2,6 @@
 
 このファイルのあるディレクトリに移動して
 ```
-python emulator.py
+python emulator.py [--ipaddr=e7awg の IP アドレス]
 ```
 を実行する.

@@ -137,7 +137,7 @@ class UdpRw(object):
         self.__dest_addr = (ip_addr, port)
         self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.__sock.settimeout(self.TIMEOUT)
-        self.__sock.bind(('', 0))
+        self.__sock.bind((get_my_ip_addr(ip_addr), 0))
         self.__min_rw_size = min_rw_size
         self.__wr_mode_id = wr_mode_id
         self.__rd_mode_id = rd_mode_id
@@ -209,3 +209,12 @@ class UdpRw(object):
             raise
 
         return recv_packet.payload()[0 : size]
+
+
+def get_my_ip_addr(ip_addr):
+    """ip_addr にパケットを送る際のこのマシンの IP アドレスを取得する"""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.connect((ip_addr, 0))
+    my_ip_addr = sock.getsockname()[0]
+    sock.close()
+    return my_ip_addr

@@ -1,6 +1,7 @@
 import sys
 import os
 import pathlib
+import argparse
 from awg import Awg
 import capture
 from hbm import Hbm
@@ -35,8 +36,12 @@ def on_wave_generated(awg_id_to_wave, cap_ctrl):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ipaddr', default='0.0.0.0')
+    args = parser.parse_args()
+
     hbm = Hbm(0x200000000)
-    
+
     cap_ctrl = CaptureController()
     for cap_unit_id in CaptureUnit.all():
         cap_unit = capture.CaptureUnit(cap_unit_id, hbm.write, CAPTURE_START_DELAY)
@@ -49,7 +54,7 @@ if __name__ == "__main__":
         awg = Awg(awg_id, hbm.read)
         awg_ctrl.add_awg(awg)
 
-    upl_dispatcher = UplDispatcher(hbm, awg_ctrl, cap_ctrl)
+    upl_dispatcher = UplDispatcher(args.ipaddr, hbm, awg_ctrl, cap_ctrl)
     upl_dispatcher.start()
 
     print('The emulator has been started.')
