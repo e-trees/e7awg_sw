@@ -225,6 +225,7 @@ class UdpRw(object):
         actual_data_len):
         msg = '{}\n'.format(summary)
         msg += '  Server IP / Port : {}\n'.format(self.__sock.getsockname())
+        msg += '  Target IP / Port : {}\n'.format(self.__dest_addr)
         msg += '  Device IP / Port : {}\n'.format(devie_ip_addr)
         msg += '  recv data : {}\n'.format(recv_data)
         msg += '  expected addr : {}, expected data len : {}\n'.format(exp_addr, exp_data_len)
