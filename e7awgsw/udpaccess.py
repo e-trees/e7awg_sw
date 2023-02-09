@@ -169,8 +169,9 @@ class UdpRw(object):
             recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
             recv_packet = UplPacket.deserialize(recv_data)
             if (recv_packet.num_bytes() != len(data)) or (recv_packet.addr() != addr):
-                raise  ValueError(
-                    'upl write err : addr {:x},  Dest {}'.format(addr, self.__dest_addr))
+                err_msg = self.__gen_err_msg(
+                    'upl write err', recv_data, addr, len(data), recv_packet.addr(), recv_packet.num_bytes())
+                raise  ValueError(err_msg)
         except socket.timeout as e:
             log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
             raise
@@ -199,8 +200,9 @@ class UdpRw(object):
             recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
             recv_packet = UplPacket.deserialize(recv_data)
             if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != addr):
-                raise ValueError(
-                    'upl read err : addr {:x}  size {},   Dest {}'.format(addr, size, self.__dest_addr))
+                err_msg = self.__gen_err_msg(
+                    'upl read err', recv_data, addr, rd_size, recv_packet.addr(), recv_packet.num_bytes())
+                raise  ValueError(err_msg)
         except socket.timeout as e:
             log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
             raise
@@ -210,6 +212,20 @@ class UdpRw(object):
 
         return recv_packet.payload()[0 : size]
 
+    def __gen_err_msg(
+        self,
+        summary,
+        recv_data,
+        exp_addr,
+        exp_data_len,
+        actual_addr,
+        actual_data_len):
+        msg = '{}\n'.format(summary)
+        msg += '  Dest IP Addr : {}\n'.format(self.__dest_addr)
+        msg += '  recv data : {}\n'.format(recv_data)
+        msg += '  expected addr : {}, expected data len : {}\n'.format(exp_addr, exp_data_len)
+        msg += '  actual addr : {}, actual data len : {}\n'.format(actual_addr, actual_data_len)
+        return msg
 
 def get_my_ip_addr(ip_addr):
     """ip_addr にパケットを送る際のこのマシンの IP アドレスを取得する"""
