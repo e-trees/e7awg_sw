@@ -426,11 +426,13 @@ class UdpRw(object):
         try:
             send_packet = UplPacket(self.__wr_mode_id, addr, len(data), data)
             self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
-            recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
+            recv_data, dev_addr = self.__sock.recvfrom(self.BUFSIZE)
             recv_packet = UplPacket.deserialize(recv_data)
             if (recv_packet.num_bytes() != len(data)) or (recv_packet.addr() != addr):
-                raise  ValueError(
-                    'upl write err : addr {:x},  Dest {}'.format(addr, self.__dest_addr))
+                err_msg = self.__gen_err_msg(
+                    'upl write err', dev_addr, recv_data,
+                    addr, len(data), recv_packet.addr(), recv_packet.num_bytes())
+                raise  ValueError(err_msg)
         except socket.timeout as e:
             log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
             raise
@@ -460,11 +462,13 @@ class UdpRw(object):
         try:
             send_packet = UplPacket(self.__rd_mode_id, rd_addr, rd_size)
             self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
-            recv_data, _ = self.__sock.recvfrom(self.BUFSIZE)
+            recv_data, dev_addr = self.__sock.recvfrom(self.BUFSIZE)
             recv_packet = UplPacket.deserialize(recv_data)
             if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != rd_addr):
-                raise ValueError(
-                    'upl read err : addr {:x}  size {},   Dest {}'.format(rd_addr, size, self.__dest_addr))
+                err_msg = self.__gen_err_msg(
+                    'upl read err', dev_addr, recv_data,
+                    addr, rd_size, recv_packet.addr(), recv_packet.num_bytes())
+                raise  ValueError(err_msg)
         except socket.timeout as e:
             log_error('{},  Dest {}'.format(e, self.__dest_addr), *self.__loggers)
             raise
@@ -474,6 +478,24 @@ class UdpRw(object):
 
         return recv_packet.payload()[rd_offset : rd_offset + size]
 
+
+    def __gen_err_msg(
+        self,
+        summary,
+        devie_ip_addr,
+        recv_data,
+        exp_addr,
+        exp_data_len,
+        actual_addr,
+        actual_data_len):
+        msg = '{}\n'.format(summary)
+        msg += '  Server IP / Port : {}\n'.format(self.__sock.getsockname())
+        msg += '  Target IP / Port : {}\n'.format(self.__dest_addr)
+        msg += '  Device IP / Port : {}\n'.format(devie_ip_addr)
+        msg += '  recv data : {}\n'.format(recv_data)
+        msg += '  expected addr : {}, expected data len : {}\n'.format(exp_addr, exp_data_len)
+        msg += '  actual addr : {}, actual data len : {}\n'.format(actual_addr, actual_data_len)
+        return msg
 
     def close(self):
         self.__sock.close()
