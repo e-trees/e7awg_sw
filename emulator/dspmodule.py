@@ -73,10 +73,12 @@ def dsp(samples, capture_param, ):
         q_samples_list = integration(
             q_samples_list, capture_param.num_sum_sections, capture_param.num_integ_sections)
 
+    num_frac_bits = 30 if DspUnit.COMPLEX_WINDOW in dsp_units_enabled else 0
+
     i_samples = sum(i_samples_list, [])
     q_samples = sum(q_samples_list, [])
-    i_samples = [int_to_float(i_sample) for i_sample in i_samples]
-    q_samples = [int_to_float(q_sample) for q_sample in q_samples]
+    i_samples = [int_to_float(i_sample, num_frac_bits) for i_sample in i_samples]
+    q_samples = [int_to_float(q_sample, num_frac_bits) for q_sample in q_samples]
 
     if DspUnit.CLASSIFICATION in dsp_units_enabled:
         results = classification(
@@ -243,19 +245,19 @@ def rawbits_to_float(val):
     return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
 
 
-def int_to_float(val):
+def int_to_float(val, num_frac_bits):
     negative = False
-    val = val & 0xFFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
-    if val & 0x8000000000_0000000000_0000000000:
+    val = val & 0x1_FFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
+    if val & 0x1_0000000000_0000000000_0000000000:
         negative = True
         val = -val
 
     dval0 = np.float32(val & 0xFFFFFFFF_FFFFFFFF)
-    dval1 = np.float32((val >> 64) & 0xFFFF_FFFFFFFFFF)
+    dval1 = np.float32((val >> 64) & 0x1_FFFF_FFFFFFFFFF)
     raw_val0 = float_to_raw_bits(dval0)
     raw_val1 = float_to_raw_bits(dval1)
-    exp0 = ((raw_val0 >> 23) - 30) & 0xFF if dval0 != 0.0 else 0
-    exp1 = ((raw_val1 >> 23) + 34) & 0xFF if dval1 != 0.0 else 0
+    exp0 = ((raw_val0 >> 23) +  0 - num_frac_bits) & 0xFF if dval0 != 0.0 else 0
+    exp1 = ((raw_val1 >> 23) + 64 - num_frac_bits) & 0xFF if dval1 != 0.0 else 0
     raw_val0 = (raw_val0 & 0x80000000) | (exp0 << 23) | (raw_val0 & 0x7FFFFF)
     raw_val1 = (raw_val1 & 0x80000000) | (exp1 << 23) | (raw_val1 & 0x7FFFFF)
     raw_val0 &= 0xFFFFFFFF
