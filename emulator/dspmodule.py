@@ -73,7 +73,8 @@ def dsp(samples, capture_param, ):
         q_samples_list = integration(
             q_samples_list, capture_param.num_sum_sections, capture_param.num_integ_sections)
 
-    num_frac_bits = 30 if DspUnit.COMPLEX_WINDOW in dsp_units_enabled else 0
+    # complex_windowはCOMPLEX_WINDOWによらず固定小数点数の小数点数位置を30bitずらす
+    num_frac_bits = 30
 
     i_samples = sum(i_samples_list, [])
     q_samples = sum(q_samples_list, [])
