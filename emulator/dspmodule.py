@@ -246,7 +246,7 @@ def rawbits_to_float(val):
     return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
 
 
-def int_to_float(val, num_frac_bits):
+def int_to_float(val, num_frac_bits = 30):
     negative = False
     val = val & 0x1_FFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
     if val & 0x1_0000000000_0000000000_0000000000:

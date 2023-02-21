@@ -418,7 +418,7 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
             ip_addr = '127.0.0.1'
-        filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
+        filepath = '/tmp/e7awg/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
         self.__flock = ReentrantFileLock(filepath)
 
 
