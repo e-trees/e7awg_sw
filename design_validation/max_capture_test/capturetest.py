@@ -15,15 +15,22 @@ from emulator.dspmodule import classification, fixed_to_float
 
 class CaptureTest(object):
 
-    def __init__(self, res_dir, ip_addr, use_labrad, server_ip_addr):
+    # テストデザインにおけるキャプチャモジュールと AWG の接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
+
+    def __init__(self, res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
-        # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
-        self.__awg = AWG.U2
-        self.__capture_module = CaptureModule.U0
-        self.__capture_units = [CaptureUnit.U3]
+        self.__capture_units = [cap_unit_id]
+        self.__capture_module = CaptureUnit.get_module(cap_unit_id)
+        self.__awg = self.__CAP_MOD_TO_AWG[self.__capture_module]
         os.makedirs(self.__res_dir, exist_ok = True)
     
     def __save_wave_samples(self, expected, capture_unit_to_capture_data):

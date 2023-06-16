@@ -31,7 +31,9 @@ class CaptureController(object):
             CaptureMasterCtrlRegs.Offset.BUSY_STATUS : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.DONE_STATUS : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.OVERFLOW_ERR : RoRegister(self.__NUM_REG_BITS),
-            CaptureMasterCtrlRegs.Offset.WRITE_ERR : RoRegister(self.__NUM_REG_BITS)
+            CaptureMasterCtrlRegs.Offset.WRITE_ERR : RoRegister(self.__NUM_REG_BITS),
+            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2 : RwRegister(self.__NUM_REG_BITS, 0),
+            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3 : RwRegister(self.__NUM_REG_BITS, 0)
         }
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
@@ -106,11 +108,17 @@ class CaptureController(object):
         """AWG からのスタート信号によりスタートに対象となるキャプチャモジュールを取得する"""
         trig_awg_sel_0_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0]
         trig_awg_sel_1_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1]
+        trig_awg_sel_2_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2]
+        trig_awg_sel_3_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3]
         cap_mod_id_list = []        
         if (trig_awg_sel_0_reg.get() - 1) in awg_id_list:
             cap_mod_id_list.append(CaptureModule.U0)
         if (trig_awg_sel_1_reg.get() - 1) in awg_id_list:
             cap_mod_id_list.append(CaptureModule.U1)
+        if (trig_awg_sel_2_reg.get() - 1) in awg_id_list:
+            cap_mod_id_list.append(CaptureModule.U2)
+        if (trig_awg_sel_3_reg.get() - 1) in awg_id_list:
+            cap_mod_id_list.append(CaptureModule.U3)
         return cap_mod_id_list
 
 
@@ -220,7 +228,7 @@ class CaptureController(object):
 
     def __ctrl_done_clr(self, cap_unit, is_ctrl_target, old_val, new_val):
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
-            cap_unit.setToIdle()
+            cap_unit.set_to_idle()
 
 
     def __gen_version_reg(self):

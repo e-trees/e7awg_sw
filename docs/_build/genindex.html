@@ -141,7 +141,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -180,7 +179,6 @@
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -261,8 +259,6 @@
 </li>
         <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl.__init__">(e7awgsw.labrad.remotesequencerctrl.RemoteSequencerCtrl のメソッド)</a>
 </li>
-        <li><a href="e7awgsw.html#e7awgsw.lock.ReentrantFileLock.__init__">(e7awgsw.lock.ReentrantFileLock のメソッド)</a>
-</li>
         <li><a href="e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmd.__init__">(e7awgsw.sequencercmd.AwgStartCmd のメソッド)</a>
 </li>
         <li><a href="e7awgsw.html#e7awgsw.sequencercmd.AwgStartCmdErr.__init__">(e7awgsw.sequencercmd.AwgStartCmdErr のメソッド)</a>
@@ -312,8 +308,6 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="e7awgsw.html#e7awgsw.lock.ReentrantFileLock.acquire">acquire() (e7awgsw.lock.ReentrantFileLock のメソッド)</a>
-</li>
       <li><a href="e7awgsw.html#e7awgsw.wavesequence.WaveSequence.add_chunk">add_chunk() (e7awgsw.wavesequence.WaveSequence のメソッド)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.add_sum_section">add_sum_section() (e7awgsw.captureparam.CaptureParam のメソッド)</a>
@@ -582,14 +576,12 @@
         <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.disable_start_trigger">(e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
       </ul></li>
-      <li><a href="e7awgsw.html#e7awgsw.lock.ReentrantFileLock.discard">discard() (e7awgsw.lock.ReentrantFileLock のメソッド)</a>
-</li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_awgctrl">discard_awgctrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
+</li>
+      <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl">discard_capturectrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl">discard_capturectrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
-</li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_sequencerctrl">discard_sequencerctrl() (e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.RemoteAwgCtrl.disconnect">disconnect() (e7awgsw.labrad.RemoteAwgCtrl のメソッド)</a>
@@ -692,6 +684,8 @@
         <li><a href="e7awgsw.labrad.html#module-e7awgsw.labrad.remoteawgctrl">モジュール</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     e7awgsw.labrad.remotecapturectrl
 
@@ -699,20 +693,11 @@
         <li><a href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">モジュール</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     e7awgsw.labrad.remotesequencerctrl
 
       <ul>
         <li><a href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">モジュール</a>
-</li>
-      </ul></li>
-      <li>
-    e7awgsw.lock
-
-      <ul>
-        <li><a href="e7awgsw.html#module-e7awgsw.lock">モジュール</a>
 </li>
       </ul></li>
       <li>
@@ -809,14 +794,14 @@
         <li><a href="e7awgsw.html#e7awgsw.awgwave.SquareWave.gen_samples">(e7awgsw.awgwave.SquareWave のメソッド)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data">get_capture_data() (e7awgsw.capturectrl.CaptureCtrlBase のメソッド)</a>
 
       <ul>
         <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data">(e7awgsw.labrad.awgcapture_server.AwgCaptureServer のメソッド)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results">get_classification_results() (e7awgsw.capturectrl.CaptureCtrlBase のメソッド)</a>
 
       <ul>
@@ -824,6 +809,8 @@
 </li>
       </ul></li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.get_decision_func_params">get_decision_func_params() (e7awgsw.captureparam.CaptureParam のメソッド)</a>
+</li>
+      <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.get_module">get_module() (e7awgsw.hwdefs.CaptureUnit のクラスメソッド)</a>
 </li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureModule.get_units">get_units() (e7awgsw.hwdefs.CaptureModule のクラスメソッド)</a>
 </li>
@@ -1173,8 +1160,6 @@
 </li>
       <li><a href="e7awgsw.html#e7awgsw.captureparam.CaptureParam.real_fir_q_coefs">real_fir_q_coefs (e7awgsw.captureparam.CaptureParam のプロパティ)</a>
 </li>
-      <li><a href="e7awgsw.html#e7awgsw.lock.ReentrantFileLock">ReentrantFileLock (e7awgsw.lock のクラス)</a>
-</li>
       <li><a href="e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.register_capture_params">register_capture_params() (e7awgsw.capturectrl.CaptureCtrlBase のメソッド)</a>
 
       <ul>
@@ -1189,8 +1174,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="e7awgsw.html#e7awgsw.lock.ReentrantFileLock.release">release() (e7awgsw.lock.ReentrantFileLock のメソッド)</a>
-</li>
       <li><a href="e7awgsw.labrad.html#e7awgsw.labrad.RemoteAwgCtrl">RemoteAwgCtrl (e7awgsw.labrad のクラス)</a>
 
       <ul>
@@ -1436,6 +1419,8 @@
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U2">U2 (e7awgsw.hwdefs.AWG の属性)</a>
 
       <ul>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureModule.U2">(e7awgsw.hwdefs.CaptureModule の属性)</a>
+</li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U2">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.U2">(e7awgsw.hwdefs.FeedbackChannel の属性)</a>
@@ -1446,6 +1431,8 @@
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U3">U3 (e7awgsw.hwdefs.AWG の属性)</a>
 
       <ul>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureModule.U3">(e7awgsw.hwdefs.CaptureModule の属性)</a>
+</li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U3">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
         <li><a href="e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.U3">(e7awgsw.hwdefs.FeedbackChannel の属性)</a>
@@ -1484,9 +1471,17 @@
 </li>
       </ul></li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U8">U8 (e7awgsw.hwdefs.AWG の属性)</a>
+
+      <ul>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U8">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
+      </ul></li>
       <li><a href="e7awgsw.html#e7awgsw.hwdefs.AWG.U9">U9 (e7awgsw.hwdefs.AWG の属性)</a>
+
+      <ul>
+        <li><a href="e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.U9">(e7awgsw.hwdefs.CaptureUnit の属性)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1594,8 +1589,6 @@
         <li><a href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotecapturectrl">e7awgsw.labrad.remotecapturectrl</a>
 </li>
         <li><a href="e7awgsw.labrad.html#module-e7awgsw.labrad.remotesequencerctrl">e7awgsw.labrad.remotesequencerctrl</a>
-</li>
-        <li><a href="e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock</a>
 </li>
         <li><a href="e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd</a>
 </li>

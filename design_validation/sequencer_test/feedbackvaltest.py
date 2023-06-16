@@ -26,7 +26,8 @@ class FeedbackValTest(object):
 
     __CAPTURE_ADDR = [
         0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
+        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
+        0x150000000, 0x170000000]
 
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
@@ -35,7 +36,7 @@ class FeedbackValTest(object):
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
         self.__awgs = [AWG.U2, AWG.U15]
-        self.__capture_units = CaptureUnit.all()
+        self.__capture_units = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
 
         self.__awg_ctrl = self.__create_awg_ctrl()
         self.__cap_ctrl = self.__create_cap_ctrl()

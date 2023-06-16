@@ -1,6 +1,8 @@
 import socket
 import time
 import struct
+import os
+import stat
 from abc import ABCMeta, abstractmethod
 from .hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
 from .memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
@@ -428,7 +430,8 @@ class CaptureCtrl(CaptureCtrlBase):
     # キャプチャモジュールが波形データを保存するアドレス
     __CAPTURE_ADDR = [
         0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
+        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
+        0x150000000, 0x170000000]
     # キャプチャパラメータレジストリの先頭アドレス
     __CAP_PARAM_REGISTRY_ADDR = 0x1F0000000
     # キャプチャパラメータ 1つ当たりのレジストリのサイズ (bytes)
@@ -458,7 +461,8 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__registry_access = ParamRegistryAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
             ip_addr = '127.0.0.1'
-        filepath = '/tmp/e7capture_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr))) 
+        filepath = '{}/e7capture_{}.lock'.format(
+            self.__get_lock_dir(), socket.inet_ntoa(socket.inet_aton(ip_addr)))
         self.__flock = ReentrantFileLock(filepath)
 
 
@@ -552,8 +556,7 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def __set_capture_addr(self, accessor, addr, capture_addr):
         """キャプチャアドレスの設定"""
-        accessor.write(
-            addr, CaptureParamRegs.Offset.CAPTURE_ADDR, capture_addr // 32)
+        accessor.write(addr, CaptureParamRegs.Offset.CAPTURE_ADDR, capture_addr // 32)
 
 
     def __set_comp_fir_coefs(self, accessor, addr, comp_fir_coefs):
@@ -580,7 +583,8 @@ class CaptureCtrl(CaptureCtrlBase):
 
     def __set_sum_range(self, accessor, addr, sum_start_word_no, num_words_to_sum):
         """総和区間内の総和範囲を設定する"""
-        end_start_word_no = min(sum_start_word_no + num_words_to_sum - 1, CaptureParam.MAX_SUM_SECTION_LEN)
+        end_start_word_no = min(
+            sum_start_word_no + num_words_to_sum - 1, CaptureParam.MAX_SUM_SECTION_LEN)
         accessor.write(addr, CaptureParamRegs.Offset.SUM_START_TIME, sum_start_word_no)
         accessor.write(addr, CaptureParamRegs.Offset.SUM_END_TIME, end_start_word_no)
 
@@ -598,8 +602,8 @@ class CaptureCtrl(CaptureCtrlBase):
             self.__reg_access.write(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
         self.reset_capture_units(*capture_unit_id_list)
-        for cap_unit_id in capture_unit_id_list:
-            self.set_capture_params(cap_unit_id, CaptureParam())
+        for capture_unit_id in capture_unit_id_list:
+            self.set_capture_params(capture_unit_id, CaptureParam())
 
 
     def _get_capture_data(self, capture_unit_id, num_samples, addr_offset):
@@ -693,6 +697,10 @@ class CaptureCtrl(CaptureCtrlBase):
                 offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
             elif capture_module_id == CaptureModule.U1:
                 offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
+            elif capture_module_id == CaptureModule.U2:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2
+            elif capture_module_id == CaptureModule.U3:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3
             
             awg_id = 0 if (awg_id is None) else (awg_id + 1)
             self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
@@ -831,3 +839,29 @@ class CaptureCtrl(CaptureCtrlBase):
         ver_day = 0xFF & (data >> 4)
         ver_id = 0xF & data
         return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)
+
+
+    def __get_lock_dir(self):
+        """
+        ロックファイルを置くディレクトリを取得する.
+        このディレクトリは環境変数 (E7AWG_HW_LOCKDIR) で指定され, アクセス権限は 777 でなければならない.
+        環境変数がない場合は /usr/local/etc/e7awg_hw/lock となる.
+        """
+        dirpath = os.getenv('E7AWG_HW_LOCKDIR', '/usr/local/etc/e7awg_hw/lock')
+        if not os.path.isdir(dirpath):
+            err = FileNotFoundError(
+                'Cannot find the directory for lock files.\n'
+                "Create a directory '/usr/local/etc/e7awg_hw/lock' "
+                "or set the E7AWG_HW_LOCKDIR environment variable to the path of another directory"
+                ', and then set its permission to 777.')
+            log_error(err, *self._loggers)
+            raise err
+
+        permission_flags = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO  
+        if (os.stat(dirpath).st_mode & permission_flags) != permission_flags:
+            err = PermissionError(
+                'Set the permission of the directory for lock files to 777.  ({})'.format(dirpath))
+            log_error(err, *self._loggers)
+            raise err
+        
+        return os.path.abspath(dirpath)

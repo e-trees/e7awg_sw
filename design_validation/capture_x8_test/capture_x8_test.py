@@ -31,40 +31,24 @@ def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, res_ro
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num-tests')
-    parser.add_argument('--ipaddr')
+    parser.add_argument('--num-tests', default=5, type=int)
+    parser.add_argument('--ipaddr', default='10.1.0.255')
     parser.add_argument('--capture-module')
-    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
-    parser.add_argument('--result-dir')
+    parser.add_argument('--result-dir', default='result')
     args = parser.parse_args()
-
-    num_tests = 10
-    if args.num_tests is not None:
-        num_tests = int(args.num_tests)
-
-    ip_addr = '10.1.0.255'
-    if args.ipaddr is not None:
-        ip_addr = args.ipaddr
 
     capture_modules = CaptureModule.all()
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 
-    server_ip_addr = 'localhost'
-    if args.server_ipaddr is not None:
-        server_ip_addr = args.server_ipaddr
-
-    res_root_dir = 'result'
-    if args.result_dir is not None:
-        res_root_dir = args.result_dir
-
     status = main(
-        num_tests,
-        ip_addr,
+        args.num_tests,
+        args.ipaddr,
         capture_modules,
         args.labrad,
-        server_ip_addr,
-        res_root_dir)
+        args.server_ipaddr,
+        args.result_dir)
 
     sys.exit(status)

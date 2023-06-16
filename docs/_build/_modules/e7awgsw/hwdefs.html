@@ -146,7 +146,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -185,7 +184,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -215,7 +213,7 @@
 <div class="viewcode-block" id="DspUnit.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DspUnit.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;信号処理モジュールの全列挙子をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">DspUnit</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">DspUnit</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DspUnit.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DspUnit.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
@@ -233,11 +231,13 @@
     <span class="n">U5</span> <span class="o">=</span> <span class="mi">5</span>
     <span class="n">U6</span> <span class="o">=</span> <span class="mi">6</span>
     <span class="n">U7</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">U8</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">U9</span> <span class="o">=</span> <span class="mi">9</span>
 
 <div class="viewcode-block" id="CaptureUnit.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全キャプチャユニットの ID をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureUnit</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">CaptureUnit</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CaptureUnit.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -248,18 +248,38 @@
 <div class="viewcode-block" id="CaptureUnit.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
         <span class="n">units</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">units</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div></div>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">val</span> <span class="ow">in</span> <span class="n">units</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">vals</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CaptureUnit.get_module"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureUnit.get_module">[ドキュメント]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture unit ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+        <span class="n">unit_to_mod</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U0</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U1</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U2</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U3</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U4</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U5</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U6</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U7</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U8</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span>
+            <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U9</span> <span class="p">:</span> <span class="n">CaptureModule</span><span class="o">.</span><span class="n">U3</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">unit_to_mod</span><span class="p">[</span><span class="n">val</span><span class="p">]</span></div></div>
 
 
 <div class="viewcode-block" id="CaptureModule"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureModule">[ドキュメント]</a><span class="k">class</span> <span class="nc">CaptureModule</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;キャプチャモジュール (複数のキャプチャユニットをまとめて保持するモジュール) の列挙型&quot;&quot;&quot;</span>
     <span class="n">U0</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">U1</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">U2</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">U3</span> <span class="o">=</span> <span class="mi">3</span>
 
 <div class="viewcode-block" id="CaptureModule.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureModule.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全キャプチャモジュールの ID をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureModule</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">CaptureModule</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CaptureModule.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureModule.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -288,6 +308,10 @@
                 <span class="n">units</span> <span class="o">+=</span> <span class="p">[</span><span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U3</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">capmod_id</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">U1</span><span class="p">:</span>
                 <span class="n">units</span> <span class="o">+=</span> <span class="p">[</span><span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U4</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U5</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U6</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U7</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">capmod_id</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">U2</span><span class="p">:</span>
+                <span class="n">units</span> <span class="o">+=</span> <span class="p">[</span><span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U8</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">capmod_id</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">U3</span><span class="p">:</span>
+                <span class="n">units</span> <span class="o">+=</span> <span class="p">[</span><span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U9</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid capture module ID </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">capmod_id</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">units</span><span class="p">)</span></div></div>
@@ -301,7 +325,7 @@
 <div class="viewcode-block" id="DecisionFunc.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全ての四値化処理の判定式の IDをリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">DecisionFunc</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">DecisionFunc</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DecisionFunc.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -332,7 +356,7 @@
 <div class="viewcode-block" id="CaptureParamElem.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureParamElem.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;キャプチャパラメータの全要素をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureParamElem</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">CaptureParamElem</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CaptureParamElem.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureParamElem.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
@@ -362,7 +386,7 @@
 <div class="viewcode-block" id="AWG.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AWG.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全 AWG の ID をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">AWG</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">AWG</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AWG.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AWG.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -390,7 +414,7 @@
 <div class="viewcode-block" id="FeedbackChannel.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全フィードバックチャネル の ID をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">FeedbackChannel</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">FeedbackChannel</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FeedbackChannel.of"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.FeedbackChannel.of">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">of</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -413,7 +437,7 @@
 <div class="viewcode-block" id="AwgErr.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AwgErr.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全 AWG エラーの列挙子をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">AwgErr</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">AwgErr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AwgErr.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.AwgErr.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
@@ -430,7 +454,7 @@
 <div class="viewcode-block" id="CaptureErr.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureErr.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全キャプチャユニットエラーの列挙子をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">CaptureErr</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">CaptureErr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CaptureErr.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.CaptureErr.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>
@@ -447,7 +471,7 @@
 <div class="viewcode-block" id="SequencerErr.all"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.SequencerErr.all">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;全キャプチャユニットエラーの列挙子をリストとして返す&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">SequencerErr</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">SequencerErr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SequencerErr.includes"><a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.SequencerErr.includes">[ドキュメント]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">vals</span><span class="p">):</span>

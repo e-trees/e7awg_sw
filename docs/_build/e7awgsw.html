@@ -167,7 +167,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -206,7 +205,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.captureparam">e7awgsw.captureparam module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.exception">e7awgsw.exception module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwdefs">e7awgsw.hwdefs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.lock">e7awgsw.lock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencercmd">e7awgsw.sequencercmd module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.sequencerctrl">e7awgsw.sequencerctrl module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a></li>
@@ -337,7 +335,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*awg_id_list</strong> (<em>list of CaptureUnit</em>) -- 波形出力終了フラグを下げる AWG の ID</td>
+<tr class="field-odd field"><th class="field-name">パラメータ:</th><td class="field-body"><strong>*awg_id_list</strong> (<em>list of AWG</em>) -- 波形出力終了フラグを下げる AWG の ID</td>
 </tr>
 </tbody>
 </table>
@@ -2189,6 +2187,16 @@
 <code class="sig-name descname"><span class="pre">U1</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.U1" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureModule.U2">
+<code class="sig-name descname"><span class="pre">U2</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.U2" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureModule.U3">
+<code class="sig-name descname"><span class="pre">U3</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.U3" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureModule.all">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureModule.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.all" title="この定義へのパーマリンク">¶</a></dt>
@@ -2354,11 +2362,26 @@
 <code class="sig-name descname"><span class="pre">U7</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.U7" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.U8">
+<code class="sig-name descname"><span class="pre">U8</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.U8" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.U9">
+<code class="sig-name descname"><span class="pre">U9</span></code><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.U9" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.all">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureUnit.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.all" title="この定義へのパーマリンク">¶</a></dt>
 <dd><p>全キャプチャユニットの ID をリストとして返す</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.get_module">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">get_module</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureUnit.get_module"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.get_module" title="この定義へのパーマリンク">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.includes">
@@ -2554,36 +2577,6 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.SequencerErr.includes">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><code class="sig-name descname"><span class="pre">includes</span></code><span class="sig-paren">(</span><em><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#SequencerErr.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.SequencerErr.includes" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-e7awgsw.lock">
-<span id="e7awgsw-lock-module"></span><h2>e7awgsw.lock module<a class="headerlink" href="#module-e7awgsw.lock" title="このヘッドラインへのパーマリンク">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><code class="sig-prename descclassname"><span class="pre">e7awgsw.lock.</span></code><code class="sig-name descname"><span class="pre">ReentrantFileLock</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock" title="この定義へのパーマリンク">¶</a></dt>
-<dd><p>ベースクラス: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>スレッド間, プロセス間排他可能なファイルロック</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.__init__" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.acquire">
-<code class="sig-name descname"><span class="pre">acquire</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.acquire"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.acquire" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.discard">
-<code class="sig-name descname"><span class="pre">discard</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.discard"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.discard" title="この定義へのパーマリンク">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.lock.ReentrantFileLock.release">
-<code class="sig-name descname"><span class="pre">release</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/lock.html#ReentrantFileLock.release"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.lock.ReentrantFileLock.release" title="この定義へのパーマリンク">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2933,7 +2926,7 @@
 <div class="line">key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー</div>
 <div class="line">となるように設定する.</div>
 <div class="line">レジストリキーに int 値 1 つを指定すると, フィードバック値によらず,</div>
-<div class="line">そのキーに登録されたキャプチャパラメータを設定する.</div>
+<div class="line">その値のキーに登録されたキャプチャパラメータを設定する.</div>
 </div>
 </li>
 <li><strong>feedback_channel_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.FeedbackChannel" title="e7awgsw.hwdefs.FeedbackChannel"><em>FeedbackChannel</em></a>) -- <div class="line-block">

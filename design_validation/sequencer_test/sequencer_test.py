@@ -111,7 +111,6 @@ def gen_capture_param_2():
 
 def main(
     num_tests,
-    capture_modules,
     awg_cap_ip_addr,
     seq_ip_addr,
     server_ip_addr,
@@ -324,7 +323,6 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--num-tests', default=1, type=int)
-    parser.add_argument('--capture-module')
     parser.add_argument('--ipaddr', default='10.1.0.255')
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--seq-ipaddr', default='10.2.0.255')
@@ -332,13 +330,8 @@ if __name__ == "__main__":
     parser.add_argument('--result-dir', default='result')
     args = parser.parse_args()
 
-    capture_modules = CaptureModule.all()
-    if args.capture_module is not None:
-        capture_modules = [CaptureModule.of(int(args.capture_module))]
-
     main(
         args.num_tests,
-        capture_modules,
         args.ipaddr,
         args.seq_ipaddr,
         args.server_ipaddr,

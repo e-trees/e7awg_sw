@@ -10,6 +10,7 @@ import numpy as np
 lib_path = str(pathlib.Path(__file__).resolve().parents[1])
 sys.path.append(lib_path)
 from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw import CaptureUnit as CapUnit
 from e7awgsw.memorymap import CaptureParamRegs
 from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
@@ -59,7 +60,7 @@ class CaptureUnit(object):
                 self.__state = CaptureUnitState.COMPLETE
 
 
-    def setToIdle(self):
+    def set_to_idle(self):
         """キャプチャユニット が complete 状態のとき IDLE 状態にする"""
         with self.__state_lock:
             if (self.__state == CaptureUnitState.COMPLETE):
@@ -114,9 +115,10 @@ class CaptureUnit(object):
             num_balnk_words = self.get_param(CaptureParamRegs.Offset.post_blank_length(i))
             param.add_sum_section(num_wave_words, num_balnk_words)
         # 有効 DSP モジュール
-        dsp_units = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
-        dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
-        param.sel_dsp_units_to_enable(*dsp_units)
+        if (self.__id != CapUnit.U8) and (self.__id != CapUnit.U9):
+            dsp_units = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
+            dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
+            param.sel_dsp_units_to_enable(*dsp_units)
         # キャプチャディレイ
         param.capture_delay = self.get_param(CaptureParamRegs.Offset.CAPTURE_DELAY)
         # 複素 FIR 係数

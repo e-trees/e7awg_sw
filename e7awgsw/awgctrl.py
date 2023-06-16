@@ -1,5 +1,7 @@
 import time
 import socket
+import os
+import stat
 from abc import ABCMeta, abstractmethod
 from .wavesequence import WaveSequence
 from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES
@@ -151,7 +153,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         """引数で指定した全ての AWG の波形出力終了フラグを下げる
 
         Args:
-            *awg_id_list (list of CaptureUnit): 波形出力終了フラグを下げる AWG の ID
+            *awg_id_list (list of AWG): 波形出力終了フラグを下げる AWG の ID
         """
         if self._validate_args:
             try:
@@ -395,7 +397,8 @@ class AwgCtrl(AwgCtrlBase):
         self.__registry_access = ParamRegistryAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
             ip_addr = '127.0.0.1'
-        filepath = '/tmp/e7awg_{}.lock'.format(socket.inet_ntoa(socket.inet_aton(ip_addr)))
+        filepath = '{}/e7awg_{}.lock'.format(
+            self.__get_lock_dir(), socket.inet_ntoa(socket.inet_aton(ip_addr)))
         self.__flock = ReentrantFileLock(filepath)
 
 
@@ -693,3 +696,29 @@ class AwgCtrl(AwgCtrlBase):
         ver_day = 0xFF & (data >> 4)
         ver_id = 0xF & data
         return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)
+
+
+    def __get_lock_dir(self):
+        """
+        ロックファイルを置くディレクトリを取得する.
+        このディレクトリは環境変数 (E7AWG_HW_LOCKDIR) で指定され, アクセス権限は 777 でなければならない.
+        環境変数がない場合は /usr/local/etc/e7awg_hw/lock となる.
+        """
+        dirpath = os.getenv('E7AWG_HW_LOCKDIR', '/usr/local/etc/e7awg_hw/lock')
+        if not os.path.isdir(dirpath):
+            err = FileNotFoundError(
+                'Cannot find the directory for lock files.\n'
+                "Create a directory '/usr/local/etc/e7awg_hw/lock' "
+                "or set the E7AWG_HW_LOCKDIR environment variable to the path of another directory"
+                ', and then set its permission to 777.')
+            log_error(err, *self._loggers)
+            raise err
+
+        permission_flags = stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO  
+        if (os.stat(dirpath).st_mode & permission_flags) != permission_flags:
+            err = PermissionError(
+                'Set the permission of the directory for lock files to 777.  ({})'.format(dirpath))
+            log_error(err, *self._loggers)
+            raise err
+        
+        return os.path.abspath(dirpath)

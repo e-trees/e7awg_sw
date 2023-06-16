@@ -1,6 +1,6 @@
 import copy
 from abc import ABCMeta, abstractmethod
-from .hwdefs import CaptureParamElem, CaptureUnit, AWG, FeedbackChannel
+from .hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel
 from .hwparam import CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
 from .wavesequence import WaveSequence
 
@@ -400,7 +400,7 @@ class CaptureParamSetCmd(SequencerCmd):
                 | key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー
                 | となるように設定する.
                 | レジストリキーに int 値 1 つを指定すると, フィードバック値によらず, 
-                | そのキーに登録されたキャプチャパラメータを設定する.
+                | その値のキーに登録されたキャプチャパラメータを設定する.
             feedback_channel_id (FeedbackChannel): 
                 | 参照するフィードバックチャネルの ID.
             param_elems (list of CaptureParamElem):
@@ -585,7 +585,15 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
         super().__init__(self.ID, cmd_no, stop_seq)
         if CaptureUnit.includes(capture_unit_id_list):
             capture_unit_id_list = [capture_unit_id_list]
-        self._validate_capture_unit_id(capture_unit_id_list)
+
+        acceptable_cap_unit_id = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
+        if ((not isinstance(capture_unit_id_list, (list, tuple))) or 
+            (not capture_unit_id_list)                            or
+            (not all([cap_unit_id in acceptable_cap_unit_id
+                      for cap_unit_id in capture_unit_id_list]))):
+            raise ValueError(
+                "Capture unit ID for feedback value calculation must be between 0 and 7.  '{}'"
+                .format(capture_unit_id_list))
 
         if not (isinstance(byte_offset, int) and
                 (0 <= byte_offset and byte_offset < MAX_CAPTURE_SIZE)):

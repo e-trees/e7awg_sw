@@ -172,6 +172,8 @@ class CaptureMasterCtrlRegs(object):
         DONE_STATUS     = 0x20
         OVERFLOW_ERR    = 0x24
         WRITE_ERR       = 0x28
+        TRIG_AWG_SEL_2  = 0x2C
+        TRIG_AWG_SEL_3  = 0x30
 
     class Bit(object):
         CTRL_RESET     = 0
@@ -186,32 +188,38 @@ class CaptureMasterCtrlRegs(object):
         CAPTURE_5      = 5
         CAPTURE_6      = 6
         CAPTURE_7      = 7
+        CAPTURE_8      = 8
+        CAPTURE_9      = 9
         
         @classmethod
         def capture(cls, idx):
             capture_units = [
                 cls.CAPTURE_0,  cls.CAPTURE_1,  cls.CAPTURE_2,  cls.CAPTURE_3,
-                cls.CAPTURE_4,  cls.CAPTURE_5,  cls.CAPTURE_6,  cls.CAPTURE_7]
+                cls.CAPTURE_4,  cls.CAPTURE_5,  cls.CAPTURE_6,  cls.CAPTURE_7,
+                cls.CAPTURE_8,  cls.CAPTURE_9]
             return capture_units[idx]
 
 
 class CaptureCtrlRegs(object):
 
     class Addr(object):
-        CAPTURE_0  = 0x100
-        CAPTURE_1  = 0x200
-        CAPTURE_2  = 0x300
-        CAPTURE_3  = 0x400
-        CAPTURE_4  = 0x500
-        CAPTURE_5  = 0x600
-        CAPTURE_6  = 0x700
-        CAPTURE_7  = 0x800
+        CAPTURE_0 = 0x100
+        CAPTURE_1 = 0x200
+        CAPTURE_2 = 0x300
+        CAPTURE_3 = 0x400
+        CAPTURE_4 = 0x500
+        CAPTURE_5 = 0x600
+        CAPTURE_6 = 0x700
+        CAPTURE_7 = 0x800
+        CAPTURE_8 = 0x900
+        CAPTURE_9 = 0xA00
     
         @classmethod
         def capture(cls, idx):
             capture_units = [
                 cls.CAPTURE_0, cls.CAPTURE_1, cls.CAPTURE_2, cls.CAPTURE_3,
-                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7]
+                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7,
+                cls.CAPTURE_8, cls.CAPTURE_9]
             return capture_units[idx]
 
     class Offset(object):
@@ -242,12 +250,15 @@ class CaptureParamRegs(object):
         CAPTURE_5  = 0x60000
         CAPTURE_6  = 0x70000
         CAPTURE_7  = 0x80000
+        CAPTURE_8  = 0x90000
+        CAPTURE_9  = 0xA0000
 
         @classmethod
         def capture(cls, idx):
             capture_units = [
                 cls.CAPTURE_0, cls.CAPTURE_1, cls.CAPTURE_2, cls.CAPTURE_3,
-                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7]
+                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7,
+                cls.CAPTURE_8, cls.CAPTURE_9]
             return capture_units[idx]
 
     class Offset(object):
@@ -367,11 +378,4 @@ class SequencerCtrlRegs(object):
 
         ERR_CMD_FIFO_OVERFLOW = 0
         ERR_ERR_FIFO_OVERFLOW = 1
-        
-        @classmethod
-        def capture(cls, idx):
-            capture_units = [
-                cls.CAPTURE_0,  cls.CAPTURE_1,  cls.CAPTURE_2,  cls.CAPTURE_3,
-                cls.CAPTURE_4,  cls.CAPTURE_5,  cls.CAPTURE_6,  cls.CAPTURE_7]
-            return capture_units[idx]
             

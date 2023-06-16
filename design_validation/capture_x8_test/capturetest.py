@@ -10,18 +10,25 @@ from e7awgsw import CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, Capt
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 class CaptureTest(object):
+    
+    # テストデザインにおけるキャプチャモジュールと AWG の接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
 
     def __init__(self, res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
-        # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
         self.__awg_to_capture_module = {}
-        if CaptureModule.U0 in capture_modules:
-            self.__awg_to_capture_module[AWG.U2] = CaptureModule.U0
-        if CaptureModule.U1 in capture_modules:
-            self.__awg_to_capture_module[AWG.U15] = CaptureModule.U1
+        for cap_mod in capture_modules:
+            awg = self.__CAP_MOD_TO_AWG[cap_mod]
+            self.__awg_to_capture_module[awg] = cap_mod        
+
         self.__capture_units = CaptureModule.get_units(*capture_modules)
         os.makedirs(self.__res_dir, exist_ok = True)
     
@@ -135,7 +142,7 @@ class CaptureTest(object):
         with (self.__create_awg_ctrl() as awg_ctrl,
               self.__create_cap_ctrl() as cap_ctrl):
             # 初期化
-            self.__setup_modules(awg_ctrl, cap_ctrl)        
+            self.__setup_modules(awg_ctrl, cap_ctrl)
             # 波形シーケンスの設定
             awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl)
             # キャプチャパラメータの設定
@@ -145,7 +152,7 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(30, *self.__capture_units)
+            cap_ctrl.wait_for_capture_units_to_stop(45, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック

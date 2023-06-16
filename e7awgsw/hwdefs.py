@@ -14,7 +14,7 @@ class DspUnit(IntEnum):
     @classmethod
     def all(cls):
         """信号処理モジュールの全列挙子をリストとして返す"""
-        return [item for item in DspUnit]
+        return list(DspUnit)
 
     @classmethod
     def includes(cls, *vals):
@@ -32,11 +32,13 @@ class CaptureUnit(IntEnum):
     U5 = 5
     U6 = 6
     U7 = 7
+    U8 = 8
+    U9 = 9
 
     @classmethod
     def all(cls):
         """全キャプチャユニットの ID をリストとして返す"""
-        return [item for item in CaptureUnit]
+        return list(CaptureUnit)
 
     @classmethod
     def of(cls, val):
@@ -49,16 +51,36 @@ class CaptureUnit(IntEnum):
         units = cls.all()
         return all([val in units for val in vals])
 
+    @classmethod
+    def get_module(cls, val):
+        if not CaptureUnit.includes(val):
+            raise ValueError('Invalid capture unit ID {}'.format(val))
+        unit_to_mod = {
+            CaptureUnit.U0 : CaptureModule.U0,
+            CaptureUnit.U1 : CaptureModule.U0,
+            CaptureUnit.U2 : CaptureModule.U0,
+            CaptureUnit.U3 : CaptureModule.U0,
+            CaptureUnit.U4 : CaptureModule.U1,
+            CaptureUnit.U5 : CaptureModule.U1,
+            CaptureUnit.U6 : CaptureModule.U1,
+            CaptureUnit.U7 : CaptureModule.U1,
+            CaptureUnit.U8 : CaptureModule.U2,
+            CaptureUnit.U9 : CaptureModule.U3
+        }
+        return unit_to_mod[val]
+
 
 class CaptureModule(IntEnum):
     """キャプチャモジュール (複数のキャプチャユニットをまとめて保持するモジュール) の列挙型"""
     U0 = 0
     U1 = 1
+    U2 = 2
+    U3 = 3
 
     @classmethod
     def all(cls):
         """全キャプチャモジュールの ID をリストとして返す"""
-        return [item for item in CaptureModule]
+        return list(CaptureModule)
 
     @classmethod
     def of(cls, val):
@@ -87,6 +109,10 @@ class CaptureModule(IntEnum):
                 units += [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
             elif capmod_id == cls.U1:
                 units += [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
+            elif capmod_id == cls.U2:
+                units += [CaptureUnit.U8]
+            elif capmod_id == cls.U3:
+                units += [CaptureUnit.U9]
             else:
                 raise ValueError('Invalid capture module ID {}'.format(capmod_id))
         return sorted(units)
@@ -100,7 +126,7 @@ class DecisionFunc(IntEnum):
     @classmethod
     def all(cls):
         """全ての四値化処理の判定式の IDをリストとして返す"""
-        return [item for item in DecisionFunc]
+        return list(DecisionFunc)
 
     @classmethod
     def of(cls, val):
@@ -131,7 +157,7 @@ class CaptureParamElem(IntEnum):
     @classmethod
     def all(cls):
         """キャプチャパラメータの全要素をリストとして返す"""
-        return [item for item in CaptureParamElem]
+        return list(CaptureParamElem)
 
     @classmethod
     def includes(cls, *vals):
@@ -161,7 +187,7 @@ class AWG(IntEnum):
     @classmethod
     def all(cls):
         """全 AWG の ID をリストとして返す"""
-        return [item for item in AWG]
+        return list(AWG)
 
     @classmethod
     def of(cls, val):
@@ -189,7 +215,7 @@ class FeedbackChannel(IntEnum):
     @classmethod
     def all(cls):
         """全フィードバックチャネル の ID をリストとして返す"""
-        return [item for item in FeedbackChannel]
+        return list(FeedbackChannel)
 
     @classmethod
     def of(cls, val):
@@ -212,7 +238,7 @@ class AwgErr(Enum):
     @classmethod
     def all(cls):
         """全 AWG エラーの列挙子をリストとして返す"""
-        return [item for item in AwgErr]
+        return list(AwgErr)
 
     @classmethod
     def includes(cls, *vals):
@@ -229,7 +255,7 @@ class CaptureErr(Enum):
     @classmethod
     def all(cls):
         """全キャプチャユニットエラーの列挙子をリストとして返す"""
-        return [item for item in CaptureErr]
+        return list(CaptureErr)
 
     @classmethod
     def includes(cls, *vals):
@@ -246,7 +272,7 @@ class SequencerErr(Enum):
     @classmethod
     def all(cls):
         """全キャプチャユニットエラーの列挙子をリストとして返す"""
-        return [item for item in SequencerErr]
+        return list(SequencerErr)
 
     @classmethod
     def includes(cls, *vals):

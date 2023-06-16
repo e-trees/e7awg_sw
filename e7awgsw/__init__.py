@@ -37,7 +37,7 @@ __all__ = [
     'plot_graph',
     'plot_samples']
 
-from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureParamElem, AWG, FeedbackChannel, AwgErr, CaptureErr
+from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureParamElem, AWG, FeedbackChannel, AwgErr, CaptureErr, SequencerErr
 from .awgctrl import AwgCtrl
 from .capturectrl import CaptureCtrl
 from .wavesequence import WaveSequence

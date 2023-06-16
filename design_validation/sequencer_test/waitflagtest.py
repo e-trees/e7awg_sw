@@ -24,10 +24,6 @@ from emulator.dspmodule import dsp
 
 class WaitFlagTest(object):
 
-    __CAPTURE_ADDR = [
-        0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
-
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
@@ -82,8 +78,8 @@ class WaitFlagTest(object):
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
         # キャプチャモジュールをスタートする AWG の設定
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U0, AWG.U2)
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U1, AWG.U2)
+        for cap_mod in CaptureModule.all():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, AWG.U2)
         # スタートトリガの有効化
         self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
 
@@ -160,12 +156,12 @@ class WaitFlagTest(object):
         success &= all([
             len(reports) == 2,
             isinstance(reports[0], CaptureEndFenceCmdErr),
-            reports[0].capture_unit_id_list == [CaptureUnit.U0],
+            reports[0].capture_unit_id_list == [CaptureUnit.U0, CaptureUnit.U8],
             reports[0].cmd_no == 10,
             not reports[0].is_terminated,
 
             isinstance(reports[1], CaptureEndFenceCmdErr),
-            reports[1].capture_unit_id_list == [CaptureUnit.U1],
+            reports[1].capture_unit_id_list == [CaptureUnit.U1, CaptureUnit.U9],
             reports[1].cmd_no == 11,
             not reports[1].is_terminated])
         return success
@@ -178,7 +174,7 @@ class WaitFlagTest(object):
         success &= all([
             len(reports) == 1,
             isinstance(reports[0], CaptureEndFenceCmdErr),
-            reports[0].capture_unit_id_list == [CaptureUnit.U0],
+            reports[0].capture_unit_id_list == [CaptureUnit.U0, CaptureUnit.U8],
             reports[0].cmd_no == 16,
             not reports[0].is_terminated])
         return success
@@ -292,30 +288,34 @@ def gen_cmds_1():
 
 def gen_cmds_2():
     time = 4500 # 36 [us]
+    cap_unit_set_0 = [CaptureUnit.U0, CaptureUnit.U8]
+    cap_unit_set_1 = [CaptureUnit.U1, CaptureUnit.U9]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(6, [AWG.U2, AWG.U15], key_table = 0),
-        CaptureParamSetCmd(7, [CaptureUnit.U0],  key_table = 0),
-        CaptureParamSetCmd(8, [CaptureUnit.U1],  key_table = 1),
+        CaptureParamSetCmd(7, cap_unit_set_0,  key_table = 0),
+        CaptureParamSetCmd(8, cap_unit_set_1,  key_table = 1),
         # AWG スタートとキャプチャ停止待ち
-        AwgStartCmd(9, [AWG.U2], time, wait = False),
-        CaptureEndFenceCmd(10, [CaptureUnit.U0], time + 512,  wait = True),                  # エラーになるのを期待
-        CaptureEndFenceCmd(11, [CaptureUnit.U1], time + 1300, wait = True, stop_seq = True), # エラーになるのを期待
+        AwgStartCmd(9, [AWG.U2], time, wait = False),                                      # エラーにならないのを期待
+        CaptureEndFenceCmd(10, cap_unit_set_0, time + 512,  wait = True),                  # エラーになるのを期待
+        CaptureEndFenceCmd(11, cap_unit_set_1, time + 1300, wait = True, stop_seq = True), # エラーになるのを期待
     ]
     return cmds
 
 
 def gen_cmds_3():
     time = 4500 # 36 [us]
+    cap_unit_set_0 = [CaptureUnit.U0, CaptureUnit.U8]
+    cap_unit_set_1 = [CaptureUnit.U1, CaptureUnit.U9]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(12, [AWG.U2, AWG.U15], key_table = 0),
-        CaptureParamSetCmd(13, [CaptureUnit.U0],  key_table = 0),
-        CaptureParamSetCmd(14, [CaptureUnit.U1],  key_table = 1),
+        CaptureParamSetCmd(13, cap_unit_set_0,  key_table = 0),
+        CaptureParamSetCmd(14, cap_unit_set_1,  key_table = 1),
         # AWG スタートとキャプチャ停止待ち
-        AwgStartCmd(15, [AWG.U2], time, wait = False),
-        CaptureEndFenceCmd(16, [CaptureUnit.U0], time + 512,  wait = False),                 # エラーになるのを期待
-        CaptureEndFenceCmd(17, [CaptureUnit.U1], time + 1300, wait = True, stop_seq = True), # エラーにならないのを期待
+        AwgStartCmd(15, [AWG.U2], time, wait = False),                                     # エラーにならないのを期待
+        CaptureEndFenceCmd(16, cap_unit_set_0, time + 512,  wait = False),                 # エラーになるのを期待
+        CaptureEndFenceCmd(17, cap_unit_set_1, time + 1300, wait = True, stop_seq = True), # エラーにならないのを期待
     ]
     return cmds
 

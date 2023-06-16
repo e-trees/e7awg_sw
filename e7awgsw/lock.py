@@ -10,7 +10,7 @@ class ReentrantFileLock(object):
 
     def __init__(self, filepath):
         dirname = os.path.dirname(filepath)
-        os.makedirs(dirname, exist_ok = True)        
+        os.makedirs(dirname, exist_ok = True)
         self.__lock_fp = self.__get_fp(filepath)
         file_owner = os.stat(filepath).st_uid
         if file_owner == os.getuid():
