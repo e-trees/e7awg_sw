@@ -1,0 +1,2 @@
+RTL シミュレーション用のデータ出力だけを実行する方法
+	python capture_x8_test_dsp.py --skip-test --output-sim-data

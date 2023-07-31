@@ -378,4 +378,3 @@ class SequencerCtrlRegs(object):
 
         ERR_CMD_FIFO_OVERFLOW = 0
         ERR_ERR_FIFO_OVERFLOW = 1
-            

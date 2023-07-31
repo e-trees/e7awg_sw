@@ -1,0 +1,3 @@
+テストの実行前に環境変数 E7AWG_HW_LOCKDIR にロックファイルの置き場所を指定すること
+export E7AWG_HW_LOCKDIR=/home/koike/proj/e7awg_sw/lock/
+

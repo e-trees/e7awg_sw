@@ -2,12 +2,15 @@ import sys
 import os
 import random
 import pathlib
-from testutil import gen_random_int_list
-import rtlsimdatagen as simgen
 import numpy as np
 
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
+lib_path = str(pathlib.Path(__file__).resolve().parents[3])
 sys.path.append(lib_path)
+lib_path = str(pathlib.Path(__file__).resolve().parents[1])
+sys.path.append(lib_path)
+
+import rtlsimdatagen as simgen
+from testutil import gen_random_int_list
 from e7awgsw import AWG, AwgCtrl, WaveSequence
 from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
@@ -73,7 +76,7 @@ class CaptureTestDsp(object):
             num_wait_words = 32, # <- キャプチャのタイミングがズレるので変更しないこと.
             num_repeats = 1)
 
-        num_chunk_samples = 1024 * 1024
+        num_chunk_samples = 1024
         num_chunk_repeats = num_samples // num_chunk_samples + 1
         i_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
         q_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
@@ -115,15 +118,15 @@ class CaptureTestDsp(object):
 
         # sum 無し, integ あり
         if (DspUnit.INTEGRATION in dsp_units) and (not DspUnit.SUM in dsp_units):
-            num_sum_sections = 4096 // max_sum_sec_len
-            capture_param.num_integ_sections = 1024
+            num_sum_sections = 9
+            capture_param.num_integ_sections = 2
         # sum あり, integ あり
         elif (DspUnit.INTEGRATION in dsp_units) and (DspUnit.SUM in dsp_units):
-            num_sum_sections = 4096
-            capture_param.num_integ_sections = 5
+            num_sum_sections = 9
+            capture_param.num_integ_sections = 2
         else:
-            num_sum_sections = 512
-            capture_param.num_integ_sections = 4
+            num_sum_sections = 9
+            capture_param.num_integ_sections = 1
         for _ in range(num_sum_sections):
             # 総和区間長が 3 ワード以下の場合 decimation から値が出てこなくなるので 4 ワード以上を指定する
             capture_param.add_sum_section(random.randint(4, max_sum_sec_len), random.randint(1, 24))

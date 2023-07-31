@@ -8,14 +8,29 @@ lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 from e7awgsw import CaptureModule, DspUnit
 
-def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, only_all):
+def main(
+    num_tests,
+    ip_addr,
+    capture_modules,
+    use_labrad,
+    server_ip_addr,
+    only_all,
+    skip_test,
+    output_sim_data):
     random.seed(10)
 
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
         res_dir = 'result/{:03d}'.format(test_id)
-        test = CaptureTestDsp(res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr)
+        test = CaptureTestDsp(
+            res_dir,
+            ip_addr,
+            capture_modules,
+            use_labrad,
+            server_ip_addr,
+            skip_test,
+            output_sim_data)
 
         if not only_all:
             print('-- comp fir --')
@@ -109,6 +124,8 @@ if __name__ == "__main__":
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
     parser.add_argument('--only-all', action='store_true')
+    parser.add_argument('--skip-test', action='store_true')
+    parser.add_argument('--output-sim-data', action='store_true')
     args = parser.parse_args()
 
     capture_modules = CaptureModule.all()
@@ -121,4 +138,6 @@ if __name__ == "__main__":
         capture_modules,
         args.labrad,
         args.server_ipaddr,
-        args.only_all)
+        args.only_all,
+        args.skip_test,
+        args.output_sim_data)
