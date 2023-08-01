@@ -149,7 +149,7 @@ class CaptureTestDsp(object):
         cap_ctrl.enable_start_trigger(*self.__cap_units_to_test)
 
     def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):
-        for awg_id, wave_seq in self.awg_to_wave_seq.items():
+        for awg_id, wave_seq in awg_to_wave_seq.items():
             awg_ctrl.set_wave_sequence(awg_id, wave_seq)
 
     def __get_capture_data(self, cap_ctrl, cls_result):
@@ -173,7 +173,7 @@ class CaptureTestDsp(object):
                     param = cap_unit_to_cap_param[cap_unit_id]
                     samples = wave_seq.all_samples(False)
                     cap_unit_to_exp_data[cap_unit_id] = dsp(samples, param)
-        return cap_unit_to_exp_data        
+        return cap_unit_to_exp_data
 
     def __set_capture_params(self, cap_ctrl, cap_unit_to_cap_param):
         # キャプチャパラメータ設定
@@ -208,7 +208,7 @@ class CaptureTestDsp(object):
         else:
             return CaptureCtrl(self.__ip_addr)
 
-    def __check_capture_data(cap_unit_to_cap_data, cap_unit_to_exp_data):
+    def __check_capture_data(self, cap_unit_to_cap_data, cap_unit_to_exp_data):
         """ キャプチャデータが期待値と一致するか確認する """
         all_match = True
         for capture_unit_id in self.__cap_units_to_test:
@@ -216,7 +216,7 @@ class CaptureTestDsp(object):
             exp_data = cap_unit_to_exp_data[capture_unit_id]
             if exp_data != capture_data:
                 all_match = False
-            
+        
         return all_match
 
     def __output_test_data(

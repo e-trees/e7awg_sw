@@ -152,7 +152,7 @@ class CaptureTestDsp(object):
         cap_ctrl.enable_start_trigger(*self.__cap_units_to_test)
 
     def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):
-        for awg_id, wave_seq in self.awg_to_wave_seq.items():
+        for awg_id, wave_seq in awg_to_wave_seq.items():
             awg_ctrl.set_wave_sequence(awg_id, wave_seq)
 
     def __get_capture_data(self, cap_ctrl, cls_result):
@@ -211,7 +211,7 @@ class CaptureTestDsp(object):
         else:
             return CaptureCtrl(self.__ip_addr)
 
-    def __check_capture_data(cap_unit_to_cap_data, cap_unit_to_exp_data):
+    def __check_capture_data(self, cap_unit_to_cap_data, cap_unit_to_exp_data):
         """ キャプチャデータが期待値と一致するか確認する """
         all_match = True
         for capture_unit_id in self.__cap_units_to_test:
