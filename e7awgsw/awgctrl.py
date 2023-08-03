@@ -4,7 +4,7 @@ import os
 import stat
 from abc import ABCMeta, abstractmethod
 from .wavesequence import WaveSequence
-from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES
+from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES, WAVE_RAM_WORD_SIZE
 from .memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from .udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
 from .exception import AwgTimeoutError
@@ -362,7 +362,7 @@ class AwgCtrl(AwgCtrlBase):
         0x100000000, 0x120000000, 0x140000000, 0x160000000, 
         0x180000000, 0x1A0000000, 0x1C0000000, 0x1E0000000]
     # 波形 RAM のワードサイズ (bytes)
-    __WAVE_RAM_WORD_SIZE = 32
+    __WAVE_RAM_WORD_SIZE = WAVE_RAM_WORD_SIZE
     # 1 波形シーケンスのサンプルデータに割り当てられる最大 RAM サイズ (bytes)
     __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE = 256 * 1024 * 1024
     # 波形レジストリの先頭アドレス

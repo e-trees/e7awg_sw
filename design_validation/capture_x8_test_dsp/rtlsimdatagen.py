@@ -8,11 +8,9 @@ lib_path = str(pathlib.Path(__file__).resolve().parents[2])
 sys.path.append(lib_path)
 
 from e7awgsw.memorymap import CaptureParamRegs
+from e7awgsw.hwparam import NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_CAP_RAM_WORD, NUM_CLS_RESULTS_IN_CAP_RAM_WORD
 from e7awgsw import CaptureParam, DecisionFunc
 
-NUM_SAMPLES_IN_AWG_WORD = 4
-NUM_CLS_SAMPLES_IN_CAP_WORDS = 128
-NUM_IQ_SAMPLES_IN_CAP_WORDS = 4
 
 def output_wave_sequences(awg_to_wave_seq, dir, filename):
     os.makedirs(dir, exist_ok = True)
@@ -23,7 +21,7 @@ def output_wave_sequences(awg_to_wave_seq, dir, filename):
 
 
 def _write_awg_words(file, samples):
-    for i in range(0, len(samples), 4):
+    for i in range(0, len(samples), NUM_SAMPLES_IN_AWG_WORD):
         if i % 64 == 0:
             sideband = 1
         elif i % 64 == 60:
@@ -59,13 +57,13 @@ def output_capture_samples(cap_unit_to_cap_data, dir, filename):
 def _add_zero(samples):
     is_cls_data = not isinstance(samples[0], tuple)
     if is_cls_data:
-        NUM_SAMPLES_IN_BURST_WORDS = NUM_CLS_SAMPLES_IN_CAP_WORDS * 16
+        NUM_SAMPLES_IN_BURST_WORDS = NUM_CLS_RESULTS_IN_CAP_RAM_WORD * 16
         rem = len(samples) % NUM_SAMPLES_IN_BURST_WORDS
         if rem != 0:
             num_additional_samples = NUM_SAMPLES_IN_BURST_WORDS - rem
             samples += [0] * num_additional_samples
     else:
-        NUM_SAMPLES_IN_BURST_WORDS = NUM_IQ_SAMPLES_IN_CAP_WORDS * 16
+        NUM_SAMPLES_IN_BURST_WORDS = NUM_SAMPLES_IN_CAP_RAM_WORD * 16
         rem = len(samples) % NUM_SAMPLES_IN_BURST_WORDS
         if rem != 0:
             num_additional_samples = NUM_SAMPLES_IN_BURST_WORDS - rem
@@ -73,9 +71,9 @@ def _add_zero(samples):
     
 
 def _write_iq_cap_words(file, samples):
-    for i in range(0, len(samples), NUM_IQ_SAMPLES_IN_CAP_WORDS):
+    for i in range(0, len(samples), NUM_SAMPLES_IN_CAP_RAM_WORD):
         capture_word = 0
-        for j in range(NUM_IQ_SAMPLES_IN_CAP_WORDS):
+        for j in range(NUM_SAMPLES_IN_CAP_RAM_WORD):
             iq = samples[i + j]
             capture_word |= int.from_bytes(np.float32(iq[0]).tobytes(), 'little') << (j * 64)
             capture_word |= int.from_bytes(np.float32(iq[1]).tobytes(), 'little') << (j * 64 + 32)
@@ -83,9 +81,9 @@ def _write_iq_cap_words(file, samples):
 
 
 def _write_cls_cap_words(file, samples):
-    for i in range(0, len(samples), NUM_CLS_SAMPLES_IN_CAP_WORDS):
+    for i in range(0, len(samples), NUM_CLS_RESULTS_IN_CAP_RAM_WORD):
         capture_word = 0
-        for j in range(NUM_CLS_SAMPLES_IN_CAP_WORDS):
+        for j in range(NUM_CLS_RESULTS_IN_CAP_RAM_WORD):
             capture_word |= samples[i + j] << (j * 2)
         file.write('{:064X}\n'.format(capture_word))
 
