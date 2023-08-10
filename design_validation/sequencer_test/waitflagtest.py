@@ -333,7 +333,7 @@ def gen_cmds_4():
 
 
 def gen_cmds_5():
-    time = 550 # 4.4 [us]
+    time = 800 # 6.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(21, [AWG.U3],  key_table = 0),
@@ -347,7 +347,7 @@ def gen_cmds_5():
 
 
 def gen_cmds_6():
-    time = 550 # 4.4 [us]
+    time = 800 # 6.4 [us]
     cmds = [
         # パラメータ更新
         WaveSequenceSetCmd(26, [AWG.U3],  key_table = 0),

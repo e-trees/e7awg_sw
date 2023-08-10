@@ -42,7 +42,7 @@ def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir, cap_unit_
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num-tests', default=1)
+    parser.add_argument('--num-tests', default=1, type=int)
     parser.add_argument('--ipaddr', default='10.1.0.255')
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
