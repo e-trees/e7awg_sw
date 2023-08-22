@@ -173,6 +173,15 @@ class WaveSequence(object):
         """
         return self.__num_repeats
 
+    @num_repeats.setter
+    def num_repeats(self, value):
+        """波形シーケンスを繰り返す回数
+
+        Args:
+            *value (int)
+        """
+        self.__num_repeats = value
+
     @property
     def num_all_samples(self):
         """この波形シーケンスの全サンプル数 (繰り返しも含む)
