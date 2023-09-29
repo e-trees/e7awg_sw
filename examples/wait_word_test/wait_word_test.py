@@ -1,14 +1,9 @@
 """
 AWG の WAIT WORD (波形シーケンスの先頭に付く 0 データの長さ) を指定して波形を出力する.
 """
-import sys
 import os
-import pathlib
 import math
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw import SinWave, IqWave, plot_graph
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl

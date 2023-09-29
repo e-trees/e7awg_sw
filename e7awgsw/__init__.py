@@ -1,4 +1,3 @@
-
 __all__ = [
     'AwgCtrl',
     'CaptureCtrl',
@@ -35,7 +34,8 @@ __all__ = [
     'WaveGenEndFenceCmdErr',
     'SequencerCtrl',
     'plot_graph',
-    'plot_samples']
+    'plot_samples',
+    'dsp']
 
 from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureParamElem, AWG, FeedbackChannel, AwgErr, CaptureErr, SequencerErr
 from .awgctrl import AwgCtrl
@@ -48,3 +48,4 @@ from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, C
 from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from .sequencerctrl import SequencerCtrl
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
+from .dspmodule import dsp

@@ -1,6 +1,4 @@
-import sys
 import os
-import pathlib
 import argparse
 from awg import Awg
 import capture
@@ -8,9 +6,6 @@ from hbm import Hbm
 from awgcontroller import AwgController
 from capturecontroller import CaptureController
 from upldispatcher import UplDispatcher
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[1])
-sys.path.append(lib_path)
 from e7awgsw import CaptureUnit, CaptureModule, AWG
 
 CAPTURE_START_DELAY = 31 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)

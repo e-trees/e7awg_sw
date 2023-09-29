@@ -1,11 +1,6 @@
 import argparse
-import pathlib
-import sys
 import random
 from capturetestdsp import CaptureTestDsp
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule, DspUnit
 
 def main(

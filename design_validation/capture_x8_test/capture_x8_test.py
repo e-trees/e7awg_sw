@@ -1,10 +1,6 @@
 import argparse
-import pathlib
 import sys
 from capturetest import CaptureTest
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule
 
 

@@ -1,13 +1,8 @@
-import sys
 import os
-import pathlib
 import math
 import argparse
 import time
 import numpy as np
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
 from e7awgsw import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
 from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
@@ -270,7 +265,7 @@ if __name__ == "__main__":
     if args.awgs is not None:
         awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
 
-    capture_modules = CaptureModule.all()
+    capture_modules = [CaptureModule.U0, CaptureModule.U1]
     if args.capture_module is not None:
         capture_modules = [CaptureModule.of(int(args.capture_module))]
 

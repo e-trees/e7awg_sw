@@ -1,17 +1,11 @@
-import sys
 import os
 import random
-import pathlib
 from testutil import gen_random_int_list
 import rtlsimdatagen as simgen
 import numpy as np
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
-from e7awgsw import AWG, AwgCtrl, WaveSequence
+from e7awgsw import AWG, AwgCtrl, WaveSequence, dsp
 from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
-from emulator.dspmodule import dsp
 
 class CaptureTestDsp(object):
 

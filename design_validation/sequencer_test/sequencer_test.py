@@ -1,6 +1,4 @@
-import sys
 import os
-import pathlib
 import argparse
 import testutil
 import random
@@ -9,9 +7,6 @@ import numpy as np
 from paramloadtest import ParamLoadTest
 from feedbackvaltest import FeedbackValTest
 from waitflagtest import WaitFlagTest
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule, WaveSequence, CaptureParam, DspUnit, DecisionFunc, CaptureParamElem
 
 

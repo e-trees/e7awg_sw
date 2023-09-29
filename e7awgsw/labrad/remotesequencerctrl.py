@@ -1,10 +1,5 @@
-import sys
-import pathlib
 import labrad
 import pickle
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw.sequencerctrl import SequencerCtrlBase
 from e7awgsw.logger import get_null_logger, log_error
 

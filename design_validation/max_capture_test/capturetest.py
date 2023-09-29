@@ -1,17 +1,12 @@
-import sys
 import os
-import pathlib
 import numpy as np
 import random
 from testutil import gen_random_int_list
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import AWG, AwgCtrl, WaveSequence
 from e7awgsw import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 from e7awgsw import hwparam
-from emulator.dspmodule import classification, fixed_to_float
+from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
+from e7awgsw.dspmodule import classification, fixed_to_float
 
 class CaptureTest(object):
 

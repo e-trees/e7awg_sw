@@ -1,16 +1,16 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
+name = "pypi"
 
 [packages]
 sphinx = "*"
 sphinx-sizzle-theme = "*"
-numpy = "*"
-matplotlib = "*"
-pylabrad = "*"
+build = "*"
+e7awgsw = {editable = true, path = "."}
+
+[dev-packages]
 
 [requires]
 python_version = "3.9"
+python_full_version = "3.9.18"

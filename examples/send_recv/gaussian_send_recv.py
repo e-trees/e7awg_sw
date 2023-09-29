@@ -1,14 +1,9 @@
 """
 プログラム引数で指定した AWG からガウスパルスを出力して, 信号処理モジュールを全て無効にしてキャプチャします.
 """
-import sys
 import os
-import pathlib
 import math
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam, plot_graph
 from e7awgsw import SquareWave, GaussianPulse, IqWave
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl

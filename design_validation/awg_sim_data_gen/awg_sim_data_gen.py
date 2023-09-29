@@ -1,12 +1,7 @@
-import sys
 import os
-import pathlib
 import argparse
 import random
 import config
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import WaveSequence
 from e7awgsw.hwparam import WAVE_RAM_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD
 from e7awgsw.memorymap import WaveParamRegs

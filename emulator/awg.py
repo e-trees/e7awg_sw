@@ -1,11 +1,6 @@
-import sys
 import threading
-import pathlib
 import struct
 from enum import IntEnum
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[1])
-sys.path.append(lib_path)
 from e7awgsw import WaveSequence
 from e7awgsw.memorymap import WaveParamRegs
 from e7awgsw.hwparam import WAVE_SAMPLE_SIZE

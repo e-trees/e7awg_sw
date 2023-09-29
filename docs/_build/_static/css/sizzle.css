@@ -134,6 +134,8 @@ div.related {
   position: relative;
   top: 2px;
   cursor: pointer;
+  z-index: 1;
+  /* otherwise obscured by filter element */
 }
 
 .sidebar-toc a {
@@ -394,7 +396,6 @@ html, .full-height {
 }
 
 #hdr-centre h3 {
-  max-width: 60vh;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -415,6 +416,8 @@ html, .full-height {
 
 #toc-filter {
   margin-bottom: 4px;
+  position: sticky;
+  top: 0;
 }
 
 #nav, #content {
@@ -453,13 +456,14 @@ html, .full-height {
 }
 
 ul.search {
+  list-style-type: none;
   margin: 10px 0 0 20px;
   padding: 0;
 }
 
 ul.search li {
   padding: 5px 0 5px 20px;
-  background: url(file.png) no-repeat 0 7px;
+  background: url(../file.png) no-repeat 0 0.7em;
 }
 
 ul.search li a {
@@ -505,6 +509,11 @@ table.indextable tr.pcap {
 table.indextable tr.cap {
   margin-top: 10px;
   background-color: #f2f2f2;
+}
+
+table.generic-table.hpad td, table.generic-table.hpad th {
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 img.toggler {
@@ -1024,6 +1033,10 @@ td.footnote-label, th.stub {
   cursor: pointer;
 }
 
+#hdr-search input {
+  min-width: 8em;
+}
+
 /* Pygments highlight styles */
 .highlight {
   /* Comment */
@@ -1489,6 +1502,36 @@ td.footnote-label, th.stub {
   cursor: help;
 }
 
+.hovertip {
+  color: black;
+  font-size: 100%;
+}
+
+.hovertip .function, .hovertip .class {
+  border-bottom: 1px solid black;
+  margin-bottom: 0.5em;
+  margin-top: 0.25em;
+  padding-bottom: 0.25em;
+  font-size: 105%;
+}
+
+.hovertip blockquote {
+  padding: 0px 0px 0px 1em;
+  margin: 0px;
+  background-color: transparent;
+  font-size: 100%;
+}
+
+.hovertip h6 {
+  font-size: 100%;
+  font-weight: bold;
+  font-family: Roboto, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.hovertip .pdoc-alert p {
+  padding-left: 1em;
+}
+
 /* Keyboard keys style */
 kbd {
   background-color: #f7f7f7;
@@ -1514,5 +1557,27 @@ kbd {
   font-size: 1.2em;
   width: 50%;
   border-bottom: 1px solid silver;
+}
+
+table.release-info {
+  border: 1px solid #f3f6f6;
+}
+
+table.release-info th, table.release-info td {
+  padding: 6px 8px;
+}
+
+table.release-info td:last-child {
+  background-color: #f3f6f6;
+}
+
+#content:focus {
+  outline: none;
+  /* Needed for Chrome :-( */
+}
+
+.octicon {
+  display: inline-block;
+  vertical-align: text-bottom;
 }
 

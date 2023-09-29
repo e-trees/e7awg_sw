@@ -1,11 +1,6 @@
 import argparse
 import random
-import sys
-import pathlib
 from capturetest import CaptureTest
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureUnit
 
 
@@ -61,5 +56,3 @@ if __name__ == "__main__":
         args.server_ipaddr,
         args.result_dir,
         cap_unit_id)
-
-    sys.exit(status)
