@@ -366,12 +366,12 @@ class CaptureParam(object):
             raise
 
         self.__comp_window_coefs = val
-    
+
     def calc_capture_samples(self):
         """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
 
         Returns:
-            int : 現在のキャプチャパラメータで保存されるサンプル数
+            int: 現在のキャプチャパラメータで保存されるサンプル数
         """
         num_samples_in_integ_section = 0
         dsp_units_enabled = self.dsp_units_enabled
@@ -534,7 +534,7 @@ class CaptureParam(object):
             msg = "Decision function selector must be 0 or 1.  {}".format(func_sel)
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
-        
+
         return self.__decision_func_params[int(func_sel)]
 
     def __is_in_range(self, min, max, val):

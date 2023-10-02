@@ -385,7 +385,6 @@ class CaptureParam(object):
             raise
 
         self.__comp_window_coefs = val
-    
 
     def calc_capture_samples(self):
         """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
