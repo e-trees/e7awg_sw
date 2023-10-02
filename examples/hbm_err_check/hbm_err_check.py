@@ -1,10 +1,4 @@
-import sys
-import pathlib
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
-
 from e7awgsw.udpaccess import WaveRamAccess
 from e7awgsw.logger import get_file_logger
 

@@ -62,14 +62,6 @@ e7awgsw.hwdefs module
    :undoc-members:
    :show-inheritance:
 
-e7awgsw.lock module
--------------------
-
-.. automodule:: e7awgsw.lock
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 e7awgsw.utiltool module
 -----------------------
 

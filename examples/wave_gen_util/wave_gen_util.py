@@ -1,13 +1,8 @@
 """
 パラメータを指定して波形を生成するユーティリティクラスの使い方を示す
 """
-import sys
 import os
-import pathlib
 import math
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import AwgCtrl, SinWave, SawtoothWave, SquareWave, GaussianPulse, plot_graph
 
 def to_degree(val):

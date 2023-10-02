@@ -6,15 +6,10 @@ AWG から I = 余弦波, Q = 正弦波を出力して, 四値化モジュール
 積算回数 = 16
 
 """
-import sys
 import os
-import pathlib
 import math
 import argparse
 import numpy as np
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import DspUnit, CaptureModule, DecisionFunc, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw import SinWave, IqWave, plot_graph
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl

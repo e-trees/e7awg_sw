@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "e7awgsw"
+version = "1.0.0"
+description = "e7awg manipulator"
+readme = "README.md"
+authors = [
+    {name = "e-trees.Japan, Inc.", email = "labo@e-trees.jp"},
+]
+
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: GPL",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy==1.26.0",
+  "matplotlib==3.8.0",
+  "pylabrad==0.98.2",
+]
+
+[tool.setuptools]
+packages = ["e7awgsw"]

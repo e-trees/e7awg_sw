@@ -1,11 +1,7 @@
 import sys
 import os
 import random
-import pathlib
 from testutil import gen_random_int_list
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 

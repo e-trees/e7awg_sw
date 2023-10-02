@@ -118,7 +118,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         """引数で指定した全ての AWG の波形出力終了フラグを下げる
 
         Args:
-            *awg_id_list (list of CaptureUnit): 波形出力終了フラグを下げる AWG の ID
+            *awg_id_list (list of AWG): 波形出力終了フラグを下げる AWG の ID
         """
         if self._validate_args:
             try:
@@ -258,7 +258,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     def _validate_wave_start_interval(self, interval):
         if not (isinstance(interval, int) and (1 <= interval and interval <= 0xFFFFFFFF)):
             raise ValueError(
-                "The interval must be an integer between {} and {} inclusive.  '{}' was set."
+                "The wave start interval must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(1, 0xFFFFFFFF, interval))
 
 

@@ -1,15 +1,10 @@
 """
 AWG から control 波形と readout 波形を出力して, 積算処理モジュールを有効にしてキャプチャします.
 """
-import sys
 import os
-import pathlib
 import math
 import argparse
 from collections import namedtuple
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import DspUnit, CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw import SinWave, IqWave, plot_graph, plot_samples
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl

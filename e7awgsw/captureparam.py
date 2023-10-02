@@ -310,7 +310,7 @@ class CaptureParam(object):
                 raise ValueError("The type of real FIR coefficients must be 'int' or 'float'.")
 
             if not all([float(coef).is_integer() for coef in val]):
-                raise ValueError('Real FIR coefficients must be an integer.')
+                raise ValueError('Real FIR coefficients must be integers.')
 
             if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef) for coef in val]):
                 raise ValueError('Real FIR coefficients must be {} ~ {}.'
@@ -371,7 +371,7 @@ class CaptureParam(object):
         """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
 
         Returns:
-            現在のキャプチャパラメータで保存されるサンプル数
+            int : 現在のキャプチャパラメータで保存されるサンプル数
         """
         num_samples_in_integ_section = 0
         dsp_units_enabled = self.dsp_units_enabled

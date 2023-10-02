@@ -7,14 +7,9 @@ AWG から 4.8MHz の余弦波を出力して, 四値化以外の信号処理モ
 積算回数 = 16
 
 """
-import sys
 import os
-import pathlib
 import math
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import DspUnit, CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw import IqWave, plot_graph, plot_samples
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl

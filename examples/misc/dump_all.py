@@ -1,12 +1,8 @@
 import sys
-import pathlib
 import argparse
 import numpy as np
 from collections import OrderedDict
 from typing import Any, Sequence, List, Tuple, Set, Dict, Optional, Callable, cast
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import AWG, CaptureUnit
 from e7awgsw.udpaccess import RegAccess, AwgRegAccess, CaptureRegAccess
 from e7awgsw.hwparam import AWG_REG_PORT, CAPTURE_REG_PORT

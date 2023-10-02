@@ -1,19 +1,13 @@
-import sys
 import threading
-import pathlib
 import struct
-import dspmodule
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[1])
-sys.path.append(lib_path)
 from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw.memorymap import CaptureParamRegs
 from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
-
+from e7awgsw.dspmodule import dsp
 
 class CaptureUnit(object):
 
@@ -85,7 +79,7 @@ class CaptureUnit(object):
             self.__check_capture_size(capture_param)
             num_samples_to_waste = self.__calc_num_samples_to_waste(capture_param.capture_delay)
             samples = wave_data[num_samples_to_waste : capture_param.num_samples_to_process + num_samples_to_waste]
-            samples = dspmodule.dsp(samples, capture_param)
+            samples = dsp(samples, capture_param)
 
             is_classification_result = DspUnit.CLASSIFICATION in capture_param.dsp_units_enabled
             wr_data = self.__serialize_capture_data(samples, is_classification_result)

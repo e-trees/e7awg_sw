@@ -1,9 +1,4 @@
-import pathlib
-import sys
 import numpy as np
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import DspUnit, DecisionFunc, CaptureParam
 
 def dsp(samples, capture_param, ):

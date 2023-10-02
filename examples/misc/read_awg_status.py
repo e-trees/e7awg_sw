@@ -1,10 +1,5 @@
 # デバッグ用スクリプト
-import sys
-import pathlib
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import AWG
 from e7awgsw.udpaccess import AwgRegAccess
 from e7awgsw.hwparam import AWG_REG_PORT

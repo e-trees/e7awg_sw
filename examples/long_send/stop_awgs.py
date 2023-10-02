@@ -1,12 +1,7 @@
 """
 AWG から 50MHz の余弦波を出力して, 信号処理モジュールを全て無効にしてキャプチャします.
 """
-import sys
-import pathlib
 import argparse
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[2])
-sys.path.append(lib_path)
 from e7awgsw import AWG, AwgCtrl
 from e7awgsw.labrad import RemoteAwgCtrl
 

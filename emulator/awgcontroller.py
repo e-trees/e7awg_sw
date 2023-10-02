@@ -1,10 +1,5 @@
-import sys
-import pathlib
 import awg
 from register import RwRegister, RoRegister
-
-lib_path = str(pathlib.Path(__file__).resolve().parents[1])
-sys.path.append(lib_path)
 from e7awgsw import AWG
 from e7awgsw.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error

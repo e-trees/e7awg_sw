@@ -1,7 +1,3 @@
-import sys
-import pathlib
-
-
 class RwRegister:
     """読み書き可能なレジスタ"""
     
