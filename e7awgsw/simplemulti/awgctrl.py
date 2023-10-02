@@ -7,7 +7,7 @@ from e7awgsw.simplemulti.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WavePa
 from e7awgsw.simplemulti.udpaccess import AwgRegAccess, WaveRamAccess
 from e7awgsw.simplemulti.exception import AwgTimeoutError
 from e7awgsw.simplemulti.logger import get_file_logger, get_null_logger, log_error
-from e7awgsw.simplemulti.lock import ReentrantFileLock
+from e7awgsw.lock import ReentrantFileLock
 from e7awgsw.simplemulti.hwdefs import AWG
 
 class AwgCtrlBase(object, metaclass = ABCMeta):

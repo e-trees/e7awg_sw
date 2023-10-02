@@ -11,7 +11,7 @@ from e7awgsw.feedback.hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, Ca
 from e7awgsw.feedback.captureparam import CaptureParam
 from e7awgsw.feedback.exception import CaptureUnitTimeoutError
 from e7awgsw.feedback.logger import get_file_logger, get_null_logger, log_error, log_warning
-from e7awgsw.feedback.lock import ReentrantFileLock
+from e7awgsw.lock import ReentrantFileLock
 from e7awgsw.feedback.classification import ClassificationResult
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
