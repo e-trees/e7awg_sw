@@ -3,8 +3,8 @@ import argparse
 import random
 import config
 from e7awgsw import WaveSequence
-from e7awgsw.hwparam import WAVE_RAM_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD
-from e7awgsw.memorymap import WaveParamRegs
+from e7awgsw import WAVE_RAM_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD
+from e7awgsw import WaveParamRegs
 
 SAMPLE_START_ADDR = 0 # メモリに格納されたサンプルデータの先頭アドレス
 

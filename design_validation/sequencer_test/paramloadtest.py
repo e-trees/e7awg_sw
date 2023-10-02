@@ -10,8 +10,8 @@ from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr
 from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 from e7awgsw import SinWave, IqWave, dsp
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
+from e7awgsw import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
+from e7awgsw import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
 
 
 class ParamLoadTest(object):

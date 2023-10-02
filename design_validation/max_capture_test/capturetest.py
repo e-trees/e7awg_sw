@@ -5,8 +5,8 @@ from testutil import gen_random_int_list
 from e7awgsw import AWG, AwgCtrl, WaveSequence
 from e7awgsw import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
 from e7awgsw import hwparam
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
-from e7awgsw.dspmodule import classification, fixed_to_float
+from e7awgsw import RemoteAwgCtrl, RemoteCaptureCtrl
+from e7awgsw import classification, fixed_to_float
 
 class CaptureTest(object):
 

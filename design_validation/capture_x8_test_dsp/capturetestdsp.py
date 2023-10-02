@@ -5,7 +5,7 @@ import rtlsimdatagen as simgen
 import numpy as np
 from e7awgsw import AWG, AwgCtrl, WaveSequence, dsp
 from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
+from e7awgsw import RemoteAwgCtrl, RemoteCaptureCtrl
 
 class CaptureTestDsp(object):
 
