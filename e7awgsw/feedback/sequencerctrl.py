@@ -8,6 +8,7 @@ from e7awgsw.feedback.uplpacket import UplPacket
 from e7awgsw.feedback.memorymap import SequencerCtrlRegs as SeqRegs
 from e7awgsw.feedback.sequencercmd import SequencerCmd
 from e7awgsw.feedback.exception import TooLittleFreeSpaceInCmdFifoError, SequencerTimeoutError
+from e7awgsw.feedback.hwdefs import SequencerErr
 
 class SequencerCtrlBase(object, metaclass = ABCMeta):
 
