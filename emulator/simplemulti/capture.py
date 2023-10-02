@@ -3,11 +3,11 @@ import struct
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
-from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
-from e7awgsw.memorymap import CaptureParamRegs
+from e7awgsw.simplemulti import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw.simplemulti.capturectrl import CaptureParamRegs
 from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
-from e7awgsw.dspmodule import dsp
+from e7awgsw.simplemulti.dspmodule import dsp
 
 class CaptureUnit(object):
 

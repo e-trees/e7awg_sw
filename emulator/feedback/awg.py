@@ -1,10 +1,10 @@
 import threading
 import struct
 from enum import IntEnum
-from e7awgsw import WaveSequence
-from e7awgsw import WaveParamRegs
-from e7awgsw import WAVE_SAMPLE_SIZE
-from e7awgsw import get_file_logger, get_stderr_logger, log_error
+from e7awgsw.feedback import WaveSequence
+from e7awgsw.feedback.awgctrl import WaveParamRegs
+from e7awgsw.feedback.hwparam import WAVE_SAMPLE_SIZE
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 
 class Awg:

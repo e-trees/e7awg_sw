@@ -1,6 +1,5 @@
 from register import RwRegister, RoRegister
-from e7awgsw import CaptureUnit, CaptureModule
-from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
+from e7awgsw.simplemulti.capturectrl import CaptureUnit, CaptureModule, CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
 
 

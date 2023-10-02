@@ -36,4 +36,3 @@ from e7awgsw.feedback.captureparam import CaptureParam
 from e7awgsw.feedback.sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
 from e7awgsw.feedback.sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from e7awgsw.feedback.sequencerctrl import SequencerCtrl
-from e7awgsw.feedback.dspmodule import dsp

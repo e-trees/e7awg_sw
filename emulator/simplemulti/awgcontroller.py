@@ -1,7 +1,7 @@
 import awg
 from register import RwRegister, RoRegister
-from e7awgsw import AWG
-from e7awgsw.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
+from e7awgsw.simplemulti.hwdefs import AWG
+from e7awgsw.simplemulti.awgctrl import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 class AwgController(object):

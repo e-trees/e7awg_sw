@@ -6,7 +6,7 @@ from hbm import Hbm
 from awgcontroller import AwgController
 from capturecontroller import CaptureController
 from upldispatcher import UplDispatcher
-from e7awgsw import CaptureUnit, CaptureModule, AWG
+from e7awgsw.simplemulti import CaptureUnit, CaptureModule, AWG
 
 CAPTURE_START_DELAY = 15 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)
 

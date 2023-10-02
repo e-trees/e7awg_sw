@@ -1,5 +1,5 @@
 import threading
-from e7awgsw import get_file_logger, get_stderr_logger, log_error
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 
 class Hbm(object):

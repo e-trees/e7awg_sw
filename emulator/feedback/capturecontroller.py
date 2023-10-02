@@ -1,7 +1,7 @@
 from register import RwRegister, RoRegister
-from e7awgsw import CaptureUnit, CaptureModule
-from e7awgsw import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
-from e7awgsw import get_file_logger, get_stderr_logger, log_error, log_warning
+from e7awgsw.feedback import CaptureUnit, CaptureModule
+from e7awgsw.feedback.capturectrl import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 
 class CaptureController(object):
