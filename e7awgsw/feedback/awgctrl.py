@@ -3,7 +3,7 @@ import socket
 import os
 import stat
 from abc import ABCMeta, abstractmethod
-from e7awgsw.feedback.wavesequence import WaveSequence
+from e7awgsw.wavesequence import WaveSequence
 from e7awgsw.feedback.hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES, WAVE_RAM_WORD_SIZE
 from e7awgsw.feedback.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from e7awgsw.feedback.udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess

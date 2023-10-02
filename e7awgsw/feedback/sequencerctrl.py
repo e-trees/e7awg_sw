@@ -2,7 +2,7 @@ import time
 import socket
 from abc import ABCMeta, abstractmethod
 from e7awgsw.logger import get_file_logger, get_null_logger, log_error
-from e7awgsw.feedback.hwparam import CMD_ERR_REPORT_SIZE, SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
+from e7awgsw.feedback.hwparam import SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
 from e7awgsw.feedback.udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter, get_my_ip_addr
 from e7awgsw.feedback.uplpacket import UplPacket
 from e7awgsw.feedback.memorymap import SequencerCtrlRegs as SeqRegs

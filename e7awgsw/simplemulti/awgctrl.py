@@ -1,8 +1,8 @@
 import time
 import socket
 from abc import ABCMeta, abstractmethod
-from e7awgsw.simplemulti.wavesequence import WaveSequence
-from e7awgsw.simplemulti.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
+from e7awgsw.wavesequence import WaveSequence
+from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
 from e7awgsw.simplemulti.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from e7awgsw.simplemulti.udpaccess import AwgRegAccess, WaveRamAccess
 from e7awgsw.simplemulti.exception import AwgTimeoutError
