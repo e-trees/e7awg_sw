@@ -7,7 +7,7 @@ from e7awgsw.simplemulti.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs
 from e7awgsw.simplemulti.udpaccess import CaptureRegAccess, WaveRamAccess
 from e7awgsw.simplemulti.hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr
 from e7awgsw.simplemulti.captureparam import CaptureParam
-from e7awgsw.simplemulti.exception import CaptureUnitTimeoutError
+from e7awgsw.exception import CaptureUnitTimeoutError
 from e7awgsw.logger import get_file_logger, get_null_logger, log_error, log_warning
 from e7awgsw.lock import ReentrantFileLock
 from e7awgsw.classification import ClassificationResult
