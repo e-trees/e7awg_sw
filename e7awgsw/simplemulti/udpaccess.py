@@ -1,6 +1,6 @@
 import socket
 from e7awgsw.simplemulti.uplpacket import UplPacket
-from e7awgsw.simplemulti.logger import log_error
+from e7awgsw.logger import log_error
 
 class RegAccess(object):
     

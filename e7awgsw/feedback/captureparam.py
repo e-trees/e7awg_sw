@@ -2,7 +2,7 @@ import copy
 import numpy as np
 from e7awgsw.feedback.hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS, CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
 from e7awgsw.feedback.hwdefs import DspUnit, DecisionFunc
-from e7awgsw.feedback.logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
 
 
 class CaptureParam(object):

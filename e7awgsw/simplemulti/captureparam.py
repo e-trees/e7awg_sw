@@ -2,7 +2,7 @@ import copy
 import numpy as np
 from e7awgsw.simplemulti.hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS
 from e7awgsw.simplemulti.hwdefs import DspUnit, DecisionFunc
-from e7awgsw.simplemulti.logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
 
 class CaptureParam(object):
     """ キャプチャパラメータを保持するクラス"""

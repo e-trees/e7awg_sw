@@ -8,7 +8,7 @@ from e7awgsw.feedback.hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGIS
 from e7awgsw.feedback.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from e7awgsw.feedback.udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
 from e7awgsw.feedback.exception import AwgTimeoutError
-from e7awgsw.feedback.logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
 from e7awgsw.lock import ReentrantFileLock
 from e7awgsw.feedback.hwdefs import AWG, AwgErr
 

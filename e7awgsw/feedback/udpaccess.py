@@ -2,7 +2,7 @@ import socket
 import threading
 import copy
 from e7awgsw.feedback.uplpacket import UplPacket
-from e7awgsw.feedback.logger import log_error
+from e7awgsw.logger import log_error
 from e7awgsw.feedback.sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
 from e7awgsw.feedback.sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
 from e7awgsw.feedback.hwparam import CMD_ERR_REPORT_SIZE
