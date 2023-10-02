@@ -513,7 +513,7 @@ class CaptureParam(object):
         if not (isinstance(const_c, np.float32) and
                 self.__is_in_range(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c)):
             msg = ("The decision function constant must be {} ~ {}.  '{}' was set."
-                 .format(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, coef_c))
+                 .format(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c))
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
 
