@@ -20,7 +20,7 @@ NUM_SAMPLES_IN_ADC_WORD = ADC_WORD_SIZE // ADC_SAMPLE_SIZE
 CAPTURED_SAMPLE_SIZE = 8
 # メモリに保存された四値化結果のサイズ (単位 : bits)
 CLASSIFICATION_RESULT_SIZE = 2
-# 1 キャプチャモジュールが保存可能なデータサイズ (bytes)
+# 1 キャプチャユニットが保存可能なデータサイズ (bytes)
 MAX_CAPTURE_SIZE = 256 * 1024 * 1024
 # 積算ユニットが保持できる積算値の最大数
 MAX_INTEG_VEC_ELEMS = 4096
