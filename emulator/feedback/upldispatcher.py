@@ -3,9 +3,9 @@ import socket
 from concurrent.futures import ThreadPoolExecutor
 from awg import Awg
 import capture as cap
-from e7awgsw.uplpacket import UplPacket
-from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
-from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
+from e7awgsw import UplPacket
+from e7awgsw import get_file_logger, get_stderr_logger, log_error
+from e7awgsw import WAVE_RAM_PORT, AWG_REG_PORT
 
 
 class UplDispatcher:

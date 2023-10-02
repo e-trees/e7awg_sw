@@ -1,5 +1,4 @@
 from enum import IntEnum, Enum
-import copy
 
 class DspUnit(IntEnum):
     """キャプチャユニットが持つ信号処理モジュールの列挙型"""

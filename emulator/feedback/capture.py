@@ -6,9 +6,9 @@ from enum import IntEnum
 import numpy as np
 from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam, dsp
 from e7awgsw import CaptureUnit as CapUnit
-from e7awgsw.memorymap import CaptureParamRegs
-from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
-from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
+from e7awgsw import CaptureParamRegs
+from e7awgsw import MAX_INTEG_VEC_ELEMS
+from e7awgsw import get_file_logger, get_stderr_logger, log_error, log_warning
 
 
 class CaptureUnit(object):

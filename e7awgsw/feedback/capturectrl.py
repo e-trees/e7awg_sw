@@ -4,15 +4,15 @@ import struct
 import os
 import stat
 from abc import ABCMeta, abstractmethod
-from e7awgsw.hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
-from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
-from e7awgsw.udpaccess import CaptureRegAccess, WaveRamAccess, ParamRegistryAccess
-from e7awgsw.hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr
-from e7awgsw.captureparam import CaptureParam
-from e7awgsw.exception import CaptureUnitTimeoutError
-from e7awgsw.logger import get_file_logger, get_null_logger, log_error, log_warning
-from e7awgsw.lock import ReentrantFileLock
-from e7awgsw.classification import ClassificationResult
+from e7awgsw.feedback.hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
+from e7awgsw.feedback.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
+from e7awgsw.feedback.udpaccess import CaptureRegAccess, WaveRamAccess, ParamRegistryAccess
+from e7awgsw.feedback.hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr
+from e7awgsw.feedback.captureparam import CaptureParam
+from e7awgsw.feedback.exception import CaptureUnitTimeoutError
+from e7awgsw.feedback.logger import get_file_logger, get_null_logger, log_error, log_warning
+from e7awgsw.feedback.lock import ReentrantFileLock
+from e7awgsw.feedback.classification import ClassificationResult
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: 1 キャプチャモジュールが保存可能なサンプル数

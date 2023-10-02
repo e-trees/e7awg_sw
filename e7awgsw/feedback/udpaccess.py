@@ -1,12 +1,12 @@
 import socket
 import threading
 import copy
-from e7awgsw.uplpacket import UplPacket
-from e7awgsw.logger import log_error
-from e7awgsw.sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
-from e7awgsw.sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
-from e7awgsw.hwparam import CMD_ERR_REPORT_SIZE
-from e7awgsw.hwdefs import AWG, CaptureUnit
+from e7awgsw.feedback.uplpacket import UplPacket
+from e7awgsw.feedback.logger import log_error
+from e7awgsw.feedback.sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
+from e7awgsw.feedback.sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
+from e7awgsw.feedback.hwparam import CMD_ERR_REPORT_SIZE
+from e7awgsw.feedback.hwdefs import AWG, CaptureUnit
 
 class RegAccess(object):
     

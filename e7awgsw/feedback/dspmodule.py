@@ -1,6 +1,6 @@
 import numpy as np
-from e7awgsw.hwdefs import DspUnit, DecisionFunc
-from e7awgsw.captureparam import CaptureParam
+from e7awgsw.feedback.hwdefs import DspUnit, DecisionFunc
+from e7awgsw.feedback.captureparam import CaptureParam
 
 def dsp(samples, capture_param):
     if len(samples) < capture_param.num_samples_to_process:
