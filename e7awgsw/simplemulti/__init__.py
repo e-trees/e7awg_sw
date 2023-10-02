@@ -17,5 +17,5 @@ from e7awgsw.simplemulti.hwdefs import DspUnit, CaptureUnit, CaptureModule, Deci
 from e7awgsw.simplemulti.awgctrl import AwgCtrl
 from e7awgsw.simplemulti.capturectrl import CaptureCtrl
 from e7awgsw.wavesequence import WaveSequence
-from e7awgsw.simplemulti.captureparam import CaptureParam
+from e7awgsw.captureparam import CaptureParam
 from e7awgsw.simplemulti.dspmodule import dsp

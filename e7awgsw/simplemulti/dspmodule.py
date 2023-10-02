@@ -1,8 +1,8 @@
 import numpy as np
 from e7awgsw.simplemulti.hwdefs import DspUnit, DecisionFunc
-from e7awgsw.simplemulti.captureparam import CaptureParam
+from e7awgsw.captureparam import CaptureParam
 
-def dsp(samples, capture_param, ):
+def dsp(samples, capture_param):
     if len(samples) < capture_param.num_samples_to_process:
         samples.extend([(0, 0)] * (capture_param.num_samples_to_process - len(samples)))
     else:
@@ -22,7 +22,7 @@ def dsp(samples, capture_param, ):
             capture_param.num_integ_sections,
             CaptureParam.NUM_REAL_FIR_COEFS)
     else:
-        # 間引きが無効な場合, 後段の FIR ポストブランクのデータを使うので取り除かない.
+        # 間引きが無効な場合, 後段の FIR がポストブランクのデータを使うので取り除かない.
         # Real FIR 用に先頭に 0 を付加する
         samples_list = [ [(0,0)] * 7 + samples ]
 
@@ -32,7 +32,7 @@ def dsp(samples, capture_param, ):
     for samples in samples_list:
         i_samples_list.append([sample[0] for sample in samples])
         q_samples_list.append([sample[1] for sample in samples])
-    
+
     # 実数 FIR
     if DspUnit.REAL_FIR in dsp_units_enabled:
         i_samples_list = real_fir(i_samples_list, capture_param.real_fir_i_coefs)
