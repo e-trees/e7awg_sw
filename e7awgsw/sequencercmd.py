@@ -1,8 +1,8 @@
 import copy
 from abc import ABCMeta, abstractmethod
-from .hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel
-from .hwparam import CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
-from .wavesequence import WaveSequence
+from e7awgsw.hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel
+from e7awgsw.hwparam import CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
+from e7awgsw.wavesequence import WaveSequence
 
 class SequencerCmd(object, metaclass = ABCMeta):
 

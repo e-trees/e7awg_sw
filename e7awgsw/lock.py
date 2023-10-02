@@ -1,5 +1,4 @@
 import os
-import pwd
 import stat
 import fcntl
 import threading

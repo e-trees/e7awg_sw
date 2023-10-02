@@ -1,13 +1,13 @@
 import time
 import socket
 from abc import ABCMeta, abstractmethod
-from .logger import get_file_logger, get_null_logger, log_error
-from .hwparam import CMD_ERR_REPORT_SIZE, SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
-from .udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter, get_my_ip_addr
-from .uplpacket import UplPacket
-from .memorymap import SequencerCtrlRegs as SeqRegs
-from .sequencercmd import SequencerCmd
-from .exception import TooLittleFreeSpaceInCmdFifoError, SequencerTimeoutError
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.hwparam import CMD_ERR_REPORT_SIZE, SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
+from e7awgsw.udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter, get_my_ip_addr
+from e7awgsw.uplpacket import UplPacket
+from e7awgsw.memorymap import SequencerCtrlRegs as SeqRegs
+from e7awgsw.sequencercmd import SequencerCmd
+from e7awgsw.exception import TooLittleFreeSpaceInCmdFifoError, SequencerTimeoutError
 
 class SequencerCtrlBase(object, metaclass = ABCMeta):
 

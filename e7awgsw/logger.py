@@ -2,7 +2,7 @@ import logging
 import datetime
 import os
 import sys
-from logging import getLogger, FileHandler, Formatter
+from logging import getLogger
 
 os.makedirs('./log', exist_ok = True)
 formatter = logging.Formatter(

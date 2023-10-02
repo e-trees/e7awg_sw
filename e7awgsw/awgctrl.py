@@ -3,14 +3,14 @@ import socket
 import os
 import stat
 from abc import ABCMeta, abstractmethod
-from .wavesequence import WaveSequence
-from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES, WAVE_RAM_WORD_SIZE
-from .memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
-from .udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
-from .exception import AwgTimeoutError
-from .logger import get_file_logger, get_null_logger, log_error
-from .lock import ReentrantFileLock
-from .hwdefs import AWG, AwgErr
+from e7awgsw.wavesequence import WaveSequence
+from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES, WAVE_RAM_WORD_SIZE
+from e7awgsw.memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
+from e7awgsw.udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
+from e7awgsw.exception import AwgTimeoutError
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.lock import ReentrantFileLock
+from e7awgsw.hwdefs import AWG, AwgErr
 
 class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)

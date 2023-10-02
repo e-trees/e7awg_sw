@@ -1,8 +1,8 @@
 import copy
 import numpy as np
-from .hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS, CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
-from .hwdefs import DspUnit, DecisionFunc
-from .logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS, CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
+from e7awgsw.hwdefs import DspUnit, DecisionFunc
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
 
 
 class CaptureParam(object):
