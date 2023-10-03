@@ -4,8 +4,9 @@ import struct
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
-from e7awgsw.feedback import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
-from e7awgsw.feedback.dspmodule import dsp
+from e7awgsw.hwdefs_dsp import DspUnit, DecisionFunc
+from e7awgsw.feedback import CaptureCtrl, WaveSequence, CaptureParam
+from emulator.feedback.dspmodule import dsp
 from e7awgsw.feedback import CaptureUnit as CapUnit
 from e7awgsw.feedback.capturectrl import CaptureParamRegs
 from e7awgsw.feedback.hwparam import MAX_INTEG_VEC_ELEMS

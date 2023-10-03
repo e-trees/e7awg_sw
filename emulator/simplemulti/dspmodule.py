@@ -1,5 +1,5 @@
 import numpy as np
-from e7awgsw.feedback.hwdefs import DspUnit, DecisionFunc
+from e7awgsw.hwdefs_dsp import DspUnit, DecisionFunc
 from e7awgsw.captureparam import CaptureParam
 
 def dsp(samples, capture_param):
@@ -53,6 +53,9 @@ def dsp(samples, capture_param):
     if DspUnit.COMPLEX_WINDOW in dsp_units_enabled:
         i_samples_list, q_samples_list = complex_window(
             i_samples_list, q_samples_list, capture_param.complex_window_coefs)
+    else:
+        i_samples_list = [[i_sample * 0x40000000 for i_sample in i_samples] for i_samples in i_samples_list]
+        q_samples_list = [[q_sample * 0x40000000 for q_sample in q_samples] for q_samples in q_samples_list]
 
     if DspUnit.SUM in dsp_units_enabled:
         i_samples_list = summation(
@@ -66,12 +69,13 @@ def dsp(samples, capture_param):
         q_samples_list = integration(
             q_samples_list, capture_param.num_sum_sections, capture_param.num_integ_sections)
 
-    num_frac_bits = 30 if DspUnit.COMPLEX_WINDOW in dsp_units_enabled else 0
+    # complex_windowはCOMPLEX_WINDOWによらず固定小数点数の小数点数位置を30bitずらす
+    num_frac_bits = 30
 
     i_samples = sum(i_samples_list, [])
     q_samples = sum(q_samples_list, [])
-    i_samples = [fixed_to_float(i_sample, num_frac_bits) for i_sample in i_samples]
-    q_samples = [fixed_to_float(q_sample, num_frac_bits) for q_sample in q_samples]
+    i_samples = [int_to_float(i_sample, num_frac_bits) for i_sample in i_samples]
+    q_samples = [int_to_float(q_sample, num_frac_bits) for q_sample in q_samples]
 
     if DspUnit.CLASSIFICATION in dsp_units_enabled:
         results = classification(
@@ -238,7 +242,7 @@ def rawbits_to_float(val):
     return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
 
 
-def fixed_to_float(val, num_frac_bits):
+def int_to_float(val, num_frac_bits = 30):
     negative = False
     val = val & 0x1_FFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
     if val & 0x1_0000000000_0000000000_0000000000:

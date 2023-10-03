@@ -1,5 +1,6 @@
 import threading
 import struct
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
@@ -7,7 +8,7 @@ from e7awgsw.simplemulti import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence
 from e7awgsw.simplemulti.capturectrl import CaptureParamRegs
 from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
-from e7awgsw.simplemulti.dspmodule import dsp
+from emulator.simplemulti.dspmodule import dsp
 
 class CaptureUnit(object):
 

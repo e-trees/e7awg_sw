@@ -5,7 +5,8 @@ from abc import ABCMeta, abstractmethod
 from e7awgsw.hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT
 from e7awgsw.simplemulti.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
 from e7awgsw.simplemulti.udpaccess import CaptureRegAccess, WaveRamAccess
-from e7awgsw.simplemulti.hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr
+from e7awgsw.hwdefs_dsp import DspUnit
+from e7awgsw.simplemulti.hwdefs import CaptureUnit, CaptureModule, AWG, CaptureErr
 from e7awgsw.captureparam import CaptureParam
 from e7awgsw.exception import CaptureUnitTimeoutError
 from e7awgsw.logger import get_file_logger, get_null_logger, log_error, log_warning

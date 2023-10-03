@@ -24,6 +24,11 @@ CLASSIFICATION_RESULT_SIZE = 2
 MAX_CAPTURE_SIZE = 256 * 1024 * 1024
 # 積算ユニットが保持できる積算値の最大数
 MAX_INTEG_VEC_ELEMS = 4096
+# キャプチャ RAM のワードサイズ (bytes)
+CAPTURE_RAM_WORD_SIZE = 32
+# キャプチャデータをキャプチャ RAM に格納する際のアライメントサイズ (bytes)
+CAPTURE_DATA_ALIGNMENT_SIZE = CAPTURE_RAM_WORD_SIZE * 16
+# 波形レジストリの最大エントリ数
 
 #UDP ポート番号
 WAVE_RAM_PORT = 0x4000

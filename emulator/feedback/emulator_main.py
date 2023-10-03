@@ -2,10 +2,10 @@ import os
 import argparse
 from awg import Awg
 import capture
-from hbm import Hbm
-from awgcontroller import AwgController
-from capturecontroller import CaptureController
-from upldispatcher import UplDispatcher
+from emulator.hbm import Hbm
+from emulator.feedback.awgcontroller import AwgController
+from emulator.feedback.capturecontroller import CaptureController
+from emulator.feedback.upldispatcher import UplDispatcher
 from e7awgsw.feedback import CaptureUnit, CaptureModule, AWG
 
 CAPTURE_START_DELAY = 31 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)

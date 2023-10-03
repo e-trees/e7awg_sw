@@ -1,25 +1,5 @@
 from enum import IntEnum, Enum
 
-class DspUnit(IntEnum):
-    """キャプチャユニットが持つ信号処理モジュールの列挙型"""
-    COMPLEX_FIR    = 0 #: 複素 FIR フィルタ
-    DECIMATION     = 1 #: 間引き
-    REAL_FIR       = 2 #: 実 FIR フィルタ
-    COMPLEX_WINDOW = 3 #: 窓関数
-    SUM            = 4 #: 総和
-    INTEGRATION    = 5 #: 積算
-    CLASSIFICATION = 6 #: 四値化
-    
-    @classmethod
-    def all(cls):
-        """信号処理モジュールの全列挙子をリストとして返す"""
-        return [item for item in DspUnit]
-
-    @classmethod
-    def includes(cls, *vals):
-        units = cls.all()
-        return all([val in units for val in vals])
-
 class CaptureUnit(IntEnum):
     """キャプチャユニットの ID"""
     U0 = 0
@@ -89,12 +69,6 @@ class CaptureModule(IntEnum):
                 raise ValueError('Invalid capture module ID {}'.format(capmod_id))
         return sorted(units)
 
-
-class DecisionFunc(IntEnum):
-    """四値化処理の判定式の ID"""
-    U0 = 0 #: 判定式 0
-    U1 = 1 #: 判定式 1
-    
 
 class AWG(IntEnum):
     """AWG の ID"""
