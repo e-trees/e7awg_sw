@@ -4,6 +4,8 @@ import pytest
 import logging
 
 from e7awgsw.feedback.udpaccess import WaveRamAccess
+from e7awgsw.feedback.uplpacketbuffer import UplPacketMode
+from e7awgsw.feedback.udprw import UdpRw
 from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
 
 logger = logging.getLogger()
@@ -18,7 +20,16 @@ TEST_SETTINGS = [
 
 @pytest.fixture(scope="session", params=TEST_SETTINGS)
 def fixtures(request):
-    wra = WaveRamAccess(request.param["ipaddr_wss"], WAVE_RAM_PORT)
+    #wra = WaveRamAccess(request.param["ipaddr_wss"], WAVE_RAM_PORT)
+    wra = UdpRw(
+        ip_addr=request.param["ipaddr_wss"],
+        port=WAVE_RAM_PORT,
+        min_rw_size=32,
+        wr_mode_id=UplPacketMode.WAVE_RAM_WRITE,
+        rd_mode_id=UplPacketMode.WAVE_RAM_READ,
+        bottom_address=0x1_ffff_ffff,
+        timeout=0.5,
+    )
     return {
         "hbm_access": wra,
     }
@@ -36,7 +47,7 @@ def fixtures(request):
 def test_hbm_basic(address, size, fixtures):
     wra = fixtures["hbm_access"]
     data0 = bytes([x & 0xff for x in range(0, size)])
-    wra.write(address, data0)
+    wra.write(address, memoryview(data0))
     data1 = wra.read(address, size)
     assert data0 == data1
 
@@ -57,7 +68,7 @@ def test_hbm_basic(address, size, fixtures):
 def test_hbm_unaligned(address, size, fixtures):
     wra = fixtures["hbm_access"]
     data0 = bytes([x & 0xff for x in range(0, size)])
-    wra.write(address, data0)
+    wra.write(address, memoryview(data0))
     data1 = wra.read(address, size)
     assert data0 == data1
 
@@ -87,7 +98,7 @@ def test_hbm_perf(address, size, fixtures):
     wra = fixtures["hbm_access"]
     data0 = bytes([x & 0xff for x in range(0, size)])
     t0 = time.perf_counter()
-    wra.write(address, data0)
+    wra.write(address, memoryview(data0))
     t1 = time.perf_counter()
     data1 = wra.read(address, size)
     t2 = time.perf_counter()

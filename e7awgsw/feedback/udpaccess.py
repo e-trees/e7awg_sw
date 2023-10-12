@@ -1,6 +1,5 @@
 import logging
 import socket
-from typing import ByteString
 import threading
 import copy
 from e7awgsw.feedback.uplpacketbuffer import UplPacketBuffer, UplPacketMode
@@ -14,7 +13,7 @@ from e7awgsw.feedback.udprw import UdpRw
 logger = logging.getLogger(__name__)
 
 class RegAccess(object):
-    
+
     def __init__(self, udp_rw, reg_size):
         self.__udp_rw = udp_rw
         self.__reg_size = reg_size # bytes
@@ -58,7 +57,7 @@ class RegAccess(object):
         rd_addr = addr + offset
         rd_data = self.__udp_rw.read(rd_addr, self.__reg_size * num_regs)
         return [
-            int.from_bytes(rd_data[i * self.__reg_size : (i + 1) * self.__reg_size], 'little') 
+            int.from_bytes(rd_data[i * self.__reg_size : (i + 1) * self.__reg_size], 'little')
             for i in range(num_regs)]
     
 
@@ -199,28 +198,25 @@ class SequencerCmdSender(object):
         return self.__udp_rw.my_port
 
 
-class WaveRamAccess(object):
+class WaveRamAccess:
+    MIN_RW_SIZE = 32  # Bytes
 
-    MIN_RW_SIZE = 32 # bytes
-
-    def __init__(self, ip_addr, port, *loggers):
+    def __init__(self, ip_addr, port):
         self.__udp_rw = UdpRw(
             ip_addr=ip_addr,
             port=port,
             min_rw_size=self.MIN_RW_SIZE,
             wr_mode_id=UplPacketMode.WAVE_RAM_WRITE,
             rd_mode_id=UplPacketMode.WAVE_RAM_READ,
-            bottom_address=0x2_0000_0000,
+            bottom_address=0x1_ffff_ffff,
             timeout=0.5,
         )
 
     def write(self, addr, data):
         self.__udp_rw.write(addr, data)
 
-
     def read(self, addr, size):
         return self.__udp_rw.read(addr, size)
-
 
     def close(self):
         self.__udp_rw.close()

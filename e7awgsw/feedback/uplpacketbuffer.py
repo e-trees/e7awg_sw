@@ -119,6 +119,7 @@ class UplPacketAbstract(metaclass=ABCMeta):
     def has_payload(self) -> bool:
         return self._mode.has_payload
 
+    @property
     @abstractmethod
     def payload(self) -> memoryview:
         pass
@@ -160,7 +161,8 @@ class UplPacketBuffer(UplPacketAbstract):
 
 class UplPacket(UplPacketAbstract):
     def __init__(self, buffer: bytes):
-        """QuEL-1内部のモジュール群（AWG, CaptureModule, SequencerModule) から受信したパケット解釈のためのバッファオブジェクト
+        """QuEL-1内部のモジュール群（AWG, CaptureModule, SequencerModule) から受信したパケットを解釈するためのオブジェクト。
+        パケットから取得したデータの改変はできない。改変及び改変済みデータからのパケット作成をするには、UplPacketBufferを使用すること。
         :param buffer: パケットの内容を含むbytesオブジェクト
         """
         super().__init__(len(buffer) - self._HEADER_SIZE)
