@@ -1,5 +1,4 @@
 import os
-import pwd
 import stat
 import fcntl
 import threading
@@ -10,7 +9,10 @@ class ReentrantFileLock(object):
 
     def __init__(self, filepath):
         dirname = os.path.dirname(filepath)
-        os.makedirs(dirname, exist_ok = True)
+        os.makedirs(dirname, exist_ok = True)        
+        dir_owner = os.stat(dirname).st_uid
+        if dir_owner == os.getuid():
+            os.chmod(dirname, 0o777)
         self.__lock_fp = self.__get_fp(filepath)
         file_owner = os.stat(filepath).st_uid
         if file_owner == os.getuid():

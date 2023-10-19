@@ -1,7 +1,7 @@
 import copy
 import struct
-from .hwparam import WAVE_SAMPLE_SIZE, AWG_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_WAVE_BLOCK
-from .logger import get_file_logger, get_null_logger, log_error
+from e7awgsw.hwparam import WAVE_SAMPLE_SIZE, AWG_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_WAVE_BLOCK
+from e7awgsw.logger import get_file_logger, get_null_logger, log_error
 
 class WaveSequence(object):
     """ 波形シーケンスの情報を保持するクラス"""

@@ -1,8 +1,8 @@
 import os
 import copy
 import numpy as np
-from e7awgsw.memorymap import CaptureParamRegs
-from e7awgsw.hwparam import NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_CAP_RAM_WORD, NUM_CLS_RESULTS_IN_CAP_RAM_WORD
+from e7awgsw import CaptureParamRegs
+from e7awgsw import NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_CAP_RAM_WORD, NUM_CLS_RESULTS_IN_CAP_RAM_WORD
 from e7awgsw import CaptureParam, DecisionFunc
 
 

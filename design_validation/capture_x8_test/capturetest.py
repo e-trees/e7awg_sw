@@ -2,7 +2,7 @@ import os
 import random
 from testutil import gen_random_int_list
 from e7awgsw import CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
-from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
+from e7awgsw import RemoteAwgCtrl, RemoteCaptureCtrl
 
 class CaptureTest(object):
     
