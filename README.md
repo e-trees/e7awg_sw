@@ -15,6 +15,7 @@
 % pyenv install 3.9.18
 % pyenv global 3.9.18
 % pip install --upgrade pip # should be installed pip >= 23.2.1
+% pip install pipenv
 % git clone https://github.com/e-trees/e7awg_sw # use HTTPS
 % git clone git@github.com:e-trees/e7awg_sw.git # or use SSH
 % cd e7awg_sw
