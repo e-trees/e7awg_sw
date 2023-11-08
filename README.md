@@ -12,10 +12,14 @@
 ```
 % mkdir -p <YOUR_WORK_DIR>
 % cd <YOUR_WORK_DIR>
+% pyenv install 3.9.18
+% pyenv global 3.9.18
+% pip install --upgrade pip # should be installed pip >= 23.2.1
 % git clone https://github.com/e-trees/e7awg_sw # use HTTPS
 % git clone git@github.com:e-trees/e7awg_sw.git # or use SSH
 % cd e7awg_sw
 % pipenv sync
+% pipenv shell
 
 # Make a directory to put the lock files used by e7awgsw library in the way of (1) or (2).
 
