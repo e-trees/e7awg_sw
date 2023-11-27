@@ -82,7 +82,8 @@ class WaveSequence(object):
 
             if num_samples % NUM_SAMPLES_IN_WAVE_BLOCK != 0:
                 raise ValueError(
-                    'The number of samples in a wave chunk must be a multiple of {}.'.format(NUM_SAMPLES_IN_WAVE_BLOCK))
+                    'The number of samples in a wave chunk must be a multiple of {}.  ({} was set.)'
+                    .format(NUM_SAMPLES_IN_WAVE_BLOCK, num_samples))
 
             try:
                 # 2 bytes で表せる数かどうかチェック

@@ -1,5 +1,4 @@
 from enum import IntEnum, Enum
-import copy
 
 class DspUnit(IntEnum):
     """キャプチャユニットが持つ信号処理モジュールの列挙型"""
@@ -278,3 +277,31 @@ class SequencerErr(Enum):
     def includes(cls, *vals):
         errs = cls.all()
         return all([val in errs for val in vals])
+
+
+class FourClassifierChannel(IntEnum):
+    """四値化結果チャネル (四値化結果を読み書きするチャネル) の ID"""
+    U0  = 0
+    U1  = 1
+    U2  = 2
+    U3  = 3
+    U4  = 4
+    U5  = 5
+    U6  = 6
+    U7  = 7
+
+    @classmethod
+    def all(cls):
+        """全フィードバックチャネル の ID をリストとして返す"""
+        return list(FourClassifierChannel)
+
+    @classmethod
+    def of(cls, val):
+        if not cls.includes(val):
+            raise ValueError("connot convert {} to FourClassifierChannel".format(val))
+        return cls.all()[val]
+
+    @classmethod
+    def includes(cls, *vals):
+        channels = cls.all()
+        return all([val in channels for val in vals])

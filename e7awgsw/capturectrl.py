@@ -363,8 +363,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
 
+
     def _validate_cap_param_registry_key(self, key):
-        if (not isinstance(key, int)) and (key is not None):
+        if ((not isinstance(key, int)) or
+            (key < 0)                  or
+            (key >= self.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES)):
             raise ValueError(
                 "The capture parameter registry key must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(0, self.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES -1, key))

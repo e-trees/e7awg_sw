@@ -298,7 +298,11 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_wave_registry_key(self, key):
-        if (not isinstance(key, int)) and (key is not None):
+        if key is None:
+            return
+        if ((not isinstance(key, int)) or
+            (key < 0)                  or
+            (key >= self.MAX_WAVE_REGISTRY_ENTRIES)):
             raise ValueError(
                 "The wave registry key must be 'None' or an integer between {} and {} inclusive.  '{}' was set."
                 .format(0, self.MAX_WAVE_REGISTRY_ENTRIES -1, key))
@@ -366,9 +370,11 @@ class AwgCtrl(AwgCtrlBase):
     # 1 波形シーケンスのサンプルデータに割り当てられる最大 RAM サイズ (bytes)
     __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE = 256 * 1024 * 1024
     # 波形レジストリの先頭アドレス
-    __WAVE_REGISTRY_ADDR = 0x1F2000000
-    # AWG 1つ当たりのレジストリのサイズ (bytes)
-    __AWG_REGISTRY_SIZE = 0x80000
+    __WAVE_REGISTRY_ADDR_LIST = [
+        0x01FF00000, 0x03FF00000, 0x05FF00000, 0x07FF00000,
+        0x09FF00000, 0x0BFF00000, 0x0DFF00000, 0x0FFF00000,
+        0x11FF00000, 0x13FF00000, 0x15FF00000, 0x17FF00000,
+        0x19FF00000, 0x1BFF00000, 0x1DFF00000, 0x1F2000000]
     # 波形シーケンス 1 つ当たりのレジストリのサイズ (bytes)
     __WAVE_SEQ_REGISTRY_SIZE = 0x400
 
@@ -443,9 +449,7 @@ class AwgCtrl(AwgCtrlBase):
                 continue
             
             chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq, addr_offset)
-            addr = (self.__WAVE_REGISTRY_ADDR +
-                    self.__AWG_REGISTRY_SIZE * awg_id +
-                    self.__WAVE_SEQ_REGISTRY_SIZE * key)
+            addr = self.__WAVE_REGISTRY_ADDR_LIST[awg_id] + self.__WAVE_SEQ_REGISTRY_SIZE * key
             self.__set_wave_params(self.__registry_access, addr, wave_seq, chunk_addr_list)
             self.__send_wave_samples(wave_seq, chunk_addr_list)
             addr_offset += self.__calc_wave_seq_data_size(wave_seq)
@@ -496,8 +500,10 @@ class AwgCtrl(AwgCtrlBase):
         """波形シーケンスのサンプルデータが格納領域に収まるかチェックする"""
         size = sum([self.__calc_wave_seq_data_size(wave_seq) for wave_seq in wave_seq_list])
         if size > self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE:
-            msg = ("Too much RAM space is required for the wave sequence(s) for AWG {}.  ({} bytes)\n".format(awg_id, size) +
-                   "The maximum RAM size for wave sequence(s) is {} bytes.".format(self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE))
+            msg = ("Too much RAM space is required for the wave sequence(s) for AWG {}.  ({} bytes)\n"
+                   .format(awg_id, size) +
+                   "The maximum RAM size for wave sequence(s) is {} bytes."
+                   .format(self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 

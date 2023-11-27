@@ -1,0 +1,9 @@
+実行方法
+	1. capture_module_test デザインをコンフィギュレーションする
+	2. pipenv shell
+	3. sequencer_test.py のあるディレクトリに移動
+	4. python sequencer_test.py [--num-tests=テスト回数] [--server-ipaddr=LabRAD サーバのIPアドレス] [--labrad]
+
+結果の確認
+	All tests succeeded. と表示されればテスト成功
+

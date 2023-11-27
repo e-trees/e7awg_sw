@@ -245,8 +245,8 @@ class ParamLoadTest(object):
         cap_param_elems の要素だけセットして, 波形シーケンス (wave_seq_0, wave_seq_1 ) の送信とキャプチャを行う.
         2 つのキャプチャパラメータを組み合わせたパラメータによるキャプチャ結果が期待値と一致するかチェックする.
         """
-        wave_seq_keys = gen_keys(AwgCtrl.MAX_WAVE_REGISTRY_ENTRIES)
-        cap_param_keys = gen_keys(CaptureCtrl.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES)
+        wave_seq_keys = gen_keys(AwgCtrl.MAX_WAVE_REGISTRY_ENTRIES - 1)
+        cap_param_keys = gen_keys(CaptureCtrl.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES - 1)
         capture_addr_offsets = gen_capture_addr_offsets()
         wave_sequences = [wave_seq_0, wave_seq_1]
         

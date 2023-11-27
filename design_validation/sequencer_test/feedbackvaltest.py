@@ -185,8 +185,8 @@ class FeedbackValTest(object):
         """
         wave_sequences = gen_wave_sequences()
         cap_params = gen_capture_params()
-        wave_seq_keys = gen_keys(AwgCtrl.MAX_WAVE_REGISTRY_ENTRIES)
-        cap_param_keys = gen_keys(CaptureCtrl.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES)
+        wave_seq_keys = gen_keys(AwgCtrl.MAX_WAVE_REGISTRY_ENTRIES - 1)
+        cap_param_keys = gen_keys(CaptureCtrl.MAX_CAPTURE_PARAM_REGISTRY_ENTRIES - 1)
         # パラメータ登録
         self.__register_wave_sequences(wave_seq_keys, wave_sequences)
         self.__register_capture_params(cap_param_keys, cap_params)
@@ -226,8 +226,8 @@ class FeedbackValTest(object):
                 samples = wave_sequence.all_samples(False)
                 expected_data = dsp(samples, capture_param)
                 # キャプチャデータ取得
-                cap_unit_to_capture_data = \
-                    self.__get_capture_data(capture_param.calc_capture_samples(), 0, False)
+                cap_unit_to_capture_data = self.__get_capture_data(
+                    capture_param.calc_capture_samples(), 0, False)
                 # 結果比較
                 all_match = True
                 for cap_unit, cap_data in cap_unit_to_capture_data.items():
@@ -237,7 +237,6 @@ class FeedbackValTest(object):
                             feedback_channel_id, elem_offset, cap_unit))
 
                 # 波形データを保存
-                # print('save wave data')
                 self.__save_wave_samples(
                     cap_unit_to_capture_data,
                     test_name,

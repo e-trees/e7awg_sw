@@ -7,6 +7,7 @@ import numpy as np
 from paramloadtest import ParamLoadTest
 from feedbackvaltest import FeedbackValTest
 from waitflagtest import WaitFlagTest
+from responsivefeedbacktest import ResponsiveFeedbackTest
 from e7awgsw import CaptureModule, WaveSequence, CaptureParam, DspUnit, DecisionFunc, CaptureParamElem
 
 
@@ -297,16 +298,24 @@ def main(
         test.close()
         if not result:
             print('failure feedback val test')
-            failed_tests.append('{} - feedback val test'.format(test_id))
+            failed_tests.append('{} - feedback val'.format(test_id))
 
-
-        print('\n-- wait flag test --\n')
+        print('\n-- wait flag test --')
         test = WaitFlagTest(res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
         result = test.run_test()
         test.close()
         if not result:
             print('failure wait flag test')
-            failed_tests.append('{} - wait flag test'.format(test_id))
+            failed_tests.append('{} - wait flag'.format(test_id))
+
+        print('\n-- responsive feedback test --\n')
+        test = ResponsiveFeedbackTest(
+            res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
+        result = test.run_test('responsive_fb_test')
+        test.close()
+        if not result:
+            print('failure responsive feedback test')
+            failed_tests.append('{} - responsive feedback'.format(test_id))
 
     if failed_tests:
         for test_id in failed_tests:

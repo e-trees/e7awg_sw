@@ -1,7 +1,9 @@
 import copy
 from abc import ABCMeta, abstractmethod
-from .hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel
-from .hwparam import CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
+from .hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel, FourClassifierChannel
+from .hwparam import \
+    CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, \
+    MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
 from .wavesequence import WaveSequence
 
 class SequencerCmd(object, metaclass = ABCMeta):
@@ -93,6 +95,12 @@ class SequencerCmd(object, metaclass = ABCMeta):
                     .format(0, max_registry_key, key_table))
 
 
+    def _validate_four_cls_channel_id(self, four_cls_channel_id):
+        if not FourClassifierChannel.includes(four_cls_channel_id):
+            raise ValueError(
+                "Invalid four-classifier value channel ID '{}'".format(four_cls_channel_id))
+
+
     def _to_bit_field(self, bit_pos_list):
         bit_field = 0
         for bit_pos in bit_pos_list:
@@ -135,7 +143,8 @@ class AwgStartCmd(SequencerCmd):
                 | AWG をスタートする時刻.
                 | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
                 | 負の値を入力した場合, AWG を即時スタートする．
-                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 1.92 [us] 後にスタートする.
+                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 
+                | awg_id_list で指定した全ての AWG の準備が完了するとスタートする.
             wait (bool):
                 | True -> AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
                 | False -> AWG をスタートした後, このコマンドを終了する.
@@ -210,7 +219,9 @@ class CaptureEndFenceCmd(SequencerCmd):
         wait = True,
         terminate = False,
         stop_seq = False):
-        """指定した時刻まで待ってからキャプチャが完了しているかを調べるコマンド
+        """キャプチャ終了フェンスコマンド
+        
+        | 'end_time' で指定した時刻まで待ってからキャプチャが完了しているかを調べるコマンド.
 
         Args:
             cmd_no (int): コマンド番号
@@ -221,9 +232,11 @@ class CaptureEndFenceCmd(SequencerCmd):
             wait (bool):
                 | True -> end_time の後もキャプチャが完了していないキャプチャユニットの終了を待つ.
                 | False -> end_time の後, キャプチャの完了を待たずにコマンドを終了する.
+                | 'end_time' で指定した時刻までにこのコマンドを実行できなかった場合, 引数に関係なくキャプチャの完了待ちは行われない.
             terminate (bool): 
                 | キャプチャユニット停止フラグ.
                 | True の場合 end_time の時点でキャプチャが完了していないキャプチャユニットを強制停止する.
+                | 'end_time' で指定した時刻までにこのコマンドを実行できなかった場合, 引数に関係なくキャプチャユニットの強制停止は行われない.
             stop_seq (bool): 
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
@@ -354,7 +367,6 @@ class WaveSequenceSetCmd(SequencerCmd):
     def __gen_cmd_bytes(self):
         stop_seq = 1 if self.stop_seq else 0
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
-        last_chunk_no = WaveSequence.MAX_CHUNKS - 1
         key_table_bits = 0
         for i in range(len(self.__key_table)):
             key_table_bits |= self.__key_table[i] << (i * 10)
@@ -365,8 +377,7 @@ class WaveSequenceSetCmd(SequencerCmd):
             self.cmd_no              << 8  |
             awg_id_bits              << 24 |
             self.feedback_channel_id << 40 |
-            last_chunk_no            << 44 |
-            key_table_bits           << 60)
+            key_table_bits           << 44)
         return cmd.to_bytes(16, 'little')
 
 
@@ -672,7 +683,9 @@ class WaveGenEndFenceCmd(SequencerCmd):
         wait = True,
         terminate = False,
         stop_seq = False):
-        """指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド
+        """波形出力終了フェンスコマンド
+
+        | 'end_time' で指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド.
 
         Args:
             cmd_no (int): コマンド番号
@@ -683,9 +696,11 @@ class WaveGenEndFenceCmd(SequencerCmd):
             wait (bool):
                 | True -> end_time の後も波形出力が完了していない AWG の終了を待つ.
                 | False -> end_time の後, 波形出力の完了を待たずにコマンドを終了する.
+                | 'end_time' で指定した時刻までにこのコマンドを実行できなかった場合, 引数に関係なく波形出力の完了待ちは行われない.
             terminate (bool): 
                 | AWG 停止フラグ.
                 | True の場合 end_time の時点で波形の出力が完了していない AWG を強制停止する.
+                | 'end_time' で指定した時刻までにこのコマンドを実行できなかった場合, 引数に関係なく AWG の強制停止は行われない.
             stop_seq (bool): 
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
@@ -745,6 +760,185 @@ class WaveGenEndFenceCmd(SequencerCmd):
             self.end_time            << 40  |
             self.terminate           << 104 |
             self.wait                << 105)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self):
+        return self.__cmd_bytes
+
+
+    def size(self):
+        return len(self.__cmd_bytes)
+
+
+class ResponsiveFeedbackCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID = 8
+    #: 1 回目の AWG スタート時刻に指定可能な最大値
+    MAX_START_TIME = 0x7FFFFFFF_FFFFFFFF
+    #: AWG を即時スタートする場合に start_time に指定する値．
+    IMMEDIATE = -1
+
+    def __init__(
+        self,
+        cmd_no,
+        awg_id_list,
+        start_time,
+        wait = False,
+        stop_seq = False):
+        """高速フィードバック処理を行うコマンド
+
+        | 高速フィードバック処理は
+        |   1. AWG から波形を出力 (1 回目)
+        |   2. キャプチャユニットで波形データを取得し四値化結果を算出
+        |   3. 四値化結果に応じて波形シーケンスを AWG に設定
+        |   4. AWG から波形を出力 (2 回目)
+        | を行う.
+        |
+        | 高速フィードバック処理で参照する四値化結果のチャネルと波形シーケンスの ID は,
+        | WaveSequenceSelectionCmd オブジェクトで作れるシーケンサコマンドを使って指定する.
+
+        Args:
+            cmd_no (int): コマンド番号
+            awg_id_list (list of AWG): 波形を出力する AWG のリスト
+            start_time (int):
+                | 1 回目に AWG をスタートする時刻.
+                | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
+                | 負の値を入力した場合, AWG を即時スタートする．
+                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 
+                | awg_id_list で指定した全ての AWG の準備が完了するとスタートする.
+            wait (bool):
+                | True -> 2 回目に AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
+                | False -> 2 回目に AWG をスタートした後, このコマンドを終了する.
+            stop_seq (bool): 
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        if AWG.includes(awg_id_list):
+            awg_id_list = [awg_id_list]
+        self._validate_awg_id(awg_id_list)
+
+        if not (isinstance(start_time, int) and (start_time <= self.MAX_START_TIME)):
+            raise ValueError(
+                "'start_time' must be less than or equal to {}.  '{}' was set."
+                .format(self.MAX_START_TIME, start_time))
+
+        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__start_time = start_time
+        self.__wait = wait
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def awg_id_list(self):
+        return copy.copy(self.__awg_id_list)
+
+
+    @property
+    def start_time(self):
+        return self.__start_time
+
+
+    @property
+    def wait(self):
+        return self.__wait
+
+
+    def __gen_cmd_bytes(self):
+        stop_seq = 1 if self.stop_seq else 0
+        awg_id_list = self._to_bit_field(self.__awg_id_list)
+        start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
+        cmd = (
+            stop_seq                    |
+            self.cmd_id          << 1   |
+            self.cmd_no          << 8   |
+            awg_id_list          << 24  |
+            start_time           << 40  |
+            self.wait            << 104)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self):
+        return self.__cmd_bytes
+
+
+    def size(self):
+        return len(self.__cmd_bytes)
+
+
+class WaveSequenceSelectionCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID = 9
+
+    def __init__(
+        self,
+        cmd_no,
+        awg_id_list,
+        key_table,
+        four_cls_channel_id = FourClassifierChannel.U0,
+        stop_seq = False):
+        """高速フィードバック処理で AWG に設定する波形シーケンスを選択するコマンド.
+
+        Args:
+            cmd_no (int): コマンド番号
+            awg_id_list (list of AWG): 波形シーケンスをセットする AWG のリスト.
+            key_table (list of int, int):
+                | 波形シーケンスを登録したレジストリのキーのリスト.
+                | key_table[四値化結果] = 設定したい波形シーケンスを登録したレジストリのキー
+                | となるように設定する.
+                | レジストリキーに int 値 1 つを指定すると, 四値化結果によらず, 
+                | そのキーに登録された波形シーケンスを設定する.
+            four_cls_channel_id (FourClassifierChannel): 
+                | 参照する四値化結果チャネルの ID.
+            stop_seq (bool):
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        if AWG.includes(awg_id_list):
+            awg_id_list = [awg_id_list]
+        self._validate_awg_id(awg_id_list)
+        self._validate_four_cls_channel_id(four_cls_channel_id)
+        self._validate_key_table(key_table, MAX_WAVE_REGISTRY_ENTRIES - 1)
+        if isinstance(key_table, int):
+            key_table = [key_table] * 4
+
+        self.__awg_id_list = awg_id_list
+        self.__four_cls_channel_id = four_cls_channel_id
+        self.__key_table = copy.copy(key_table)
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def awg_id_list(self):
+        return copy.copy(self.__awg_id_list)
+
+
+    @property
+    def four_cls_channel_id(self):
+        return self.__four_cls_channel_id
+
+
+    @property
+    def key_table(self):
+        return copy.copy(self.__key_table)
+
+
+    def __gen_cmd_bytes(self):
+        stop_seq = 1 if self.stop_seq else 0
+        awg_id_bits = self._to_bit_field(self.__awg_id_list)
+        key_table_bits = 0
+        for i in range(len(self.__key_table)):
+            key_table_bits |= self.__key_table[i] << (i * 10)
+
+        cmd = (
+            stop_seq                              |
+            self.cmd_id                     << 1  |
+            self.cmd_no                     << 8  |
+            awg_id_bits                     << 24 |
+            self.four_cls_channel_id << 40 |
+            key_table_bits                  << 44)
         return cmd.to_bytes(16, 'little')
 
 
@@ -826,10 +1020,11 @@ class AwgStartCmdErr(SequencerCmdErr):
 
 class CaptureEndFenceCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, capture_unit_id_list):
+    def __init__(self, cmd_no, is_terminated, capture_unit_id_list, is_in_time):
         """キャプチャ完了確認コマンドのエラー情報を保持するクラス"""
         super().__init__(CaptureEndFenceCmd.ID, cmd_no, is_terminated)
         self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__is_in_time = is_in_time
 
 
     @property
@@ -842,6 +1037,19 @@ class CaptureEndFenceCmdErr(SequencerCmdErr):
         return copy.copy(self.__capture_unit_id_list)
 
 
+    @property
+    def is_in_time(self):
+        """このエラーを出したコマンドが指定した時刻に実行されていたかどうか.
+
+        | キャプチャ終了フェンスコマンドで指定した時刻より後に同コマンドが実行された場合, そのコマンドは失敗扱いとなり
+        | このプロパティは False となる.
+        
+        Returns:
+            bool: 指定した時刻以前にコマンドが実行されていた場合 True
+        """
+        return self.__is_in_time
+
+
     def __str__(self):
         capture_unit_id_list = [int(awg_id) for awg_id in self.__capture_unit_id_list]
         return  (
@@ -849,7 +1057,8 @@ class CaptureEndFenceCmdErr(SequencerCmdErr):
             '  - command ID       : {}\n'.format(self.cmd_id) +
             '  - command No       : {}\n'.format(self.cmd_no) +
             '  - terminated       : {}\n'.format(self.is_terminated) +
-            '  - capture unit IDs : {}'.format(capture_unit_id_list))
+            '  - capture unit IDs : {}\n'.format(capture_unit_id_list) +
+            '  - in time          : {}'.format(self.__is_in_time))
 
 
 class WaveSequenceSetCmdErr(SequencerCmdErr):
@@ -986,10 +1195,11 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
 
 class WaveGenEndFenceCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, awg_id_list):
+    def __init__(self, cmd_no, is_terminated, awg_id_list, is_in_time):
         """波形出力完了確認コマンドのエラー情報を保持するクラス"""
         super().__init__(WaveGenEndFenceCmd.ID, cmd_no, is_terminated)
         self.__awg_id_list = copy.copy(awg_id_list)
+        self.__is_in_time = is_in_time
 
 
     @property
@@ -1001,6 +1211,18 @@ class WaveGenEndFenceCmdErr(SequencerCmdErr):
         """
         return copy.copy(self.__awg_id_list)
 
+    @property
+    def is_in_time(self):
+        """このエラーを出したコマンドが指定した時刻に実行されていたかどうか.
+
+        | 波形出力終了フェンスコマンドで指定した時刻より後に同コマンドが実行された場合, そのコマンドは失敗扱いとなり
+        | このプロパティは False となる.
+        
+        Returns:
+            bool: 指定した時刻以前にコマンドが実行されていた場合 True
+        """
+        return self.__is_in_time
+
 
     def __str__(self):
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
@@ -1009,4 +1231,72 @@ class WaveGenEndFenceCmdErr(SequencerCmdErr):
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
             '  - terminated : {}\n'.format(self.is_terminated) +
-            '  - AWG IDs    : {}'.format(awg_id_list))
+            '  - AWG IDs    : {}\n'.format(awg_id_list) + 
+            '  - in time    : {}'.format(self.__is_in_time))
+
+
+class ResponsiveFeedbackCmdErr(SequencerCmdErr):
+
+    def __init__(self, cmd_no, is_terminated, awg_id_list, read_err, write_err):
+        """高速フィードバックコマンドのエラー情報を保持するクラス"""
+        super().__init__(ResponsiveFeedbackCmd.ID, cmd_no, is_terminated)
+        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__read_err = read_err
+        self.__write_err = write_err
+
+
+    @property
+    def awg_id_list(self):
+        """指定した時刻にスタートできなかった AWG の ID のリスト
+        
+        Returns:
+            list of AWG: 指定した時刻にスタートできなかった AWG の ID のリスト
+        """
+        return copy.copy(self.__awg_id_list)
+
+
+    @property
+    def read_err(self):
+        """読み出しエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの読み出しエラーが発生した場合 True
+        """
+        return self.__read_err
+
+
+    @property
+    def write_err(self):
+        """書き込みエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True
+        """
+        return self.__write_err
+
+
+    def __str__(self):
+        awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
+        return  (
+            'ResponsiveFeedbackCmdErr\n' +
+            '  - command ID  : {}\n'.format(self.cmd_id) +
+            '  - command No  : {}\n'.format(self.cmd_no) +
+            '  - terminated  : {}\n'.format(self.is_terminated) +
+            '  - AWG IDs     : {}\n'.format(awg_id_list) +
+            '  - read error  : {}\n'.format(self.read_err) +
+            '  - write error : {}'.format(self.write_err))
+
+
+class WaveSequenceSelectionCmdErr(SequencerCmdErr):
+
+    def __init__(self, cmd_no, is_terminated):
+        """波形シーケンス選択コマンドのエラー情報を保持するクラス"""
+        super().__init__(WaveSequenceSelectionCmd.ID, cmd_no, is_terminated)
+
+
+    def __str__(self):
+        return  (
+            'WaveSequenceSelectionCmdErr\n' +
+            '  - command ID : {}\n'.format(self.cmd_id) +
+            '  - command No : {}\n'.format(self.cmd_no) +
+            '  - terminated : {}'.format(self.is_terminated))

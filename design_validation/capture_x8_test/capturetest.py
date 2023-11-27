@@ -100,15 +100,15 @@ class CaptureTest(object):
         for awg_id, wave_seq in awg_to_wave_sequence.items():
             capture_param = self.__gen_capture_param(wave_seq)
             capture_units = CaptureModule.get_units(self.__awg_to_capture_module[awg_id])
-            for captu_unit_id in capture_units:
-                cap_ctrl.set_capture_params(captu_unit_id, capture_param)
+            for cap_unit in capture_units:
+                cap_ctrl.set_capture_params(cap_unit, capture_param)
 
     def __get_capture_data(self, cap_ctrl):
         capture_unit_to_capture_data = {}
-        for capture_unit_id in self.__capture_units:
-            num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-            capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(
-                capture_unit_id, num_captured_samples)
+        for cap_unit in self.__capture_units:
+            num_captured_samples = cap_ctrl.num_captured_samples(cap_unit)
+            capture_unit_to_capture_data[cap_unit] = \
+                cap_ctrl.get_capture_data(cap_unit, num_captured_samples)
         return capture_unit_to_capture_data
 
     def __sort_capture_data_by_awg(self, capture_unit_to_capture_data):

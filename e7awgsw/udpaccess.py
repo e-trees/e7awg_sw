@@ -3,8 +3,14 @@ import threading
 import copy
 from .uplpacket import UplPacket
 from .logger import log_error
-from .sequencercmd import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd
-from .sequencercmd import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr
+from .sequencercmd import \
+    AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
+    CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd, \
+    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd
+from .sequencercmd import \
+    AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, \
+    CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr, \
+    ResponsiveFeedbackCmdErr, WaveSequenceSelectionCmdErr
 from .hwparam import CMD_ERR_REPORT_SIZE
 from .hwdefs import AWG, CaptureUnit
 
@@ -253,15 +259,15 @@ class CmdErrReceiver(threading.Thread):
                 log_error(e, *self.__loggers)
                 raise
 
-
     @classmethod
     def __gen_seq_cmd_err_from_bytes(cls, data):
         bit_field = int.from_bytes(data, byteorder='little')
         is_terminated = bit_field & 0x1
         cmd_id = (bit_field >> 1) & 0x7F
         cmd_no = (bit_field >> 8) & 0xFFFF
-        read_err = bool((bit_field >> 24) & 0x1)
-        write_err = bool((bit_field >> 25) & 0x1)
+        read_err = cls.__get_read_err(bit_field, cmd_id)
+        write_err = cls.__get_write_err(bit_field, cmd_id)
+        is_in_time = cls.__is_in_time(bit_field, cmd_id)
         awg_id_bits = bit_field >> 24
         awg_id_list = list(filter(lambda awg_id: awg_id_bits & (1 << awg_id), AWG.all()))
         cap_unit_id_bits = bit_field >> 24
@@ -271,7 +277,7 @@ class CmdErrReceiver(threading.Thread):
         if cmd_id == AwgStartCmd.ID:
             return AwgStartCmdErr(cmd_no, is_terminated, awg_id_list)
         elif cmd_id == CaptureEndFenceCmd.ID:
-            return CaptureEndFenceCmdErr(cmd_no, is_terminated, cap_unit_id_list)
+            return CaptureEndFenceCmdErr(cmd_no, is_terminated, cap_unit_id_list, is_in_time)
         elif cmd_id == WaveSequenceSetCmd.ID:
             return WaveSequenceSetCmdErr(cmd_no, is_terminated, read_err, write_err)
         elif cmd_id == CaptureParamSetCmd.ID:
@@ -281,9 +287,38 @@ class CmdErrReceiver(threading.Thread):
         elif cmd_id == FeedbackCalcOnClassificationCmd.ID:
             return FeedbackCalcOnClassificationCmdErr(cmd_no, is_terminated, read_err)
         elif cmd_id == WaveGenEndFenceCmd.ID:
-            return WaveGenEndFenceCmdErr(cmd_no, is_terminated, awg_id_list)
+            return WaveGenEndFenceCmdErr(cmd_no, is_terminated, awg_id_list, is_in_time)
+        elif cmd_id == ResponsiveFeedbackCmd.ID:
+            return ResponsiveFeedbackCmdErr(
+                cmd_no, is_terminated, awg_id_list, read_err, write_err)
+        elif cmd_id == WaveSequenceSelectionCmd.ID:
+            return WaveSequenceSelectionCmdErr(cmd_no, is_terminated)
 
         assert False, ('Invalid cmd err.  cmd_id = {}'.format(cmd_id))
+
+
+    @classmethod
+    def __get_read_err(cls, bit_field, cmd_id):
+        if cmd_id == ResponsiveFeedbackCmd.ID:
+            return bool((bit_field >> 40) & 0x1)
+
+        return bool((bit_field >> 24) & 0x1)
+
+
+    @classmethod
+    def __get_write_err(cls, bit_field, cmd_id):
+        if cmd_id == ResponsiveFeedbackCmd.ID:
+            return bool((bit_field >> 41) & 0x1)
+
+        return bool((bit_field >> 25) & 0x1)
+
+
+    @classmethod
+    def __is_in_time(cls, bit_field, cmd_id):
+        if cmd_id == CaptureEndFenceCmd.ID:
+            return not bool((bit_field >> 34) & 0x1)
+
+        return not bool((bit_field >> 40) & 0x1)
 
 
     def pop_err_reports(self):

@@ -25,7 +25,7 @@ CAPTURED_SAMPLE_SIZE = 8
 # メモリに保存された四値化結果のサイズ (bits)
 CLASSIFICATION_RESULT_SIZE = 2
 # 1 キャプチャユニットが保存可能なデータサイズ (bytes)
-MAX_CAPTURE_SIZE = 256 * 1024 * 1024
+MAX_CAPTURE_SIZE = 255 * 1024 * 1024
 # 積算ユニットが保持できる積算値の最大数
 MAX_INTEG_VEC_ELEMS = 4096
 # キャプチャ RAM のワードサイズ (bytes)
