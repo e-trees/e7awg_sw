@@ -464,7 +464,7 @@ B = コマンドで指定したキャプチャユニットの ID (= 0 ~ 7) の�
 
 ![高速FBコマンドタイムチャート1](./feedback_figures/cmd_time/responsive_feedback_cmd_1.png)
 
-![高速FBコマンドタイムチャート式](./feedback_figures/cmd_time/resposive_feedback_eq.png)
+![高速FBコマンドタイムチャート式](./feedback_figures/cmd_time/responsive_feedback_eq.png)
 <!--
 $$
 \begin{align*}
