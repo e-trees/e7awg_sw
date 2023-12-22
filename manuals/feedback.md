@@ -292,8 +292,8 @@ AWG スタートコマンドは `終了待ち` フラグを有効にするかど
 
 ![AWG スタートコマンドタイムチャート1](./feedback_figures/cmd_time/awg_start_1.png)
 
-<!-- ![AWG スタートコマンド式1](./feedback_figures/cmd_time/awg_start_exp.png) -->
-
+![AWG スタートコマンド式](./feedback_figures/cmd_time/awg_start_eq.png)
+<!--
 $$
 \\[3ex]
 \hspace{-4.5em}
@@ -308,7 +308,7 @@ A &= \left\{
 B &= コマンドで指定した AWG が出力するユーザ定義波形の中で最長のものに含まれるサンプル数
 \end{align*}
 $$
-
+-->
 ※1  コマンドの実行開始時刻 (= 前のコマンドの終了時刻) に依存するため.
 
 <br>
@@ -464,7 +464,8 @@ B = コマンドで指定したキャプチャユニットの ID (= 0 ~ 7) の�
 
 ![高速FBコマンドタイムチャート1](./feedback_figures/cmd_time/responsive_feedback_cmd_1.png)
 
-
+![高速FBコマンドタイムチャート式](./feedback_figures/cmd_time/resposive_feedback_eq.png)
+<!--
 $$
 \begin{align*}
 A &= \left\{
@@ -518,7 +519,7 @@ D_u &= \:L_u\: に含まれるキャプチャディレイのサンプル数
 C &= コマンドで指定した AWG が 2 回目に出力するユーザ定義波形の中で最長のものに含まれるサンプル数 \\[1ex]
 \end{align*}
 $$
-
+-->
 ※1 間引きを有効にする場合，S<sub>u</sub>(i) は 16 以上であるものとします.
 
 V<sub>u</sub> を算出する際のパターンは，L<sub>u</sub> のキャプチャパラメータによって以下の表の通り決まります.
