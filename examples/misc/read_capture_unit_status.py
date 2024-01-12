@@ -1,6 +1,6 @@
 # デバッグ用スクリプト
 import argparse
-from e7awgsw import CaptureUnit
+from e7awgsw import CaptureUnit, CaptureCtrl
 from e7awgsw.udpaccess import CaptureRegAccess
 from e7awgsw.hwparam import CAPTURE_REG_PORT
 from e7awgsw.memorymap import CaptureCtrlRegs
@@ -15,6 +15,8 @@ if __name__ == "__main__":
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
+    ctrl = CaptureCtrl(IP_ADDR)
+    print("Capture Version:", ctrl.version())
     # 通常 CaptureRegAccess は使用しないこと
     cap_reg_access = CaptureRegAccess(IP_ADDR, CAPTURE_REG_PORT)
     for capture_unit_id in CaptureUnit.all():

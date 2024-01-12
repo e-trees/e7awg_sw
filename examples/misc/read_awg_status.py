@@ -1,6 +1,6 @@
 # デバッグ用スクリプト
 import argparse
-from e7awgsw import AWG
+from e7awgsw import AWG, AwgCtrl
 from e7awgsw.udpaccess import AwgRegAccess
 from e7awgsw.hwparam import AWG_REG_PORT
 from e7awgsw.memorymap import AwgCtrlRegs
@@ -15,6 +15,8 @@ if __name__ == "__main__":
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
+    ctrl = AwgCtrl(IP_ADDR)
+    print("AWG Version:", ctrl.version())
     # 通常 AwgRegAccess は使用しないこと
     awg_reg_access = AwgRegAccess(IP_ADDR, AWG_REG_PORT)
     for awg_id in AWG.all():
