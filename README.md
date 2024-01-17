@@ -3,15 +3,9 @@
 ### Requirements
 
 - Python3 (3.9.18)
-<<<<<<< HEAD
-- pip (>= 23.2.1)
-- pipenv (>= 2023.2.18)
-- pyenv (>= 2.3.27-5-gf7f09650)
-=======
 - pyenv (>= 2.3.27-5-gf7f09650)
 - Pipenv (>= 2023.2.18)
 - Pip (>= 23.2.1)
->>>>>>> 39f290c0779090ea1709f2a3abf401d2f16c35d0
 
 ### Setup
 
@@ -27,33 +21,6 @@
 % cd e7awg_sw
 % pipenv sync
 % pipenv shell
-<<<<<<< HEAD
-% pipenv install ${TMPDIR}/python/qube_lsi
-```
-
-## Standalone
-
-### Requirements
-
-- Python3 (3.9.18)
-- pip (>= 23.2.1)
-- pipenv (>= 2023.2.18)
-- pyenv (>= 2.3.27-5-gf7f09650)
-  - libssl-dev (Ubuntu 20.04)
-
-### Setup
-
-```
-$ pipenv shell
-$ pipenv install
-```
-
-If you don't have Python 3.9.18, the Python will be installed by `pyenv`.
-
-
-
-=======
->>>>>>> 39f290c0779090ea1709f2a3abf401d2f16c35d0
 
 # Make a directory to put the lock files used by e7awgsw library in the way of (1) or (2).
 
