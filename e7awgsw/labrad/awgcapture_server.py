@@ -363,6 +363,28 @@ class AwgCaptureServer(ThreadedServer):
         return pickle.dumps(None)
 
 
+    @setting(216, handle='s', returns='y')
+    def enable_dsp(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.enable_dsp()
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(None)
+
+
+    @setting(217, handle='s', returns='y')
+    def disable_dsp(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.disable_dsp()
+        except Exception as e:
+            return pickle.dumps(e)
+
+        return pickle.dumps(None)
+
+
 __server__ = AwgCaptureServer()
 
 if __name__ == '__main__':

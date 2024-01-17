@@ -228,7 +228,7 @@ class AwgController(object):
 
     def __ctrl_done_clr(self, awg, is_ctrl_target, old_val, new_val):
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
-            awg.setToIdle()
+            awg.set_to_idle()
 
 
     def __gen_version_reg(self):

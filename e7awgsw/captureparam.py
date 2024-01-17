@@ -368,7 +368,7 @@ class CaptureParam(object):
         self.__comp_window_coefs = val
     
     def calc_capture_samples(self):
-        """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
+        """信号処理機構が有効な場合のこのキャプチャパラメータで保存されるサンプル数もしくは四値化結果の個数を計算する.
 
         Returns:
             int : 現在のキャプチャパラメータで保存されるサンプル数

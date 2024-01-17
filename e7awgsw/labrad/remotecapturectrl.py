@@ -199,7 +199,8 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
     def _enable_start_trigger(self, *capture_unit_id_list):
         try:
             capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.enable_start_trigger(self.__handler, capture_unit_id_list)
+            result = self.__server.enable_start_trigger(self.__handler, capture_unit_id_list)
+            self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
@@ -208,7 +209,26 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
     def _disable_start_trigger(self, *capture_unit_id_list):
         try:
             capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.disable_start_trigger(self.__handler, capture_unit_id_list)
+            result = self.__server.disable_start_trigger(self.__handler, capture_unit_id_list)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _enable_dsp(self):
+        try:
+            result = self.__server.enable_dsp(self.__handler)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _disable_dsp(self):
+        try:
+            result = self.__server.disable_dsp(self.__handler)
+            self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise

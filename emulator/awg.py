@@ -53,7 +53,7 @@ class Awg:
                 self.__state = AwgState.COMPLETE
 
 
-    def setToIdle(self):
+    def set_to_idle(self):
         """AWG が complete 状態のとき IDLE 状態にする"""
         with self.__state_lock:
             if (self.__state == AwgState.COMPLETE):

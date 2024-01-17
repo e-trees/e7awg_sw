@@ -1,4 +1,3 @@
-import sys
 import os
 import random
 from testutil import gen_random_int_list
@@ -7,17 +6,24 @@ from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 class CaptureTest(object):
 
+    # テストデザインにおけるキャプチャモジュールと AWG の接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
+
     def __init__(self, res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
-        # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
         self.__awg_to_capture_module = {}
-        if CaptureModule.U0 in capture_modules:
-            self.__awg_to_capture_module[AWG.U2] = CaptureModule.U0
-        if CaptureModule.U1 in capture_modules:
-            self.__awg_to_capture_module[AWG.U15] = CaptureModule.U1
+        for cap_mod in capture_modules:
+            awg = self.__CAP_MOD_TO_AWG[cap_mod]
+            self.__awg_to_capture_module[awg] = cap_mod        
+
         self.__capture_units = CaptureModule.get_units(*capture_modules)
         os.makedirs(self.__res_dir, exist_ok = True)
     
@@ -47,7 +53,7 @@ class CaptureTest(object):
             q_data = gen_random_int_list(num_samples, -32768, 32767)
             wave_seq.add_chunk(
                 iq_samples = list(zip(i_data, q_data)),
-                num_blank_words = random.randint(0, 32), 
+                num_blank_words = random.randint(0, 16), 
                 num_repeats = random.randint(1, 4))
 
         return wave_seq
@@ -94,15 +100,15 @@ class CaptureTest(object):
         for awg_id, wave_seq in awg_to_wave_sequence.items():
             capture_param = self.__gen_capture_param(wave_seq)
             capture_units = CaptureModule.get_units(self.__awg_to_capture_module[awg_id])
-            for captu_unit_id in capture_units:
-                cap_ctrl.set_capture_params(captu_unit_id, capture_param)
+            for cap_unit in capture_units:
+                cap_ctrl.set_capture_params(cap_unit, capture_param)
 
     def __get_capture_data(self, cap_ctrl):
         capture_unit_to_capture_data = {}
-        for capture_unit_id in self.__capture_units:
-            num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
-            capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(
-                capture_unit_id, num_captured_samples)
+        for cap_unit in self.__capture_units:
+            num_captured_samples = cap_ctrl.num_captured_samples(cap_unit)
+            capture_unit_to_capture_data[cap_unit] = \
+                cap_ctrl.get_capture_data(cap_unit, num_captured_samples)
         return capture_unit_to_capture_data
 
     def __sort_capture_data_by_awg(self, capture_unit_to_capture_data):
@@ -141,7 +147,7 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(30, *self.__capture_units)
+            cap_ctrl.wait_for_capture_units_to_stop(45, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック

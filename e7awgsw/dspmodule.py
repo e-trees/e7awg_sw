@@ -1,7 +1,7 @@
 import numpy as np
 from e7awgsw import DspUnit, DecisionFunc, CaptureParam
 
-def dsp(samples, capture_param, ):
+def dsp(samples, capture_param):
     if len(samples) < capture_param.num_samples_to_process:
         samples.extend([(0, 0)] * (capture_param.num_samples_to_process - len(samples)))
     else:
@@ -21,7 +21,7 @@ def dsp(samples, capture_param, ):
             capture_param.num_integ_sections,
             CaptureParam.NUM_REAL_FIR_COEFS)
     else:
-        # 間引きが無効な場合, 後段の FIR ポストブランクのデータを使うので取り除かない.
+        # 間引きが無効な場合, 後段の FIR がポストブランクのデータを使うので取り除かない.
         # Real FIR 用に先頭に 0 を付加する
         samples_list = [ [(0,0)] * 7 + samples ]
 
@@ -68,7 +68,7 @@ def dsp(samples, capture_param, ):
         q_samples_list = integration(
             q_samples_list, capture_param.num_sum_sections, capture_param.num_integ_sections)
 
-    # complex_windowはCOMPLEX_WINDOWによらず固定小数点数の小数点数位置を30bitずらす
+    # complex_windowは有効/無効に関わらず固定小数点数の小数点数位置を30bitずらす
     num_frac_bits = 30
 
     i_samples = sum(i_samples_list, [])

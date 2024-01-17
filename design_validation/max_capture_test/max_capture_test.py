@@ -1,31 +1,34 @@
 import argparse
 import random
-import sys
 from capturetest import CaptureTest
+from e7awgsw import CaptureUnit
 
 
-def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
+def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir, cap_unit_id):
     random.seed(10)
 
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
 
-        res_dir = '{}/{:03d}/classification'.format(res_root_dir, test_id)
-        result = CaptureTest(res_dir, ip_addr, use_labrad, server_ip_addr).run_test(True)
-        if not result:
-            print('failure classification\n')
-            failed_tests.append('classification {}'.format(test_id))
+        if (cap_unit_id != CaptureUnit.U8) and (cap_unit_id != CaptureUnit.U9):
+            res_dir = '{}/cap_{}/{:03d}/classification'.format(res_root_dir, cap_unit_id, test_id)
+            test = CaptureTest(res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr)
+            result = test.run_test(True)
+            if not result:
+                print('failure classification\n')
+                failed_tests.append('classification {}'.format(test_id))
 
-        res_dir = '{}/{:03d}/no_dsp'.format(res_root_dir, test_id)
-        result = CaptureTest(res_dir, ip_addr, use_labrad, server_ip_addr).run_test(False)
+        res_dir = '{}/cap_{}/{:03d}/no_dsp'.format(res_root_dir, cap_unit_id, test_id)
+        test = CaptureTest(res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr)
+        result = test.run_test(False)
         if not result:
             print('failure no dsp\n')
             failed_tests.append('no dsp {}'.format(test_id))
 
     if failed_tests:
         for test_id in failed_tests:
-            print("Test {:03d} failed.".format(test_id))
+            print("Test {} failed.".format(test_id))
         return 1
     else:
         print("All tests succeeded.".format(failed_tests))
@@ -34,34 +37,22 @@ def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--num-tests')
-    parser.add_argument('--ipaddr')
-    parser.add_argument('--server-ipaddr')
+    parser.add_argument('--num-tests', default=1, type=int)
+    parser.add_argument('--ipaddr', default='10.1.0.255')
+    parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
-    parser.add_argument('--result-dir')
+    parser.add_argument('--result-dir', default='result')
+    parser.add_argument('--capture-unit')
     args = parser.parse_args()
 
-    num_tests = 1
-    if args.num_tests is not None:
-        num_tests = int(args.num_tests)
-
-    ip_addr = '10.1.0.255'
-    if args.ipaddr is not None:
-        ip_addr = args.ipaddr
-
-    server_ip_addr = 'localhost'
-    if args.server_ipaddr is not None:
-        server_ip_addr = args.server_ipaddr
-
-    res_root_dir = 'result'
-    if args.result_dir is not None:
-        res_root_dir = args.result_dir
+    cap_unit_id = CaptureUnit.U3
+    if args.capture_unit is not None:
+        cap_unit_id = CaptureUnit.of(int(args.capture_unit))
 
     status = main(
-        num_tests,
-        ip_addr,
+        args.num_tests,
+        args.ipaddr,
         args.labrad,
-        server_ip_addr,
-        res_root_dir)
-
-    sys.exit(status)
+        args.server_ipaddr,
+        args.result_dir,
+        cap_unit_id)

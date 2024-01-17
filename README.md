@@ -4,7 +4,10 @@
 
 ### Requirements
 
-- Python3 (+3.9)
+- Python3 (3.9.18)
+- pip (>= 23.2.1)
+- pipenv (>= 2023.2.18)
+- pyenv (>= 2.3.27-5-gf7f09650)
 
 ### Setup
 
@@ -23,9 +26,10 @@ For example,
 
 ### Requirements
 
-- Python3 (+3.9)
-- pipenv
-- pyenv
+- Python3 (3.9.18)
+- pip (>= 23.2.1)
+- pipenv (>= 2023.2.18)
+- pyenv (>= 2.3.27-5-gf7f09650)
   - libssl-dev (Ubuntu 20.04)
 
 ### Setup
@@ -35,7 +39,7 @@ $ pipenv shell
 $ pipenv install
 ```
 
-If you don't have Python 3.9.10, the Python will be installed by `pyenv`.
+If you don't have Python 3.9.18, the Python will be installed by `pyenv`.
 
 
 

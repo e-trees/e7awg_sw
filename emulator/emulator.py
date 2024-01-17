@@ -13,7 +13,9 @@ CAPTURE_START_DELAY = 15 # キャプチャスタートからキャプチャデ�
 # AWG とキャプチャモジュールのデータバスの接続関係
 awg_to_capture_module = {
     AWG.U2  : CaptureModule.U0,
-    AWG.U15 : CaptureModule.U1
+    AWG.U15 : CaptureModule.U1,
+    AWG.U3  : CaptureModule.U2,
+    AWG.U4  : CaptureModule.U3
 }
 
 
@@ -21,7 +23,9 @@ def on_wave_generated(awg_id_to_wave, cap_ctrl):
     """AWG が起動したときのイベントハンドラ"""
     cap_mod_to_wave = {
         CaptureModule.U0: [],
-        CaptureModule.U1: []
+        CaptureModule.U1: [],
+        CaptureModule.U2: [],
+        CaptureModule.U3: []
     }
     for awg_id, wave in awg_id_to_wave.items():
         cap_mod = awg_to_capture_module.get(awg_id)

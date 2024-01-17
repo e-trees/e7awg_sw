@@ -233,6 +233,21 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._disable_start_trigger(*capture_unit_id_list)
 
 
+    def enable_dsp(self):
+        """キャプチャユニット 0 ~ 7 の DSP 機構を有効化する
+
+        | 信号処理を実行する場合, DSP 機構を有効にしてかつ, 
+        | 適用する処理の DSP ユニットをキャプチャパラメータで有効化する必要がある.
+
+        """
+        self._enable_dsp()
+
+
+    def disable_dsp(self):
+        """キャプチャユニット 0 ~ 7 の DSP 機構を無効化する"""
+        self._disable_dsp()
+
+
     def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
         """引数で指定した全てのキャプチャユニットの波形の保存が終了するのを待つ
 
@@ -262,7 +277,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         Args:
             *capture_unit_id_list (list of CaptureUnit): エラーを調べるキャプチャユニットの ID
         Returns:
-            {CaptureUnit -> list of CaptureErr} or None:
+            {CaptureUnit -> list of CaptureErr}:
             | key = Capture Unit ID
             | value = 発生したエラーのリスト
             | エラーが無かった場合は空の Dict.
@@ -375,6 +390,14 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
+    def _enable_dsp(self):
+        pass
+
+    @abstractmethod
+    def _disable_dsp(self):
+        pass
+
+    @abstractmethod
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
         pass
     
@@ -391,7 +414,8 @@ class CaptureCtrl(CaptureCtrlBase):
     # キャプチャモジュールが波形データを保存するアドレス
     __CAPTURE_ADDR = [
         0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000]
+        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
+        0x150000000, 0x170000000]
     # キャプチャ RAM のワードサイズ (bytes)
     __CAPTURE_RAM_WORD_SIZE = 32 # bytes
 
@@ -544,6 +568,7 @@ class CaptureCtrl(CaptureCtrlBase):
     def _initialize(self, *capture_unit_id_list):
         self._disable_start_trigger(*capture_unit_id_list)
         self.__deselect_ctrl_target(*capture_unit_id_list)
+        self._enable_dsp()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
@@ -641,6 +666,10 @@ class CaptureCtrl(CaptureCtrlBase):
                 offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
             elif capture_module_id == CaptureModule.U1:
                 offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
+            elif capture_module_id == CaptureModule.U2:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2
+            elif capture_module_id == CaptureModule.U3:
+                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3
             
             awg_id = 0 if (awg_id is None) else (awg_id + 1)
             self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg_id)
@@ -662,6 +691,18 @@ class CaptureCtrl(CaptureCtrlBase):
                     CaptureMasterCtrlRegs.ADDR,
                     CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
                     CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
+
+
+    def _enable_dsp(self):
+        with self.__flock:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 1)
+
+
+    def _disable_dsp(self):
+        with self.__flock:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 0)
 
 
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):

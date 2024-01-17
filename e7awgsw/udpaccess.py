@@ -27,7 +27,9 @@ class RegAccess(object):
 
     def write_bits(self, addr, offset, bit_pos, num_bits, val):
         reg_val = self.read(addr, offset)
-        reg_val = (reg_val & ~self.__get_mask(bit_pos, num_bits)) | ((val << bit_pos) & self.__get_mask(bit_pos, num_bits))
+        reg_val = \
+            (reg_val & ~self.__get_mask(bit_pos, num_bits)) | \
+            ((val << bit_pos) & self.__get_mask(bit_pos, num_bits))
         self.write(addr, offset, reg_val)
 
 

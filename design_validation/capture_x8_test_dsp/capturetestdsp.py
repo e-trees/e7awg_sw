@@ -2,18 +2,25 @@ import os
 import random
 from testutil import gen_random_int_list
 import numpy as np
-from e7awgsw import AWG, AwgCtrl, WaveSequence
-from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc, dsp
+from e7awgsw import AWG, AwgCtrl, WaveSequence, dsp
+from e7awgsw import CaptureModule, CaptureCtrl, CaptureParam, DspUnit, CaptureUnit, DecisionFunc
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 class CaptureTestDsp(object):
 
-    def __init__(self, res_dir, ip_addr, capture_modules, use_labrad, server_ip_addr):
+    def __init__(
+        self,
+        res_dir,
+        ip_addr,
+        capture_modules,
+        use_labrad,
+        server_ip_addr):
         self.__ip_addr = ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
         os.makedirs(self.__res_dir, exist_ok = True)
+
         # テストデザインでは, AWG 2 が Captrue 0, 1, 2, 3 に繋がっており, AWG 15 が Capture 4, 5, 6, 7 に繋がっている
         self.__awg_to_capture_module = {}
         self.__cap_units_to_test = []
@@ -28,19 +35,17 @@ class CaptureTestDsp(object):
               self.__create_cap_ctrl() as cap_ctrl):
             self.__setup_modules(awg_ctrl, cap_ctrl)
     
-    def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
-        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
-            dir = self.__res_dir + '/' + test_name
-            os.makedirs(dir, exist_ok = True)
-            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data_list, capture_data_file)
+    def __save_capture_samples(self, cap_unit_to_cap_data, dir, filename):
+        os.makedirs(dir, exist_ok = True)
+        for cap_unit_id, cap_data_list in cap_unit_to_cap_data.items():
+            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
+            self.__write_to_file(cap_data_list, filepath)
         
-    def __save_capture_params(self, capture_unit_to_capture_param, test_name):
-        for cap_unit_id, cap_param in capture_unit_to_capture_param.items():
-            dir = self.__res_dir + '/' + test_name
-            os.makedirs(dir, exist_ok = True)
-            capture_param_file = dir + '/captured_params_{}.txt'.format(cap_unit_id)
-            with open(capture_param_file, 'w') as txt_file:
+    def __save_capture_params(self, cap_unit_to_cap_param, dir, filename):
+        os.makedirs(dir, exist_ok = True)
+        for cap_unit_id, cap_param in cap_unit_to_cap_param.items():
+            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
+            with open(filepath, 'w') as txt_file:
                 txt_file.write(str(cap_param))
 
     def __write_to_file(self, cap_data_list, filepath):
@@ -111,11 +116,14 @@ class CaptureTestDsp(object):
             # 総和区間長が 3 ワード以下の場合 decimation から値が出てこなくなるので 4 ワード以上を指定する
             capture_param.add_sum_section(random.randint(4, max_sum_sec_len), random.randint(1, 24))
 
-        a0 = np.float32(random.randint(CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
-        b0 = np.float32(random.randint(CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
+        a0 = np.float32(random.randint(
+            CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
+        b0 = np.float32(random.randint(
+            CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
         c0 = np.float32(random.randint(-10000, 10000))
         capture_param.set_decision_func_params(DecisionFunc.U0, a0, b0, c0)
         capture_param.set_decision_func_params(DecisionFunc.U1, b0, -a0, -c0)
+        capture_param.sel_dsp_units_to_enable(*dsp_units)
 
         return capture_param
 
@@ -128,49 +136,53 @@ class CaptureTestDsp(object):
         # スタートトリガの有効化
         cap_ctrl.enable_start_trigger(*self.__cap_units_to_test)
 
-    def __set_wave_sequence(self, awg_ctrl, capture_unit_to_capture_param):
-        max_samples = 0
-        for param in capture_unit_to_capture_param.values():
-            max_samples = max(max_samples, param.num_samples_to_process)
-
-        awg_to_wave_sequence = {}
-        for awg_id in self.__awg_to_capture_module.keys():
-            wave_seq = self.__gen_wave_seq(max_samples)
-            awg_to_wave_sequence[awg_id] = wave_seq
+    def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):
+        for awg_id, wave_seq in awg_to_wave_seq.items():
             awg_ctrl.set_wave_sequence(awg_id, wave_seq)
-        return awg_to_wave_sequence        
 
     def __get_capture_data(self, cap_ctrl, cls_result):
-        capture_unit_to_capture_data = {}
+        cap_unit_to_cap_data = {}
         for capture_unit_id in self.__cap_units_to_test:
             num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
             if cls_result:
-                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
+                cap_unit_to_cap_data[capture_unit_id] = \
+                    cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
             else:
-                capture_unit_to_capture_data[capture_unit_id] = cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
-        return capture_unit_to_capture_data
+                cap_unit_to_cap_data[capture_unit_id] = \
+                    cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+        return cap_unit_to_cap_data
 
-    def __calc_exp_data(self, awg_to_wave_sequence, capture_unit_to_capture_param):
-        capture_unit_to_exp_data = {}
-        for awg_id, wave_seq in awg_to_wave_sequence.items():
+    def __calc_exp_data(self, awg_to_wave_seq, cap_unit_to_cap_param):
+        cap_unit_to_exp_data = {}
+        for awg_id, wave_seq in awg_to_wave_seq.items():
             capmod_id = self.__awg_to_capture_module[awg_id]
             for cap_unit_id in CaptureModule.get_units(capmod_id):
-                if cap_unit_id in capture_unit_to_capture_param.keys():
-                    param = capture_unit_to_capture_param[cap_unit_id]
+                if cap_unit_id in cap_unit_to_cap_param.keys():
+                    param = cap_unit_to_cap_param[cap_unit_id]
                     samples = wave_seq.all_samples(False)
-                    capture_unit_to_exp_data[cap_unit_id] = dsp(samples, param)
-        return capture_unit_to_exp_data        
+                    cap_unit_to_exp_data[cap_unit_id] = dsp(samples, param)
+        return cap_unit_to_exp_data
 
-    def __set_capture_params(self, cap_ctrl, *dsp_units):
+    def __set_capture_params(self, cap_ctrl, cap_unit_to_cap_param):
+        # キャプチャパラメータ設定
+        for capture_unit_id, capture_param in cap_unit_to_cap_param.items():
+            cap_ctrl.set_capture_params(capture_unit_id, capture_param)
+
+    def __gen_test_data(self, *dsp_units):
         # キャプチャパラメータの作成
-        capture_unit_to_capture_param = {
+        cap_unit_to_cap_param = {
             capture_unit_id : self.__gen_capture_param(*dsp_units)
             for capture_unit_id in self.__cap_units_to_test}
-        # キャプチャパラメータ設定
-        for capture_unit_id, capture_param in capture_unit_to_capture_param.items():
-            capture_param.sel_dsp_units_to_enable(*dsp_units)
-            cap_ctrl.set_capture_params(capture_unit_id, capture_param)
-        return capture_unit_to_capture_param
+
+        max_samples = max([
+            param.num_samples_to_process
+            for param in cap_unit_to_cap_param.values()])
+
+        awg_to_wave_seq = {
+            awg_id : self.__gen_wave_seq(max_samples)
+            for awg_id in self.__awg_to_capture_module.keys()}
+
+        return awg_to_wave_seq, cap_unit_to_cap_param
 
     def __create_awg_ctrl(self):
         if self.__use_labrad:
@@ -184,13 +196,40 @@ class CaptureTestDsp(object):
         else:
             return CaptureCtrl(self.__ip_addr)
 
+    def __check_capture_data(self, cap_unit_to_cap_data, cap_unit_to_exp_data):
+        """ キャプチャデータが期待値と一致するか確認する """
+        all_match = True
+        for capture_unit_id in self.__cap_units_to_test:
+            capture_data = cap_unit_to_cap_data[capture_unit_id]
+            exp_data = cap_unit_to_exp_data[capture_unit_id]
+            if exp_data != capture_data:
+                all_match = False
+        
+        return all_match
+
+    def __output_test_data(
+        self,
+        test_name,
+        cap_unit_to_cap_param,
+        cap_unit_to_cap_data,
+        cap_unit_to_exp_data,
+        awg_to_wave_seq):
+        dir = self.__res_dir + '/' + test_name
+        self.__save_capture_samples(cap_unit_to_cap_data, dir, 'captured')
+        self.__save_capture_samples(cap_unit_to_exp_data, dir, 'expected')
+        self.__save_capture_params(cap_unit_to_cap_param, dir, 'caprure_params')
 
     def run_test(self, test_name, *dsp_units):
+        # 波形シーケンスとキャプチャパラメータの生成
+        awg_to_wave_seq, cap_unit_to_cap_param = self.__gen_test_data(*dsp_units)
+        cap_unit_to_cap_data = None
+        
         with (self.__create_awg_ctrl() as awg_ctrl,
               self.__create_cap_ctrl() as cap_ctrl):
-            capture_unit_to_capture_param = self.__set_capture_params(cap_ctrl, *dsp_units)
+            # キャプチャパラメータの設定
+            self.__set_capture_params(cap_ctrl, cap_unit_to_cap_param)
             # 波形シーケンスの設定
-            awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl, capture_unit_to_capture_param)
+            self.__set_wave_sequence(awg_ctrl, awg_to_wave_seq)
             # 波形送信スタート
             awg_ctrl.start_awgs(*self.__awg_to_capture_module.keys())
             # 波形送信完了待ち
@@ -200,7 +239,7 @@ class CaptureTestDsp(object):
             # キャプチャデータ取得
             print('get capture data')
             cls_result = DspUnit.CLASSIFICATION in dsp_units
-            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl, cls_result)
+            cap_unit_to_cap_data = self.__get_capture_data(cap_ctrl, cls_result)
             # エラーチェック
             awg_errs = awg_ctrl.check_err(*self.__awg_to_capture_module.keys())
             cap_errs = cap_ctrl.check_err(*self.__cap_units_to_test)
@@ -211,22 +250,21 @@ class CaptureTestDsp(object):
 
         # キャプチャデータ期待値取得
         print('calc expected value')
-        capture_unit_to_exp_data = self.__calc_exp_data(awg_to_wave_sequence, capture_unit_to_capture_param)
-        # キャプチャデータが DSP の結果の期待値と一致しているかチェック
-        all_match = True
-        for capture_unit_id in self.__cap_units_to_test:
-            capture_data = capture_unit_to_capture_data[capture_unit_id]
-            exp_data = capture_unit_to_exp_data[capture_unit_id]
-            if exp_data != capture_data:
-                all_match = False
+        cap_unit_to_exp_data = self.__calc_exp_data(awg_to_wave_seq, cap_unit_to_cap_param)
 
         # 波形データを保存
         print('save wave data')
-        self.__save_wave_samples(capture_unit_to_capture_data, test_name, 'captured'.format(test_name))
-        self.__save_wave_samples(capture_unit_to_exp_data, test_name, 'expected'.format(test_name))
-        self.__save_capture_params(capture_unit_to_capture_param, test_name)
-        
-        if awg_errs or cap_errs:
-            return False
+        self.__output_test_data(
+            test_name,
+            cap_unit_to_cap_param,
+            cap_unit_to_cap_data,
+            cap_unit_to_exp_data,
+            awg_to_wave_seq)
 
-        return all_match
+        # キャプチャデータが DSP の結果の期待値と一致しているかチェック
+        is_test_successful = \
+            self.__check_capture_data(cap_unit_to_cap_data, cap_unit_to_exp_data) and \
+            (not awg_errs) and \
+            (not cap_errs)
+
+        return is_test_successful

@@ -3,11 +3,12 @@ import struct
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
-from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw import DspUnit, DecisionFunc, CaptureCtrl, WaveSequence, CaptureParam, dsp
+from e7awgsw import CaptureUnit as CapUnit
 from e7awgsw.memorymap import CaptureParamRegs
 from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
-from e7awgsw.dspmodule import dsp
+
 
 class CaptureUnit(object):
 
@@ -53,29 +54,29 @@ class CaptureUnit(object):
                 self.__state = CaptureUnitState.COMPLETE
 
 
-    def setToIdle(self):
+    def set_to_idle(self):
         """キャプチャユニット が complete 状態のとき IDLE 状態にする"""
         with self.__state_lock:
             if (self.__state == CaptureUnitState.COMPLETE):
                 self.__state = CaptureUnitState.IDLE
 
 
-    def capture_wave(self, wave_data, *, is_async = False):
+    def capture_wave(self, wave_data, enables_dsp, *, is_async = False):
         """波形をキャプチャする"""
         with self.__state_lock:
             if (self.__state != CaptureUnitState.IDLE) and (self.__state != CaptureUnitState.COMPLETE):
                 return
             self.__state = CaptureUnitState.CAPTURE_WAVE
-        
+
         if is_async:
-            self.__executor.submit(self.__capture_wave, wave_data)
+            self.__executor.submit(self.__capture_wave, wave_data, enables_dsp)
         else:
-            self.__capture_wave(wave_data)
+            self.__capture_wave(wave_data, enables_dsp)
 
 
-    def __capture_wave(self, wave_data):
+    def __capture_wave(self, wave_data, enables_dsp):
         try:
-            capture_param = self.__gen_capture_param()
+            capture_param = self.__gen_capture_param(enables_dsp)
             self.__check_capture_size(capture_param)
             num_samples_to_waste = self.__calc_num_samples_to_waste(capture_param.capture_delay)
             samples = wave_data[num_samples_to_waste : capture_param.num_samples_to_process + num_samples_to_waste]
@@ -96,7 +97,7 @@ class CaptureUnit(object):
             raise
 
 
-    def __gen_capture_param(self):
+    def __gen_capture_param(self, enables_dsp):
         param = CaptureParam()
         # 積算区間数
         param.num_integ_sections = self.get_param(CaptureParamRegs.Offset.NUM_INTEG_SECTIONS)
@@ -108,9 +109,10 @@ class CaptureUnit(object):
             num_balnk_words = self.get_param(CaptureParamRegs.Offset.post_blank_length(i))
             param.add_sum_section(num_wave_words, num_balnk_words)
         # 有効 DSP モジュール
-        dsp_units = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
-        dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
-        param.sel_dsp_units_to_enable(*dsp_units)
+        if (self.__id != CapUnit.U8) and (self.__id != CapUnit.U9) and enables_dsp:
+            dsp_units = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
+            dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
+            param.sel_dsp_units_to_enable(*dsp_units)
         # キャプチャディレイ
         param.capture_delay = self.get_param(CaptureParamRegs.Offset.CAPTURE_DELAY)
         # 複素 FIR 係数

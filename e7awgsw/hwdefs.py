@@ -31,6 +31,8 @@ class CaptureUnit(IntEnum):
     U5 = 5
     U6 = 6
     U7 = 7
+    U8 = 8
+    U9 = 9
 
     @classmethod
     def all(cls):
@@ -48,11 +50,31 @@ class CaptureUnit(IntEnum):
         units = cls.all()
         return all([val in units for val in vals])
 
+    @classmethod
+    def get_module(cls, val):
+        if not CaptureUnit.includes(val):
+            raise ValueError('Invalid capture unit ID {}'.format(val))
+        unit_to_mod = {
+            CaptureUnit.U0 : CaptureModule.U0,
+            CaptureUnit.U1 : CaptureModule.U0,
+            CaptureUnit.U2 : CaptureModule.U0,
+            CaptureUnit.U3 : CaptureModule.U0,
+            CaptureUnit.U4 : CaptureModule.U1,
+            CaptureUnit.U5 : CaptureModule.U1,
+            CaptureUnit.U6 : CaptureModule.U1,
+            CaptureUnit.U7 : CaptureModule.U1,
+            CaptureUnit.U8 : CaptureModule.U2,
+            CaptureUnit.U9 : CaptureModule.U3
+        }
+        return unit_to_mod[val]
+
 
 class CaptureModule(IntEnum):
     """キャプチャモジュール (複数のキャプチャユニットをまとめて保持するモジュール) の列挙型"""
     U0 = 0
     U1 = 1
+    U2 = 2
+    U3 = 3
 
     @classmethod
     def all(cls):
@@ -86,6 +108,10 @@ class CaptureModule(IntEnum):
                 units += [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
             elif capmod_id == cls.U1:
                 units += [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
+            elif capmod_id == cls.U2:
+                units += [CaptureUnit.U8]
+            elif capmod_id == cls.U3:
+                units += [CaptureUnit.U9]
             else:
                 raise ValueError('Invalid capture module ID {}'.format(capmod_id))
         return sorted(units)
