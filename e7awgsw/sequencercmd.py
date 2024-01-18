@@ -405,7 +405,7 @@ class CaptureParamSetCmd(SequencerCmd):
 
         Args:
             cmd_no (int): コマンド番号
-            capture_unit_id_list (list of CaptureUnit): 波形シーケンスをセットするキャプチャユニットのリスト.
+            capture_unit_id_list (list of CaptureUnit): キャプチャパラメータをセットするキャプチャユニットのリスト.
             key_table (list of int, int):
                 | キャプチャパラメータを登録したレジストリのキーのリスト.
                 | key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー
