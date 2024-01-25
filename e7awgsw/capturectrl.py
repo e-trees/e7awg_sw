@@ -243,6 +243,21 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._enable_start_trigger(*capture_unit_id_list)
 
 
+    def enable_dsp(self):
+        """キャプチャユニット 0 ~ 7 の DSP 機構を有効化する.
+
+        | キャプチャデータに信号処理を適用する場合, DSP 機構を有効にしてかつ, 
+        | DSP ユニットをキャプチャパラメータで有効化する必要がある.
+
+        """
+        self._enable_dsp()
+
+
+    def disable_dsp(self):
+        """キャプチャユニット 0 ~ 7 の DSP 機構を無効化する."""
+        self._disable_dsp()
+
+
     def disable_start_trigger(self, *capture_unit_id_list):
         """引数で指定したキャプチャユニットのスタートトリガを無効化する.
 
@@ -414,6 +429,14 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _disable_start_trigger(self, *capture_unit_id_list):
+        pass
+
+    @abstractmethod
+    def _enable_dsp(self):
+        pass
+
+    @abstractmethod
+    def _disable_dsp(self):
         pass
 
     @abstractmethod
@@ -601,6 +624,7 @@ class CaptureCtrl(CaptureCtrlBase):
     def _initialize(self, *capture_unit_id_list):
         self._disable_start_trigger(*capture_unit_id_list)
         self.__deselect_ctrl_target(*capture_unit_id_list)
+        self._enable_dsp()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
@@ -725,6 +749,18 @@ class CaptureCtrl(CaptureCtrlBase):
                     CaptureMasterCtrlRegs.ADDR,
                     CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK,
                     CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
+
+
+    def _enable_dsp(self):
+        with self.__flock:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 1)
+
+
+    def _disable_dsp(self):
+        with self.__flock:
+            self.__reg_access.write_bits(
+                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 0)
 
 
     def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):

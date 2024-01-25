@@ -173,9 +173,9 @@ class CaptureParam(object):
         return num_samples * self.__num_integ_sections
 
     def sel_dsp_units_to_enable(self, *dsp_units):
-        """このキャプチャシーケンスで有効にする信号処理ユニットを選択する.
+        """このキャプチャシーケンスで有効にする DSP ユニットを選択する.
 
-        引数に含まなかった信号処理ユニットは無効になる.
+        引数に含まなかった DSP ユニットは無効になる.
         
         Args:
             *dsp_units (DspUnit): 有効にする DSP ユニットの ID

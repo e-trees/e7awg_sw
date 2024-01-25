@@ -226,6 +226,24 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _enable_dsp(self):
+        try:
+            result = self.__server.enable_dsp(self.__handler)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _disable_dsp(self):
+        try:
+            result = self.__server.disable_dsp(self.__handler)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _version(self):
         try:
             result = self.__server.capture_unit_version(self.__handler)

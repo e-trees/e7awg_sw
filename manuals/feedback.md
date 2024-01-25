@@ -542,6 +542,7 @@ B = コマンドで指定したキャプチャユニットの ID (= 0 ~ 7) の�
 ![高速FBコマンドタイムチャート1](./feedback_figures/cmd_time/responsive_feedback_cmd_1.png)
 
 ![高速FBコマンドタイムチャート式](./feedback_figures/cmd_time/responsive_feedback_eq.png)
+
 <!--
 $$
 \begin{align*}
@@ -575,11 +576,11 @@ b &= スタート時刻フィールドの値 \\[4ex]
 B_2 &= max \:\{V_u \;|\; u \in U\} \;\;\;\;\; (可変) \\[1ex]
 V_u &= \left\{
 \begin{array}{ll}
-  2D_u + 1392 \;\; & (パターン 1) \\[1ex]
-  2 \left\lparen \displaystyle\sum_{i=1}^{min\{4, \;M_uN_u\}} S_u(i) + \displaystyle\sum_{i=1}^{min\{3, \;M_uN_u\}} P_u(i) + D_u \right\rparen + 1400 & (パターン 2) \\[4ex]
-  2 \left\lparen \displaystyle\sum_{i=1}^{M_u(N_u-1)} \left\{S_u(i) +  P_u(i) \right\} + D_u \right\rparen + 1392 & (パターン 3) \\[4ex]
-  2 \left\lparen \displaystyle\sum_{i=1}^{M_uN_u} \left\{S_u(i) +  P_u(i) \right\} + D_u \right\rparen + 1400 & (パターン 4) \\[4ex]
-  2 \left\lparen\displaystyle\sum_{i=1}^{M_u(N_u-1)+4} S_u(i) + \displaystyle\sum_{i=1}^{M_u(N_u-1)+3} P_u(i) + D_u \right\rparen + 1400 & (パターン 5) \\
+  2D_u + 1400 \;\; & (パターン 1) \\[1ex]
+  2 \left\lparen \displaystyle\sum_{i=1}^{min\{4, \;M_uN_u\}} S_u(i) + \displaystyle\sum_{i=1}^{min\{3, \;M_uN_u\}} P_u(i) + D_u \right\rparen + 1408 & (パターン 2) \\[4ex]
+  2 \left\lparen \displaystyle\sum_{i=1}^{M_u(N_u-1)} \left\{S_u(i) +  P_u(i) \right\} + D_u \right\rparen + 1400 & (パターン 3) \\[4ex]
+  2 \left\lparen \displaystyle\sum_{i=1}^{M_uN_u} \left\{S_u(i) +  P_u(i) \right\} + D_u \right\rparen + 1408 & (パターン 4) \\[4ex]
+  2 \left\lparen\displaystyle\sum_{i=1}^{M_u(N_u-1)+4} S_u(i) + \displaystyle\sum_{i=1}^{M_u(N_u-1)+3} P_u(i) + D_u \right\rparen + 1408 & (パターン 5) \\
 \end{array} \\
 \right.\\
 \\[1ex]

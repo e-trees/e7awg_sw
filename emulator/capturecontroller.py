@@ -28,7 +28,8 @@ class CaptureController(object):
             CaptureMasterCtrlRegs.Offset.OVERFLOW_ERR : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.WRITE_ERR : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2 : RwRegister(self.__NUM_REG_BITS, 0),
-            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3 : RwRegister(self.__NUM_REG_BITS, 0)
+            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3 : RwRegister(self.__NUM_REG_BITS, 0),
+            CaptureMasterCtrlRegs.Offset.DSP_ENABLE : RwRegister(self.__NUM_REG_BITS, 1)
         }
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
@@ -92,11 +93,15 @@ class CaptureController(object):
         """
         cap_mod_id_list = self.__get_cap_mod_to_start(awg_id_list)
         trig_mask_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK]
+        is_dsp_enabled = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
+        is_dsp_enabled = is_dsp_enabled.get_bit(0)
+
         for cap_mod_id in cap_mod_id_list:
             wave = cap_mod_to_wave[cap_mod_id]
             for cap_unit_id in CaptureModule.get_units(cap_mod_id):
                 if (cap_unit_id in self.__cap_units) and trig_mask_reg.get_bit(cap_unit_id):
-                    self.__cap_units[cap_unit_id].capture_wave(wave, is_async = True)
+                    cap_unit = self.__cap_units[cap_unit_id]
+                    cap_unit.capture_wave(wave, is_dsp_enabled, is_async = True)
 
 
     def __get_cap_mod_to_start(self, awg_id_list):
@@ -218,7 +223,9 @@ class CaptureController(object):
 
     def __ctrl_start(self, cap_unit, is_ctrl_target, old_val, new_val):
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
-            cap_unit.capture_wave([], is_async = True)
+            is_dsp_enabled = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
+            is_dsp_enabled = is_dsp_enabled.get_bit(0)
+            cap_unit.capture_wave([], is_dsp_enabled, is_async = True)
 
 
     def __ctrl_done_clr(self, cap_unit, is_ctrl_target, old_val, new_val):

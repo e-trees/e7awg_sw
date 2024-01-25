@@ -251,7 +251,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.check_err"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.check_err()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.clear_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.clear_capture_stop_flags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.disable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_start_trigger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.enable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_capture_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_classification_results()</span></code></a></li>
@@ -853,7 +855,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.check_err"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.check_err()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.clear_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.clear_capture_stop_flags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.disable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_start_trigger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.enable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_capture_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_classification_results()</span></code></a></li>
@@ -1517,9 +1521,9 @@
 <div class="viewcode-block" id="CaptureParam.sel_dsp_units_to_enable">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.captureparam.CaptureParam.sel_dsp_units_to_enable">[ドキュメント]</a>
     <span class="k">def</span> <span class="nf">sel_dsp_units_to_enable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">dsp_units</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;このキャプチャシーケンスで有効にする信号処理ユニットを選択する.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;このキャプチャシーケンスで有効にする DSP ユニットを選択する.</span>
 
-<span class="sd">        引数に含まなかった信号処理ユニットは無効になる.</span>
+<span class="sd">        引数に含まなかった DSP ユニットは無効になる.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            *dsp_units (DspUnit): 有効にする DSP ユニットの ID</span>
@@ -1991,7 +1995,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-01-18" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-01-25" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

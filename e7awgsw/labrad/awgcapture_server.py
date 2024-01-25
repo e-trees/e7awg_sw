@@ -362,6 +362,26 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
+    @setting(217, handle='s', returns='y')
+    def enable_dsp(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.enable_dsp()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(218, handle='s', returns='y')
+    def disable_dsp(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.disable_dsp()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
     @setting(300, returns='y')
     def create_sequencerctrl(self, c, ipaddr):
         try:

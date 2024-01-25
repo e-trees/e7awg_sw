@@ -174,6 +174,7 @@ class CaptureMasterCtrlRegs(object):
         WRITE_ERR       = 0x28
         TRIG_AWG_SEL_2  = 0x2C
         TRIG_AWG_SEL_3  = 0x30
+        DSP_ENABLE      = 0x34
 
     class Bit(object):
         CTRL_RESET     = 0
