@@ -236,8 +236,8 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     def enable_dsp(self):
         """キャプチャユニット 0 ~ 7 の DSP 機構を有効化する
 
-        | 信号処理を実行する場合, DSP 機構を有効にしてかつ, 
-        | 適用する処理の DSP ユニットをキャプチャパラメータで有効化する必要がある.
+        | キャプチャデータに信号処理を適用する場合, DSP 機構を有効にしてかつ, 
+        | DSP ユニットをキャプチャパラメータで有効化する必要がある.
 
         """
         self._enable_dsp()

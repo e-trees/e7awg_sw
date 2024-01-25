@@ -1680,8 +1680,8 @@
 <span class="sig-name descname"><span class="pre">enable_dsp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.enable_dsp"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp" title="Link to this definition">¶</a></dt>
 <dd><p>キャプチャユニット 0 ~ 7 の DSP 機構を有効化する</p>
 <div class="line-block">
-<div class="line">信号処理を実行する場合, DSP 機構を有効にしてかつ,</div>
-<div class="line">適用する処理の DSP ユニットをキャプチャパラメータで有効化する必要がある.</div>
+<div class="line">キャプチャデータに信号処理を適用する場合, DSP 機構を有効にしてかつ,</div>
+<div class="line">DSP ユニットをキャプチャパラメータで有効化する必要がある.</div>
 </div>
 </dd></dl>
 
@@ -2276,8 +2276,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.captureparam.CaptureParam.sel_dsp_units_to_enable">
 <span class="sig-name descname"><span class="pre">sel_dsp_units_to_enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">dsp_units</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/captureparam.html#CaptureParam.sel_dsp_units_to_enable"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.captureparam.CaptureParam.sel_dsp_units_to_enable" title="Link to this definition">¶</a></dt>
-<dd><p>このキャプチャシーケンスで有効にする信号処理ユニットを選択する.</p>
-<p>引数に含まなかった信号処理ユニットは無効になる.</p>
+<dd><p>このキャプチャシーケンスで有効にする DSP ユニットを選択する.</p>
+<p>引数に含まなかった DSP ユニットは無効になる.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>*dsp_units</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.DspUnit" title="e7awgsw.hwdefs.DspUnit"><em class="hover">DspUnit</em></a>) -- 有効にする DSP ユニットの ID</p>
@@ -3313,7 +3313,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-01-17" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-01-25" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 
