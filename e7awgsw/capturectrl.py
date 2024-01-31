@@ -2,6 +2,8 @@ import socket
 import time
 import struct
 from abc import ABCMeta, abstractmethod
+from typing import Union
+
 from .hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT
 from .memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
 from .udpaccess import CaptureRegAccess, WaveRamAccess
@@ -20,11 +22,13 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     #: キャプチャユニットのサンプリングレート (単位=サンプル数/秒)
     SAMPLING_RATE = 500000000
 
-    def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
+    def __init__(self, ip_addr, validate_args, enable_lib_log, enable_dsp_enable, logger):
         self._validate_args = validate_args
         self._loggers = [logger]
         if enable_lib_log:
             self._loggers.append(get_file_logger())
+
+        self._enable_dsp_enable = enable_dsp_enable
 
         if self._validate_args:
             try:
@@ -52,11 +56,12 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._set_capture_params(capture_unit_id, param)
 
 
-    def initialize(self, *capture_unit_id_list):
+    def initialize(self, *capture_unit_id_list, enable_dsp: Union[bool, None] = True):
         """引数で指定したキャプチャユニットを初期化する
 
         Args:
             *capture_unit_id_list (list of CaptureUnit): 初期化するキャプチャユニットの ID
+            enable_dsp: dsp全体を使用許可状態にするにはTrue, 使用不許可状態にするにはFalse, 状態を変えたくないときにはNone
         """
         if self._validate_args:
             try:
@@ -65,7 +70,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 log_error(e, *self._loggers)
                 raise
 
-        self._initialize(*capture_unit_id_list)
+        self._initialize(*capture_unit_id_list, enable_dsp=enable_dsp)
 
 
     def get_capture_data(self, capture_unit_id, num_samples):
@@ -240,12 +245,14 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         | DSP ユニットをキャプチャパラメータで有効化する必要がある.
 
         """
-        self._enable_dsp()
+        if self._enable_dsp_enable:
+            self._enable_dsp()
 
 
     def disable_dsp(self):
         """キャプチャユニット 0 ~ 7 の DSP 機構を無効化する"""
-        self._disable_dsp()
+        if self._enable_dsp_enable:
+            self._disable_dsp()
 
 
     def wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
@@ -350,7 +357,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _initialize(self, *capture_unit_id_list):
+    def _initialize(self, *capture_unit_id_list, enable_dsp: Union[bool, None]):
         pass
 
     @abstractmethod
@@ -425,6 +432,7 @@ class CaptureCtrl(CaptureCtrlBase):
         *,
         validate_args = True,
         enable_lib_log = True,
+        enable_dsp_enable = False,
         logger = get_null_logger()):
         """
         Args:
@@ -435,9 +443,12 @@ class CaptureCtrl(CaptureCtrlBase):
             enable_lib_log (bool):
                 | True -> ライブラリの標準のログ機能を有効にする.
                 | False -> ライブラリの標準のログ機能を無効にする.
+            enable_dsp_enable (bool):
+                | True -> dsp全体の有効化・無効化の仕組みを有効にする.
+                | False -> dsp全体の有効化・無効化の仕組みを無効にする.（20240125より前のe7awghw用）
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        super().__init__(ip_addr, validate_args, enable_lib_log, logger)
+        super().__init__(ip_addr, validate_args, enable_lib_log, enable_dsp_enable, logger)
         self.__reg_access = CaptureRegAccess(ip_addr, CAPTURE_REG_PORT, *self._loggers)
         self.__wave_ram_access = WaveRamAccess(ip_addr, WAVE_RAM_PORT, *self._loggers)
         if ip_addr == 'localhost':
@@ -565,10 +576,14 @@ class CaptureCtrl(CaptureCtrlBase):
         self.__reg_access.multi_write(base_addr, CaptureParamRegs.Offset.decision_func_params(0), *coef_list)
 
 
-    def _initialize(self, *capture_unit_id_list):
+    def _initialize(self, *capture_unit_id_list, enable_dsp: Union[bool, None]):
         self._disable_start_trigger(*capture_unit_id_list)
         self.__deselect_ctrl_target(*capture_unit_id_list)
-        self._enable_dsp()
+        if enable_dsp is not None:
+            if enable_dsp:
+                self._enable_dsp()
+            else:
+                self._disable_dsp()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
