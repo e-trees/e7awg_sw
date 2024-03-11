@@ -86,6 +86,7 @@ class CaptureTest(object):
         for awg, cap_unit in self.__awg_to_cap_units.items():
             cap_ctrl.select_trigger_awg(CaptureUnit.get_module(cap_unit), awg)
         # スタートトリガの有効化
+        cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         cap_ctrl.enable_start_trigger(*self.__cap_units)
 
     def __set_wave_sequence(self, awg_ctrl):

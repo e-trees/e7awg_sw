@@ -114,9 +114,9 @@ class RemoteSequencerCtrl(SequencerCtrlBase):
             raise
 
 
-    def _clear_unprocessed_commands(self):
+    def _clear_commands(self):
         try:
-            result = self.__server.clear_unprocessed_commands(self.__handler)
+            result = self.__server.clear_commands(self.__handler)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -178,6 +178,15 @@ class RemoteSequencerCtrl(SequencerCtrlBase):
             raise
 
 
+    def _num_stored_commands(self):
+        try:
+            result = self.__server.num_stored_commands(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _num_successful_commands(self):
         try:
             result = self.__server.num_successful_commands(self.__handler)
@@ -226,6 +235,51 @@ class RemoteSequencerCtrl(SequencerCtrlBase):
     def _pop_cmd_err_reports(self):
         try:
             result = self.__server.pop_cmd_err_reports(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _cmd_counter(self):
+        try:
+            result = self.__server.cmd_counter(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+        
+
+    def _reset_cmd_counter(self):
+        try:
+            result = self.__server.reset_cmd_counter(self.__handler)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+    
+    def _get_branch_flag(self):
+        try:
+            result = self.__server.get_branch_flag(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _set_branch_flag(self, val):
+        try:
+            result = self.__server.set_branch_flag(self.__handler, val)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _get_external_branch_flag(self):
+        try:
+            result = self.__server.get_external_branch_flag(self.__handler)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)

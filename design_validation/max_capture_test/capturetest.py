@@ -18,27 +18,27 @@ class CaptureTest(object):
         CaptureModule.U3 : AWG.U4
     }
 
-    def __init__(self, res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr):
+    def __init__(self, res_dir, ip_addr, cap_unit, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
         self.__use_labrad = use_labrad
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
-        self.__capture_units = [cap_unit_id]
-        self.__capture_module = CaptureUnit.get_module(cap_unit_id)
+        self.__capture_units = [cap_unit]
+        self.__capture_module = CaptureUnit.get_module(cap_unit)
         self.__awg = self.__CAP_MOD_TO_AWG[self.__capture_module]
         os.makedirs(self.__res_dir, exist_ok = True)
     
-    def __save_wave_samples(self, expected, capture_unit_to_capture_data):
+    def __save_wave_samples(self, expected, cap_unit_to_cap_data):
         udef_wave_file = self.__res_dir + '/expected_data.txt'
         self.__write_to_file(expected, udef_wave_file)
 
         # キャプチャデータの最初と最後の繰り返しだけ保存する
         exp_len = len(expected)
-        for cap_unit_id, cap_data in capture_unit_to_capture_data.items():
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
             num_repeats = len(cap_data) // exp_len
-            capture_data_file = self.__res_dir + '/capture_data_{}_head.txt'.format(cap_unit_id)
+            capture_data_file = self.__res_dir + '/capture_data_{}_head.txt'.format(cap_unit)
             self.__write_to_file(cap_data[0:exp_len], capture_data_file)
-            capture_data_file = self.__res_dir + '/capture_data_{}_tail.txt'.format(cap_unit_id)
+            capture_data_file = self.__res_dir + '/capture_data_{}_tail.txt'.format(cap_unit)
             self.__write_to_file(cap_data[(num_repeats - 1) * exp_len:], capture_data_file)
         
     def __save_capture_params(self, capture_param):
@@ -46,13 +46,13 @@ class CaptureTest(object):
             with open(capture_param_file, 'w') as txt_file:
                 txt_file.write(str(capture_param))
 
-    def __write_to_file(self, cap_data_list, filepath):
+    def __write_to_file(self, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
-                if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+            for sample in cap_data:
+                if isinstance(filepath, tuple):
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
     def __gen_wave_seq(self, do_classification):
         wave_seq = WaveSequence(
@@ -75,20 +75,11 @@ class CaptureTest(object):
 
         return wave_seq
 
-    def __save_wave_seq_params(self, awg_id, wave_seq):
-        filepath = self.__res_dir + '/wave_seq_params_{}.txt'.format(awg_id)
+    def __save_wave_seq_params(self, awg, wave_seq):
+        filepath = self.__res_dir + '/wave_seq_params_{}.txt'.format(awg)
         txt_file = open(filepath, 'w')
         txt_file.write(str(wave_seq))
         txt_file.close()
-
-    def __convert_to_float(self, samples):
-        """
-        AWG が出力するサンプルを Capture がそのまま保存したときの浮動小数点データに変換する
-        """
-        iq_samples = []
-        for i_data, q_data in samples:
-            iq_samples.append((float(i_data), float(q_data)))
-        return iq_samples
 
     def __gen_capture_param(self, wave_seq, do_classification):
         capture_param = CaptureParam()
@@ -111,6 +102,7 @@ class CaptureTest(object):
         # キャプチャモジュールをスタートする AWG の設定
         cap_ctrl.select_trigger_awg(self.__capture_module, self.__awg)
         # スタートトリガの有効化
+        cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         cap_ctrl.enable_start_trigger(*self.__capture_units)
 
     def __set_wave_sequence(self, awg_ctrl, do_classification):
@@ -125,14 +117,14 @@ class CaptureTest(object):
         return capture_param
 
     def __get_capture_data(self, cap_ctrl, do_classification):
-        capture_unit_to_capture_data = {}
+        cap_unit_to_cap_data = {}
         for capture_unit in self.__capture_units:
             num_samples_to_get = cap_ctrl.num_captured_samples(self.__capture_units[0])
             if do_classification:
-                capture_unit_to_capture_data[capture_unit] = cap_ctrl.get_classification_results(capture_unit, num_samples_to_get)
+                cap_unit_to_cap_data[capture_unit] = cap_ctrl.get_classification_results(capture_unit, num_samples_to_get)
             else:
-                capture_unit_to_capture_data[capture_unit] = cap_ctrl.get_capture_data(capture_unit, num_samples_to_get)
-        return capture_unit_to_capture_data
+                cap_unit_to_cap_data[capture_unit] = cap_ctrl.get_capture_data(capture_unit, num_samples_to_get)
+        return cap_unit_to_cap_data
 
     def __calc_expected_capture_data(self, samples, capture_param):
         """キャプチャユニットに samples を入力したときのキャプチャデータを算出する"""
@@ -191,7 +183,7 @@ class CaptureTest(object):
             # キャプチャ完了待ち
             cap_ctrl.wait_for_capture_units_to_stop(1200, *self.__capture_units)
             # キャプチャデータ取得
-            capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl, do_classification)
+            cap_unit_to_cap_data = self.__get_capture_data(cap_ctrl, do_classification)
             # エラーチェック
             awg_errs = awg_ctrl.check_err(self.__awg)
             cap_errs = cap_ctrl.check_err(*self.__capture_units)
@@ -211,11 +203,11 @@ class CaptureTest(object):
         # AWG の波形データとキャプチャデータを比較
         expected = self.__calc_expected_capture_data(
             wave_seq.chunk(0).wave_data.samples, capture_param)
-        for cap_data in capture_unit_to_capture_data.values():
+        for cap_data in cap_unit_to_cap_data.values():
             all_match &= self.__comp_capture_data_to_expected(cap_data, expected)
 
         # 波形データを保存
-        self.__save_wave_samples(expected, capture_unit_to_capture_data)
+        self.__save_wave_samples(expected, cap_unit_to_cap_data)
         self.__save_wave_seq_params(self.__awg, wave_seq)
         self.__save_capture_params(capture_param)
 

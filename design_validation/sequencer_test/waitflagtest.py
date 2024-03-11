@@ -8,11 +8,12 @@ from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam,
 from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, \
     CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, \
-    WaveGenEndFenceCmd, WaveSequenceSelectionCmd, ResponsiveFeedbackCmd
+    WaveGenEndFenceCmd, WaveSequenceSelectionCmd, ResponsiveFeedbackCmd, \
+    BranchByFlagCmd
 from e7awgsw import \
     AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
-    WaveGenEndFenceCmdErr
+    WaveGenEndFenceCmdErr, BranchByFlagCmdErr
 from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 from e7awgsw import SinWave, IqWave, dsp
@@ -82,8 +83,8 @@ class WaitFlagTest(object):
 
     def __register_wave_sequences(self, keys, wave_sequences):
         key_to_wave_seq = dict(zip(keys, wave_sequences))
-        for awg_id in self.__awgs:
-            self.__awg_ctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+        for awg in self.__awgs:
+            self.__awg_ctrl.register_wave_sequences(awg, key_to_wave_seq)
 
 
     def __register_capture_params(self, keys, params):
@@ -93,18 +94,18 @@ class WaitFlagTest(object):
 
     def __check_err(self):
         awg_to_err = self.__awg_ctrl.check_err(*self.__awgs)
-        for awg_id, err_list in awg_to_err.items():
-            print(awg_id)
+        for awg, err_list in awg_to_err.items():
+            print(awg)
             for err in err_list:
                 print('    {}'.format(err))
         
         cap_unit_to_err = self.__cap_ctrl.check_err(*self.__capture_units)
-        for cap_unit_id, err_list in cap_unit_to_err.items():
-            print('{} err'.format(cap_unit_id))
+        for cap_unit, err_list in cap_unit_to_err.items():
+            print('{} err'.format(cap_unit))
             for err in err_list:
                 print('    {}'.format(err))
 
-        seq_err_list = self.__cap_ctrl.check_err()
+        seq_err_list = self.__seq_ctrl.check_err()
         for seq_err in seq_err_list:
             print(seq_err, '\n')
         
@@ -120,6 +121,8 @@ class WaitFlagTest(object):
         self.__seq_ctrl.start_sequencer()
         # コマンドの処理終了待ち
         self.__seq_ctrl.wait_for_sequencer_to_stop(5)
+        # コマンドキューをクリア
+        self.__seq_ctrl.clear_commands()
         # エラー出力
         return not self.__check_err()
 
@@ -230,10 +233,6 @@ class WaitFlagTest(object):
         self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
         success = self.exec_cmds(gen_cmds_7())
         reports = self.__seq_ctrl.pop_cmd_err_reports()
-        if len(reports) != 2:
-            for report in reports:
-                print(report)
-
         success &= all([
             len(reports) == 2,
             isinstance(reports[0], CaptureEndFenceCmdErr),
@@ -248,10 +247,34 @@ class WaitFlagTest(object):
             reports[1].cmd_no == 37,
             not reports[1].is_terminated])
 
-        if not success:
-            for report in reports:
-                print(report)
+        return success
 
+
+    def test_8(self):
+        self.__cap_ctrl.disable_start_trigger(*self.__capture_units)
+        success = self.exec_cmds(gen_cmds_8())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 1,
+            isinstance(reports[0], BranchByFlagCmdErr),
+            reports[0].cmd_counter == -1,
+            reports[0].out_of_range_err,
+            reports[0].cmd_no == 40,
+            not reports[0].is_terminated])
+        return success
+
+
+    def test_9(self):
+        self.__cap_ctrl.disable_start_trigger(*self.__capture_units)
+        success = self.exec_cmds(gen_cmds_9())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 1,
+            isinstance(reports[0], BranchByFlagCmdErr),
+            reports[0].cmd_counter == 1025,
+            reports[0].out_of_range_err,
+            reports[0].cmd_no == 41,
+            not reports[0].is_terminated])
         return success
 
 
@@ -259,6 +282,7 @@ class WaitFlagTest(object):
         """
         テスト項目
         ・AWG スタートとキャプチャ終了モニタコマンドの wait フラグが機能する
+        ・各種コマンドがエラーになる条件を満たしたときに, 対応するエラーレポートが FPGA から送られる
         """
         wave_seq = [gen_wave_sequence(2048), gen_wave_sequence(1024)]
         cap_params = [
@@ -276,7 +300,9 @@ class WaitFlagTest(object):
             self.test_4(),
             self.test_5(),
             self.test_6(),
-            self.test_7()])
+            self.test_7(),
+            self.test_8(),
+            self.test_9()])
 
 
 def gen_capture_param(num_sum_section_words, enable_classification):
@@ -421,3 +447,14 @@ def gen_cmds_7():
     ]
     return cmds
 
+
+def gen_cmds_8():
+    cmds = [
+        WaveSequenceSelectionCmd(39, [AWG.U2], key_table = 0),
+        BranchByFlagCmd(40, -2) # 範囲外分岐でエラーになるのを期待
+    ]
+    return cmds
+
+
+def gen_cmds_9():
+    return [ BranchByFlagCmd(41, 1025) ] # 範囲外分岐でエラーになるのを期待

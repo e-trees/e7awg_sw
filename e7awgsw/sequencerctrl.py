@@ -1,6 +1,7 @@
 import time
 import socket
 from abc import ABCMeta, abstractmethod
+from deprecated import deprecated
 from .logger import get_file_logger, get_null_logger, log_error
 from .hwparam import CMD_ERR_REPORT_SIZE, SEQUENCER_REG_PORT, SEQUENCER_CMD_PORT
 from .udpaccess import SequencerRegAccess, SequencerCmdSender, CmdErrReceiver, UdpRouter, get_my_ip_addr
@@ -67,14 +68,28 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
     def terminate_sequencer(self):
         """シーケンサを強制停止させる
 
-        | 実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.        
+        | 実行中のコマンドは途中で終了する.  途中で終了したコマンドは, 処理に失敗したコマンドとしてカウントされる.
         """
         self._terminate_sequencer()
 
 
+    @deprecated(reason='You should use "clear_commands"')
     def clear_unprocessed_commands(self):
-        """シーケンサにある未実行のコマンドをすべて削除する"""
-        self._clear_unprocessed_commands()
+        """コマンドキューのコマンドをすべて削除する (非推奨)
+        
+        | このメソッドを呼ぶとコマンドカウンタ (コマンドキューの中で次に実行するコマンドの位置を指すポインタ) が
+        | コマンドキューの先頭に移動する.
+        """
+        self._clear_commands()
+
+
+    def clear_commands(self):
+        """コマンドキューのコマンドをすべて削除する
+        
+        | このメソッドを呼ぶとコマンドカウンタ (コマンドキューの中で次に実行するコマンドの位置を指すポインタ) が
+        | コマンドキューの先頭に移動する.
+        """
+        self._clear_commands()
 
 
     def clear_unsent_cmd_err_reports(self):
@@ -120,32 +135,32 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
 
 
     def num_unprocessed_commands(self):
-        """シーケンサにある未実行のコマンドの数を取得する
+        """シーケンサが次に実行するコマンドからコマンドキューの末尾のコマンドまでのコマンド数を取得する
         
         Returns:
-            int: シーケンサにある未実行のコマンドの数
+            int: シーケンサが次に実行するコマンドからコマンドキューの末尾のコマンドまでのコマンド数
         """
         return self._num_unprocessed_commands()
 
 
     def num_successful_commands(self):
-        """シーケンサのコマンドの処理開始から現在までに, 処理に成功したコマンドの数を取得する
+        """シーケンサのコマンドの処理開始から現在までに, コマンドの処理に成功した回数を取得する
 
         | この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.
         
         Returns:
-            int: シーケンサが処理に成功したコマンドの数
+            int: コマンドの処理に成功した回数
         """
         return self._num_successful_commands()
 
 
     def num_err_commands(self):
-        """シーケンサのコマンドの処理開始から現在までに, 処理に失敗したコマンドの数を取得する
+        """シーケンサのコマンドの処理開始から現在までに, コマンドの処理に失敗した回数を取得する
 
         | この数は, シーケンサのコマンドの処理を開始するたびに 0 に戻る.
         
         Returns:
-            int: シーケンサが処理に失敗したコマンドの数
+            int: コマンドの処理に失敗した回数
         """
         return self._num_err_commands()
 
@@ -191,6 +206,32 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         return self._pop_cmd_err_reports()
 
 
+    def get_branch_flag(self):
+        """シーケンサが実行する分岐コマンドの条件フラグを取得する
+
+        Returns:
+            bool: 分岐コマンドの条件フラグ.
+        """
+        return self._get_branch_flag()
+
+
+    def set_branch_flag(self, val):
+        """シーケンサが実行する分岐コマンドの条件フラグを設定する
+
+        Args:
+            val (bool):
+                | False : 分岐コマンドの分岐が成立しない.
+                | True : 分岐コマンドの分岐が成立する.
+        """
+        if self._validate_args:
+            try:
+                self._validate_flag(val)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        self._set_branch_flag(val)
+
+
     def version(self):
         """シーケンサのバージョンを取得する
 
@@ -225,6 +266,10 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
             raise ValueError('Invalid timeout {}'.format(timeout))
 
 
+    def _validate_flag(self, flag):
+        if (not isinstance(flag, bool)):
+            raise ValueError('Invalid flag {}'.format(flag))
+
     @abstractmethod
     def _initialize(self):
         pass
@@ -242,7 +287,7 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _clear_unprocessed_commands(self):
+    def _clear_commands(self):
         pass
 
     @abstractmethod
@@ -270,6 +315,11 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
+    def _num_stored_commands(self):
+        """コマンドキューにあるコマンドの数を取得する"""
+        pass
+
+    @abstractmethod
     def _num_successful_commands(self):
         pass
 
@@ -291,6 +341,29 @@ class SequencerCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _pop_cmd_err_reports(self):
+        pass
+
+    @abstractmethod
+    def _cmd_counter(self):
+        """コマンドカウンタの値を取得する"""
+        pass
+
+    @abstractmethod
+    def _reset_cmd_counter(self):
+        """コマンドカウンタの値を0にする"""
+        pass
+
+    @abstractmethod
+    def _get_branch_flag(self):
+        pass
+
+    @abstractmethod
+    def _set_branch_flag(self, val):
+        pass
+
+    @abstractmethod
+    def _get_external_branch_flag(self):
+        """シーケンサの外部から入力される分岐フラグの値を取得する"""
         pass
 
     @abstractmethod
@@ -373,6 +446,7 @@ class SequencerCtrl(SequencerCtrlBase):
         self.__set_dest_ip_addr(self.__my_ip_addr)
         self.__reg_access.write(SeqRegs.ADDR, SeqRegs.Offset.CTRL, 0)
         self.__reset_sequencer()
+        self.set_branch_flag(True)
         # 古いエラーレポートを受信しないように, エラー送信を止めてリセットしてからエラーレポート受信ポートを作成する.
         if self.__err_receiver is None:
             self.__err_receiver = CmdErrReceiver(self.__my_ip_addr, *self._loggers)
@@ -416,11 +490,12 @@ class SequencerCtrl(SequencerCtrlBase):
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_TERMINATE, 1, 0)
 
 
-    def _clear_unprocessed_commands(self):
+    def _clear_commands(self):
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_CLR, 1, 1)
         time.sleep(1e-4)
         self.__reg_access.write_bits(SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_CLR, 1, 0)
         time.sleep(1e-4)
+        self._reset_cmd_counter()
 
 
     def _clear_unsent_cmd_err_reports(self):
@@ -502,7 +577,11 @@ class SequencerCtrl(SequencerCtrlBase):
 
 
     def _num_unprocessed_commands(self):
-        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_UNPROCESSED_CMDS)
+        return self._num_stored_commands() - self._cmd_counter()
+
+
+    def _num_stored_commands(self):
+        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.NUM_STORED_CMDS)
 
 
     def _num_successful_commands(self):
@@ -518,13 +597,13 @@ class SequencerCtrl(SequencerCtrlBase):
 
 
     def _cmd_fifo_free_space(self):
-        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.CMD_FIFO_FREE_SPACE)
+        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.CMD_BUF_FREE_SPACE)
 
 
     def _check_err(self):
         err_list = []
         err = self.__reg_access.read_bits(
-            SeqRegs.ADDR, SeqRegs.Offset.ERR, SeqRegs.Bit.ERR_CMD_FIFO_OVERFLOW, 1)
+            SeqRegs.ADDR, SeqRegs.Offset.ERR, SeqRegs.Bit.ERR_CMD_BUF_OVERFLOW, 1)
         if err == 1:
             err_list.append(SequencerErr.CMD_FIFO_OVERFLOW)
 
@@ -541,6 +620,34 @@ class SequencerCtrl(SequencerCtrlBase):
             return []
 
         return self.__err_receiver.pop_err_reports()
+
+
+    def _cmd_counter(self):
+        return self.__reg_access.read(SeqRegs.ADDR, SeqRegs.Offset.CMD_COUNTER)
+
+
+    def _reset_cmd_counter(self):
+        self.__reg_access.write_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_COUNTER_RESET, 1, 0)
+        self.__reg_access.write_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_COUNTER_RESET, 1, 1)
+        self.__reg_access.write_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_CMD_COUNTER_RESET, 1, 0)
+
+
+    def _get_branch_flag(self):
+        return not bool(self.__reg_access.read_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_BRANCH_FLAG_NEG, 1))
+
+
+    def _set_branch_flag(self, val):
+        self.__reg_access.write_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.CTRL, SeqRegs.Bit.CTRL_BRANCH_FLAG_NEG, 1, int(not val))
+    
+
+    def _get_external_branch_flag(self):
+        return not bool(self.__reg_access.read_bits(
+            SeqRegs.ADDR, SeqRegs.Offset.STATUS, SeqRegs.Bit.STATUS_EXT_BRANCH_FLAG_NEG, 1))
 
 
     def _version(self):

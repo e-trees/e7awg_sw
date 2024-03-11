@@ -6,11 +6,11 @@ from .logger import log_error
 from .sequencercmd import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
     CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd, \
-    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd
+    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd, BranchByFlagCmd
 from .sequencercmd import \
     AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, \
     CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, WaveGenEndFenceCmdErr, \
-    ResponsiveFeedbackCmdErr, WaveSequenceSelectionCmdErr
+    ResponsiveFeedbackCmdErr, WaveSequenceSelectionCmdErr, BranchByFlagCmdErr
 from .hwparam import CMD_ERR_REPORT_SIZE
 from .hwdefs import AWG, CaptureUnit
 
@@ -273,6 +273,8 @@ class CmdErrReceiver(threading.Thread):
         cap_unit_id_bits = bit_field >> 24
         cap_unit_id_list = list(filter(
             lambda cap_unit_id: cap_unit_id_bits & (1 << cap_unit_id), CaptureUnit.all()))
+        out_of_range_err = bool((bit_field >> 24) & 0x1)
+        cmd_counter = cls.__to_int32(bit_field >> 32)
 
         if cmd_id == AwgStartCmd.ID:
             return AwgStartCmdErr(cmd_no, is_terminated, awg_id_list)
@@ -293,6 +295,8 @@ class CmdErrReceiver(threading.Thread):
                 cmd_no, is_terminated, awg_id_list, read_err, write_err)
         elif cmd_id == WaveSequenceSelectionCmd.ID:
             return WaveSequenceSelectionCmdErr(cmd_no, is_terminated)
+        elif cmd_id == BranchByFlagCmd.ID:
+            return BranchByFlagCmdErr(cmd_no, is_terminated, out_of_range_err, cmd_counter)
 
         assert False, ('Invalid cmd err.  cmd_id = {}'.format(cmd_id))
 
@@ -319,6 +323,12 @@ class CmdErrReceiver(threading.Thread):
             return not bool((bit_field >> 34) & 0x1)
 
         return not bool((bit_field >> 40) & 0x1)
+
+
+    @classmethod
+    def __to_int32(self, val):
+        val = val & 0xffffffff
+        return (val ^ 0x80000000) - 0x80000000
 
 
     def pop_err_reports(self):

@@ -8,6 +8,7 @@ from paramloadtest import ParamLoadTest
 from feedbackvaltest import FeedbackValTest
 from waitflagtest import WaitFlagTest
 from responsivefeedbacktest import ResponsiveFeedbackTest
+from branchtest import BranchTest
 from e7awgsw import CaptureModule, WaveSequence, CaptureParam, DspUnit, DecisionFunc, CaptureParamElem
 
 
@@ -308,7 +309,7 @@ def main(
             print('failure wait flag test')
             failed_tests.append('{} - wait flag'.format(test_id))
 
-        print('\n-- responsive feedback test --\n')
+        print('\n-- responsive feedback test --')
         test = ResponsiveFeedbackTest(
             res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
         result = test.run_test('responsive_fb_test')
@@ -316,6 +317,14 @@ def main(
         if not result:
             print('failure responsive feedback test')
             failed_tests.append('{} - responsive feedback'.format(test_id))
+
+        print('\n-- branch test --\n')
+        test = BranchTest(res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
+        result = test.run_test('branch_test')
+        test.close()
+        if not result:
+            print('failure branch test')
+            failed_tests.append('{} - branch'.format(test_id))
 
     if failed_tests:
         for test_id in failed_tests:

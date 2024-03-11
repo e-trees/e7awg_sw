@@ -49,24 +49,24 @@ class CaptureTestDsp(object):
     
     def __save_capture_samples(self, cap_unit_to_cap_data, dir, filename):
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_data_list in cap_unit_to_cap_data.items():
-            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data_list, filepath)
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
+            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit)
+            self.__write_to_file(cap_data, filepath)
         
     def __save_capture_params(self, cap_unit_to_cap_param, dir, filename):
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_param in cap_unit_to_cap_param.items():
-            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
+        for cap_unit, cap_param in cap_unit_to_cap_param.items():
+            filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit)
             with open(filepath, 'w') as txt_file:
                 txt_file.write(str(cap_param))
 
-    def __write_to_file(self, cap_data_list, filepath):
+    def __write_to_file(self, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
-                if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+            for sample in cap_data:
+                if isinstance(sample, tuple):
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
     def __gen_wave_seq(self, num_samples):
         wave_seq = WaveSequence(
@@ -146,6 +146,7 @@ class CaptureTestDsp(object):
         for awg_id, cap_mod in self.__awg_to_capture_module.items():
             cap_ctrl.select_trigger_awg(cap_mod, awg_id)
         # スタートトリガの有効化
+        cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         cap_ctrl.enable_start_trigger(*self.__cap_units_to_test)
 
     def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):

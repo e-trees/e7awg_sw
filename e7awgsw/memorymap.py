@@ -351,17 +351,18 @@ class SequencerCtrlRegs(object):
     ADDR = 0x0
 
     class Offset(object):
-        VERSION               = 0x0
-        CTRL                  = 0x4
-        DEST_UDP_PORT         = 0x8
-        DEST_IP_ADDR          = 0xC
-        STATUS                = 0x10
-        ERR                   = 0x14
-        NUM_UNPROCESSED_CMDS  = 0x18
-        NUM_SUCCESSFUL_CMDS   = 0x1C
-        NUM_ERR_CMDS          = 0x20
-        CMD_FIFO_FREE_SPACE   = 0x24
-        NUM_ERR_REPORTS       = 0x28
+        VERSION              = 0x0
+        CTRL                 = 0x4
+        DEST_UDP_PORT        = 0x8
+        DEST_IP_ADDR         = 0xC
+        STATUS               = 0x10
+        ERR                  = 0x14
+        NUM_STORED_CMDS      = 0x18
+        NUM_SUCCESSFUL_CMDS  = 0x1C
+        NUM_ERR_CMDS         = 0x20
+        CMD_BUF_FREE_SPACE   = 0x24
+        NUM_ERR_REPORTS      = 0x28
+        CMD_COUNTER          = 0x2C
 
     class Bit(object):
         CTRL_RESET                  = 0
@@ -371,11 +372,14 @@ class SequencerCtrlRegs(object):
         CTRL_ERR_REPORT_CLR         = 4
         CTRL_DONE_CLR               = 5
         CTRL_ERR_REPORT_SEND_ENABLE = 6
+        CTRL_CMD_COUNTER_RESET      = 7
+        CTRL_BRANCH_FLAG_NEG        = 8
 
         STATUS_WAKEUP                 = 0
         STATUS_BUSY                   = 1
         STATUS_DONE                   = 2
         STATUS_ERR_REPORT_SEND_ACTIVE = 3
+        STATUS_EXT_BRANCH_FLAG_NEG    = 4
 
-        ERR_CMD_FIFO_OVERFLOW = 0
+        ERR_CMD_BUF_OVERFLOW  = 0
         ERR_ERR_FIFO_OVERFLOW = 1

@@ -8,8 +8,8 @@ from e7awgsw import CaptureParam, DecisionFunc
 
 def output_wave_sequences(awg_to_wave_seq, dir, filename):
     os.makedirs(dir, exist_ok = True)
-    for awg_id, wave_seq in awg_to_wave_seq.items():
-        filepath = dir + '/' + filename + '_{}.txt'.format(awg_id)
+    for awg, wave_seq in awg_to_wave_seq.items():
+        filepath = dir + '/' + filename + '_{}.txt'.format(awg)
         with open(filepath, 'w') as txt_file:
             _write_awg_words(txt_file, wave_seq.all_samples_lazy(False))
 
@@ -35,8 +35,8 @@ def _write_awg_words(file, samples):
 def output_capture_samples(cap_unit_to_cap_data, dir, filename):
     os.makedirs(dir, exist_ok = True)
     cap_unit_to_cap_data = copy.deepcopy(cap_unit_to_cap_data)
-    for cap_id, samples in cap_unit_to_cap_data.items():
-        filepath = dir + '/' + filename + '_{}.txt'.format(cap_id)
+    for cap, samples in cap_unit_to_cap_data.items():
+        filepath = dir + '/' + filename + '_{}.txt'.format(cap)
         _add_zero(samples)
         is_cls_data = not isinstance(samples[0], tuple)
         with open(filepath, 'w') as txt_file:
@@ -84,8 +84,8 @@ def _write_cls_cap_words(file, samples):
 
 def output_capture_params(cap_unit_to_cap_params, dir, filename):
     os.makedirs(dir, exist_ok = True)
-    for cap_id, params in cap_unit_to_cap_params.items():
-        filepath = dir + '/' + filename + '_{}.txt'.format(cap_id)
+    for cap, params in cap_unit_to_cap_params.items():
+        filepath = dir + '/' + filename + '_{}.txt'.format(cap)
         with open(filepath, 'w') as txt_file:
             _write_capture_section_params(txt_file, params)
             _write_complex_fir_coefs(txt_file, params)

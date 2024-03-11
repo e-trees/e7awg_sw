@@ -241,6 +241,8 @@ def main(
         seq_ctrl.start_sequencer()
         # コマンドの処理終了待ち
         seq_ctrl.wait_for_sequencer_to_stop(4)
+        # コマンドキューのクリア
+        seq_ctrl.clear_commands()
         # エラー出力
         check_err(seq_ctrl, awg_ctrl, cap_ctrl, awgs, capture_units)
         # キャプチャデータ取得

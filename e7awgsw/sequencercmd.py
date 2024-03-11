@@ -101,12 +101,25 @@ class SequencerCmd(object, metaclass = ABCMeta):
                 "Invalid four-classifier value channel ID '{}'".format(four_cls_channel_id))
 
 
+    def _validate_cmd_offset(self, offset, min, max):
+        if isinstance(offset, int) and  self.__is_in_range(min, max, offset):
+            return
+        
+        raise ValueError(
+            "The branch offset must be integers between {} and {} inclusive.  ({})"
+            .format(min, max, offset))
+
+
     def _to_bit_field(self, bit_pos_list):
         bit_field = 0
         for bit_pos in bit_pos_list:
             bit_field |= 1 << bit_pos
         return bit_field
 
+
+    def __is_in_range(self, min, max, val):
+        return (min <= val) and (val <= max)
+    
 
     @abstractmethod
     def serialize(self):
@@ -184,11 +197,10 @@ class AwgStartCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         awg_id_list = self._to_bit_field(self.__awg_id_list)
         start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
         cmd = (
-            stop_seq                    |
+            int(self.stop_seq)          |
             self.cmd_id          << 1   |
             self.cmd_no          << 8   |
             awg_id_list          << 24  |
@@ -286,10 +298,9 @@ class CaptureEndFenceCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
         cmd = (
-            stop_seq                        |
+            int(self.stop_seq)              |
             self.cmd_id              << 1   |
             self.cmd_no              << 8   |
             capture_unit_id_bits     << 24  |
@@ -365,14 +376,13 @@ class WaveSequenceSetCmd(SequencerCmd):
         return copy.copy(self.__key_table)
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         key_table_bits = 0
         for i in range(len(self.__key_table)):
             key_table_bits |= self.__key_table[i] << (i * 10)
 
         cmd = (
-            stop_seq                       |
+            int(self.stop_seq)             |
             self.cmd_id              << 1  |
             self.cmd_no              << 8  |
             awg_id_bits              << 24 |
@@ -463,7 +473,6 @@ class CaptureParamSetCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)        
         param_elem_bits = self._to_bit_field(self.__param_elems)
 
@@ -472,7 +481,7 @@ class CaptureParamSetCmd(SequencerCmd):
             key_table_bits |= self.__key_table[i] << (i * 10)
 
         cmd = (
-            stop_seq                       |
+            int(self.stop_seq)             |
             self.cmd_id              << 1  |
             self.cmd_no              << 8  |
             capture_unit_id_bits     << 24 |
@@ -543,11 +552,9 @@ class CaptureAddrSetCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
-
         cmd = (
-            stop_seq                   |
+            int(self.stop_seq)         |
             self.cmd_id          << 1  |
             self.cmd_no          << 8  |
             capture_unit_id_bits << 24 |
@@ -647,12 +654,11 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         byte_offset = self.__bit_offset // (CAPTURE_RAM_WORD_SIZE * 8) * CAPTURE_RAM_WORD_SIZE
         elem_offset = (self.__bit_offset % (CAPTURE_RAM_WORD_SIZE * 8)) // CLASSIFICATION_RESULT_SIZE
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
         cmd = (
-            stop_seq                   |
+            int(self.stop_seq)         |
             self.cmd_id          << 1  |
             self.cmd_no          << 8  |
             capture_unit_id_bits << 24 |
@@ -750,10 +756,9 @@ class WaveGenEndFenceCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         cmd = (
-            stop_seq                        |
+            int(self.stop_seq)              |
             self.cmd_id              << 1   |
             self.cmd_no              << 8   |
             awg_id_bits              << 24  |
@@ -846,11 +851,10 @@ class ResponsiveFeedbackCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         awg_id_list = self._to_bit_field(self.__awg_id_list)
         start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
         cmd = (
-            stop_seq                    |
+            int(self.stop_seq)          |
             self.cmd_id          << 1   |
             self.cmd_no          << 8   |
             awg_id_list          << 24  |
@@ -926,19 +930,77 @@ class WaveSequenceSelectionCmd(SequencerCmd):
 
 
     def __gen_cmd_bytes(self):
-        stop_seq = 1 if self.stop_seq else 0
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         key_table_bits = 0
         for i in range(len(self.__key_table)):
             key_table_bits |= self.__key_table[i] << (i * 10)
 
         cmd = (
-            stop_seq                              |
-            self.cmd_id                     << 1  |
-            self.cmd_no                     << 8  |
-            awg_id_bits                     << 24 |
+            int(self.stop_seq)             |
+            self.cmd_id              << 1  |
+            self.cmd_no              << 8  |
+            awg_id_bits              << 24 |
             self.four_cls_channel_id << 40 |
-            key_table_bits                  << 44)
+            key_table_bits           << 44)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self):
+        return self.__cmd_bytes
+
+
+    def size(self):
+        return len(self.__cmd_bytes)
+
+
+class BranchByFlagCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID = 10
+    #: 分岐先として指定可能なコマンドオフセットの最大値
+    MAX_CMD_OFFSET = 32767
+    #: 分岐先として指定可能なコマンドオフセットの最小値
+    MIN_CMD_OFFSET = -32768
+
+    def __init__(
+        self,
+        cmd_no,
+        cmd_offset,
+        stop_seq = False):
+        """シーケンサ内部の専用フラグを参照する条件分岐コマンド.
+
+        | 分岐が成立したとき, 次に実行されるコマンドが cmd_offset で指定したコマンドになる.
+        | 分岐が成立しなかったとき, 次に実行されるコマンドはコマンドキューに並んだ 1 つ後のコマンドとなる.
+
+        Args:
+            cmd_no (int): コマンド番号
+            cmd_offset (int):
+                | 分岐成立時にこのコマンドの次に処理されるコマンドが cmd_offset 個後のコマンドになる.
+                | 次に実行されるコマンドの例
+                |   0  : このコマンド
+                |   1  : コマンドキューに並んだ 1 つ後のコマンド
+                |   -2 : コマンドキューに並んだ 2 つ前のコマンド
+            stop_seq (bool):
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        self._validate_cmd_offset(
+            cmd_offset, self.MIN_CMD_OFFSET, self.MAX_CMD_OFFSET)
+        self.__cmd_offset = cmd_offset
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def cmd_offset(self):
+        return self.__cmd_offset
+
+
+    def __gen_cmd_bytes(self):
+        cmd = (
+            int(self.stop_seq)              |
+            self.cmd_id                << 1 |
+            self.cmd_no                << 8 |
+            (self.cmd_offset & 0xFFFF) << 24)
         return cmd.to_bytes(16, 'little')
 
 
@@ -1010,7 +1072,7 @@ class AwgStartCmdErr(SequencerCmdErr):
 
     def __str__(self):
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
-        return  (
+        return (
             'AwgStartCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
@@ -1091,7 +1153,7 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
 
 
     def __str__(self):
-        return  (
+        return (
             'WaveSequenceSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
@@ -1130,7 +1192,7 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
 
 
     def __str__(self):
-        return  (
+        return (
             'CaptureParamSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
@@ -1158,7 +1220,7 @@ class CaptureAddrSetCmdErr(SequencerCmdErr):
 
 
     def __str__(self):
-        return  (
+        return (
             'CaptureAddrSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
@@ -1185,7 +1247,7 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
 
 
     def __str__(self):
-        return  (
+        return (
             'FeedbackCalcOnClassificationCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
@@ -1226,7 +1288,7 @@ class WaveGenEndFenceCmdErr(SequencerCmdErr):
 
     def __str__(self):
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
-        return  (
+        return (
             'WaveGenEndFenceCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
@@ -1277,7 +1339,7 @@ class ResponsiveFeedbackCmdErr(SequencerCmdErr):
 
     def __str__(self):
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
-        return  (
+        return (
             'ResponsiveFeedbackCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
             '  - command No  : {}\n'.format(self.cmd_no) +
@@ -1295,8 +1357,47 @@ class WaveSequenceSelectionCmdErr(SequencerCmdErr):
 
 
     def __str__(self):
-        return  (
+        return (
             'WaveSequenceSelectionCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
             '  - command No : {}\n'.format(self.cmd_no) +
             '  - terminated : {}'.format(self.is_terminated))
+
+
+class BranchByFlagCmdErr(SequencerCmdErr):
+
+    def __init__(self, cmd_no, is_terminated, out_of_range_err, cmd_counter):
+        """条件分岐コマンドのエラー情報を保持するクラス"""
+        super().__init__(BranchByFlagCmd.ID, cmd_no, is_terminated)
+        self.__out_of_range_err = out_of_range_err
+        self.__cmd_counter = cmd_counter
+
+
+    @property
+    def out_of_range_err(self):
+        """範囲外分岐エラーフラグ
+
+        Returns:
+            bool: 分岐が成立してかつ分岐先となるコマンドカウンタ値が不正な値であった場合 True
+        """
+        return self.__out_of_range_err
+
+
+    @property
+    def cmd_counter(self):
+        """範囲外分岐エラーが発生したときに分岐先となったコマンドカウンタ値
+
+        Returns:
+            int: 範囲外分岐エラーが発生したときに分岐先となったコマンドカウンタ値
+        """
+        return self.__cmd_counter
+
+
+    def __str__(self):
+        return (
+            'BranchByFlagCmdErr\n' +
+            '  - command ID         : {}\n'.format(self.cmd_id) +
+            '  - command No         : {}\n'.format(self.cmd_no) +
+            '  - terminated         : {}\n'.format(self.is_terminated) +
+            '  - out of range error : {}\n'.format(self.out_of_range_err) +
+            '  - cmd_counter        : {}'.format(self.cmd_counter))

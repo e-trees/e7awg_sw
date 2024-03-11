@@ -528,25 +528,29 @@ class CaptureParam(object):
             msg = "'func_sel' must be 0 or 1.  {}".format(func_sel)
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
-
-        if not (isinstance(coef_a, np.float32) and
-                self.__is_in_range(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_a)):
-            msg = ("The decision function coefficients must be {} ~ {}.  '{}' was set."
-                 .format(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_a))
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
-
-        if not (isinstance(coef_b, np.float32) and
-                self.__is_in_range(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_b)):
-            msg = ("The decision function coefficisnts must be {} ~ {}.  '{}' was set."
-                 .format(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef_b))
-            log_error(msg, *self.__loggers)
-            raise ValueError(msg)
         
-        if not (isinstance(const_c, np.float32) and
-                self.__is_in_range(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c)):
+        for coef in [coef_a, coef_b]:
+            if not isinstance(coef, np.float32):
+                msg = ("The type of the decision function coefficients must be 'np.float32'.  '{}' was set."
+                    .format(type(coef)))
+                log_error(msg, *self.__loggers)
+                raise ValueError(msg)
+
+            if not self.__is_in_range(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef):
+                msg = ("The decision function coefficients must be {} ~ {}.  '{}' was set."
+                    .format(self.MIN_DECISION_FUNC_COEF_VAL, self.MAX_DECISION_FUNC_COEF_VAL, coef))
+                log_error(msg, *self.__loggers)
+                raise ValueError(msg)
+        
+        if not isinstance(const_c, np.float32):
+                msg = ("The type of the decision function constant must be 'np.float32'.  '{}' was set."
+                    .format(type(const_c)))
+                log_error(msg, *self.__loggers)
+                raise ValueError(msg)
+
+        if not self.__is_in_range(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c):
             msg = ("The decision function constant must be {} ~ {}.  '{}' was set."
-                 .format(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, coef_c))
+                 .format(self.MIN_DECISION_FUNC_CONST_VAL, self.MAX_DECISION_FUNC_CONST_VAL, const_c))
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
 

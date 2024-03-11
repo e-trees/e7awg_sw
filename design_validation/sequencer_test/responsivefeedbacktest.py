@@ -1,8 +1,4 @@
 import os
-import math
-import time
-import copy
-import random
 import testutil
 import numpy as np
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
@@ -12,7 +8,6 @@ from e7awgsw import \
     ResponsiveFeedbackCmd, FourClassifierChannel
 from e7awgsw import CaptureParamElem, DspUnit, DecisionFunc
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
-from e7awgsw import SinWave, IqWave, dsp
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
 from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
 from e7awgsw.logger import get_file_logger
@@ -90,8 +85,8 @@ class ResponsiveFeedbackTest(object):
 
     def __register_wave_sequences(self, keys, wave_sequences):        
         key_to_wave_seq = dict(zip(keys, wave_sequences))
-        for awg_id in self.__awgs:
-            self.__awg_ctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+        for awg in self.__awgs:
+            self.__awg_ctrl.register_wave_sequences(awg, key_to_wave_seq)
 
 
     def __register_capture_params(self, keys, params):
@@ -114,18 +109,18 @@ class ResponsiveFeedbackTest(object):
 
     def __check_err(self):
         awg_to_err = self.__awg_ctrl.check_err(*self.__awgs)
-        for awg_id, err_list in awg_to_err.items():
-            print('awg {} err'.format(awg_id))
+        for awg, err_list in awg_to_err.items():
+            print('awg {} err'.format(awg))
             for err in err_list:
                 print('    {}'.format(err))
         
         cap_unit_to_err = self.__cap_ctrl.check_err(*self.__cap_units)
-        for cap_unit_id, err_list in cap_unit_to_err.items():
-            print('capture unit {} err'.format(cap_unit_id))
+        for cap_unit, err_list in cap_unit_to_err.items():
+            print('capture unit {} err'.format(cap_unit))
             for err in err_list:
                 print('    {}'.format(err))
 
-        seq_err_list = self.__cap_ctrl.check_err()
+        seq_err_list = self.__seq_ctrl.check_err()
         for seq_err in seq_err_list:
             print(seq_err, '\n')
 
@@ -195,12 +190,12 @@ class ResponsiveFeedbackTest(object):
             cap_unit_to_exp_cap_data, test_name, 'resp_fb_{}_expected'.format(test_no))
 
 
-    def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
+    def __save_wave_samples(self, cap_unit_to_cap_data, test_name, filename):
         dir = self.__res_dir + '/' + test_name
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
-            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data_list, capture_data_file)
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
+            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit)
+            self.__write_to_file(cap_data, capture_data_file)
 
 
     def __save_capture_params(self, capture_param, test_name, filename):
@@ -216,18 +211,18 @@ class ResponsiveFeedbackTest(object):
         for cap_unit, wave_0, wave_1 in list(zip(cap_units, data_0, data_1)):
             if wave_0 != wave_1:
                 all_match = False
-                print('resp fb {}, cap_unit {} error'.format(test_no, err_cap_unit))
+                print('resp fb {}, cap_unit {} error'.format(test_no, cap_unit))
         return all_match
 
 
     @classmethod
-    def __write_to_file(cls, cap_data_list, filepath):
+    def __write_to_file(cls, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
-                if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+            for sample in cap_data:
+                if isinstance(sample, tuple):
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
 
     def run_test(self, test_name):
@@ -282,6 +277,8 @@ class ResponsiveFeedbackTest(object):
             self.__seq_ctrl.start_sequencer()
             # コマンドの処理終了待ち
             self.__seq_ctrl.wait_for_sequencer_to_stop(5)
+            # コマンドキューをクリア
+            self.__seq_ctrl.clear_commands()
             # エラー出力
             is_err_detected = self.__check_err()
             # キャプチャパラメータ保存

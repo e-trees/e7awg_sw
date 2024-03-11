@@ -79,13 +79,14 @@ class ParamLoadTest(object):
         for cap_mod, awg in self.__CAP_MOD_TO_AWG.items():
             self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
+        self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
 
 
     def __register_wave_sequences(self, keys, wave_sequences):
         key_to_wave_seq = dict(zip(keys, wave_sequences))
-        for awg_id in self.__awgs:
-            self.__awg_ctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+        for awg in self.__awgs:
+            self.__awg_ctrl.register_wave_sequences(awg, key_to_wave_seq)
 
 
     def __register_capture_params(self, keys, params):
@@ -99,34 +100,34 @@ class ParamLoadTest(object):
         cls_result = DspUnit.CLASSIFICATION in capture_param.dsp_units_enabled
         cap_unit_to_capture_data = {}
 
-        for cap_unit_id in self.__capture_units:
-            if (cap_unit_id == CaptureUnit.U8) or (cap_unit_id == CaptureUnit.U9):
-                cap_unit_to_capture_data[cap_unit_id] = \
-                    self.__cap_ctrl.get_capture_data(cap_unit_id, num_samples_none_dsp, addr_offset)
+        for cap_unit in self.__capture_units:
+            if (cap_unit == CaptureUnit.U8) or (cap_unit == CaptureUnit.U9):
+                cap_unit_to_capture_data[cap_unit] = \
+                    self.__cap_ctrl.get_capture_data(cap_unit, num_samples_none_dsp, addr_offset)
             elif cls_result:
-                cap_unit_to_capture_data[cap_unit_id] = \
-                    self.__cap_ctrl.get_classification_results(cap_unit_id, num_samples, addr_offset)
+                cap_unit_to_capture_data[cap_unit] = \
+                    self.__cap_ctrl.get_classification_results(cap_unit, num_samples, addr_offset)
             else:
-                cap_unit_to_capture_data[cap_unit_id] = \
-                    self.__cap_ctrl.get_capture_data(cap_unit_id, num_samples, addr_offset)
+                cap_unit_to_capture_data[cap_unit] = \
+                    self.__cap_ctrl.get_capture_data(cap_unit, num_samples, addr_offset)
 
         return cap_unit_to_capture_data
 
 
     def __check_err(self):
         awg_to_err = self.__awg_ctrl.check_err(*self.__awgs)
-        for awg_id, err_list in awg_to_err.items():
-            print(awg_id)
+        for awg, err_list in awg_to_err.items():
+            print(awg)
             for err in err_list:
                 print('    {}'.format(err))
         
         cap_unit_to_err = self.__cap_ctrl.check_err(*self.__capture_units)
-        for cap_unit_id, err_list in cap_unit_to_err.items():
-            print('{} err'.format(cap_unit_id))
+        for cap_unit, err_list in cap_unit_to_err.items():
+            print('{} err'.format(cap_unit))
             for err in err_list:
                 print('    {}'.format(err))
 
-        seq_err_list = self.__cap_ctrl.check_err()
+        seq_err_list = self.__seq_ctrl.check_err()
         for seq_err in seq_err_list:
             print(seq_err, '\n')
 
@@ -170,12 +171,12 @@ class ParamLoadTest(object):
         return cmds
 
 
-    def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
+    def __save_wave_samples(self, cap_unit_to_cap_data, test_name, filename):
         dir = self.__res_dir + '/' + test_name
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
-            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            ParamLoadTest.__write_to_file(cap_data_list, capture_data_file)
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
+            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit)
+            self.__write_to_file(cap_data, capture_data_file)
 
 
     def __save_capture_params(self, capture_param, dirname, filename):
@@ -217,13 +218,13 @@ class ParamLoadTest(object):
 
 
     @classmethod
-    def __write_to_file(cls, cap_data_list, filepath):
+    def __write_to_file(cls, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
+            for sample in cap_data:
                 if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
     def run_test(
         self,
@@ -242,7 +243,7 @@ class ParamLoadTest(object):
         ・シーケンサコマンドで, キャプチャの完了をチェックできる
 
         キャプチャパラメータ (cap_param_base) をセットしてから, 別のキャプチャパラメータ (cap_param_diff) の 
-        cap_param_elems の要素だけセットして, 波形シーケンス (wave_seq_0, wave_seq_1 ) の送信とキャプチャを行う.
+        cap_param_elems の要素だけセットして, 波形シーケンス (wave_seq_0, wave_seq_1) の送信とキャプチャを行う.
         2 つのキャプチャパラメータを組み合わせたパラメータによるキャプチャ結果が期待値と一致するかチェックする.
         """
         wave_seq_keys = gen_keys(AwgCtrl.MAX_WAVE_REGISTRY_ENTRIES - 1)
@@ -264,6 +265,8 @@ class ParamLoadTest(object):
         self.__seq_ctrl.start_sequencer()
         # コマンドの処理終了待ち
         self.__seq_ctrl.wait_for_sequencer_to_stop(5)
+        # コマンドキューをクリア
+        self.__seq_ctrl.clear_commands()
         # エラー出力
         is_err_detected = self.__check_err()
         # キャプチャに使われるキャプチャパラメータを作成
