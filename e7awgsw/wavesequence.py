@@ -1,20 +1,32 @@
+from __future__ import annotations
 import copy
 import struct
+from typing_extensions import Self
+from typing import Any, Final, overload
+from collections.abc import Sequence, Iterator
+from logging import Logger
 from .hwparam import WAVE_SAMPLE_SIZE, AWG_WORD_SIZE, NUM_SAMPLES_IN_AWG_WORD, NUM_SAMPLES_IN_WAVE_BLOCK
 from .logger import get_file_logger, get_null_logger, log_error
 
 class WaveSequence(object):
     """ 波形シーケンスの情報を保持するクラス"""
 
-    MAX_POST_BLANK_LEN = 0xFFFFFFFF    #: 最大ポストブランク長
-    MAX_CHUNK_REPEATS = 0xFFFFFFFF     #: 波形チャンクの最大リピート回数
-    MAX_WAIT_WORDS = 0xFFFFFFFF        #: 波形シーケンスの先頭に付く 0 データの最大の長さ
-    MAX_SEQUENCE_REPEATS = 0xFFFFFFFF  #: 波形シーケンスの最大リピート回数
-    MAX_CHUNKS = 16                    #: 波形シーケンスに登録可能な最大チャンク数
-    NUM_SAMPLES_IN_WAVE_BLOCK = NUM_SAMPLES_IN_WAVE_BLOCK #: 1 波形ブロック当たりのサンプル数
-    NUM_SAMPLES_IN_AWG_WORD = NUM_SAMPLES_IN_AWG_WORD #: 1 AWG ワード当たりのサンプル数
+    MAX_POST_BLANK_LEN: Final = 0xFFFFFFFF    #: 最大ポストブランク長
+    MAX_CHUNK_REPEATS: Final = 0xFFFFFFFF     #: 波形チャンクの最大リピート回数
+    MAX_WAIT_WORDS: Final = 0xFFFFFFFF        #: 波形シーケンスの先頭に付く 0 データの最大の長さ
+    MAX_SEQUENCE_REPEATS: Final = 0xFFFFFFFF  #: 波形シーケンスの最大リピート回数
+    MAX_CHUNKS: Final = 16                    #: 波形シーケンスに登録可能な最大チャンク数
+    NUM_SAMPLES_IN_WAVE_BLOCK: Final = NUM_SAMPLES_IN_WAVE_BLOCK #: 1 波形ブロック当たりのサンプル数
+    NUM_SAMPLES_IN_AWG_WORD: Final = NUM_SAMPLES_IN_AWG_WORD #: 1 AWG ワード当たりのサンプル数
 
-    def __init__(self, num_wait_words, num_repeats, *, enable_lib_log = True, logger = get_null_logger()):
+    def __init__(
+        self,
+        num_wait_words: int,
+        num_repeats: int,
+        *,
+        enable_lib_log: bool = True,
+        logger: Logger = get_null_logger()
+    ) -> None:
         """
         Args:
             num_wait_words (int): 
@@ -46,22 +58,27 @@ class WaveSequence(object):
             log_error(e, *self.__loggers)
             raise
 
-        self.__chunks = []
+        self.__chunks: list[WaveChunk] = []
         self.__num_wait_words = num_wait_words
         self.__num_repeats = num_repeats
 
-    def del_chunk(self, index):
+    def del_chunk(self, index: int) -> None:
         if index < len(self.__chunks):
             del self.__chunks[index]
         
-    def add_chunk(self, iq_samples, num_blank_words, num_repeats):
+    def add_chunk(
+        self,
+        iq_samples: Sequence[tuple[int, int]],
+        num_blank_words: int,
+        num_repeats: int
+    ) -> None:
         """波形チャンクを追加する
 
         Args:
-            iq_samples (list of (int, int)):
-                | 各サンプルの I データと Q データを格納したタプルのリスト.
+            iq_samples (Sequence of (int, int)):
+                | 各サンプルの I データと Q データを格納したタプルのシーケンス.
                 | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.
-                | リストの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.
+                | シーケンスの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.
                 | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)
             num_blank_words (int): 
                 | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.
@@ -70,7 +87,7 @@ class WaveSequence(object):
             num_repeats (int): 追加する波形チャンクを繰り返す回数
         """
         try:
-            if not isinstance(iq_samples, list):
+            if not isinstance(iq_samples, Sequence):
                 raise ValueError('Invalid sample list  ({})'.format(iq_samples))
             
             if (len(self.__chunks) == self.MAX_CHUNKS):
@@ -116,7 +133,7 @@ class WaveSequence(object):
         self.__chunks.append(WaveChunk(iq_samples, num_blank_words, num_repeats))
 
     @property
-    def num_chunks(self):
+    def num_chunks(self) -> int:
         """現在登録されている波形チャンクの数
         
         Returns:
@@ -124,7 +141,7 @@ class WaveSequence(object):
         """
         return len(self.__chunks)
 
-    def chunk(self, idx):
+    def chunk(self, idx: int) -> WaveChunk:
         """引数で指定した番号の波形チャンクを返す
         
         Args:
@@ -136,7 +153,7 @@ class WaveSequence(object):
         return self.__chunks[idx]
 
     @property
-    def chunk_list(self):
+    def chunk_list(self) -> list[WaveChunk]:
         """現在登録されている波形チャンクのリスト
 
         Returns:
@@ -145,7 +162,7 @@ class WaveSequence(object):
         return copy.copy(self.__chunks)
 
     @property
-    def num_wait_samples(self):
+    def num_wait_samples(self) -> int:
         """波形シーケンスの先頭に付く 0 データのサンプル数.
 
         Returns:
@@ -154,7 +171,7 @@ class WaveSequence(object):
         return self.num_wait_words * NUM_SAMPLES_IN_AWG_WORD
 
     @property
-    def num_wait_words(self):
+    def num_wait_words(self) -> int:
         """波形シーケンスの先頭に付く 0 データの長さ.
         
         | 単位は AWG ワード.
@@ -166,7 +183,7 @@ class WaveSequence(object):
         return self.__num_wait_words
 
     @property
-    def num_repeats(self):
+    def num_repeats(self) -> int:
         """波形シーケンスを繰り返す回数
 
         Returns:
@@ -175,7 +192,7 @@ class WaveSequence(object):
         return self.__num_repeats
 
     @num_repeats.setter
-    def num_repeats(self, value):
+    def num_repeats(self, value: int):
         """波形シーケンスを繰り返す回数
 
         Args:
@@ -184,7 +201,7 @@ class WaveSequence(object):
         self.__num_repeats = value
 
     @property
-    def num_all_samples(self):
+    def num_all_samples(self) -> int:
         """この波形シーケンスの全サンプル数 (繰り返しも含む)
 
         Returns:
@@ -193,7 +210,7 @@ class WaveSequence(object):
         return self.num_all_words * NUM_SAMPLES_IN_AWG_WORD
 
     @property
-    def num_all_words(self):
+    def num_all_words(self) -> int:
         """この波形シーケンスの全AWG ワード数 (wait words も繰り返しも含む)
         
         Returns:
@@ -204,7 +221,7 @@ class WaveSequence(object):
             num_chunk_words += chunk.num_words * chunk.num_repeats
         return num_chunk_words * self.__num_repeats + self.__num_wait_words
 
-    def all_samples_lazy(self, include_wait_words = True):
+    def all_samples_lazy(self, include_wait_words: bool = True) -> Sequence[tuple[int, int]]:
         """この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)
 
         | all_samples の遅延評価版
@@ -215,11 +232,11 @@ class WaveSequence(object):
                 | False -> 戻り値の中にシーケンスの先頭の 0 データを含まない
         
         Returns:
-            list of (int, int): 波形サンプルデータのリスト.
+            Sequence of (int, int): 波形サンプルデータのリスト.
         """
         return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
 
-    def all_samples(self, include_wait_words = True):
+    def all_samples(self, include_wait_words = True) -> list[tuple[int, int]]:
         """この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)
 
         Args:
@@ -243,7 +260,7 @@ class WaveSequence(object):
                 
         return samples
 
-    def save_as_text(self, filepath, to_hex = False):
+    def save_as_text(self, filepath: str, to_hex: bool = False) -> None:
         """この波形シーケンスをテキストデータとして保存する
 
         Args:
@@ -275,7 +292,7 @@ class WaveSequence(object):
             log_error(e, *self.__loggers)
             raise
 
-    def __str__(self):
+    def __str__(self) -> str:
         ret = ('num wait words : {}\n'.format(self.__num_wait_words) +
                'num sequence repeats : {}\n'.format(self.__num_repeats) +
                'num chunks : {}\n'.format(self.num_chunks) +
@@ -289,13 +306,18 @@ class WaveSequence(object):
             ret += tmp
         return ret + "\n"
 
-    def __is_in_range(self, min, max, val):
+    def __is_in_range(self, min: int, max: int, val: int) -> bool:
         return (min <= val) and (val <= max)
 
 
-    class __WaveSampleList(object):
+    class __WaveSampleList(Sequence[tuple[int, int]]):
 
-        def __init__(self, wave_seq, include_wait_words, *loggers):
+        def __init__(
+            self,
+            wave_seq: WaveSequence,
+            include_wait_words: bool,
+            *loggers: Logger
+        ) -> None:
             self.__chunks = wave_seq.chunk_list
             if include_wait_words:
                 self.__num_wait_samples = wave_seq.num_wait_words * NUM_SAMPLES_IN_AWG_WORD
@@ -310,7 +332,7 @@ class WaveSequence(object):
             self.__num_samples_in_seq = (self.__len - self.__num_wait_samples) // wave_seq.num_repeats
             self.__loggers = loggers
         
-        def __gen_chunk_range_list(self, chunks):
+        def __gen_chunk_range_list(self, chunks: Sequence[WaveChunk]) -> list[tuple[int, int]]:
             chunk_range_list = []
             start_idx = 0
             for chunk in chunks:
@@ -319,10 +341,10 @@ class WaveSequence(object):
                 start_idx = end_idx + 1
             return chunk_range_list
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return self.__str__()
 
-        def __str__(self):
+        def __str__(self) -> str:
             len = min(self.__len, 12)
             items = []
             for i in range(len):
@@ -331,36 +353,44 @@ class WaveSequence(object):
                 items.append('...')
             return '[' + ', '.join(items) + ']'
 
-        def __iter__(self):
+        def __iter__(self) -> Iterator[tuple[int, int]]:
             return self.WaveIter(self)
 
-        def __getitem__(self, key):
+        @overload
+        def __getitem__(self, index: int) -> tuple[int, int]: ...
+
+        @overload
+        def __getitem__(self, index: slice) -> list[tuple[int, int]]: ...
+
+        def __getitem__(self, key: int | slice) -> tuple[int, int] | list[tuple[int, int]]:
             if isinstance(key, int):
-                if key < 0:
-                    key += self.__len
-                if (key < 0) or (self.__len <= key):
-                    msg = 'The index [{}] is out of range.'.format(key)
-                    log_error(msg, *self.__loggers)
-                    raise IndexError(msg)
-                if key < self.__num_wait_samples:
-                    return (0, 0)
-
-                key = (key - self.__num_wait_samples) % self.__num_samples_in_seq
-                chunk, start_idx, _ = self.__find_chunk(key)
-                key = (key - start_idx) % chunk.num_samples
-                if key < chunk.wave_data.num_samples:
-                    return chunk.wave_data.sample(key)
-                else:
-                    return (0, 0)
-
+                return self.get(key)
             elif isinstance(key, slice):
-                return [self[i] for i in range(*key.indices(self.__len))]
+                return [self.get(i) for i in range(*key.indices(self.__len))]
             else:
                 msg = 'Invalid argument type.'
                 log_error(msg, *self.__loggers)
                 raise TypeError(msg)
 
-        def __find_chunk(self, idx):
+        def get(self, key: int) -> tuple[int, int]:
+            if key < 0:
+                    key += self.__len
+            if (key < 0) or (self.__len <= key):
+                msg = 'The index [{}] is out of range.'.format(key)
+                log_error(msg, *self.__loggers)
+                raise IndexError(msg)
+            if key < self.__num_wait_samples:
+                return (0, 0)
+
+            key = (key - self.__num_wait_samples) % self.__num_samples_in_seq
+            chunk, start_idx, _ = self.__find_chunk(key)
+            key = (key - start_idx) % chunk.num_samples
+            if key < chunk.wave_data.num_samples:
+                return chunk.wave_data.sample(key)
+            else:
+                return (0, 0)
+
+        def __find_chunk(self, idx: int) -> tuple[WaveChunk, int, int]:
             first = 0
             last = len(self.__chunk_range_list) - 1
             while first <= last:
@@ -373,19 +403,57 @@ class WaveSequence(object):
                 else:
                     last = target - 1
 
-        def __len__(self):
+            assert False, ('unreachable')
+
+        def __len__(self) -> int:
             return self.__len
 
-        class WaveIter(object):
+        def __contains__(self, item: object) -> bool:
+            if (self.__num_wait_samples > 0) and item == (0, 0):
+                return True
 
-            def __init__(self, outer):
+            for chunk in self.__chunks:
+                if (chunk.num_blank_samples > 0) and item == (0, 0):
+                    return True
+                for sample in chunk.wave_data.samples:
+                    if item == sample:
+                        return True
+
+            return False
+
+        def __eq__(self, other: Any) -> bool:
+            try:
+                if self is other:
+                    return True
+                                                
+                if (other is None) or (len(self) != len(other)):
+                    return False
+                
+                for i in range(len(self)):
+                    if self[i] != other[i]:
+                        return False
+
+                return True
+            except:
+                return NotImplemented
+        
+        def __ne__(self, other: object):
+            return not self == other
+
+
+        class WaveIter(Iterator[tuple[int, int]]):
+
+            def __init__(self, outer: WaveSequence.__WaveSampleList) -> None:
                 self._i = 0
                 self.__outer = outer
 
-            def __next__(self):
+            def __iter__(self) -> Self:
+                return self
+
+            def __next__(self) -> tuple[int, int]:
                 if self._i == len(self.__outer):
                     raise StopIteration()
-                val = self.__outer[self._i]
+                val = self.__outer.get(self._i)
                 self._i += 1
                 return val
 
@@ -393,13 +461,18 @@ class WaveSequence(object):
 class WaveChunk(object):
     """波形チャンクの情報を保持するクラス"""
 
-    def __init__(self, samples, num_blank_words, num_repeats):
+    def __init__(
+        self,
+        samples: Sequence[tuple[int, int]],
+        num_blank_words: int,
+        num_repeats: int
+    ) -> None:
         self.__wave_data = WaveData(samples, WAVE_SAMPLE_SIZE)
         self.__num_blank_words = num_blank_words
         self.__num_repeats = num_repeats
 
     @property
-    def wave_data(self):
+    def wave_data(self) -> WaveData:
         """この波形チャンクのポストブランクを除く波形データ
 
         Returns:
@@ -408,7 +481,7 @@ class WaveChunk(object):
         return self.__wave_data
 
     @property
-    def num_blank_words(self):
+    def num_blank_words(self) -> int:
         """この波形チャンクのポストブランクの長さ
         
         Returns:
@@ -420,7 +493,7 @@ class WaveChunk(object):
         return self.__num_blank_words
 
     @property
-    def num_blank_samples(self):
+    def num_blank_samples(self) -> int:
         """この波形チャンクのポストブランクのサンプル数
         
         Returns:
@@ -429,7 +502,7 @@ class WaveChunk(object):
         return self.num_blank_words * NUM_SAMPLES_IN_AWG_WORD
 
     @property
-    def num_wave_words(self):
+    def num_wave_words(self) -> int:
         """この波形チャンクの有波形部の長さ
         
         Returns:
@@ -441,7 +514,7 @@ class WaveChunk(object):
         return self.__wave_data.num_bytes // AWG_WORD_SIZE
 
     @property
-    def num_wave_samples(self):
+    def num_wave_samples(self) -> int:
         """この波形チャンクの有波形部のサンプル数
         
         Returns:
@@ -450,7 +523,7 @@ class WaveChunk(object):
         return self.num_wave_words * NUM_SAMPLES_IN_AWG_WORD
 
     @property
-    def num_repeats(self):
+    def num_repeats(self) -> int:
         """この波形チャンクを繰り返す回数
         
         Returns:
@@ -459,7 +532,7 @@ class WaveChunk(object):
         return self.__num_repeats
 
     @property
-    def num_words(self):
+    def num_words(self) -> int:
         """この波形チャンクのワード数.
 
         1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)
@@ -470,7 +543,7 @@ class WaveChunk(object):
         return self.num_wave_words + self.num_blank_words
 
     @property
-    def num_samples(self):
+    def num_samples(self) -> int:
         """この波形チャンクのサンプル数.
 
         Returns:
@@ -482,12 +555,12 @@ class WaveChunk(object):
 class WaveData(object):
     """波形のサンプルデータを保持するクラス"""
 
-    def __init__(self, samples, wave_sample_size):
-        self.__samples = copy.copy(samples)
+    def __init__(self, samples: Sequence[tuple[int, int]], wave_sample_size: int) -> None:
+        self.__samples = list(samples)
         self.__wave_sample_size = wave_sample_size
 
     @property
-    def samples(self):
+    def samples(self) -> list[tuple[int, int]]:
         """波形データのサンプルリスト
 
         Returns:
@@ -495,7 +568,7 @@ class WaveData(object):
         """
         return copy.copy(self.__samples)
 
-    def sample(self, idx):
+    def sample(self, idx: int) -> tuple[int, int]:
         """引数で指定したサンプルを返す
         
         Rturns:
@@ -504,7 +577,7 @@ class WaveData(object):
         return self.__samples[idx]
 
     @property
-    def num_samples(self):
+    def num_samples(self) -> int:
         """波形データのサンプル数
         
         Returns:
@@ -513,7 +586,7 @@ class WaveData(object):
         return len(self.__samples)
 
     @property
-    def num_bytes(self):
+    def num_bytes(self) -> int:
         """波形データのバイト数
         
         Returns:
@@ -521,7 +594,7 @@ class WaveData(object):
         """
         return len(self.__samples) * self.__wave_sample_size
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         payload = bytearray()
         for i_data, q_data in self.__samples:
             i_data = i_data & ((1 << (self.__wave_sample_size // 2 * 8)) - 1)
@@ -531,7 +604,7 @@ class WaveData(object):
         return payload
 
     @classmethod
-    def deserialize(cls, data, wave_sample_size):
+    def deserialize(cls, data: bytes, wave_sample_size: int) -> WaveData:
         samples = []
         num_samples = len(data) // wave_sample_size
         for i in range(num_samples):

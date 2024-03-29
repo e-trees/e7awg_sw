@@ -1,57 +1,59 @@
+from typing_extensions import Self
+from typing import Final
 
 class UplPacket(object):
 
-    MODE_WAVE_RAM_READ       = 0x00
-    MODE_WAVE_RAM_READ_REPLY = 0x01
-    MODE_WAVE_RAM_WRITE      = 0x02
-    MODE_WAVE_RAM_WRITE_ACK  = 0x03
+    MODE_WAVE_RAM_READ: Final       = 0x00
+    MODE_WAVE_RAM_READ_REPLY: Final = 0x01
+    MODE_WAVE_RAM_WRITE: Final      = 0x02
+    MODE_WAVE_RAM_WRITE_ACK: Final  = 0x03
 
-    MODE_AWG_REG_READ       = 0x10
-    MODE_AWG_REG_READ_REPLY = 0x11
-    MODE_AWG_REG_WRITE      = 0x12
-    MODE_AWG_REG_WRITE_ACK  = 0x13
+    MODE_AWG_REG_READ: Final       = 0x10
+    MODE_AWG_REG_READ_REPLY: Final = 0x11
+    MODE_AWG_REG_WRITE: Final      = 0x12
+    MODE_AWG_REG_WRITE_ACK: Final  = 0x13
 
-    MODE_CAPTURE_REG_READ       = 0x40
-    MODE_CAPTURE_REG_READ_REPLY = 0x41
-    MODE_CAPTURE_REG_WRITE      = 0x42
-    MODE_CAPTURE_REG_WRITE_ACK  = 0x43
+    MODE_CAPTURE_REG_READ: Final       = 0x40
+    MODE_CAPTURE_REG_READ_REPLY: Final = 0x41
+    MODE_CAPTURE_REG_WRITE: Final      = 0x42
+    MODE_CAPTURE_REG_WRITE_ACK: Final  = 0x43
 
-    MODE_SEQUENCER_REG_READ       = 0x20
-    MODE_SEQUENCER_REG_READ_REPLY = 0x21
-    MODE_SEQUENCER_REG_WRITE      = 0x22
-    MODE_SEQUENCER_REG_WRITE_ACK  = 0x23
-    MODE_SEQUENCER_CMD_WRITE      = 0x24
-    MODE_SEQUENCER_CMD_WRITE_ACK  = 0x25
-    MODE_SEQUENCER_CMD_ERR_REPORT = 0x27
+    MODE_SEQUENCER_REG_READ: Final       = 0x20
+    MODE_SEQUENCER_REG_READ_REPLY: Final = 0x21
+    MODE_SEQUENCER_REG_WRITE: Final      = 0x22
+    MODE_SEQUENCER_REG_WRITE_ACK: Final  = 0x23
+    MODE_SEQUENCER_CMD_WRITE: Final      = 0x24
+    MODE_SEQUENCER_CMD_WRITE_ACK: Final  = 0x25
+    MODE_SEQUENCER_CMD_ERR_REPORT: Final = 0x27
 
-    MODE_OTHERS = 0xFF
+    MODE_OTHERS: Final = 0xFF
 
     def __init__(
         self,
-        mode,
-        addr,
-        num_bytes,
-        payload = b''):
-
+        mode: int,
+        addr: int,
+        num_bytes: int,
+        payload: bytes = b''
+    ) -> None:
         self.__mode = mode
         self.__num_bytes = num_bytes
         self.__addr = addr
         self.__payload = payload
         return
 
-    def mode(self):
+    def mode(self) -> int:
         return self.__mode
 
-    def num_bytes(self):
+    def num_bytes(self) -> int:
         return self.__num_bytes
 
-    def addr(self):
+    def addr(self) -> int:
         return self.__addr
 
-    def payload(self):
+    def payload(self) -> bytes:
         return self.__payload
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         data = bytearray()
         data += self.__mode.to_bytes(1, "big")
         data += self.__addr.to_bytes(5, "big")
@@ -59,7 +61,7 @@ class UplPacket(object):
         data += self.__payload
         return data
 
-    def __mode_to_str(self, mode):
+    def __mode_to_str(self, mode: int) -> str:
         if mode == self.MODE_WAVE_RAM_READ:
             return "WAVE RAM READ"
         elif mode == self.MODE_WAVE_RAM_WRITE:
@@ -76,10 +78,33 @@ class UplPacket(object):
             return "AWG REG WRITE-ACK"
         elif mode == self.MODE_AWG_REG_READ_REPLY:
             return "AWG REG READ-REPLY"
+        elif mode == self.MODE_CAPTURE_REG_READ:
+            return "CAPTURE REG READ"
+        elif mode == self.MODE_CAPTURE_REG_WRITE:
+            return "CAPTURE REG WRITE"
+        elif mode == self.MODE_CAPTURE_REG_WRITE_ACK:
+            return "CAPTURE REG WRITE-ACK"
+        elif mode == self.MODE_CAPTURE_REG_READ_REPLY:
+            return "CAPTURE REG READ-REPLY"
+        elif mode == self.MODE_SEQUENCER_REG_READ:
+            return "SEQUENCER REG READ"
+        elif mode == self.MODE_SEQUENCER_REG_WRITE:
+            return "SEQUENCER REG WRITE"
+        elif mode == self.MODE_SEQUENCER_REG_WRITE_ACK:
+            return "SEQUENCER REG WRITE-ACK"
+        elif mode == self.MODE_SEQUENCER_REG_READ_REPLY:
+            return "SEQUENCER REG READ-REPLY"
+        elif mode == self.MODE_SEQUENCER_CMD_WRITE:
+            return "SEQUENCER CMD WRITE"
+        elif mode == self.MODE_SEQUENCER_CMD_WRITE_ACK:
+            return "SEQUENCER CMD WRITE-ACK"
+        elif mode == self.MODE_SEQUENCER_CMD_ERR_REPORT:
+            return "SEQUENCER CMD ERR REPORT"
+        elif mode == self.MODE_OTHERS:
+            return "OTHERS"
         return ""
 
-
-    def __str__(self):
+    def __str__(self) -> str:
         ret = ('mode : {} ({})'.format(self.__mode_to_str(self.__mode), self.__mode) + '\n' + 
             'mem addr : {}'.format(self.__addr) + '\n' + 
             'payload bytes : {}'.format(self.__num_bytes))
@@ -87,7 +112,7 @@ class UplPacket(object):
 
 
     @classmethod
-    def deserialize(cls, data):
+    def deserialize(cls, data: bytes) -> Self:
         mode = int.from_bytes(data[0:1], 'big')
         addr = int.from_bytes(data[1:6], 'big')
         num_bytes = int.from_bytes(data[6:8], 'big')
@@ -105,4 +130,4 @@ class UplPacket(object):
              (mode == cls.MODE_SEQUENCER_CMD_ERR_REPORT))):
             payload = data[8 : 8 + num_bytes]
 
-        return UplPacket(mode, addr, num_bytes, payload)
+        return cls(mode, addr, num_bytes, payload)

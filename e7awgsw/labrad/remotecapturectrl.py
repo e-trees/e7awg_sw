@@ -1,19 +1,26 @@
-import labrad
+from __future__ import annotations
+
+import labrad # type: ignore
 import pickle
+from typing_extensions import Self, Any
+from types import TracebackType
+from collections.abc import Sequence
+from logging import Logger
+from e7awgsw import CaptureUnit, CaptureParam, CaptureModule, AWG, CaptureErr
 from e7awgsw.capturectrl import CaptureCtrlBase
 from e7awgsw.logger import get_null_logger, log_error
-
 
 class RemoteCaptureCtrl(CaptureCtrlBase):
     """ LabRAD サーバを通してキャプチャユニットを制御するためのクラス """
 
     def __init__(
         self,
-        remote_server_ip_addr,
-        capture_ctrl_ip_addr,
+        remote_server_ip_addr: str,
+        capture_ctrl_ip_addr: str,
         *,
-        enable_lib_log = True,
-        logger = get_null_logger()):
+        enable_lib_log: bool = True,
+        logger: Logger = get_null_logger()
+    ) -> None:
         """
         Args:
             remote_server_ip_addr (string): LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')
@@ -38,21 +45,26 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def __get_capture_ctrl_handler(self, ip_addr):
+    def __get_capture_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
         handler = self.__server.create_capturectrl(ip_addr)
         return self.__decode_and_check(handler)
 
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+    ) -> None:
         self.disconnect()
 
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.
 
         | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
@@ -77,156 +89,162 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
         self.__client = None
 
 
-    def _set_capture_params(self, capture_unit_id, param):
+    def _set_capture_params(self, capture_unit_id: CaptureUnit, param: CaptureParam) -> None:
         try:
-            capture_unit_id = int(capture_unit_id)
-            param = pickle.dumps(param)
-            result = self.__server.set_capture_params(self.__handler, capture_unit_id, param)
+            cap_unit = int(capture_unit_id)
+            cap_param = pickle.dumps(param)
+            result = self.__server.set_capture_params(self.__handler, cap_unit, cap_param)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _register_capture_params(self, key, param):
+    def _register_capture_params(self, key: int, param: CaptureParam) -> None:
         try:
-            key = pickle.dumps(key)
-            param = pickle.dumps(param)
-            result = self.__server.register_capture_params(self.__handler, key, param)
+            reg_key = pickle.dumps(key)
+            cap_param = pickle.dumps(param)
+            result = self.__server.register_capture_params(self.__handler, reg_key, cap_param)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _initialize(self, *capture_unit_id_list):
+    def _initialize(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.initialize_capture_units(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.initialize_capture_units(self.__handler, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _get_capture_data(self, capture_unit_id, num_samples, addr_offset):
+    def _get_capture_data(
+        self, capture_unit_id: CaptureUnit, num_samples: int, addr_offset: int
+    ) -> list[tuple[float, float]]:
         try:
-            capture_unit_id = int(capture_unit_id)
-            num_samples = pickle.dumps(num_samples)
-            addr_offset = pickle.dumps(addr_offset)
-            result = self.__server.get_capture_data(
-                self.__handler, capture_unit_id, num_samples, addr_offset)
+            cap_unit = int(capture_unit_id)
+            n_samples = pickle.dumps(num_samples)
+            addr_ofst = pickle.dumps(addr_offset)
+            result = self.__server.get_capture_data(self.__handler, cap_unit, n_samples, addr_ofst)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _get_classification_results(self, capture_unit_id, num_samples, addr_offset):
+    def _get_classification_results(
+        self, capture_unit_id: CaptureUnit, num_samples: int, addr_offset: int
+    ) -> Sequence[int]:
         try:
-            capture_unit_id = int(capture_unit_id)
-            num_samples = pickle.dumps(num_samples)
-            addr_offset = pickle.dumps(addr_offset)
+            cap_unit = int(capture_unit_id)
+            n_samples = pickle.dumps(num_samples)
+            addr_ofst = pickle.dumps(addr_offset)
             result = self.__server.get_classification_results(
-                self.__handler, capture_unit_id, num_samples, addr_offset)
+                self.__handler, cap_unit, n_samples, addr_ofst)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _num_captured_samples(self, capture_unit_id):
+    def _num_captured_samples(self, capture_unit_id: CaptureUnit) -> int:
         try:
-            capture_unit_id = int(capture_unit_id)
-            result = self.__server.num_captured_samples(self.__handler, capture_unit_id)
+            cap_unit = int(capture_unit_id)
+            result = self.__server.num_captured_samples(self.__handler, cap_unit)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _start_capture_units(self, *capture_unit_id_list):
+    def _start_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.start_capture_units(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.start_capture_units(self.__handler, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _reset_capture_units(self, *capture_unit_id_list):
+    def _reset_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.reset_capture_units(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.reset_capture_units(self.__handler, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _clear_capture_stop_flags(self, *capture_unit_id_list):
+    def _clear_capture_stop_flags(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.clear_capture_stop_flags(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.clear_capture_stop_flags(self.__handler, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _select_trigger_awg(self, capture_module_id, awg_id):
+    def _select_trigger_awg(self, capture_module_id: CaptureModule, awg_id: AWG | None) -> None:
         try:
-            capture_module_id = int(capture_module_id)
-            awg_id = int(awg_id)
-            result = self.__server.select_trigger_awg(self.__handler, capture_module_id, awg_id)
+            cap_mod = int(capture_module_id)
+            awg = pickle.dumps(awg_id)
+            result = self.__server.select_trigger_awg(self.__handler, cap_mod, awg)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _wait_for_capture_units_to_stop(self, timeout, *capture_unit_id_list):
+    def _wait_for_capture_units_to_stop(
+        self, timeout: float, *capture_unit_id_list: CaptureUnit
+    ) -> None:
         try:
-            timeout = pickle.dumps(timeout)
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.wait_for_capture_units_to_stop(
-                self.__handler, timeout, capture_unit_id_list)
+            to = pickle.dumps(timeout)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.wait_for_capture_units_to_stop(self.__handler, to, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _check_err(self, *capture_unit_id_list):
+    def _check_err(
+        self, *capture_unit_id_list: CaptureUnit
+    ) -> dict[CaptureUnit, list[CaptureErr]]:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            result = self.__server.check_capture_unit_err(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.check_capture_unit_err(self.__handler, cap_units)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _enable_start_trigger(self, *capture_unit_id_list):
+    def _enable_start_trigger(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.enable_start_trigger(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            self.__server.enable_start_trigger(self.__handler, cap_units)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _disable_start_trigger(self, *capture_unit_id_list):
+    def _disable_start_trigger(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            capture_unit_id_list = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.disable_start_trigger(self.__handler, capture_unit_id_list)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            self.__server.disable_start_trigger(self.__handler, cap_units)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _enable_dsp(self):
+    def _enable_dsp(self) -> None:
         try:
             result = self.__server.enable_dsp(self.__handler)
             self.__decode_and_check(result)
@@ -235,7 +253,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def _disable_dsp(self):
+    def _disable_dsp(self) -> None:
         try:
             result = self.__server.disable_dsp(self.__handler)
             self.__decode_and_check(result)
@@ -244,7 +262,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def _version(self):
+    def _version(self) -> str:
         try:
             result = self.__server.capture_unit_version(self.__handler)
             return self.__decode_and_check(result)
@@ -253,7 +271,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def __decode_and_check(self, data):
+    def __decode_and_check(self, data: bytes) -> Any:
         data = pickle.loads(data)
         if isinstance(data, Exception):
             raise data

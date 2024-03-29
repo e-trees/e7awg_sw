@@ -1,16 +1,19 @@
-import copy
+from __future__ import annotations
+
 from abc import ABCMeta, abstractmethod
+from typing import Any, Final
+from collections.abc import Iterable, Sequence
 from .hwdefs import CaptureParamElem, CaptureUnit, CaptureModule, AWG, FeedbackChannel, FourClassifierChannel
 from .hwparam import \
     CLASSIFICATION_RESULT_SIZE, MAX_CAPTURE_SIZE, CAPTURE_RAM_WORD_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, \
     MAX_WAVE_REGISTRY_ENTRIES, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES
-from .wavesequence import WaveSequence
+
 
 class SequencerCmd(object, metaclass = ABCMeta):
 
-    MAX_CMD_NO = 0xFFFF #: 指定可能なコマンド番号の最大値
+    MAX_CMD_NO: Final = 0xFFFF #: 指定可能なコマンド番号の最大値
 
-    def __init__(self, cmd_id, cmd_no, stop_seq):
+    def __init__(self, cmd_id: int, cmd_no: int, stop_seq: bool) -> None:
 
         if not (isinstance(cmd_no, int) and
                 (0 <= cmd_no and cmd_no <= self.MAX_CMD_NO)):
@@ -27,7 +30,7 @@ class SequencerCmd(object, metaclass = ABCMeta):
 
 
     @property
-    def cmd_id(self):
+    def cmd_id(self) -> int:
         """このコマンドの種類を表す ID
 
         Returns:
@@ -37,7 +40,7 @@ class SequencerCmd(object, metaclass = ABCMeta):
 
 
     @property
-    def cmd_no(self):
+    def cmd_no(self) -> int:
         """このコマンドのコマンド番号
         
         Returns:
@@ -47,41 +50,50 @@ class SequencerCmd(object, metaclass = ABCMeta):
 
 
     @property
-    def stop_seq(self):
+    def stop_seq(self) -> bool:
         """シーケンサ停止フラグ
         
         Returns:
-            int: シーケンサ停止フラグ
+            bool: シーケンサ停止フラグ
         """
         return self.__stop_seq
 
 
-    def _validate_capture_unit_id(self, capture_unit_id_list):        
-        if ((not isinstance(capture_unit_id_list, (list, tuple))) or 
-            (not capture_unit_id_list)                            or
+    def _validate_capture_unit_id(self, capture_unit_id_list: list[CaptureUnit]) -> None:
+        if ((not isinstance(capture_unit_id_list, list)) or 
+            (not capture_unit_id_list)                   or # 空だと False であることを保証するために list 型を指定する
             (not CaptureUnit.includes(*capture_unit_id_list))):
             raise ValueError("Invalid capture unit ID '{}'".format(capture_unit_id_list))
 
 
-    def _validate_awg_id(self, awg_id_list):
-        if ((not isinstance(awg_id_list, (list, tuple))) or 
-            (not awg_id_list)                            or
+    def _validate_awg_id(self, awg_id_list: list[AWG]) -> None:
+        if ((not isinstance(awg_id_list, list)) or
+            (not awg_id_list)                   or
             (not AWG.includes(*awg_id_list))):
             raise ValueError("Invalid AWG ID '{}'".format(awg_id_list))
 
 
-    def _validate_feedback_channel_id(self, feedback_channel_id):
+    def _validate_cap_param_elems(self, elems: list[CaptureParamElem]) -> None:
+        if ((not isinstance(elems, list)) or
+            (not elems)                   or
+            (not CaptureParamElem.includes(*elems))):
+            raise ValueError("Invalid capture parameter elements.  ({})".format(elems))
+
+
+    def _validate_feedback_channel_id(self, feedback_channel_id: FeedbackChannel) -> None:
         if not FeedbackChannel.includes(feedback_channel_id):
             raise ValueError("Invalid feedback channel ID '{}'".format(feedback_channel_id))
 
 
-    def _validate_key_table(self, key_table, max_registry_key):
-        if isinstance(key_table, int) and (0 <= key_table and key_table <= max_registry_key):
+    def _validate_key_table(
+        self, key_table: int | Sequence[int], max_registry_key: int
+    ) -> None:
+        if isinstance(key_table, int) and self._is_in_range(0, max_registry_key, key_table):
             return
 
-        if not isinstance(key_table, (list, tuple)):
+        if not isinstance(key_table, Sequence):
             raise ValueError(
-                "The type of 'key_table' must be 'list' or 'tuple'.  ({})".format(key_table))
+                "The type of 'key_table' must be Sequence.  ({})".format(key_table))
 
         # 2022/08/02 現在, フィードバック値は四値化結果だけなので, レジストリキーの数 = 4 という制約を加えておく.
         if len(key_table) != 4:
@@ -89,20 +101,20 @@ class SequencerCmd(object, metaclass = ABCMeta):
                 "The number of elements in 'key_table' must be 4.  ({})".format(len(key_table)))
 
         for key in key_table:
-            if not (isinstance(key, int) and (0 <= key and key <= max_registry_key)):
+            if not (isinstance(key, int) and self._is_in_range(0, max_registry_key, key)):
                 raise ValueError(
                     "The elements in 'key_table' must be integers between {} and {} inclusive.  ({})"
                     .format(0, max_registry_key, key_table))
 
 
-    def _validate_four_cls_channel_id(self, four_cls_channel_id):
+    def _validate_four_cls_channel_id(self, four_cls_channel_id: FourClassifierChannel) -> None:
         if not FourClassifierChannel.includes(four_cls_channel_id):
             raise ValueError(
                 "Invalid four-classifier value channel ID '{}'".format(four_cls_channel_id))
 
 
-    def _validate_cmd_offset(self, offset, min, max):
-        if isinstance(offset, int) and  self.__is_in_range(min, max, offset):
+    def _validate_cmd_offset(self, offset: int, min: int, max: int) -> None:
+        if isinstance(offset, int) and  self._is_in_range(min, max, offset):
             return
         
         raise ValueError(
@@ -110,48 +122,56 @@ class SequencerCmd(object, metaclass = ABCMeta):
             .format(min, max, offset))
 
 
-    def _to_bit_field(self, bit_pos_list):
+    def _to_bit_field(self, bit_pos_list: Iterable[int]) -> int:
         bit_field = 0
         for bit_pos in bit_pos_list:
             bit_field |= 1 << bit_pos
         return bit_field
 
 
-    def __is_in_range(self, min, max, val):
+    def _is_in_range(self, min: int, max: int, val: int) -> bool:
         return (min <= val) and (val <= max)
     
 
+    def _to_list(self, val: object) -> list:
+        if isinstance(val, Iterable):
+            return list(val)
+        else:
+            return [val]
+
+
     @abstractmethod
-    def serialize(self):
+    def serialize(self) -> bytes:
         pass
 
 
     @abstractmethod
-    def size(self):
+    def size(self) -> int:
         """serialize した際のコマンドのバイト数"""
         pass
 
 
 class AwgStartCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 1
+    ID: Final = 1
     #: AWG スタート時刻に指定可能な最大値
-    MAX_START_TIME = 0x7FFFFFFF_FFFFFFFF
+    MAX_START_TIME: Final = 0x7FFFFFFF_FFFFFFFF
     #: AWG を即時スタートする場合に start_time に指定する値．
-    IMMEDIATE = -1
+    IMMEDIATE: Final = -1
 
     def __init__(
         self,
-        cmd_no,
-        awg_id_list,
-        start_time,
-        wait = False,
-        stop_seq = False):
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        start_time: int,
+        wait: bool = False,
+        stop_seq: bool = False
+    ) -> None:
         """AWG を指定した時刻にスタートするコマンド
 
         Args:
             cmd_no (int): コマンド番号
-            awg_id_list (list of AWG): 波形の出力を開始する AWG のリスト
+            awg_id_list (Iterable of AWG | AWG): 波形の出力を開始する AWG のリスト
             start_time (int):
                 | AWG をスタートする時刻.
                 | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
@@ -166,8 +186,7 @@ class AwgStartCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if AWG.includes(awg_id_list):
-            awg_id_list = [awg_id_list]
+        awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
 
         if not (isinstance(start_time, int) and (start_time <= self.MAX_START_TIME)):
@@ -175,28 +194,28 @@ class AwgStartCmd(SequencerCmd):
                 "'start_time' must be less than or equal to {}.  '{}' was set."
                 .format(self.MAX_START_TIME, start_time))
 
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list: list[AWG] = awg_id_list
         self.__start_time = start_time
         self.__wait = wait
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def awg_id_list(self):
-        return copy.copy(self.__awg_id_list)
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
 
 
     @property
-    def start_time(self):
+    def start_time(self) -> int:
         return self.__start_time
 
 
     @property
-    def wait(self):
+    def wait(self) -> bool:
         return self.__wait
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         awg_id_list = self._to_bit_field(self.__awg_id_list)
         start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
         cmd = (
@@ -209,35 +228,36 @@ class AwgStartCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class CaptureEndFenceCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 2
+    ID: Final = 2
     #: キャプチャ完了確認時刻に指定可能な最大値
-    MAX_END_TIME = 0x7FFFFFFF_FFFFFFFF
+    MAX_END_TIME: Final = 0x7FFFFFFF_FFFFFFFF
 
     def __init__(
         self,
-        cmd_no,
-        capture_unit_id_list,
-        end_time,
-        wait = True,
-        terminate = False,
-        stop_seq = False):
+        cmd_no: int,
+        capture_unit_id_list: Iterable[CaptureUnit] | CaptureUnit,
+        end_time: int,
+        wait: bool = True,
+        terminate: bool = False,
+        stop_seq: bool = False
+    ) -> None:
         """キャプチャ終了フェンスコマンド
         
         | 'end_time' で指定した時刻まで待ってからキャプチャが完了しているかを調べるコマンド.
 
         Args:
             cmd_no (int): コマンド番号
-            capture_unit_id_list (list of CaptureUnit): キャプチャの完了を調べるキャプチャユニットのリスト.
+            capture_unit_id_list (Iterable of CaptureUnit | CaptureUnit): キャプチャの完了を調べるキャプチャユニットのリスト.
             end_time (int):
                 | キャプチャが完了しているかを調べる時刻.
                 | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後にキャプチャの完了をチェックする.
@@ -254,8 +274,7 @@ class CaptureEndFenceCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if CaptureUnit.includes(capture_unit_id_list):
-            capture_unit_id_list = [capture_unit_id_list]
+        capture_unit_id_list = self._to_list(capture_unit_id_list)
         self._validate_capture_unit_id(capture_unit_id_list)
 
         if not (isinstance(end_time, int) and
@@ -270,7 +289,7 @@ class CaptureEndFenceCmd(SequencerCmd):
         if not isinstance(terminate, bool):
             raise ValueError("The type of 'terminate' must be 'bool'.  '{}' was set.".format(terminate))
 
-        self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__capture_unit_id_list: list[CaptureUnit] = capture_unit_id_list
         self.__end_time = end_time
         self.__wait = wait
         self.__terminate = terminate
@@ -278,26 +297,26 @@ class CaptureEndFenceCmd(SequencerCmd):
 
 
     @property
-    def capture_unit_id_list(self):
-        return copy.copy(self.__capture_unit_id_list)
+    def capture_unit_id_list(self) -> list[CaptureUnit]:
+        return list(self.__capture_unit_id_list)
 
 
     @property
-    def end_time(self):
+    def end_time(self) -> int:
         return self.__end_time
 
 
     @property
-    def wait(self):
+    def wait(self) -> bool:
         return self.__wait
 
 
     @property
-    def terminate(self):
+    def terminate(self) -> bool:
         return self.__terminate
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
         cmd = (
             int(self.stop_seq)              |
@@ -310,31 +329,32 @@ class CaptureEndFenceCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class WaveSequenceSetCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 3
+    ID: Final = 3
 
     def __init__(
         self,
-        cmd_no,
-        awg_id_list,
-        key_table,
-        feedback_channel_id = FeedbackChannel.U0,
-        stop_seq = False):
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        key_table: Sequence[int] | int,
+        feedback_channel_id: FeedbackChannel = FeedbackChannel.U0,
+        stop_seq: bool = False
+    ) -> None:
         """フィードバック値に応じて波形シーケンスを AWG にセットするコマンド
 
         Args:
             cmd_no (int): コマンド番号
-            awg_id_list (list of AWG): 波形シーケンスをセットする AWG のリスト.
-            key_table (list of int, int):
+            awg_id_list (Iterable of AWG | AWG): 波形シーケンスをセットする AWG のリスト.
+            key_table (Sequence of int | int):
                 | 波形シーケンスを登録したレジストリのキーのリスト.
                 | key_table[フィードバック値] = 設定したい波形シーケンスを登録したレジストリのキー
                 | となるように設定する.
@@ -347,35 +367,35 @@ class WaveSequenceSetCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if AWG.includes(awg_id_list):
-            awg_id_list = [awg_id_list]
+        awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
         self._validate_feedback_channel_id(feedback_channel_id)
         self._validate_key_table(key_table, MAX_WAVE_REGISTRY_ENTRIES - 1)
         if isinstance(key_table, int):
             key_table = [key_table] * 4
 
-        self.__awg_id_list = awg_id_list
+        self.__awg_id_list: list[AWG] = awg_id_list
         self.__feedback_channel_id = feedback_channel_id
-        self.__key_table = copy.copy(key_table)
+        self.__key_table = list(key_table)
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def awg_id_list(self):
-        return copy.copy(self.__awg_id_list)
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
 
 
     @property
-    def feedback_channel_id(self):
+    def feedback_channel_id(self) -> FeedbackChannel:
         return self.__feedback_channel_id
 
 
     @property
-    def key_table(self):
-        return copy.copy(self.__key_table)
+    def key_table(self) -> list[int]:
+        return list(self.__key_table)
 
-    def __gen_cmd_bytes(self):
+
+    def __gen_cmd_bytes(self) -> bytes:
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         key_table_bits = 0
         for i in range(len(self.__key_table)):
@@ -391,32 +411,33 @@ class WaveSequenceSetCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class CaptureParamSetCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 4
+    ID: Final = 4
 
     def __init__(
         self,
-        cmd_no,
-        capture_unit_id_list,
-        key_table,
-        feedback_channel_id = FeedbackChannel.U0,
-        param_elems = CaptureParamElem.all(),
-        stop_seq = False):
+        cmd_no: int,
+        capture_unit_id_list: Iterable[CaptureUnit] | CaptureUnit,
+        key_table: Sequence[int] | int,
+        feedback_channel_id: FeedbackChannel = FeedbackChannel.U0,
+        param_elems: Iterable[CaptureParamElem] | CaptureParamElem = CaptureParamElem.all(),
+        stop_seq: bool = False
+    ) -> None:
         """フィードバック値に応じてキャプチャパラメータをキャプチャユニットにセットするコマンド
 
         Args:
             cmd_no (int): コマンド番号
-            capture_unit_id_list (list of CaptureUnit): キャプチャパラメータをセットするキャプチャユニットのリスト.
-            key_table (list of int, int):
+            capture_unit_id_list (Iterable of CaptureUnit | CaptureUnit): キャプチャパラメータをセットするキャプチャユニットのリスト.
+            key_table (Sequence of int | int):
                 | キャプチャパラメータを登録したレジストリのキーのリスト.
                 | key_table[フィードバック値] = 設定したいキャプチャパラメータを登録したレジストリのキー
                 | となるように設定する.
@@ -424,7 +445,7 @@ class CaptureParamSetCmd(SequencerCmd):
                 | その値のキーに登録されたキャプチャパラメータを設定する.
             feedback_channel_id (FeedbackChannel): 
                 | 参照するフィードバックチャネルの ID.
-            param_elems (list of CaptureParamElem):
+            param_elems (Iterable of CaptureParamElem | CaptureParamElem):
                 | キャプチャパラメータの中の設定したい要素のリスト.
                 | ここに指定しなかった要素は, キャプチャユニットに設定済みの値のまま更新されない.
                 | 特に, 「総和区間数」「総和区間長」「ポストブランク長」の 3 つは, セットで更新しない場合,
@@ -434,45 +455,43 @@ class CaptureParamSetCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if CaptureUnit.includes(capture_unit_id_list):
-            capture_unit_id_list = [capture_unit_id_list]
+        capture_unit_id_list = self._to_list(capture_unit_id_list)
         self._validate_capture_unit_id(capture_unit_id_list)
         self._validate_feedback_channel_id(feedback_channel_id)
+        param_elems = self._to_list(param_elems)
+        self._validate_cap_param_elems(param_elems)
         self._validate_key_table(key_table, MAX_CAPTURE_PARAM_REGISTRY_ENTRIES - 1)
         if isinstance(key_table, int):
             key_table = [key_table] * 4
-
-        if not (isinstance(param_elems, (list, tuple)) and CaptureParamElem.includes(*param_elems)):
-            raise ValueError("Invalid capture parameter elements.  ({})".format(param_elems))
         
-        self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__capture_unit_id_list: list[CaptureUnit] = capture_unit_id_list
         self.__feedback_channel_id = feedback_channel_id
-        self.__key_table = copy.copy(key_table)
-        self.__param_elems = copy.copy(param_elems)
+        self.__key_table = list(key_table)
+        self.__param_elems = param_elems
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def capture_unit_id_list(self):
-        return copy.copy(self.__capture_unit_id_list)
+    def capture_unit_id_list(self) -> list[CaptureUnit]:
+        return list(self.__capture_unit_id_list)
 
 
     @property
-    def feedback_channel_id(self):
+    def feedback_channel_id(self) -> FeedbackChannel:
         return self.__feedback_channel_id
 
 
     @property
-    def key_table(self):
-        return copy.copy(self.__key_table)
+    def key_table(self) -> list[int]:
+        return list(self.__key_table)
 
 
     @property
-    def param_elems(self):
-        return copy.copy(self.__param_elems)
+    def param_elems(self) -> list[CaptureParamElem]:
+        return list(self.__param_elems)
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)        
         param_elem_bits = self._to_bit_field(self.__param_elems)
 
@@ -491,29 +510,30 @@ class CaptureParamSetCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class CaptureAddrSetCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 5
+    ID: Final = 5
 
     def __init__(
         self,
-        cmd_no,
-        capture_unit_id_list,
-        byte_offset,
-        stop_seq = False):
+        cmd_no: int,
+        capture_unit_id_list: Iterable[CaptureUnit] | CaptureUnit,
+        byte_offset: int,
+        stop_seq: bool = False
+    ) -> None:
         """キャプチャアドレスをセットするコマンド
 
         Args:
             cmd_no (int): コマンド番号
-            capture_unit_id_list (list of CaptureUnit): キャプチャアドレスをセットするキャプチャユニットのリスト.
+            capture_unit_id_list (Iterable of CaptureUnit | CaptureUnit): キャプチャアドレスをセットするキャプチャユニットのリスト.
             byte_offset (int): 
                 | 各キャプチャユニットのキャプチャ領域の先頭アドレス + byte_offset を, 次のキャプチャのデータの格納先とする.
             stop_seq (bool): 
@@ -521,9 +541,8 @@ class CaptureAddrSetCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
+        capture_unit_id_list = self._to_list(capture_unit_id_list)
         self._validate_capture_unit_id(capture_unit_id_list)
-        if CaptureUnit.includes(capture_unit_id_list):
-            capture_unit_id_list = [capture_unit_id_list]
 
         if not (isinstance(byte_offset, int) and
                 (0 <= byte_offset and byte_offset < MAX_CAPTURE_SIZE)):
@@ -536,22 +555,22 @@ class CaptureAddrSetCmd(SequencerCmd):
                 "'byte_offset' must be a multiple of {}.  '{}' was set."
                 .format(CAPTURE_DATA_ALIGNMENT_SIZE, byte_offset))
         
-        self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__capture_unit_id_list: list[CaptureUnit] = capture_unit_id_list
         self.__byte_offset = byte_offset
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def capture_unit_id_list(self):
-        return copy.copy(self.__capture_unit_id_list)
+    def capture_unit_id_list(self) -> list[CaptureUnit]:
+        return list(self.__capture_unit_id_list)
 
 
     @property
-    def byte_offset(self):
+    def byte_offset(self) -> int:
         return self.__byte_offset
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
         cmd = (
             int(self.stop_seq)         |
@@ -562,25 +581,26 @@ class CaptureAddrSetCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class FeedbackCalcOnClassificationCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 6
+    ID: Final = 6
 
     def __init__(
         self,
-        cmd_no,
-        capture_unit_id_list,
-        byte_offset,
-        elem_offset = 0,
-        stop_seq = False):
+        cmd_no: int,
+        capture_unit_id_list: Iterable[CaptureUnit] | CaptureUnit,
+        byte_offset: int,
+        elem_offset: int = 0,
+        stop_seq: bool = False
+    ) -> None:
         """四値化結果をフィードバック値とするフィードバック値計算コマンド
 
         | フィードバックチャネル i のフィードバック値 (FB_VAL(i)) は, 以下の式で求まる.
@@ -591,7 +611,7 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
 
         Args:
             cmd_no (int): コマンド番号
-            capture_unit_id_list (list of CaptureUnit): 
+            capture_unit_id_list (Iterable of CaptureUnit | CaptureUnit): 
                 | フィードバック値とする四値化結果が格納されたキャプチャ領域を持つキャプチャユニットの ID のリスト.
                 | 更新されるフィードバックチャネルの ID のリストでもある.
             byte_offset (int): フィードバック値とするデータのバイト単位での位置
@@ -601,12 +621,10 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """        
         super().__init__(self.ID, cmd_no, stop_seq)
-        if CaptureUnit.includes(capture_unit_id_list):
-            capture_unit_id_list = [capture_unit_id_list]
-
+        capture_unit_id_list = self._to_list(capture_unit_id_list)
         acceptable_cap_unit_id = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
-        if ((not isinstance(capture_unit_id_list, (list, tuple))) or 
-            (not capture_unit_id_list)                            or
+        if ((not isinstance(capture_unit_id_list, Iterable)) or 
+            (not capture_unit_id_list)                       or
             (not all([cap_unit_id in acceptable_cap_unit_id
                       for cap_unit_id in capture_unit_id_list]))):
             raise ValueError(
@@ -621,7 +639,7 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
 
         max_results = MAX_CAPTURE_SIZE * (8 // CLASSIFICATION_RESULT_SIZE)
         if not (isinstance(elem_offset, int) and
-                (0 <= elem_offset and elem_offset < max_results)):
+                self._is_in_range(0, max_results - 1, elem_offset)):
            raise ValueError(
                "'elem_offset' must be an integer between {} and {} inclusive.  '{}' was set."
                .format(0, max_results - 1, elem_offset))
@@ -632,28 +650,28 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
                 'The specified classification result is not in the capture data area.  ' + 
                 'byte_offset = {}, elem_offset = {}'.format(byte_offset, elem_offset))
         
-        self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__capture_unit_id_list: list[CaptureUnit] = capture_unit_id_list
         self.__byte_offset = byte_offset
         self.__elem_offset = elem_offset
         self.__cmd_bytes = self.__gen_cmd_bytes()
         
 
     @property
-    def capture_unit_id_list(self):
-        return copy.copy(self.__capture_unit_id_list)
+    def capture_unit_id_list(self) -> list[CaptureUnit]:
+        return list(self.__capture_unit_id_list)
 
 
     @property
-    def byte_offset(self):
+    def byte_offset(self) -> int:
         return self.__byte_offset
 
 
     @property
-    def elem_offset(self):
+    def elem_offset(self) -> int:
         return self.__elem_offset
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         byte_offset = self.__bit_offset // (CAPTURE_RAM_WORD_SIZE * 8) * CAPTURE_RAM_WORD_SIZE
         elem_offset = (self.__bit_offset % (CAPTURE_RAM_WORD_SIZE * 8)) // CLASSIFICATION_RESULT_SIZE
         capture_unit_id_bits = self._to_bit_field(self.__capture_unit_id_list)
@@ -667,35 +685,36 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class WaveGenEndFenceCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 7
+    ID: Final = 7
     #: AWG の波形出力完了を確認する時刻に指定可能な最大値
-    MAX_END_TIME = 0x7FFFFFFF_FFFFFFFF
+    MAX_END_TIME: Final = 0x7FFFFFFF_FFFFFFFF
 
     def __init__(
         self,
-        cmd_no,
-        awg_id_list,
-        end_time,
-        wait = True,
-        terminate = False,
-        stop_seq = False):
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        end_time: int,
+        wait: bool = True,
+        terminate: bool = False,
+        stop_seq: bool = False
+    ) -> None:
         """波形出力終了フェンスコマンド
 
         | 'end_time' で指定した時刻まで待ってから AWG の波形出力が完了しているかを調べるコマンド.
 
         Args:
             cmd_no (int): コマンド番号
-            awg_id_list (list of AWG): 波形出力完了を調べる AWG のリスト.
+            awg_id_list (Iterable of AWG | AWG): 波形出力完了を調べる AWG のリスト.
             end_time (int):
                 | AWG の波形出力が完了しているかを調べる時刻.
                 | シーケンサが動作を開始した時点を 0 として, end_time * 8[ns] 後に波形出力の完了をチェックする.
@@ -712,12 +731,10 @@ class WaveGenEndFenceCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if AWG.includes(awg_id_list):
-            awg_id_list = [awg_id_list]
+        awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
 
-        if not (isinstance(end_time, int) and
-                (0 <= end_time and end_time <= self.MAX_END_TIME)):
+        if not (isinstance(end_time, int) and self._is_in_range(0, self.MAX_END_TIME, end_time)):
             raise ValueError(
                 "'end_time' must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(0, self.MAX_END_TIME, end_time))
@@ -728,7 +745,7 @@ class WaveGenEndFenceCmd(SequencerCmd):
         if not isinstance(terminate, bool):
             raise ValueError("The type of 'terminate' must be 'bool'.  '{}' was set.".format(terminate))
 
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list: list[AWG] = awg_id_list
         self.__end_time = end_time
         self.__wait = wait
         self.__terminate = terminate
@@ -736,26 +753,26 @@ class WaveGenEndFenceCmd(SequencerCmd):
 
 
     @property
-    def awg_id_list(self):
-        return copy.copy(self.__awg_id_list)
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
 
 
     @property
-    def end_time(self):
+    def end_time(self) -> int:
         return self.__end_time
 
 
     @property
-    def wait(self):
+    def wait(self) -> bool:
         return self.__wait
 
 
     @property
-    def terminate(self):
+    def terminate(self) -> bool:
         return self.__terminate
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         cmd = (
             int(self.stop_seq)              |
@@ -768,29 +785,30 @@ class WaveGenEndFenceCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class ResponsiveFeedbackCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 8
+    ID: Final = 8
     #: 1 回目の AWG スタート時刻に指定可能な最大値
-    MAX_START_TIME = 0x7FFFFFFF_FFFFFFFF
+    MAX_START_TIME: Final = 0x7FFFFFFF_FFFFFFFF
     #: AWG を即時スタートする場合に start_time に指定する値．
-    IMMEDIATE = -1
+    IMMEDIATE: Final = -1
 
     def __init__(
         self,
-        cmd_no,
-        awg_id_list,
-        start_time,
-        wait = False,
-        stop_seq = False):
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        start_time: int,
+        wait: bool = False,
+        stop_seq: bool = False
+    ) -> None:
         """高速フィードバック処理を行うコマンド
 
         | 高速フィードバック処理は
@@ -805,7 +823,7 @@ class ResponsiveFeedbackCmd(SequencerCmd):
 
         Args:
             cmd_no (int): コマンド番号
-            awg_id_list (list of AWG): 波形を出力する AWG のリスト
+            awg_id_list (Iterable of AWG | AWG): 波形を出力する AWG のリスト
             start_time (int):
                 | 1 回目に AWG をスタートする時刻.
                 | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
@@ -820,8 +838,7 @@ class ResponsiveFeedbackCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if AWG.includes(awg_id_list):
-            awg_id_list = [awg_id_list]
+        awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
 
         if not (isinstance(start_time, int) and (start_time <= self.MAX_START_TIME)):
@@ -829,28 +846,28 @@ class ResponsiveFeedbackCmd(SequencerCmd):
                 "'start_time' must be less than or equal to {}.  '{}' was set."
                 .format(self.MAX_START_TIME, start_time))
 
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list: list[AWG] = awg_id_list
         self.__start_time = start_time
         self.__wait = wait
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def awg_id_list(self):
-        return copy.copy(self.__awg_id_list)
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
 
 
     @property
-    def start_time(self):
+    def start_time(self) -> int:
         return self.__start_time
 
 
     @property
-    def wait(self):
+    def wait(self) -> bool:
         return self.__wait
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         awg_id_list = self._to_bit_field(self.__awg_id_list)
         start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
         cmd = (
@@ -863,31 +880,32 @@ class ResponsiveFeedbackCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class WaveSequenceSelectionCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 9
+    ID: Final = 9
 
     def __init__(
         self,
-        cmd_no,
-        awg_id_list,
-        key_table,
-        four_cls_channel_id = FourClassifierChannel.U0,
-        stop_seq = False):
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        key_table: Sequence[int] | int,
+        four_cls_channel_id: FourClassifierChannel = FourClassifierChannel.U0,
+        stop_seq: bool = False
+    ) -> None:
         """高速フィードバック処理で AWG に設定する波形シーケンスを選択するコマンド.
 
         Args:
             cmd_no (int): コマンド番号
-            awg_id_list (list of AWG): 波形シーケンスをセットする AWG のリスト.
-            key_table (list of int, int):
+            awg_id_list (Iterable of AWG | AWG): 波形シーケンスをセットする AWG のリスト.
+            key_table (Sequence of int | int):
                 | 波形シーケンスを登録したレジストリのキーのリスト.
                 | key_table[四値化結果] = 設定したい波形シーケンスを登録したレジストリのキー
                 | となるように設定する.
@@ -900,36 +918,35 @@ class WaveSequenceSelectionCmd(SequencerCmd):
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
-        if AWG.includes(awg_id_list):
-            awg_id_list = [awg_id_list]
+        awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
         self._validate_four_cls_channel_id(four_cls_channel_id)
         self._validate_key_table(key_table, MAX_WAVE_REGISTRY_ENTRIES - 1)
         if isinstance(key_table, int):
             key_table = [key_table] * 4
 
-        self.__awg_id_list = awg_id_list
+        self.__awg_id_list: list[AWG] = awg_id_list
         self.__four_cls_channel_id = four_cls_channel_id
-        self.__key_table = copy.copy(key_table)
+        self.__key_table = list(key_table)
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
     @property
-    def awg_id_list(self):
-        return copy.copy(self.__awg_id_list)
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
 
 
     @property
-    def four_cls_channel_id(self):
+    def four_cls_channel_id(self) -> FourClassifierChannel:
         return self.__four_cls_channel_id
 
 
     @property
-    def key_table(self):
-        return copy.copy(self.__key_table)
+    def key_table(self) -> list[int]:
+        return list(self.__key_table)
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         key_table_bits = 0
         for i in range(len(self.__key_table)):
@@ -945,27 +962,28 @@ class WaveSequenceSelectionCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class BranchByFlagCmd(SequencerCmd):
     #: コマンドの種類を表す ID
-    ID = 10
+    ID: Final = 10
     #: 分岐先として指定可能なコマンドオフセットの最大値
-    MAX_CMD_OFFSET = 32767
+    MAX_CMD_OFFSET: Final = 32767
     #: 分岐先として指定可能なコマンドオフセットの最小値
-    MIN_CMD_OFFSET = -32768
+    MIN_CMD_OFFSET: Final = -32768
 
     def __init__(
         self,
-        cmd_no,
-        cmd_offset,
-        stop_seq = False):
+        cmd_no: int,
+        cmd_offset: int,
+        stop_seq: bool = False
+    ) -> None:
         """シーケンサ内部の専用フラグを参照する条件分岐コマンド.
 
         | 分岐が成立したとき, 次に実行されるコマンドが cmd_offset で指定したコマンドになる.
@@ -991,11 +1009,11 @@ class BranchByFlagCmd(SequencerCmd):
 
 
     @property
-    def cmd_offset(self):
+    def cmd_offset(self) -> int:
         return self.__cmd_offset
 
 
-    def __gen_cmd_bytes(self):
+    def __gen_cmd_bytes(self) -> bytes:
         cmd = (
             int(self.stop_seq)              |
             self.cmd_id                << 1 |
@@ -1004,24 +1022,24 @@ class BranchByFlagCmd(SequencerCmd):
         return cmd.to_bytes(16, 'little')
 
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         return self.__cmd_bytes
 
 
-    def size(self):
+    def size(self) -> int:
         return len(self.__cmd_bytes)
 
 
 class SequencerCmdErr(object):
 
-    def __init__(self, cmd_id, cmd_no, is_terminated):
+    def __init__(self, cmd_id: int, cmd_no: int, is_terminated: bool) -> None:
         self.__cmd_id = cmd_id
         self.__cmd_no = cmd_no
         self.__is_terminated = is_terminated
 
 
     @property
-    def cmd_id(self):
+    def cmd_id(self) -> int:
         """このエラーを起こしたコマンドの種類を表す ID
 
         Returns:
@@ -1031,7 +1049,7 @@ class SequencerCmdErr(object):
 
 
     @property
-    def cmd_no(self):
+    def cmd_no(self) -> int:
         """このエラーを起こしたコマンドのコマンド番号
         
         Returns:
@@ -1041,7 +1059,7 @@ class SequencerCmdErr(object):
 
 
     @property
-    def is_terminated(self):
+    def is_terminated(self) -> bool:
         """ このエラーを起こしたコマンドが実行中に強制終了させられたかどうか
 
         Returns:
@@ -1054,23 +1072,28 @@ class SequencerCmdErr(object):
 
 class AwgStartCmdErr(SequencerCmdErr):
 
-    def __init__(self, cmd_no, is_terminated, awg_id_list):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        awg_id_list: Iterable[AWG]
+    ) -> None:
         """AWG スタートコマンドのエラー情報を保持するクラス"""
         super().__init__(AwgStartCmd.ID, cmd_no, is_terminated)
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list = list(awg_id_list)
 
 
     @property
-    def awg_id_list(self):
+    def awg_id_list(self) -> list[AWG]:
         """指定した時刻にスタートできなかった AWG の ID のリスト
         
         Returns:
             list of AWG: 指定した時刻にスタートできなかった AWG の ID のリスト
         """
-        return copy.copy(self.__awg_id_list)
+        return list(self.__awg_id_list)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
         return (
             'AwgStartCmdErr\n' +
@@ -1082,25 +1105,31 @@ class AwgStartCmdErr(SequencerCmdErr):
 
 class CaptureEndFenceCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, capture_unit_id_list, is_in_time):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        capture_unit_id_list: Iterable[CaptureUnit],
+        is_in_time: bool
+    ) -> None:
         """キャプチャ完了確認コマンドのエラー情報を保持するクラス"""
         super().__init__(CaptureEndFenceCmd.ID, cmd_no, is_terminated)
-        self.__capture_unit_id_list = copy.copy(capture_unit_id_list)
+        self.__capture_unit_id_list = list(capture_unit_id_list)
         self.__is_in_time = is_in_time
 
 
     @property
-    def capture_unit_id_list(self):
+    def capture_unit_id_list(self) -> list[CaptureUnit]:
         """指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト
         
         Returns:
             list of CaptureUnit: 指定した時刻にキャプチャが完了していなかったキャプチャユニットの ID のリスト
         """
-        return copy.copy(self.__capture_unit_id_list)
+        return list(self.__capture_unit_id_list)
 
 
     @property
-    def is_in_time(self):
+    def is_in_time(self) -> bool:
         """このエラーを出したコマンドが指定した時刻に実行されていたかどうか.
 
         | キャプチャ終了フェンスコマンドで指定した時刻より後に同コマンドが実行された場合, そのコマンドは失敗扱いとなり
@@ -1112,9 +1141,9 @@ class CaptureEndFenceCmdErr(SequencerCmdErr):
         return self.__is_in_time
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         capture_unit_id_list = [int(awg_id) for awg_id in self.__capture_unit_id_list]
-        return  (
+        return (
             'CaptureEndFenceCmdErr\n' +
             '  - command ID       : {}\n'.format(self.cmd_id) +
             '  - command No       : {}\n'.format(self.cmd_no) +
@@ -1125,7 +1154,13 @@ class CaptureEndFenceCmdErr(SequencerCmdErr):
 
 class WaveSequenceSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, read_err, write_err):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        read_err: bool,
+        write_err: bool
+    ) -> None:
         """波形シーケンスセットコマンドのエラー情報を保持するクラス"""
         super().__init__(WaveSequenceSetCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
@@ -1133,7 +1168,7 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
 
 
     @property
-    def read_err(self):
+    def read_err(self) -> bool:
         """読み出しエラーフラグ
 
         Returns:
@@ -1143,7 +1178,7 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
 
 
     @property
-    def write_err(self):
+    def write_err(self) -> bool:
         """書き込みエラーフラグ
 
         Returns:
@@ -1152,7 +1187,7 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
         return self.__write_err
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'WaveSequenceSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
@@ -1164,7 +1199,13 @@ class WaveSequenceSetCmdErr(SequencerCmdErr):
 
 class CaptureParamSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, read_err, write_err):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        read_err: bool,
+        write_err: bool
+    ) -> None:
         """キャプチャパラメータセットコマンドのエラー情報を保持するクラス"""
         super().__init__(CaptureParamSetCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
@@ -1172,7 +1213,7 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
 
 
     @property
-    def read_err(self):
+    def read_err(self) -> bool:
         """読み出しエラーフラグ
 
         Returns:
@@ -1182,7 +1223,7 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
 
 
     @property
-    def write_err(self):
+    def write_err(self) -> bool:
         """書き込みエラーフラグ
 
         Returns:
@@ -1191,7 +1232,7 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
         return self.__write_err
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'CaptureParamSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
@@ -1203,14 +1244,19 @@ class CaptureParamSetCmdErr(SequencerCmdErr):
 
 class CaptureAddrSetCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, write_err):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        write_err: bool
+    ) -> None:
         """キャプチャアドレスセットコマンドのエラー情報を保持するクラス"""
         super().__init__(CaptureAddrSetCmd.ID, cmd_no, is_terminated)
         self.__write_err = write_err
 
 
     @property
-    def write_err(self):
+    def write_err(self) -> bool:
         """書き込みエラーフラグ
 
         Returns:
@@ -1219,7 +1265,7 @@ class CaptureAddrSetCmdErr(SequencerCmdErr):
         return self.__write_err
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'CaptureAddrSetCmdErr\n' +
             '  - command ID  : {}\n'.format(self.cmd_id) +
@@ -1230,14 +1276,19 @@ class CaptureAddrSetCmdErr(SequencerCmdErr):
 
 class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, read_err):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        read_err: bool
+    ) -> None:
         """四値化結果をフィードバック値とするフィードバック値計算コマンドのエラー情報を保持するクラス"""
         super().__init__(FeedbackCalcOnClassificationCmd.ID, cmd_no, is_terminated)
         self.__read_err = read_err
 
 
     @property
-    def read_err(self):
+    def read_err(self) -> bool:
         """読み出しエラーフラグ
 
         Returns:
@@ -1246,7 +1297,7 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
         return self.__read_err
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'FeedbackCalcOnClassificationCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
@@ -1257,24 +1308,30 @@ class FeedbackCalcOnClassificationCmdErr(SequencerCmdErr):
 
 class WaveGenEndFenceCmdErr(SequencerCmdErr):
     
-    def __init__(self, cmd_no, is_terminated, awg_id_list, is_in_time):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        awg_id_list: Iterable[AWG],
+        is_in_time: bool
+    ) -> None:
         """波形出力完了確認コマンドのエラー情報を保持するクラス"""
         super().__init__(WaveGenEndFenceCmd.ID, cmd_no, is_terminated)
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list = list(awg_id_list)
         self.__is_in_time = is_in_time
 
 
     @property
-    def awg_id_list(self):
+    def awg_id_list(self) -> list[AWG]:
         """指定した時刻に波形出力が完了していなかった AWG の ID のリスト
         
         Returns:
             list of AWG: 指定した時刻に波形出力が完了していなかった AWG の ID のリスト
         """
-        return copy.copy(self.__awg_id_list)
+        return list(self.__awg_id_list)
 
     @property
-    def is_in_time(self):
+    def is_in_time(self) -> bool:
         """このエラーを出したコマンドが指定した時刻に実行されていたかどうか.
 
         | 波形出力終了フェンスコマンドで指定した時刻より後に同コマンドが実行された場合, そのコマンドは失敗扱いとなり
@@ -1286,7 +1343,7 @@ class WaveGenEndFenceCmdErr(SequencerCmdErr):
         return self.__is_in_time
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
         return (
             'WaveGenEndFenceCmdErr\n' +
@@ -1299,26 +1356,33 @@ class WaveGenEndFenceCmdErr(SequencerCmdErr):
 
 class ResponsiveFeedbackCmdErr(SequencerCmdErr):
 
-    def __init__(self, cmd_no, is_terminated, awg_id_list, read_err, write_err):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        awg_id_list: Iterable[AWG],
+        read_err: bool,
+        write_err: bool
+    ) -> None:
         """高速フィードバックコマンドのエラー情報を保持するクラス"""
         super().__init__(ResponsiveFeedbackCmd.ID, cmd_no, is_terminated)
-        self.__awg_id_list = copy.copy(awg_id_list)
+        self.__awg_id_list = list(awg_id_list)
         self.__read_err = read_err
         self.__write_err = write_err
 
 
     @property
-    def awg_id_list(self):
+    def awg_id_list(self) -> list[AWG]:
         """指定した時刻にスタートできなかった AWG の ID のリスト
         
         Returns:
             list of AWG: 指定した時刻にスタートできなかった AWG の ID のリスト
         """
-        return copy.copy(self.__awg_id_list)
+        return list(self.__awg_id_list)
 
 
     @property
-    def read_err(self):
+    def read_err(self) -> bool:
         """読み出しエラーフラグ
 
         Returns:
@@ -1328,7 +1392,7 @@ class ResponsiveFeedbackCmdErr(SequencerCmdErr):
 
 
     @property
-    def write_err(self):
+    def write_err(self) -> bool:
         """書き込みエラーフラグ
 
         Returns:
@@ -1337,7 +1401,7 @@ class ResponsiveFeedbackCmdErr(SequencerCmdErr):
         return self.__write_err
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
         return (
             'ResponsiveFeedbackCmdErr\n' +
@@ -1351,12 +1415,12 @@ class ResponsiveFeedbackCmdErr(SequencerCmdErr):
 
 class WaveSequenceSelectionCmdErr(SequencerCmdErr):
 
-    def __init__(self, cmd_no, is_terminated):
+    def __init__(self, cmd_no: int, is_terminated: bool):
         """波形シーケンス選択コマンドのエラー情報を保持するクラス"""
         super().__init__(WaveSequenceSelectionCmd.ID, cmd_no, is_terminated)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'WaveSequenceSelectionCmdErr\n' +
             '  - command ID : {}\n'.format(self.cmd_id) +
@@ -1366,7 +1430,12 @@ class WaveSequenceSelectionCmdErr(SequencerCmdErr):
 
 class BranchByFlagCmdErr(SequencerCmdErr):
 
-    def __init__(self, cmd_no, is_terminated, out_of_range_err, cmd_counter):
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        out_of_range_err: bool,
+        cmd_counter: int):
         """条件分岐コマンドのエラー情報を保持するクラス"""
         super().__init__(BranchByFlagCmd.ID, cmd_no, is_terminated)
         self.__out_of_range_err = out_of_range_err
@@ -1374,7 +1443,7 @@ class BranchByFlagCmdErr(SequencerCmdErr):
 
 
     @property
-    def out_of_range_err(self):
+    def out_of_range_err(self) -> bool:
         """範囲外分岐エラーフラグ
 
         Returns:
@@ -1384,7 +1453,7 @@ class BranchByFlagCmdErr(SequencerCmdErr):
 
 
     @property
-    def cmd_counter(self):
+    def cmd_counter(self) -> int:
         """範囲外分岐エラーが発生したときに分岐先となったコマンドカウンタ値
 
         Returns:
@@ -1393,7 +1462,7 @@ class BranchByFlagCmdErr(SequencerCmdErr):
         return self.__cmd_counter
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             'BranchByFlagCmdErr\n' +
             '  - command ID         : {}\n'.format(self.cmd_id) +

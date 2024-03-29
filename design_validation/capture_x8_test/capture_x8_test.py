@@ -21,7 +21,7 @@ def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, res_ro
             print("Test {:03d} failed.".format(test_id))
         return 1
     else:
-        print("All tests succeeded.".format(failed_tests))
+        print('All tests succeeded.')
         return 0
 
 

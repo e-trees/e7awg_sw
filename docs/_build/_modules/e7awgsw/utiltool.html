@@ -1365,7 +1365,10 @@
           <div class="body">
             
   <h1>e7awgsw.utiltool のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">matplotlib</span>
@@ -1377,12 +1380,19 @@
 
 <div class="viewcode-block" id="plot_graph">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.utiltool.plot_graph">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">plot_graph</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#b44c97&#39;</span><span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_graph</span><span class="p">(</span>
+    <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;#b44c97&#39;</span><span class="p">,</span>
+    <span class="n">marker</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;時刻とサンプル値のグラフをファイルに保存する</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        sampling_rate (int or float): samples を取得した際のサンプリングレート. (単位: Hz)</span>
-<span class="sd">        samples (list of [float | int]): グラフに出力するサンプル値のリスト.</span>
+<span class="sd">        samples (Sequence of [float | int]): グラフに出力するサンプル値のリスト.</span>
 <span class="sd">        title (string): グラフのタイトル.</span>
 <span class="sd">        filepath (string): グラフを保存するファイルのパス.</span>
 <span class="sd">        color (string): グラフの線の色. 16進RGB値で指定する. (例: &#39;#102030&#39;)</span>
@@ -1401,11 +1411,18 @@
 
 <div class="viewcode-block" id="plot_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.utiltool.plot_samples">[ドキュメント]</a>
-<span class="k">def</span> <span class="nf">plot_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;#b44c97&#39;</span><span class="p">,</span> <span class="n">marker</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x_label</span> <span class="o">=</span> <span class="s1">&#39;Sample No&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_samples</span><span class="p">(</span>
+    <span class="n">samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;#b44c97&#39;</span><span class="p">,</span>
+    <span class="n">marker</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Sample No&#39;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;サンプル値をグラフとしてファイルに保存する</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        samples (list of [float | int]): グラフに出力するサンプル値のリスト.</span>
+<span class="sd">        samples (Sequence of [float | int]): グラフに出力するサンプル値のリスト.</span>
 <span class="sd">        title (string): グラフのタイトル.</span>
 <span class="sd">        filepath (string): グラフを保存するファイルのパス.</span>
 <span class="sd">        color (string): グラフの線の色. 16進RGB値で指定する. (例: &#39;#102030&#39;)</span>
@@ -1431,7 +1448,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-03-11" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-03-29" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

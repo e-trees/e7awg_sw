@@ -1365,8 +1365,13 @@
           <div class="body">
             
   <h1>e7awgsw.wavesequence のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">WAVE_SAMPLE_SIZE</span><span class="p">,</span> <span class="n">AWG_WORD_SIZE</span><span class="p">,</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">,</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
 
@@ -1375,17 +1380,24 @@
 <span class="k">class</span> <span class="nc">WaveSequence</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; 波形シーケンスの情報を保持するクラス&quot;&quot;&quot;</span>
 
-    <span class="n">MAX_POST_BLANK_LEN</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>    <span class="c1">#: 最大ポストブランク長</span>
-    <span class="n">MAX_CHUNK_REPEATS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>     <span class="c1">#: 波形チャンクの最大リピート回数</span>
-    <span class="n">MAX_WAIT_WORDS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>        <span class="c1">#: 波形シーケンスの先頭に付く 0 データの最大の長さ</span>
-    <span class="n">MAX_SEQUENCE_REPEATS</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>  <span class="c1">#: 波形シーケンスの最大リピート回数</span>
-    <span class="n">MAX_CHUNKS</span> <span class="o">=</span> <span class="mi">16</span>                    <span class="c1">#: 波形シーケンスに登録可能な最大チャンク数</span>
-    <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="c1">#: 1 波形ブロック当たりのサンプル数</span>
-    <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="c1">#: 1 AWG ワード当たりのサンプル数</span>
+    <span class="n">MAX_POST_BLANK_LEN</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>    <span class="c1">#: 最大ポストブランク長</span>
+    <span class="n">MAX_CHUNK_REPEATS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>     <span class="c1">#: 波形チャンクの最大リピート回数</span>
+    <span class="n">MAX_WAIT_WORDS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>        <span class="c1">#: 波形シーケンスの先頭に付く 0 データの最大の長さ</span>
+    <span class="n">MAX_SEQUENCE_REPEATS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>  <span class="c1">#: 波形シーケンスの最大リピート回数</span>
+    <span class="n">MAX_CHUNKS</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">16</span>                    <span class="c1">#: 波形シーケンスに登録可能な最大チャンク数</span>
+    <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_WAVE_BLOCK</span> <span class="c1">#: 1 波形ブロック当たりのサンプル数</span>
+    <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span> <span class="c1">#: 1 AWG ワード当たりのサンプル数</span>
 
 <div class="viewcode-block" id="WaveSequence.__init__">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.__init__">[ドキュメント]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_wait_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">enable_lib_log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">get_null_logger</span><span class="p">()):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_wait_words</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_repeats</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">enable_lib_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="n">get_null_logger</span><span class="p">()</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            num_wait_words (int): </span>
@@ -1417,28 +1429,33 @@
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
             <span class="k">raise</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">WaveChunk</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">=</span> <span class="n">num_wait_words</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">num_repeats</span></div>
 
 
 <div class="viewcode-block" id="WaveSequence.del_chunk">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.del_chunk">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">del_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">del_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">):</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
         
 <div class="viewcode-block" id="WaveSequence.add_chunk">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.add_chunk">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">add_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iq_samples</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_chunk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">iq_samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+        <span class="n">num_blank_words</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_repeats</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形チャンクを追加する</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            iq_samples (list of (int, int)):</span>
-<span class="sd">                | 各サンプルの I データと Q データを格納したタプルのリスト.</span>
+<span class="sd">            iq_samples (Sequence of (int, int)):</span>
+<span class="sd">                | 各サンプルの I データと Q データを格納したタプルのシーケンス.</span>
 <span class="sd">                | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.</span>
-<span class="sd">                | リストの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.</span>
+<span class="sd">                | シーケンスの要素数は送信波形の 1 ブロックに含まれるサンプル数 (= 64) の倍数でなければならない.</span>
 <span class="sd">                | タプルの各要素は 2bytes で表せる整数値でなければならない. (符号付, 符号なしは問わない)</span>
 <span class="sd">            num_blank_words (int): </span>
 <span class="sd">                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</span>
@@ -1447,7 +1464,7 @@
 <span class="sd">            num_repeats (int): 追加する波形チャンクを繰り返す回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid sample list  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">))</span>
             
             <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAX_CHUNKS</span><span class="p">):</span>
@@ -1494,7 +1511,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;現在登録されている波形チャンクの数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1504,7 +1521,7 @@
 
 <div class="viewcode-block" id="WaveSequence.chunk">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WaveChunk</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;引数で指定した番号の波形チャンクを返す</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1517,7 +1534,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">chunk_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">chunk_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">WaveChunk</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;現在登録されている波形チャンクのリスト</span>
 
 <span class="sd">        Returns:</span>
@@ -1526,7 +1543,7 @@
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_wait_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_wait_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスの先頭に付く 0 データのサンプル数.</span>
 
 <span class="sd">        Returns:</span>
@@ -1535,7 +1552,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wait_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_wait_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_wait_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスの先頭に付く 0 データの長さ.</span>
 <span class="sd">        </span>
 <span class="sd">        | 単位は AWG ワード.</span>
@@ -1547,7 +1564,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスを繰り返す回数</span>
 
 <span class="sd">        Returns:</span>
@@ -1556,7 +1573,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span>
 
     <span class="nd">@num_repeats</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスを繰り返す回数</span>
 
 <span class="sd">        Args:</span>
@@ -1565,7 +1582,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスの全サンプル数 (繰り返しも含む)</span>
 
 <span class="sd">        Returns:</span>
@@ -1574,7 +1591,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_all_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_all_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_all_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスの全AWG ワード数 (wait words も繰り返しも含む)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1587,7 +1604,7 @@
 
 <div class="viewcode-block" id="WaveSequence.all_samples_lazy">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples_lazy">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">all_samples_lazy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_samples_lazy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
 
 <span class="sd">        | all_samples の遅延評価版</span>
@@ -1598,14 +1615,14 @@
 <span class="sd">                | False -&gt; 戻り値の中にシーケンスの先頭の 0 データを含まない</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            list of (int, int): 波形サンプルデータのリスト.</span>
+<span class="sd">            Sequence of (int, int): 波形サンプルデータのリスト.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WaveSequence.all_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
 
 <span class="sd">        Args:</span>
@@ -1632,7 +1649,7 @@
 
 <div class="viewcode-block" id="WaveSequence.save_as_text">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.save_as_text">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">save_as_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">to_hex</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">save_as_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_hex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスをテキストデータとして保存する</span>
 
 <span class="sd">        Args:</span>
@@ -1665,7 +1682,7 @@
             <span class="k">raise</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;num wait words : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span><span class="p">)</span> <span class="o">+</span>
                <span class="s1">&#39;num sequence repeats : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span><span class="p">)</span> <span class="o">+</span>
                <span class="s1">&#39;num chunks : </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_chunks</span><span class="p">)</span> <span class="o">+</span>
@@ -1679,13 +1696,18 @@
             <span class="n">ret</span> <span class="o">+=</span> <span class="n">tmp</span>
         <span class="k">return</span> <span class="n">ret</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__is_in_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__is_in_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">max</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">min</span> <span class="o">&lt;=</span> <span class="n">val</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">)</span>
 
 
-    <span class="k">class</span> <span class="nc">__WaveSampleList</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">__WaveSampleList</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]):</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">,</span> <span class="o">*</span><span class="n">loggers</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">wave_seq</span><span class="p">:</span> <span class="n">WaveSequence</span><span class="p">,</span>
+            <span class="n">include_wait_words</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">loggers</span><span class="p">:</span> <span class="n">Logger</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">chunk_list</span>
             <span class="k">if</span> <span class="n">include_wait_words</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span> <span class="o">=</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_wait_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
@@ -1700,7 +1722,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples_in_seq</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">//</span> <span class="n">wave_seq</span><span class="o">.</span><span class="n">num_repeats</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span> <span class="o">=</span> <span class="n">loggers</span>
         
-        <span class="k">def</span> <span class="nf">__gen_chunk_range_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__gen_chunk_range_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunks</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">WaveChunk</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
             <span class="n">chunk_range_list</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">start_idx</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
@@ -1709,10 +1731,10 @@
                 <span class="n">start_idx</span> <span class="o">=</span> <span class="n">end_idx</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="k">return</span> <span class="n">chunk_range_list</span>
 
-        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="nb">len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">):</span>
@@ -1721,36 +1743,44 @@
                 <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;...&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="s1">&#39;[&#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span>
 
-        <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">WaveIter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="nd">@overload</span>
+        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+
+        <span class="nd">@overload</span>
+        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span> <span class="o">...</span>
+
+        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">&lt;=</span> <span class="n">key</span><span class="p">):</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;The index [</span><span class="si">{}</span><span class="s1">] is out of range.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                    <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples_in_seq</span>
-                <span class="n">chunk</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_chunk</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span> <span class="o">%</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">num_samples</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
-                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span><span class="p">))]</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">*</span><span class="n">key</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span><span class="p">))]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid argument type.&#39;</span>
                 <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">__find_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__len</span> <span class="o">&lt;=</span> <span class="n">key</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;The index [</span><span class="si">{}</span><span class="s1">] is out of range.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_samples_in_seq</span>
+            <span class="n">chunk</span><span class="p">,</span> <span class="n">start_idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__find_chunk</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span> <span class="o">-</span> <span class="n">start_idx</span><span class="p">)</span> <span class="o">%</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_samples</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">&lt;</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">num_samples</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__find_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">WaveChunk</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
             <span class="n">first</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">last</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunk_range_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="k">while</span> <span class="n">first</span> <span class="o">&lt;=</span> <span class="n">last</span><span class="p">:</span>
@@ -1763,19 +1793,57 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">last</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="mi">1</span>
 
-        <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="kc">False</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;unreachable&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len</span>
 
-        <span class="k">class</span> <span class="nc">WaveIter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_samples</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
 
-            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outer</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_samples</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="n">sample</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                                                
+                <span class="k">if</span> <span class="p">(</span><span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)):</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">other</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">NotImplemented</span>
+        
+        <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span>
+
+
+        <span class="k">class</span> <span class="nc">WaveIter</span><span class="p">(</span><span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]):</span>
+
+            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outer</span><span class="p">:</span> <span class="n">WaveSequence</span><span class="o">.</span><span class="n">__WaveSampleList</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__outer</span> <span class="o">=</span> <span class="n">outer</span>
 
-            <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span>
+
+            <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__outer</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__outer</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">]</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__outer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_i</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_i</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">return</span> <span class="n">val</span></div>
 
@@ -1788,14 +1856,19 @@
 
 <div class="viewcode-block" id="WaveChunk.__init__">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveChunk.__init__">[ドキュメント]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+        <span class="n">num_blank_words</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_repeats</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span> <span class="o">=</span> <span class="n">WaveData</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">WAVE_SAMPLE_SIZE</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_blank_words</span> <span class="o">=</span> <span class="n">num_blank_words</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span> <span class="o">=</span> <span class="n">num_repeats</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wave_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WaveData</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのポストブランクを除く波形データ</span>
 
 <span class="sd">        Returns:</span>
@@ -1804,7 +1877,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_blank_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_blank_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのポストブランクの長さ</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1816,7 +1889,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blank_words</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_blank_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_blank_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのポストブランクのサンプル数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1825,7 +1898,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_wave_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_wave_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクの有波形部の長さ</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1837,7 +1910,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wave_data</span><span class="o">.</span><span class="n">num_bytes</span> <span class="o">//</span> <span class="n">AWG_WORD_SIZE</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_wave_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_wave_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクの有波形部のサンプル数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1846,7 +1919,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wave_words</span> <span class="o">*</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクを繰り返す回数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1855,7 +1928,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_words</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのワード数.</span>
 
 <span class="sd">        1 AWG ワードは 4 サンプル. (I データと Q データはまとめて 1 サンプルとカウント)</span>
@@ -1866,7 +1939,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wave_words</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_blank_words</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのサンプル数.</span>
 
 <span class="sd">        Returns:</span>
@@ -1883,13 +1956,13 @@
 
 <div class="viewcode-block" id="WaveData.__init__">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveData.__init__">[ドキュメント]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">wave_sample_size</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">wave_sample_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wave_sample_size</span> <span class="o">=</span> <span class="n">wave_sample_size</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形データのサンプルリスト</span>
 
 <span class="sd">        Returns:</span>
@@ -1899,7 +1972,7 @@
 
 <div class="viewcode-block" id="WaveData.sample">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveData.sample">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;引数で指定したサンプルを返す</span>
 <span class="sd">        </span>
 <span class="sd">        Rturns:</span>
@@ -1909,7 +1982,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形データのサンプル数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1918,7 +1991,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__samples</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形データのバイト数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1928,7 +2001,7 @@
 
 <div class="viewcode-block" id="WaveData.serialize">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveData.serialize">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__samples</span><span class="p">:</span>
             <span class="n">i_data</span> <span class="o">=</span> <span class="n">i_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__wave_sample_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -1941,7 +2014,7 @@
 <div class="viewcode-block" id="WaveData.deserialize">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveData.deserialize">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">wave_sample_size</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">wave_sample_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WaveData</span><span class="p">:</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">//</span> <span class="n">wave_sample_size</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
@@ -1967,7 +2040,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-03-11" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-03-29" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

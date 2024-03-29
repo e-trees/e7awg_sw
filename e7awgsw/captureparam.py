@@ -1,6 +1,10 @@
-import copy
 import numpy as np
-from .hwparam import NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS, CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
+from typing import Any, Final
+from logging import Logger
+from collections.abc import Sequence
+from .hwparam import \
+    NUM_SAMPLES_IN_ADC_WORD, MAX_INTEG_VEC_ELEMS, \
+    CLASSIFICATION_RESULT_SIZE, CAPTURED_SAMPLE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE
 from .hwdefs import DspUnit, DecisionFunc
 from .logger import get_file_logger, get_null_logger, log_error
 
@@ -8,31 +12,33 @@ from .logger import get_file_logger, get_null_logger, log_error
 class CaptureParam(object):
     """ キャプチャパラメータを保持するクラス"""
 
-    MAX_INTEG_SECTIONS = 1048576           #: 最大統合区間数
-    MAX_SUM_SECTIONS = MAX_INTEG_VEC_ELEMS #: 1統合区間当たりの最大総和区間数
-    NUM_COMPLEX_FIR_COEFS = 16             #: 複素 FIR フィルタの係数の数
-    NUM_REAL_FIR_COEFS = 8                 #: 実数 FIR フィルタの係数の数
-    NUM_COMPLEXW_WINDOW_COEFS = 2048       #: 複素窓関数の係数の数
+    MAX_INTEG_SECTIONS: Final = 1048576           #: 最大統合区間数
+    MAX_SUM_SECTIONS: Final = MAX_INTEG_VEC_ELEMS #: 1統合区間当たりの最大総和区間数
+    NUM_COMPLEX_FIR_COEFS: Final = 16             #: 複素 FIR フィルタの係数の数
+    NUM_REAL_FIR_COEFS: Final = 8                 #: 実数 FIR フィルタの係数の数
+    NUM_COMPLEXW_WINDOW_COEFS: Final = 2048       #: 複素窓関数の係数の数
 
-    MIN_FIR_COEF_VAL = -32768          #: 複素 or 実数 FIR フィルタの係数の最小値
-    MAX_FIR_COEF_VAL = 32767           #: 複素 or 実数 FIR フィルタの係数の最大値
-    MIN_WINDOW_COEF_VAL = -2147483648  #: 窓関数の係数の最小値
-    MAX_WINDOW_COEF_VAL = 2147483647   #: 窓関数の係数の最大値
-    MAX_CAPTURE_DELAY = 0xFFFFFFFE     #: キャプチャディレイの最大値
+    MIN_FIR_COEF_VAL: Final = -32768          #: 複素 or 実数 FIR フィルタの係数の最小値
+    MAX_FIR_COEF_VAL: Final = 32767           #: 複素 or 実数 FIR フィルタの係数の最大値
+    MIN_WINDOW_COEF_VAL: Final = -2147483648  #: 窓関数の係数の最小値
+    MAX_WINDOW_COEF_VAL: Final = 2147483647   #: 窓関数の係数の最大値
+    MAX_CAPTURE_DELAY: Final = 0xFFFFFFFE     #: キャプチャディレイの最大値
 
-    MAX_SUM_SECTION_LEN = 0xFFFFFFFE   #: 最大総和区間長
-    MAX_POST_BLANK_LEN = 0xFFFFFFFF    #: 最大ポストブランク長
+    MAX_SUM_SECTION_LEN: Final = 0xFFFFFFFE   #: 最大総和区間長
+    MAX_POST_BLANK_LEN: Final = 0xFFFFFFFF    #: 最大ポストブランク長
 
-    MAX_SUM_RANGE_LEN = 1024           #: オーバーフローせずに総和可能な総和範囲の長さ (単位：キャプチャワード)
+    MAX_SUM_RANGE_LEN: Final = 1024           #: オーバーフローせずに総和可能な総和範囲の長さ (単位：キャプチャワード)
     
-    MIN_DECISION_FUNC_COEF_VAL = -32768                          #: 四値化判別式の係数の最小値
-    MAX_DECISION_FUNC_COEF_VAL = 32768                           #: 四値化判別式の係数の最大値
-    MIN_DECISION_FUNC_CONST_VAL = -0x80000000_00000000_00000000  #: 四値化判別式の定数の最小値
-    MAX_DECISION_FUNC_CONST_VAL = 0x7FFFFFFF_FFFFFFFF_FFFFFFFF   #: 四値化判別式の定数の最大値
+    MIN_DECISION_FUNC_COEF_VAL: Final = -32768                          #: 四値化判別式の係数の最小値
+    MAX_DECISION_FUNC_COEF_VAL: Final = 32768                           #: 四値化判別式の係数の最大値
+    MIN_DECISION_FUNC_CONST_VAL: Final = -0x80000000_00000000_00000000  #: 四値化判別式の定数の最小値
+    MAX_DECISION_FUNC_CONST_VAL: Final = 0x7FFFFFFF_FFFFFFFF_FFFFFFFF   #: 四値化判別式の定数の最大値
 
-    NUM_SAMPLES_IN_ADC_WORD = NUM_SAMPLES_IN_ADC_WORD #: 1 キャプチャワード当たりのサンプル数
+    NUM_SAMPLES_IN_ADC_WORD: Final = NUM_SAMPLES_IN_ADC_WORD #: 1 キャプチャワード当たりのサンプル数
 
-    def __init__(self, *, enable_lib_log = True, logger = get_null_logger()):
+    def __init__(
+        self, *, enable_lib_log: bool = True, logger: Logger = get_null_logger()
+    ) -> None:
         """
         Args:
             enable_lib_log (bool):
@@ -41,8 +47,8 @@ class CaptureParam(object):
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
         self.__num_integ_sections = 1
-        self.__sumsections = []
-        self.__dsp_units = []
+        self.__sumsections: list[tuple[int, int]] = []
+        self.__dsp_units: list[DspUnit] = []
         self.__capture_delay = 0
         self.__comp_fir_coefs = [0 + 0j] * self.NUM_COMPLEX_FIR_COEFS
         self.__real_fir_i_coefs = [0] * self.NUM_REAL_FIR_COEFS
@@ -58,7 +64,7 @@ class CaptureParam(object):
             self.__loggers.append(get_file_logger())
 
     @property
-    def num_integ_sections(self):
+    def num_integ_sections(self) -> int:
         """積算区間数
         
         Args:
@@ -69,7 +75,7 @@ class CaptureParam(object):
         return self.__num_integ_sections
 
     @num_integ_sections.setter
-    def num_integ_sections(self, val):
+    def num_integ_sections(self, val: int) -> None:
         if not (isinstance(val, int) and (1 <= val and val <= self.MAX_INTEG_SECTIONS)):
             msg = ("The number of integration sections must be an integer between {} and {} inclusive.  '{}' was set."
                   .format(1, self.MAX_INTEG_SECTIONS, val))
@@ -78,7 +84,7 @@ class CaptureParam(object):
         
         self.__num_integ_sections = val
 
-    def add_sum_section(self, num_words, num_post_blank_words):
+    def add_sum_section(self, num_words: int, num_post_blank_words: int) -> None:
         """総和区間を追加する
 
         Args:
@@ -111,7 +117,7 @@ class CaptureParam(object):
 
         self.__sumsections.append((num_words, num_post_blank_words))
 
-    def del_sum_section(self, index):
+    def del_sum_section(self, index: int) -> None:
         """引数で指定したインデックスの総和区間を削除する
 
         Args:
@@ -125,12 +131,12 @@ class CaptureParam(object):
 
         del self.__sumsections[index]
 
-    def clear_sum_sections(self):
+    def clear_sum_sections(self) -> None:
         """登録済みの全ての総和区間を削除する"""
         self.__sumsections = []
 
     @property
-    def num_sum_sections(self):
+    def num_sum_sections(self) -> int:
         """総和区間数
         
         Returns:
@@ -138,7 +144,7 @@ class CaptureParam(object):
         """
         return len(self.__sumsections)
 
-    def sum_section(self, idx):
+    def sum_section(self, idx: int) -> tuple[int, int]:
         """引数で指定した総和区間のパラメータを取得する
 
         Args:
@@ -150,16 +156,16 @@ class CaptureParam(object):
         return self.__sumsections[idx]
 
     @property
-    def sum_section_list(self):
+    def sum_section_list(self) -> list[tuple[int, int]]:
         """登録されている全総和区間とポストブランクの長さのリスト
 
         Returns:
             list of (int, int): 総和区間長 と ポストブランク長のタプルのリスト
         """
-        return copy.copy(self.__sumsections)
+        return list(self.__sumsections)
 
     @property
-    def num_samples_to_process(self): 
+    def num_samples_to_process(self) -> int: 
         """処理対象となる ADC データのサンプル数 (I データと Q データはまとめて 1 サンプルとカウント)
 
         Returns:
@@ -172,7 +178,7 @@ class CaptureParam(object):
             num_samples += (sum_section[0] + sum_section[1]) * NUM_SAMPLES_IN_ADC_WORD
         return num_samples * self.__num_integ_sections
 
-    def sel_dsp_units_to_enable(self, *dsp_units):
+    def sel_dsp_units_to_enable(self, *dsp_units: DspUnit) -> None:
         """このキャプチャシーケンスで有効にする DSP ユニットを選択する.
 
         引数に含まなかった DSP ユニットは無効になる.
@@ -184,10 +190,10 @@ class CaptureParam(object):
             msg = 'Invalid DSP Unit  {}'.format(dsp_units)
             log_error(msg, *self.__loggers)
             raise ValueError(msg)
-        self.__dsp_units = dsp_units
+        self.__dsp_units = list(dsp_units)
 
     @property
-    def dsp_units_enabled(self):
+    def dsp_units_enabled(self) -> list[DspUnit]:
         """現在有効になっている DSP ユニットのリスト
 
         Returns:
@@ -196,7 +202,7 @@ class CaptureParam(object):
         return list(self.__dsp_units)
 
     @property
-    def capture_delay(self):
+    def capture_delay(self) -> int:
         """キャプチャディレイ
 
         | 単位はキャプチャワード.
@@ -217,7 +223,7 @@ class CaptureParam(object):
         return self.__capture_delay
 
     @capture_delay.setter
-    def capture_delay(self, val):
+    def capture_delay(self, val: int) -> None:
         if not (isinstance(val, int) and (0 <= val and val <= self.MAX_CAPTURE_DELAY)):
             msg = ("Capture Delay must be an integer between {} and {} inclusive.  '{}' was set."
                     .format(0, self.MAX_CAPTURE_DELAY, val))
@@ -226,23 +232,23 @@ class CaptureParam(object):
         self.__capture_delay = val
 
     @property
-    def complex_fir_coefs(self):
+    def complex_fir_coefs(self) -> list[complex]:
         """複素 FIR フィルタの係数のリスト
 
         Args:
-            val (list of [complex | float | int]):
+            val (Sequence of [complex | float | int]):
                 | 複素係数のリスト. 
                 | 各係数の実数および虚数成分は整数値とすること.
                 | 指定しなかった分の係数は全て 0 + 0j となる.
         Returns:
             list of complex: 複素 FIR フィルタの係数のリスト
         """
-        return copy.copy(self.__comp_fir_coefs)
+        return list(self.__comp_fir_coefs)
 
     @complex_fir_coefs.setter
-    def complex_fir_coefs(self, val):
+    def complex_fir_coefs(self, val: Sequence[complex]):
         try:
-            if not isinstance(val, list):
+            if not isinstance(val, Sequence):
                 raise ValueError('Invalid coefficient list  ({})'.format(val))
 
             num_coefs = len(val)
@@ -273,47 +279,47 @@ class CaptureParam(object):
         self.__comp_fir_coefs = val
 
     @property
-    def real_fir_i_coefs(self):
+    def real_fir_i_coefs(self) -> list[int]:
         """I データ用実数 FIR フィルタの係数
         
         Args:
-            val (list of [float | int]):
+            val (Sequence of [float | int]):
                 | 係数のリスト.
                 | 各係数は整数値とすること.
                 | 指定しなかった分の係数は全て 0 となる.
         Returns:
             list of int: I データ用実数 FIR フィルタの係数リスト
         """
-        return copy.copy(self.__real_fir_i_coefs)
+        return list(self.__real_fir_i_coefs)
 
     @real_fir_i_coefs.setter
-    def real_fir_i_coefs(self, val):
+    def real_fir_i_coefs(self, val: Sequence[float]) -> None:
         self.__check_real_fir_coef_set(val)
         self.__real_fir_i_coefs = [int(coef) for coef in val] + [0] * (self.NUM_REAL_FIR_COEFS - len(val))
 
     @property
-    def real_fir_q_coefs(self):
+    def real_fir_q_coefs(self) -> list[int]:
         """Q データ用実数 FIR フィルタの係数を設定する.
         
         Args:
-            val (list of [float | int]):
+            val (Sequence of [float | int]):
                 | 係数のリスト.
                 | 各係数は整数値とすること.
                 | 指定しなかった分の係数は全て 0 となる.
         Returns:
             list of int: Q データ用実数 FIR フィルタの係数リスト
         """
-        return copy.copy(self.__real_fir_q_coefs)
+        return list(self.__real_fir_q_coefs)
 
     @real_fir_q_coefs.setter
-    def real_fir_q_coefs(self, val):
+    def real_fir_q_coefs(self, val: Sequence[float]) -> None:
         self.__check_real_fir_coef_set(val)
         self.__real_fir_q_coefs = [int(coef) for coef in val] + [0] * (self.NUM_REAL_FIR_COEFS - len(val))
 
-    def __check_real_fir_coef_set(self, val):
+    def __check_real_fir_coef_set(self, val: Sequence[float]) -> None:
         """実数 FIR の係数が正常かどうかチェック"""
         try:
-            if not isinstance(val, list):
+            if not isinstance(val, Sequence):
                 raise ValueError('Invalid coefficient list  ({})'.format(val))
             
             num_coefs = len(val)
@@ -331,7 +337,8 @@ class CaptureParam(object):
             if not all([float(coef).is_integer() for coef in val]):
                 raise ValueError('Real FIR coefficients must be integers.')
 
-            if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef) for coef in val]):
+            if not all([self.__is_in_range(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL, coef)
+                        for coef in val]):
                 raise ValueError('Real FIR coefficients must be {} ~ {}.'
                     .format(self.MIN_FIR_COEF_VAL, self.MAX_FIR_COEF_VAL))
         except Exception as e:
@@ -339,23 +346,23 @@ class CaptureParam(object):
             raise
 
     @property
-    def complex_window_coefs(self):
+    def complex_window_coefs(self) -> list[complex]:
         """複素窓関数の係数リスト
 
         Args:
-            val (list of [complex | floar | int]):
+            val (Sequence of [complex | floar | int]):
                 | 複素係数のリスト. 
                 | 各係数の実数および虚数成分は整数値とすること.
                 | 指定しなかった分の係数は全て 0 + 0j となる.
         Returns:
             list of complex: 複素窓関数の係数リスト
         """
-        return copy.copy(self.__comp_window_coefs)
+        return list(self.__comp_window_coefs)
 
     @complex_window_coefs.setter
-    def complex_window_coefs(self, val):
+    def complex_window_coefs(self, val: Sequence[complex]) -> None:
         try:
-            if not isinstance(val, list):
+            if not isinstance(val, Sequence):
                 raise ValueError('Invalid coefficient list  ({})'.format(val))
 
             num_coefs = len(val)
@@ -387,7 +394,7 @@ class CaptureParam(object):
         self.__comp_window_coefs = val
     
 
-    def calc_capture_samples(self):
+    def calc_capture_samples(self) -> int:
         """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
 
         Returns:
@@ -415,7 +422,7 @@ class CaptureParam(object):
         return num_samples_in_integ_section * self.__num_integ_sections
 
 
-    def calc_required_capture_mem_size(self):
+    def calc_required_capture_mem_size(self) -> int:
         """現在のキャプチャパラメータでのキャプチャに必要な RAM のサイズを計算する
 
         Returns:
@@ -429,7 +436,7 @@ class CaptureParam(object):
         return -(-num_bytes // CAPTURE_DATA_ALIGNMENT_SIZE) * CAPTURE_DATA_ALIGNMENT_SIZE
 
 
-    def num_samples_to_sum(self, section_no):
+    def num_samples_to_sum(self, section_no: int) -> int:
         """現在のキャプチャパラメータで, 引数で指定した総和区間で総和されるサンプル数を取得する
         
         Args:
@@ -454,7 +461,7 @@ class CaptureParam(object):
         return max(num_sum_words, 0)
 
     @property
-    def sum_start_word_no(self):
+    def sum_start_word_no(self) -> int:
         """総和を開始するキャプチャワードの番号
 
             | 総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,
@@ -475,7 +482,7 @@ class CaptureParam(object):
         return self.__sum_start_word_no
 
     @sum_start_word_no.setter
-    def sum_start_word_no(self, val):
+    def sum_start_word_no(self, val: int) -> None:
         if not (isinstance(val, int) and 
                 (0 <= val and val <= self.MAX_SUM_SECTION_LEN)):
             msg = ("Sum start word number must be an integer between {} and {} inclusive.  '{}' was set."
@@ -485,7 +492,7 @@ class CaptureParam(object):
         self.__sum_start_word_no = val
 
     @property
-    def num_words_to_sum(self):
+    def num_words_to_sum(self) -> int:
         """総和するキャプチャワード数
 
             | 総和区間の N 番目のキャプチャワードをキャプチャワード N (≧0) としたとき,
@@ -505,7 +512,7 @@ class CaptureParam(object):
         return self.__num_words_to_sum
 
     @num_words_to_sum.setter
-    def num_words_to_sum(self, val):
+    def num_words_to_sum(self, val: int) -> None:
         if not (isinstance(val, int) and (1 <= val)):
             msg = ("The number of capture words to be added up must be greater than or equal to 1.  '{}' was set."
                 .format(val))
@@ -513,13 +520,19 @@ class CaptureParam(object):
             raise ValueError(msg)
         self.__num_words_to_sum = val
 
-    def set_decision_func_params(self, func_sel, coef_a, coef_b, const_c):
+    def set_decision_func_params(
+        self,
+        func_sel: DecisionFunc,
+        coef_a: np.float32,
+        coef_b: np.float32,
+        const_c: np.float32
+    ) -> None:
         """四値化に使用する判定式のパラメータを設定する
 
             | 判定式(I, Q) = coef_a * I + coef_b * Q + const_c
 
         Args:
-            func_sel (int):           パラメータを設定する判定式の選択 (0 or 1)
+            func_sel (DecisionFunc):  パラメータを設定する判定式の選択
             coef_a   (numpy.float32): 判定式で I データに掛ける係数 (-32768 ～ 32767)
             coef_b   (numpy.float32): 判定式で Q データに掛ける係数 (-32768 ～ 32767)
             const_c  (numpy.float32): 判定式の定数項 (-0x80000000_00000000_00000000 ～ 0x7FFFFFFF_FFFFFFFF_FFFFFFFF)
@@ -556,13 +569,15 @@ class CaptureParam(object):
 
         self.__decision_func_params[int(func_sel)] = (coef_a, coef_b, const_c)
 
-    def get_decision_func_params(self, func_sel):
+    def get_decision_func_params(
+        self, func_sel: DecisionFunc
+    ) -> tuple[np.float32, np.float32, np.float32]:
         """四値化に使用する判定式のパラメータを取得する
 
             | 判定式(I, Q) = coef_a * I + coef_b * Q + const_c
 
         Args:
-            func_sel (int): パラメータを設定する判別式の選択 (0 or 1)
+            func_sel (DecisionFunc): パラメータを設定する判別式の選択
 
         Returns:
             tuple of numpy.float32: (coef_a, coef_b, const_c)
@@ -574,10 +589,10 @@ class CaptureParam(object):
         
         return self.__decision_func_params[int(func_sel)]
 
-    def __is_in_range(self, min, max, val):
+    def __is_in_range(self, min: Any, max: Any, val: Any) -> bool:
         return (min <= val) and (val <= max)
 
-    def __str__(self):
+    def __str__(self) -> str:
         retstr = []
         retstr.append('num integration sections : {}\n'.format(self.__num_integ_sections))
         retstr.append('num sum sections : {}\n'.format(self.num_sum_sections))

@@ -1,346 +1,358 @@
+from typing import Final
 
 class AwgMasterCtrlRegs(object):
-    ADDR = 0x0
+    ADDR: Final = 0x0
 
     class Offset(object):
-        VERSION             = 0x0
-        CTRL_TARGET_SEL     = 0x4
-        CTRL                = 0x8
-        WAKEUP_STATUS       = 0xC
-        BUSY_STATUS         = 0x10
-        READY_STATUS        = 0x14
-        DONE_STATUS         = 0x18
-        READ_ERR            = 0x1C
-        SAMPLE_SHORTAGE_ERR = 0x20
+        VERSION: Final             = 0x0
+        CTRL_TARGET_SEL: Final     = 0x4
+        CTRL: Final                = 0x8
+        WAKEUP_STATUS: Final       = 0xC
+        BUSY_STATUS: Final         = 0x10
+        READY_STATUS: Final        = 0x14
+        DONE_STATUS: Final         = 0x18
+        READ_ERR: Final            = 0x1C
+        SAMPLE_SHORTAGE_ERR: Final = 0x20
 
     class Bit(object):
-        CTRL_RESET     = 0
-        CTRL_PREPARE   = 1
-        CTRL_START     = 2
-        CTRL_TERMINATE = 3
-        CTRL_DONE_CLR  = 4
-        AWG_0  = 0
-        AWG_1  = 1
-        AWG_2  = 2
-        AWG_3  = 3
-        AWG_4  = 4
-        AWG_5  = 5
-        AWG_6  = 6
-        AWG_7  = 7
-        AWG_8  = 8
-        AWG_9  = 9
-        AWG_10 = 10
-        AWG_11 = 11
-        AWG_12 = 12
-        AWG_13 = 13
-        AWG_14 = 14
-        AWG_15 = 15
+        CTRL_RESET: Final     = 0
+        CTRL_PREPARE: Final   = 1
+        CTRL_START: Final     = 2
+        CTRL_TERMINATE: Final = 3
+        CTRL_DONE_CLR: Final  = 4
+        AWG_0: Final  = 0
+        AWG_1: Final  = 1
+        AWG_2: Final  = 2
+        AWG_3: Final  = 3
+        AWG_4: Final  = 4
+        AWG_5: Final  = 5
+        AWG_6: Final  = 6
+        AWG_7: Final  = 7
+        AWG_8: Final  = 8
+        AWG_9: Final  = 9
+        AWG_10: Final = 10
+        AWG_11: Final = 11
+        AWG_12: Final = 12
+        AWG_13: Final = 13
+        AWG_14: Final = 14
+        AWG_15: Final = 15
+
+        __LIST: Final = [
+            AWG_0,  AWG_1,  AWG_2,  AWG_3,
+            AWG_4,  AWG_5,  AWG_6,  AWG_7,
+            AWG_8,  AWG_9,  AWG_10, AWG_11,
+            AWG_12, AWG_13, AWG_14, AWG_15]
 
         @classmethod
-        def awg(cls, idx):
-            awgs = [cls.AWG_0,  cls.AWG_1,  cls.AWG_2,  cls.AWG_3,
-                    cls.AWG_4,  cls.AWG_5,  cls.AWG_6,  cls.AWG_7,
-                    cls.AWG_8,  cls.AWG_9,  cls.AWG_10, cls.AWG_11,
-                    cls.AWG_12, cls.AWG_13, cls.AWG_14, cls.AWG_15]
-            return awgs[idx]
+        def awg(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
 
 class AwgCtrlRegs(object):
 
     class Addr(object):
-        AWG_0  = 0x80
-        AWG_1  = 0x100
-        AWG_2  = 0x180
-        AWG_3  = 0x200
-        AWG_4  = 0x280
-        AWG_5  = 0x300
-        AWG_6  = 0x380
-        AWG_7  = 0x400
-        AWG_8  = 0x480
-        AWG_9  = 0x500
-        AWG_10 = 0x580
-        AWG_11 = 0x600
-        AWG_12 = 0x680
-        AWG_13 = 0x700
-        AWG_14 = 0x780
-        AWG_15 = 0x800
+        AWG_0: Final  = 0x80
+        AWG_1: Final  = 0x100
+        AWG_2: Final  = 0x180
+        AWG_3: Final  = 0x200
+        AWG_4: Final  = 0x280
+        AWG_5: Final  = 0x300
+        AWG_6: Final  = 0x380
+        AWG_7: Final  = 0x400
+        AWG_8: Final  = 0x480
+        AWG_9: Final  = 0x500
+        AWG_10: Final = 0x580
+        AWG_11: Final = 0x600
+        AWG_12: Final = 0x680
+        AWG_13: Final = 0x700
+        AWG_14: Final = 0x780
+        AWG_15: Final = 0x800
+
+        __LIST: Final = [
+            AWG_0,  AWG_1,  AWG_2,  AWG_3,
+            AWG_4,  AWG_5,  AWG_6,  AWG_7,
+            AWG_8,  AWG_9,  AWG_10, AWG_11,
+            AWG_12, AWG_13, AWG_14, AWG_15]
     
         @classmethod
-        def awg(cls, idx):
-            awgs = [cls.AWG_0,  cls.AWG_1,  cls.AWG_2,  cls.AWG_3,
-                    cls.AWG_4,  cls.AWG_5,  cls.AWG_6,  cls.AWG_7,
-                    cls.AWG_8,  cls.AWG_9,  cls.AWG_10, cls.AWG_11,
-                    cls.AWG_12, cls.AWG_13, cls.AWG_14, cls.AWG_15]
-            return awgs[idx]
+        def awg(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
     class Offset(object):
-        CTRL   = 0x0
-        STATUS = 0x4
-        ERR    = 0x8
+        CTRL: Final   = 0x0
+        STATUS: Final = 0x4
+        ERR: Final    = 0x8
 
     class Bit(object):
-        CTRL_RESET          = 0
-        CTRL_PREPARE        = 1
-        CTRL_START          = 2
-        CTRL_TERMINATE      = 3
-        CTRL_DONE_CLR       = 4
-        STATUS_WAKEUP       = 0
-        STATUS_BUSY         = 1
-        STATUS_READY        = 2
-        STATUS_DONE         = 3
-        ERR_READ            = 0
-        ERR_SAMPLE_SHORTAGE = 1
+        CTRL_RESET: Final          = 0
+        CTRL_PREPARE: Final        = 1
+        CTRL_START: Final          = 2
+        CTRL_TERMINATE: Final      = 3
+        CTRL_DONE_CLR: Final       = 4
+        STATUS_WAKEUP: Final       = 0
+        STATUS_BUSY: Final         = 1
+        STATUS_READY: Final        = 2
+        STATUS_DONE: Final         = 3
+        ERR_READ: Final            = 0
+        ERR_SAMPLE_SHORTAGE: Final = 1
 
 
 class WaveParamRegs(object):
     #### wave params ####
     class Addr(object):
-        AWG_0  = 0x1000
-        AWG_1  = 0x1400
-        AWG_2  = 0x1800
-        AWG_3  = 0x1C00
-        AWG_4  = 0x2000
-        AWG_5  = 0x2400
-        AWG_6  = 0x2800
-        AWG_7  = 0x2C00
-        AWG_8  = 0x3000
-        AWG_9  = 0x3400
-        AWG_10 = 0x3800
-        AWG_11 = 0x3C00
-        AWG_12 = 0x4000
-        AWG_13 = 0x4400
-        AWG_14 = 0x4800
-        AWG_15 = 0x4C00
+        AWG_0: Final  = 0x1000
+        AWG_1: Final  = 0x1400
+        AWG_2: Final  = 0x1800
+        AWG_3: Final  = 0x1C00
+        AWG_4: Final  = 0x2000
+        AWG_5: Final  = 0x2400
+        AWG_6: Final  = 0x2800
+        AWG_7: Final  = 0x2C00
+        AWG_8: Final  = 0x3000
+        AWG_9: Final  = 0x3400
+        AWG_10: Final = 0x3800
+        AWG_11: Final = 0x3C00
+        AWG_12: Final = 0x4000
+        AWG_13: Final = 0x4400
+        AWG_14: Final = 0x4800
+        AWG_15: Final = 0x4C00
+
+        __LIST: Final = [
+            AWG_0,  AWG_1,  AWG_2,  AWG_3,
+            AWG_4,  AWG_5,  AWG_6,  AWG_7,
+            AWG_8,  AWG_9,  AWG_10, AWG_11,
+            AWG_12, AWG_13, AWG_14, AWG_15]
 
         @classmethod
-        def awg(cls, idx):
-            awgs = [cls.AWG_0,  cls.AWG_1,  cls.AWG_2,  cls.AWG_3,
-                    cls.AWG_4,  cls.AWG_5,  cls.AWG_6,  cls.AWG_7,
-                    cls.AWG_8,  cls.AWG_9,  cls.AWG_10, cls.AWG_11,
-                    cls.AWG_12, cls.AWG_13, cls.AWG_14, cls.AWG_15]
-            return awgs[idx]
+        def awg(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
     class Offset(object):
-        CHUNK_0  = 0x40
-        CHUNK_1  = 0x50
-        CHUNK_2  = 0x60
-        CHUNK_3  = 0x70
-        CHUNK_4  = 0x80
-        CHUNK_5  = 0x90
-        CHUNK_6  = 0xA0
-        CHUNK_7  = 0xB0
-        CHUNK_8  = 0xC0
-        CHUNK_9  = 0xD0
-        CHUNK_10 = 0xE0
-        CHUNK_11 = 0xF0
-        CHUNK_12 = 0x100
-        CHUNK_13 = 0x110
-        CHUNK_14 = 0x120
-        CHUNK_15 = 0x130
+        CHUNK_0: Final  = 0x40
+        CHUNK_1: Final  = 0x50
+        CHUNK_2: Final  = 0x60
+        CHUNK_3: Final  = 0x70
+        CHUNK_4: Final  = 0x80
+        CHUNK_5: Final  = 0x90
+        CHUNK_6: Final  = 0xA0
+        CHUNK_7: Final  = 0xB0
+        CHUNK_8: Final  = 0xC0
+        CHUNK_9: Final  = 0xD0
+        CHUNK_10: Final = 0xE0
+        CHUNK_11: Final = 0xF0
+        CHUNK_12: Final = 0x100
+        CHUNK_13: Final = 0x110
+        CHUNK_14: Final = 0x120
+        CHUNK_15: Final = 0x130
+
+        __LIST: Final = [
+            CHUNK_0,  CHUNK_1,  CHUNK_2,  CHUNK_3,
+            CHUNK_4,  CHUNK_5,  CHUNK_6,  CHUNK_7,
+            CHUNK_8,  CHUNK_9,  CHUNK_10, CHUNK_11,
+            CHUNK_12, CHUNK_13, CHUNK_14, CHUNK_15]
         
         @classmethod
-        def chunk(cls, idx):
-            chunks = [cls.CHUNK_0,  cls.CHUNK_1,  cls.CHUNK_2,  cls.CHUNK_3,
-                      cls.CHUNK_4,  cls.CHUNK_5,  cls.CHUNK_6,  cls.CHUNK_7,
-                      cls.CHUNK_8,  cls.CHUNK_9,  cls.CHUNK_10, cls.CHUNK_11,
-                      cls.CHUNK_12, cls.CHUNK_13, cls.CHUNK_14, cls.CHUNK_15]
-            return chunks[idx]
+        def chunk(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
-        NUM_WAIT_WORDS                = 0x0
-        NUM_REPEATS                   = 0x4
-        NUM_CHUNKS                    = 0x8
-        WAVE_STARTABLE_BLOCK_INTERVAL = 0xC
+        NUM_WAIT_WORDS: Final                = 0x0
+        NUM_REPEATS: Final                   = 0x4
+        NUM_CHUNKS: Final                    = 0x8
+        WAVE_STARTABLE_BLOCK_INTERVAL: Final = 0xC
 
-        CHUNK_START_ADDR    = 0x0
-        NUM_WAVE_PART_WORDS = 0x4
-        NUM_BLANK_WORDS     = 0x8
-        NUM_CHUNK_REPEATS   = 0xC
+        CHUNK_START_ADDR: Final    = 0x0
+        NUM_WAVE_PART_WORDS: Final = 0x4
+        NUM_BLANK_WORDS: Final     = 0x8
+        NUM_CHUNK_REPEATS: Final   = 0xC
 
 
 class CaptureMasterCtrlRegs(object):
-    ADDR = 0x0
+    ADDR: Final = 0x0
 
     class Offset(object):
-        VERSION         = 0x0
-        TRIG_AWG_SEL_0  = 0x4
-        TRIG_AWG_SEL_1  = 0x8
-        AWG_TRIG_MASK   = 0xC
-        CTRL_TARGET_SEL = 0x10
-        CTRL            = 0x14
-        WAKEUP_STATUS   = 0x18
-        BUSY_STATUS     = 0x1C
-        DONE_STATUS     = 0x20
-        OVERFLOW_ERR    = 0x24
-        WRITE_ERR       = 0x28
-        TRIG_AWG_SEL_2  = 0x2C
-        TRIG_AWG_SEL_3  = 0x30
-        DSP_ENABLE      = 0x34
+        VERSION: Final         = 0x0
+        TRIG_AWG_SEL_0: Final  = 0x4
+        TRIG_AWG_SEL_1: Final  = 0x8
+        AWG_TRIG_MASK: Final   = 0xC
+        CTRL_TARGET_SEL: Final = 0x10
+        CTRL: Final            = 0x14
+        WAKEUP_STATUS: Final   = 0x18
+        BUSY_STATUS: Final     = 0x1C
+        DONE_STATUS: Final     = 0x20
+        OVERFLOW_ERR: Final    = 0x24
+        WRITE_ERR: Final       = 0x28
+        TRIG_AWG_SEL_2: Final  = 0x2C
+        TRIG_AWG_SEL_3: Final  = 0x30
+        DSP_ENABLE: Final      = 0x34
 
     class Bit(object):
-        CTRL_RESET     = 0
-        CTRL_START     = 1
-        CTRL_TERMINATE = 2
-        CTRL_DONE_CLR  = 3
-        CAPTURE_0      = 0
-        CAPTURE_1      = 1
-        CAPTURE_2      = 2
-        CAPTURE_3      = 3
-        CAPTURE_4      = 4
-        CAPTURE_5      = 5
-        CAPTURE_6      = 6
-        CAPTURE_7      = 7
-        CAPTURE_8      = 8
-        CAPTURE_9      = 9
+        CTRL_RESET: Final     = 0
+        CTRL_START: Final     = 1
+        CTRL_TERMINATE: Final = 2
+        CTRL_DONE_CLR: Final  = 3
+        CAPTURE_0: Final      = 0
+        CAPTURE_1: Final      = 1
+        CAPTURE_2: Final      = 2
+        CAPTURE_3: Final      = 3
+        CAPTURE_4: Final      = 4
+        CAPTURE_5: Final      = 5
+        CAPTURE_6: Final      = 6
+        CAPTURE_7: Final      = 7
+        CAPTURE_8: Final      = 8
+        CAPTURE_9: Final      = 9
+
+        __LIST: Final = [
+            CAPTURE_0,  CAPTURE_1,  CAPTURE_2,  CAPTURE_3,
+            CAPTURE_4,  CAPTURE_5,  CAPTURE_6,  CAPTURE_7,
+            CAPTURE_8,  CAPTURE_9]
         
         @classmethod
-        def capture(cls, idx):
-            capture_units = [
-                cls.CAPTURE_0,  cls.CAPTURE_1,  cls.CAPTURE_2,  cls.CAPTURE_3,
-                cls.CAPTURE_4,  cls.CAPTURE_5,  cls.CAPTURE_6,  cls.CAPTURE_7,
-                cls.CAPTURE_8,  cls.CAPTURE_9]
-            return capture_units[idx]
+        def capture(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
 
 class CaptureCtrlRegs(object):
 
     class Addr(object):
-        CAPTURE_0 = 0x100
-        CAPTURE_1 = 0x200
-        CAPTURE_2 = 0x300
-        CAPTURE_3 = 0x400
-        CAPTURE_4 = 0x500
-        CAPTURE_5 = 0x600
-        CAPTURE_6 = 0x700
-        CAPTURE_7 = 0x800
-        CAPTURE_8 = 0x900
-        CAPTURE_9 = 0xA00
+        CAPTURE_0: Final = 0x100
+        CAPTURE_1: Final = 0x200
+        CAPTURE_2: Final = 0x300
+        CAPTURE_3: Final = 0x400
+        CAPTURE_4: Final = 0x500
+        CAPTURE_5: Final = 0x600
+        CAPTURE_6: Final = 0x700
+        CAPTURE_7: Final = 0x800
+        CAPTURE_8: Final = 0x900
+        CAPTURE_9: Final = 0xA00
     
+        __LIST: Final = [
+            CAPTURE_0, CAPTURE_1, CAPTURE_2, CAPTURE_3,
+            CAPTURE_4, CAPTURE_5, CAPTURE_6, CAPTURE_7,
+            CAPTURE_8, CAPTURE_9]
+
         @classmethod
-        def capture(cls, idx):
-            capture_units = [
-                cls.CAPTURE_0, cls.CAPTURE_1, cls.CAPTURE_2, cls.CAPTURE_3,
-                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7,
-                cls.CAPTURE_8, cls.CAPTURE_9]
-            return capture_units[idx]
+        def capture(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
     class Offset(object):
-        CTRL   = 0x0
-        STATUS = 0x4
-        ERR    = 0x8
+        CTRL: Final   = 0x0
+        STATUS: Final = 0x4
+        ERR: Final    = 0x8
 
     class Bit(object):
-        CTRL_RESET     = 0
-        CTRL_START     = 1
-        CTRL_TERMINATE = 2
-        CTRL_DONE_CLR  = 3
-        STATUS_WAKEUP  = 0
-        STATUS_BUSY    = 1
-        STATUS_DONE    = 2
-        ERR_OVERFLOW   = 0
-        ERR_WRITE      = 1
+        CTRL_RESET: Final     = 0
+        CTRL_START: Final     = 1
+        CTRL_TERMINATE: Final = 2
+        CTRL_DONE_CLR: Final  = 3
+        STATUS_WAKEUP: Final  = 0
+        STATUS_BUSY: Final    = 1
+        STATUS_DONE: Final    = 2
+        ERR_OVERFLOW: Final   = 0
+        ERR_WRITE: Final      = 1
 
 
 class CaptureParamRegs(object):
     #### capture params ####
     class Addr(object):
-        CAPTURE_0  = 0x10000
-        CAPTURE_1  = 0x20000
-        CAPTURE_2  = 0x30000
-        CAPTURE_3  = 0x40000
-        CAPTURE_4  = 0x50000
-        CAPTURE_5  = 0x60000
-        CAPTURE_6  = 0x70000
-        CAPTURE_7  = 0x80000
-        CAPTURE_8  = 0x90000
-        CAPTURE_9  = 0xA0000
+        CAPTURE_0: Final  = 0x10000
+        CAPTURE_1: Final  = 0x20000
+        CAPTURE_2: Final  = 0x30000
+        CAPTURE_3: Final  = 0x40000
+        CAPTURE_4: Final  = 0x50000
+        CAPTURE_5: Final  = 0x60000
+        CAPTURE_6: Final  = 0x70000
+        CAPTURE_7: Final  = 0x80000
+        CAPTURE_8: Final  = 0x90000
+        CAPTURE_9: Final  = 0xA0000
+
+        __LIST: Final = [
+            CAPTURE_0, CAPTURE_1, CAPTURE_2, CAPTURE_3,
+            CAPTURE_4, CAPTURE_5, CAPTURE_6, CAPTURE_7,
+            CAPTURE_8, CAPTURE_9]
 
         @classmethod
-        def capture(cls, idx):
-            capture_units = [
-                cls.CAPTURE_0, cls.CAPTURE_1, cls.CAPTURE_2, cls.CAPTURE_3,
-                cls.CAPTURE_4, cls.CAPTURE_5, cls.CAPTURE_6, cls.CAPTURE_7,
-                cls.CAPTURE_8, cls.CAPTURE_9]
-            return capture_units[idx]
+        def capture(cls, idx: int) -> int:
+            return cls.__LIST[idx]
 
     class Offset(object):
 
-        DSP_MODULE_ENABLE    = 0x0
-        CAPTURE_DELAY        = 0x4
-        CAPTURE_ADDR         = 0x8
-        NUM_CAPTURED_SAMPLES = 0xC
-        NUM_INTEG_SECTIONS   = 0x10
-        NUM_SUM_SECTIONS     = 0x14
-        SUM_START_TIME       = 0x18
-        SUM_END_TIME         = 0x1C
+        DSP_MODULE_ENABLE: Final    = 0x0
+        CAPTURE_DELAY: Final        = 0x4
+        CAPTURE_ADDR: Final         = 0x8
+        NUM_CAPTURED_SAMPLES: Final = 0xC
+        NUM_INTEG_SECTIONS: Final   = 0x10
+        NUM_SUM_SECTIONS: Final     = 0x14
+        SUM_START_TIME: Final       = 0x18
+        SUM_END_TIME: Final         = 0x1C
 
-        __MAX_SUM_SECTIONS           = 4096
-        __MAX_POST_BLANKS            = 4096
-        __MAX_COMP_FIR_REAL_COEFS    = 16
-        __MAX_COMP_FIR_IMAG_COEFS    = 16
-        __MAX_REAL_FIR_I_DATA_COEFS  = 8
-        __MAX_REAL_FIR_Q_DATA_COEFS  = 8
-        __MAX_COMP_WINDOW_REAL_COEFS = 2048
-        __MAX_COMP_WINDOW_IMGA_COEFS = 2048
-        __MAX_DECISION_FUNC_PARAMS   = 6
+        __MAX_SUM_SECTIONS: Final           = 4096
+        __MAX_POST_BLANKS: Final            = 4096
+        __MAX_COMP_FIR_REAL_COEFS: Final    = 16
+        __MAX_COMP_FIR_IMAG_COEFS: Final    = 16
+        __MAX_REAL_FIR_I_DATA_COEFS: Final  = 8
+        __MAX_REAL_FIR_Q_DATA_COEFS: Final  = 8
+        __MAX_COMP_WINDOW_REAL_COEFS: Final = 2048
+        __MAX_COMP_WINDOW_IMGA_COEFS: Final = 2048
+        __MAX_DECISION_FUNC_PARAMS: Final   = 6
 
         @classmethod
-        def sum_section_length(cls, idx):
+        def sum_section_length(cls, idx: int) -> int:
             if idx >= cls.__MAX_SUM_SECTIONS:
                 raise ValueError("sum section length addr offset error")
             SUM_SEC_LEN_OFFSET = 0x1000
             return 4 * idx + SUM_SEC_LEN_OFFSET
 
         @classmethod
-        def post_blank_length(cls, idx):
+        def post_blank_length(cls, idx: int) -> int:
             if idx >= cls.__MAX_POST_BLANKS:
                 raise ValueError("post blank length addr offset error")
             POST_BLANK_LEN_OFFSET = 0x5000
             return 4 * idx + POST_BLANK_LEN_OFFSET
 
         @classmethod
-        def comp_fir_re_coef(cls, idx):
+        def comp_fir_re_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_COMP_FIR_REAL_COEFS:
                 raise ValueError("complex fir real coefficient addr offset error")
             COMP_FIR_REAL_COEF_OFFSET = 0x9000
             return 4 * idx + COMP_FIR_REAL_COEF_OFFSET
 
         @classmethod
-        def comp_fir_im_coef(cls, idx):
+        def comp_fir_im_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_COMP_FIR_IMAG_COEFS:
                 raise ValueError("complex fir imaginary coefficient addr offset error")
             COMP_FIR_IMAGINARY_COEF_OFFSET = 0x9040
             return 4 * idx + COMP_FIR_IMAGINARY_COEF_OFFSET
 
         @classmethod
-        def real_fir_i_coef(cls, idx):
+        def real_fir_i_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_REAL_FIR_I_DATA_COEFS:
                 raise ValueError("real fir I data coefficient addr offset error")
             REAL_FIR_I_DATA_COEF_OFFSET = 0xA000
             return 4 * idx + REAL_FIR_I_DATA_COEF_OFFSET
 
         @classmethod
-        def real_fir_q_coef(cls, idx):
+        def real_fir_q_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_REAL_FIR_Q_DATA_COEFS:
                 raise ValueError("real fir Q data coefficient addr offset error")
             REAL_FIR_Q_DATA_COEF_OFFSET = 0xA020
             return 4 * idx + REAL_FIR_Q_DATA_COEF_OFFSET
 
         @classmethod
-        def comp_window_re_coef(cls, idx):
+        def comp_window_re_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_COMP_WINDOW_REAL_COEFS:
                 raise ValueError("complex window real coefficient addr offset error")
             COMP_WINDOW_REAL_COEF_OFFSET = 0xB000
             return 4 * idx + COMP_WINDOW_REAL_COEF_OFFSET
 
         @classmethod
-        def comp_window_im_coef(cls, idx):
+        def comp_window_im_coef(cls, idx: int) -> int:
             if idx >= cls.__MAX_COMP_WINDOW_IMGA_COEFS:
                 raise ValueError("complex window imaginary coefficient addr offset error")
             COMP_WINDOW_IMAGINARY_COEF_OFFSET = 0xD000
             return 4 * idx + COMP_WINDOW_IMAGINARY_COEF_OFFSET
 
         @classmethod
-        def decision_func_params(cls, idx):
+        def decision_func_params(cls, idx: int) -> int:
             if idx >= cls.__MAX_DECISION_FUNC_PARAMS:
                 raise ValueError("decision func param addr offset error")
             DECISION_FUNC_PARAMS_OFFSET = 0xF000
@@ -348,38 +360,38 @@ class CaptureParamRegs(object):
 
 
 class SequencerCtrlRegs(object):
-    ADDR = 0x0
+    ADDR: Final = 0x0
 
     class Offset(object):
-        VERSION              = 0x0
-        CTRL                 = 0x4
-        DEST_UDP_PORT        = 0x8
-        DEST_IP_ADDR         = 0xC
-        STATUS               = 0x10
-        ERR                  = 0x14
-        NUM_STORED_CMDS      = 0x18
-        NUM_SUCCESSFUL_CMDS  = 0x1C
-        NUM_ERR_CMDS         = 0x20
-        CMD_BUF_FREE_SPACE   = 0x24
-        NUM_ERR_REPORTS      = 0x28
-        CMD_COUNTER          = 0x2C
+        VERSION: Final              = 0x0
+        CTRL: Final                 = 0x4
+        DEST_UDP_PORT: Final        = 0x8
+        DEST_IP_ADDR: Final         = 0xC
+        STATUS: Final               = 0x10
+        ERR: Final                  = 0x14
+        NUM_STORED_CMDS: Final      = 0x18
+        NUM_SUCCESSFUL_CMDS: Final  = 0x1C
+        NUM_ERR_CMDS: Final         = 0x20
+        CMD_BUF_FREE_SPACE: Final   = 0x24
+        NUM_ERR_REPORTS: Final      = 0x28
+        CMD_COUNTER: Final          = 0x2C
 
     class Bit(object):
-        CTRL_RESET                  = 0
-        CTRL_START                  = 1
-        CTRL_TERMINATE              = 2
-        CTRL_CMD_CLR                = 3
-        CTRL_ERR_REPORT_CLR         = 4
-        CTRL_DONE_CLR               = 5
-        CTRL_ERR_REPORT_SEND_ENABLE = 6
-        CTRL_CMD_COUNTER_RESET      = 7
-        CTRL_BRANCH_FLAG_NEG        = 8
+        CTRL_RESET: Final                  = 0
+        CTRL_START: Final                  = 1
+        CTRL_TERMINATE: Final              = 2
+        CTRL_CMD_CLR: Final                = 3
+        CTRL_ERR_REPORT_CLR: Final         = 4
+        CTRL_DONE_CLR: Final               = 5
+        CTRL_ERR_REPORT_SEND_ENABLE: Final = 6
+        CTRL_CMD_COUNTER_RESET: Final      = 7
+        CTRL_BRANCH_FLAG_NEG: Final        = 8
 
-        STATUS_WAKEUP                 = 0
-        STATUS_BUSY                   = 1
-        STATUS_DONE                   = 2
-        STATUS_ERR_REPORT_SEND_ACTIVE = 3
-        STATUS_EXT_BRANCH_FLAG_NEG    = 4
+        STATUS_WAKEUP: Final                 = 0
+        STATUS_BUSY: Final                   = 1
+        STATUS_DONE: Final                   = 2
+        STATUS_ERR_REPORT_SEND_ACTIVE: Final = 3
+        STATUS_EXT_BRANCH_FLAG_NEG: Final    = 4
 
-        ERR_CMD_BUF_OVERFLOW  = 0
-        ERR_ERR_FIFO_OVERFLOW = 1
+        ERR_CMD_BUF_OVERFLOW: Final  = 0
+        ERR_ERR_FIFO_OVERFLOW: Final = 1

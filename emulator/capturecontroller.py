@@ -1,21 +1,21 @@
-from register import RwRegister, RoRegister
-from e7awgsw import CaptureUnit, CaptureModule
-from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
-from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
+from __future__ import annotations
 
+from typing import Final, Container, Mapping, Sequence, Any
+from register import RwRegister, RoRegister
+from e7awgsw import CaptureModule, AWG
+from e7awgsw import CaptureUnit as CapUnit
+from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
+from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
+from capture import CaptureUnit
 
 class CaptureController(object):
 
-    __NUM_REG_BITS = 32
-    __cap_unit_to_param_base_addr = { 
-        cap_unit_id : CaptureParamRegs.Addr.capture(cap_unit_id) for cap_unit_id in CaptureUnit.all() }
-    __cap_unit_to_ctrl_reg_base_addr = { 
-        cap_unit_id : CaptureCtrlRegs.Addr.capture(cap_unit_id) for cap_unit_id in CaptureUnit.all() }
+    __NUM_REG_BITS: Final = 32
 
-    def __init__(self):
-        self.__cap_units = {}
-        self.__capture_ctrl_regs = {}
-        self.__capture_master_ctrl_regs = {
+    def __init__(self) -> None:
+        self.__cap_units: dict[CapUnit, CaptureUnit] = {}
+        self.__capture_ctrl_regs: dict[int, RoRegister | RwRegister] = {}
+        self.__capture_master_ctrl_regs: dict[int, RoRegister | RwRegister]  = {
             CaptureMasterCtrlRegs.Offset.VERSION : self.__gen_version_reg(),
             CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0 : RwRegister(self.__NUM_REG_BITS, 0),
             CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1 : RwRegister(self.__NUM_REG_BITS, 0),
@@ -34,9 +34,9 @@ class CaptureController(object):
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
 
-    def add_capture_unit(self, cap_unit):
+    def add_capture_unit(self, cap_unit: CaptureUnit) -> None:
         self.__cap_units[cap_unit.id] = cap_unit
-        base_addr = self.__cap_unit_to_ctrl_reg_base_addr[cap_unit.id]
+        base_addr = CaptureCtrlRegs.Addr.capture(cap_unit.id)
         self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.CTRL] = self.__gen_ctrl_reg(cap_unit)
         self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.STATUS] = self.__gen_status_reg(cap_unit)
         self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.ERR] = RoRegister(self.__NUM_REG_BITS)
@@ -44,7 +44,7 @@ class CaptureController(object):
         self.__add_on_master_status_read(cap_unit.id, cap_unit)
 
 
-    def write_reg(self, addr, val):
+    def write_reg(self, addr: int, val: int) -> None:
         # 波形パラメータ書き込み
         if self.__write_capture_param(addr, val):
             return
@@ -64,7 +64,7 @@ class CaptureController(object):
         raise ValueError(msg)
 
 
-    def read_reg(self, addr):
+    def read_reg(self, addr: int) -> int:
         # 波形パラメータ読み出し
         val = self.__read_wave_param(addr)
         if val is not None:
@@ -85,16 +85,20 @@ class CaptureController(object):
         raise ValueError(msg)
 
 
-    def on_wave_generated(self, awg_id_list, cap_mod_to_wave):
+    def on_wave_generated(
+        self,
+        awg_id_list: Container[AWG],
+        cap_mod_to_wave: Mapping[CaptureModule, Sequence[tuple[int, int]]]
+    ) -> None:
         """AWG が波形データを生成した時のイベントハンドラ
         Args:
-            awg_id_list (AWG): 波形データを生成した AWG の ID
-            cap_mod_to_wave ({CaptureModule : (int, int)}) : キャプチャモジュールの ID とそれに入力される波形データの dict
+            awg_id_list (Container of AWG): 波形データを生成した AWG の ID
+            cap_mod_to_wave ({CaptureModule : list of (int, int)}) : キャプチャモジュールの ID とそれに入力される波形データの dict
         """
         cap_mod_id_list = self.__get_cap_mod_to_start(awg_id_list)
         trig_mask_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK]
-        is_dsp_enabled = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
-        is_dsp_enabled = is_dsp_enabled.get_bit(0)
+        dsp_en_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
+        is_dsp_enabled = bool(dsp_en_reg.get_bit(0))
 
         for cap_mod_id in cap_mod_id_list:
             wave = cap_mod_to_wave[cap_mod_id]
@@ -104,7 +108,7 @@ class CaptureController(object):
                     cap_unit.capture_wave(wave, is_dsp_enabled, is_async = True)
 
 
-    def __get_cap_mod_to_start(self, awg_id_list):
+    def __get_cap_mod_to_start(self, awg_id_list: Container[AWG]) -> list[CaptureModule]:
         """AWG からのスタート信号によりスタートに対象となるキャプチャモジュールを取得する"""
         trig_awg_sel_0_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0]
         trig_awg_sel_1_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1]
@@ -122,7 +126,7 @@ class CaptureController(object):
         return cap_mod_id_list
 
 
-    def __gen_ctrl_reg(self, cap_unit):
+    def __gen_ctrl_reg(self, cap_unit: CaptureUnit) -> RwRegister:
         ctrl_reg = RwRegister(self.__NUM_REG_BITS, 0)
         ctrl_reg.add_on_change(
             lambda old_bits, new_bits: self.__ctrl_reset(cap_unit, True, new_bits[0]),
@@ -143,7 +147,7 @@ class CaptureController(object):
         return ctrl_reg
 
 
-    def __gen_status_reg(self, cap_unit):
+    def __gen_status_reg(self, cap_unit: CaptureUnit) -> RoRegister:
         status_reg = RoRegister(self.__NUM_REG_BITS)
         status_reg.add_on_read(
             lambda: [cap_unit.is_wakeup()],
@@ -160,11 +164,12 @@ class CaptureController(object):
         return status_reg
 
 
-    def __add_on_master_ctrl_write(self, cap_unit_id, cap_unit):
+    def __add_on_master_ctrl_write(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit) -> None:
         """マスタコントロールレジスタの書き込み時のイベントハンドラを設定する"""
         bit_idx = CaptureMasterCtrlRegs.Bit.capture(cap_unit_id)
-        ctrl_target_sel_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL]
-        master_ctrl_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL]
+        ctrl_target_sel_reg = \
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL]
+        master_ctrl_reg: Any = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL]
         master_ctrl_reg.add_on_change(
             lambda old_bits, new_bits: self.__ctrl_reset(
                 cap_unit, ctrl_target_sel_reg.get_bit(bit_idx), new_bits[0]),
@@ -187,28 +192,32 @@ class CaptureController(object):
         )
 
 
-    def __add_on_master_status_read(self, cap_unit_id, cap_unit):
+    def __add_on_master_status_read(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit) -> None:
         """マスタステータスレジスタのステータス読み取り時のイベントハンドラを設定する"""
         bit_idx = CaptureMasterCtrlRegs.Bit.capture(cap_unit_id)
-        ctrl_target_sel_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL]
-        master_wakeup_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.WAKEUP_STATUS]
+        ctrl_target_sel_reg = \
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL]
+        master_wakeup_reg: Any = \
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.WAKEUP_STATUS]
         master_wakeup_reg.add_on_read(
             lambda: [cap_unit.is_wakeup() & ctrl_target_sel_reg.get_bit(bit_idx)],
             bit_idx
         )
-        master_busy_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.BUSY_STATUS]
+        master_busy_reg: Any = \
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.BUSY_STATUS]
         master_busy_reg.add_on_read(
             lambda: [cap_unit.is_busy() & ctrl_target_sel_reg.get_bit(bit_idx)],
             bit_idx
         )
-        master_done_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DONE_STATUS]
+        master_done_reg: Any = \
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DONE_STATUS]
         master_done_reg.add_on_read(
             lambda: [cap_unit.is_complete() & ctrl_target_sel_reg.get_bit(bit_idx)],
             bit_idx
         )
 
 
-    def __ctrl_reset(self, cap_unit, is_ctrl_target, new_val):
+    def __ctrl_reset(self, cap_unit: CaptureUnit, is_ctrl_target: int, new_val: int) -> None:
         if is_ctrl_target:
             if new_val == 1:
                 cap_unit.assert_reset()
@@ -216,24 +225,30 @@ class CaptureController(object):
                 cap_unit.diassert_reset()
 
 
-    def __ctrl_terminate(self, cap_unit, is_ctrl_target, old_val, new_val):
+    def __ctrl_terminate(
+        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+    ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             cap_unit.terminate()
 
 
-    def __ctrl_start(self, cap_unit, is_ctrl_target, old_val, new_val):
+    def __ctrl_start(
+        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+    ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
-            is_dsp_enabled = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
-            is_dsp_enabled = is_dsp_enabled.get_bit(0)
+            dsp_en_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
+            is_dsp_enabled = bool(dsp_en_reg.get_bit(0))
             cap_unit.capture_wave([], is_dsp_enabled, is_async = True)
 
 
-    def __ctrl_done_clr(self, cap_unit, is_ctrl_target, old_val, new_val):
+    def __ctrl_done_clr(
+        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+    ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             cap_unit.set_to_idle()
 
 
-    def __gen_version_reg(self):
+    def __gen_version_reg(self) -> RoRegister:
         char = 'K'
         year = 22
         month = 3
@@ -247,37 +262,41 @@ class CaptureController(object):
         return RoRegister(self.__NUM_REG_BITS, val = version)
 
 
-    def __write_capture_param(self, addr, val):
+    def __write_capture_param(self, addr: int, val: int) -> bool:
         """キャプチャパラメータ書き込み"""
-        cap_unit_id_list = reversed(CaptureUnit.all())
+        cap_unit_id_list = reversed(CapUnit.all())
         for cap_unit_id in cap_unit_id_list:
-            param_base_addr = self.__cap_unit_to_param_base_addr[cap_unit_id]
+            param_base_addr = CaptureParamRegs.Addr.capture(cap_unit_id)
             if addr >= param_base_addr:
                 if cap_unit_id in self.__cap_units:
                     self.__cap_units[cap_unit_id].set_param(addr - param_base_addr, val)
                 return True
+        return False
 
 
-    def __write_ctrl_reg(self, addr, val):
+    def __write_ctrl_reg(self, addr: int, val: int) -> bool:
         """個別コントロールレジスタ書き込み"""
         ctrl_reg = self.__capture_ctrl_regs.get(addr)
         if (ctrl_reg is not None) and isinstance(ctrl_reg, RwRegister):
             ctrl_reg.set(val)
             return True
+        return False
 
 
-    def __read_wave_param(self, addr):
+    def __read_wave_param(self, addr: int) -> int | None:
         """キャプチャパラメータ読み出し"""
-        cap_unit_id_list = reversed(CaptureUnit.all())
+        cap_unit_id_list = reversed(CapUnit.all())
         for cap_unit_id in cap_unit_id_list:
-            param_base_addr = self.__cap_unit_to_param_base_addr[cap_unit_id]
+            param_base_addr = CaptureParamRegs.Addr.capture(cap_unit_id)
             if addr >= param_base_addr:
                 if cap_unit_id in self.__cap_units:
                     return self.__cap_units[cap_unit_id].get_param(addr - param_base_addr)
+        return None
 
 
-    def __read_ctrl_reg(self, addr):
+    def __read_ctrl_reg(self, addr: int) -> int | None:
         """個別コントロールレジスタ読み出し"""
         ctrl_reg = self.__capture_ctrl_regs.get(addr)
         if ctrl_reg is not None:
             return ctrl_reg.get()
+        return None

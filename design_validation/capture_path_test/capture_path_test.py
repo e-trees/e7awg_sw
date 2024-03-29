@@ -2,7 +2,6 @@ import argparse
 import sys
 import random
 from capturetest import CaptureTest
-from e7awgsw import CaptureModule
 
 
 def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
@@ -22,7 +21,7 @@ def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir):
             print("Test {:03d} failed.".format(test_id))
         return 1
     else:
-        print("All tests succeeded.".format(failed_tests))
+        print('All tests succeeded.')
         return 0
 
 

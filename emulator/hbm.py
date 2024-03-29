@@ -1,26 +1,29 @@
+from __future__ import annotations
+
 import threading
+from typing import Final, Any
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 
 class Hbm(object):
     """HBM をエミュレートするクラス"""
 
-    __PAGE_SIZE = 0x2000
-    __ALIGNMENT_SIZE = 32 # bytes
+    __PAGE_SIZE: Final = 0x2000
+    __ALIGNMENT_SIZE: Final = 32 # bytes
 
-    def __init__(self, mem_size):
+    def __init__(self, mem_size: int) -> None:
         """
         Args:
             mem_size (int): メモリサイズ
         """
         self.__mem_size = mem_size
         num_entries = mem_size // self.__PAGE_SIZE
-        self.__page_list = [None] * num_entries
+        self.__page_list: list[Any] = [None] * num_entries
         self.__rlock = threading.RLock()
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
 
-    def write(self, addr, data):
+    def write(self, addr: int, data: bytes) -> None:
         """HBM にデータを書き込む
 
         Args:
@@ -50,7 +53,7 @@ class Hbm(object):
             offset = 0
 
 
-    def __split_to_wr_block(self, addr, data):
+    def __split_to_wr_block(self, addr: int, data: bytes) -> list[bytes]:
         size = len(data)
         offset = addr % self.__PAGE_SIZE
         num_blocks = (size + offset + self.__PAGE_SIZE - 1) // self.__PAGE_SIZE
@@ -65,14 +68,15 @@ class Hbm(object):
         return wr_blocks
 
 
-    def __write_to_page(self, idx, offset, data):
+    def __write_to_page(self, idx: int, offset: int, data: bytes) -> None:
         with self.__rlock:
             if self.__page_list[idx] is None:
                 self.__page_list[idx] = bytearray([0] * self.__PAGE_SIZE)
 
             self.__page_list[idx][offset : offset + len(data)] = data
 
-    def read(self, addr, size):
+
+    def read(self, addr: int, size: int) -> bytearray:
         """HBM からデータを読みだす
 
         Args:
@@ -105,7 +109,7 @@ class Hbm(object):
         return rd_data[offset : size + offset]
 
 
-    def __read_from_page(self, idx):
+    def __read_from_page(self, idx: int) -> bytes:
         with self.__rlock:
             if self.__page_list[idx] is None:
                 return bytearray([0] * self.__PAGE_SIZE)

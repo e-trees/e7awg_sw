@@ -1,18 +1,20 @@
 from abc import ABCMeta, abstractmethod
+from collections.abc import Sequence
 import math
 
 class ParameterizedWave(object, metaclass = ABCMeta):
     """パラメータで表される波形のベースクラス"""
     def __init__(
         self,
-        num_cycles,
-        frequency,
-        amplitude,
-        phase,
-        offset):
+        num_cycles: float,
+        frequency: float,
+        amplitude: float,
+        phase: float,
+        offset: float
+    ) -> None:
         """
         Args:
-            num_cycles (int): サイクル数
+            num_cycles (int or float): サイクル数
             frequency (int or float): 周波数 (単位: Hz)
             amplitude (int or float): 振幅
             phase (int or float): 位相 (単位: radian)
@@ -40,16 +42,16 @@ class ParameterizedWave(object, metaclass = ABCMeta):
         self.__offset = offset
 
     @property
-    def num_cycles(self):
+    def num_cycles(self) -> float:
         """サイクル数
         
         Returns:
-            int: サイクル数
+            int or float: サイクル数
         """
         return self.__num_cycles
 
     @property
-    def frequency(self):
+    def frequency(self) -> float:
         """周波数 (単位: Hz)
 
         Returns:
@@ -58,7 +60,7 @@ class ParameterizedWave(object, metaclass = ABCMeta):
         return self.__frequency
 
     @property
-    def phase(self):
+    def phase(self) -> float:
         """位相 (単位: radian)
         
         Returns:
@@ -67,7 +69,7 @@ class ParameterizedWave(object, metaclass = ABCMeta):
         return self.__phase
 
     @property
-    def amplitude(self):
+    def amplitude(self) -> float:
         """振幅
 
         Returns:
@@ -76,7 +78,7 @@ class ParameterizedWave(object, metaclass = ABCMeta):
         return self.__amplitude
 
     @property
-    def offset(self):
+    def offset(self) -> float:
         """振幅オフセット
         
         Returns:
@@ -85,23 +87,25 @@ class ParameterizedWave(object, metaclass = ABCMeta):
         return self.__offset
 
     @abstractmethod
-    def gen_samples(self, sampling_rate):
+    def gen_samples(self, sampling_rate: float) -> list[int]:
         pass
+
 
 class SinWave(ParameterizedWave):
     """正弦波クラス"""
 
     def __init__(
         self,
-        num_cycles,
-        frequency,
-        amplitude,
+        num_cycles: float,
+        frequency: float,
+        amplitude: float,
         *,
-        phase = 0.0,
-        offset = 0.0):
+        phase: float = 0.0,
+        offset: float = 0.0
+    ) -> None:
         """
         Args:
-            num_cycles (int): サイクル数
+            num_cycles (int or float): サイクル数
             frequency (int or float): 周波数 (単位: Hz)
             amplitude (int or float): 振幅
             phase (int or float): 位相 (単位: radian)
@@ -109,7 +113,7 @@ class SinWave(ParameterizedWave):
         """
         super().__init__(num_cycles, frequency, amplitude, phase, offset)
 
-    def gen_samples(self, sampling_rate):
+    def gen_samples(self, sampling_rate: float) -> list[int]:
         """このオブジェクトのパラメータに従う sin 波のサンプルリストを生成する
 
         Args:
@@ -133,13 +137,14 @@ class SawtoothWave(ParameterizedWave):
 
     def __init__(
         self,
-        num_cycles,
-        frequency,
-        amplitude,
+        num_cycles: float,
+        frequency: float,
+        amplitude: float,
         *,
-        phase = 0.0,
-        offset = 0.0,
-        crest_pos = 1.0):
+        phase: float = 0.0,
+        offset: float = 0.0,
+        crest_pos: float = 1.0
+    ) -> None:
         """
         Args:
             num_cycles (int): サイクル数
@@ -160,7 +165,7 @@ class SawtoothWave(ParameterizedWave):
         super().__init__(num_cycles, frequency, amplitude, phase, offset)
 
     @property
-    def crest_pos(self):
+    def crest_pos(self) -> float:
         """ノコギリ波の頂点の位置
 
         Returns:
@@ -168,7 +173,7 @@ class SawtoothWave(ParameterizedWave):
         """
         return self.__crest_pos
 
-    def gen_samples(self, sampling_rate):
+    def gen_samples(self, sampling_rate: float) -> list[int]:
         """このオブジェクトのパラメータに従うノコギリ波のサンプルリストを生成する
         
         Args:
@@ -209,13 +214,14 @@ class SquareWave(ParameterizedWave):
 
     def __init__(
         self,
-        num_cycles,
-        frequency,
-        amplitude,
+        num_cycles: float,
+        frequency: float,
+        amplitude: float,
         *,
-        phase = 0.0,
-        offset = 0.0,
-        duty_cycle = 0.5):
+        phase: float = 0.0,
+        offset: float = 0.0,
+        duty_cycle: float = 0.5
+    ) -> None:
         """
         Args:
             num_cycles (int): サイクル数
@@ -233,7 +239,7 @@ class SquareWave(ParameterizedWave):
         super().__init__(num_cycles, frequency, amplitude, phase, offset)
 
     @property
-    def duty_cycle(self):
+    def duty_cycle(self) -> float:
         """デューティ比
         
         Returns:
@@ -241,7 +247,7 @@ class SquareWave(ParameterizedWave):
         """
         return self.__duty_cycle
 
-    def gen_samples(self, sampling_rate):
+    def gen_samples(self, sampling_rate: float) -> list[int]:
         """このオブジェクトのパラメータに従う方形波のサンプルリストを生成する
         
         Args:
@@ -280,15 +286,15 @@ class GaussianPulse(ParameterizedWave):
 
     def __init__(
         self,
-        num_cycles,
-        frequency,
-        amplitude,
+        num_cycles: float,
+        frequency: float,
+        amplitude: float,
         *,
-        phase = 0.0,
-        offset = 0.0,
-        duration = 2.0,
-        variance = 1.0,
-    ):
+        phase: float = 0.0,
+        offset: float = 0.0,
+        duration: float = 2.0,
+        variance: float = 1.0
+    ) -> None:
         """
         Args:
             num_cycles (int): サイクル数
@@ -312,7 +318,7 @@ class GaussianPulse(ParameterizedWave):
         super().__init__(num_cycles, frequency, amplitude, phase, offset)
 
     @property
-    def duration(self):
+    def duration(self) -> float:
         """ガウスパルスの長さ
 
         Returns:
@@ -321,7 +327,7 @@ class GaussianPulse(ParameterizedWave):
         return self.__duration
 
     @property
-    def variance(self):
+    def variance(self) -> float:
         """ガウスパルスの広がり具合
 
         Returns:
@@ -329,7 +335,7 @@ class GaussianPulse(ParameterizedWave):
         """
         return self.__variance
 
-    def gen_samples(self, sampling_rate):
+    def gen_samples(self, sampling_rate: float) -> list[int]:
         """このオブジェクトのパラメータに従うガウスパルスのサンプルリストを生成する
         
         Args:
@@ -360,10 +366,11 @@ class GaussianPulse(ParameterizedWave):
 
         return samples
 
+
 class IqWave(object):
     """I/Q 波形クラス"""
 
-    def __init__(self, i_wave, q_wave):
+    def __init__(self, i_wave: ParameterizedWave, q_wave: ParameterizedWave) -> None:
         """
         Args:
             i_wave (ParameterizedWave): I 相の波形オブジェクト
@@ -377,12 +384,17 @@ class IqWave(object):
         self.__q_wave = q_wave
 
     @classmethod
-    def convert_to_iq_format(cls, i_samples, q_samples, padding_size):
+    def convert_to_iq_format(
+        cls,
+        i_samples: Sequence[int],
+        q_samples: Sequence[int],
+        padding_size: int
+    ) -> list[tuple[int, int]]:
         """I 相と Q 相のサンプルリストをまとめて I/Q データフォーマットに変換する
 
         Args:
-            i_samples (int): I 相のサンプルリスト
-            q_samples (int): Q 相のサンプルリスト
+            i_samples (Sequence of int): I 相のサンプルリスト
+            q_samples (Sequence of int): Q 相のサンプルリスト
             padding_size (int): 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.
 
         Returns:
@@ -400,7 +412,7 @@ class IqWave(object):
         return iq_samples
 
     @property
-    def i_wave(self):
+    def i_wave(self) -> ParameterizedWave:
         """I 相の波形オブジェクト
         
         Returns:
@@ -409,7 +421,7 @@ class IqWave(object):
         return self.__i_wave
 
     @property
-    def q_wave(self):
+    def q_wave(self) -> ParameterizedWave:
         """Q 相の波形オブジェクト
         
         Returns:
@@ -417,7 +429,7 @@ class IqWave(object):
         """
         return self.__q_wave
 
-    def gen_samples(self, sampling_rate, padding_size = 1):
+    def gen_samples(self, sampling_rate: float, padding_size: int = 1) -> list[tuple[int, int]]:
         """I/Q 波形を生成する
 
         Args:

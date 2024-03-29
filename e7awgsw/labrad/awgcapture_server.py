@@ -1,8 +1,8 @@
 import pickle
 import threading
 from concurrent import futures
-from labrad.server import ThreadedServer, setting
-from labrad import util
+from labrad.server import ThreadedServer, setting  # type: ignore
+from labrad import util  # type: ignore
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 
 class AwgCaptureServer(ThreadedServer):
@@ -267,9 +267,10 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(208, handle='s', capture_module_id='w', awg_id='w', returns='y')
+    @setting(208, handle='s', capture_module_id='w', awg_id='y', returns='y')
     def select_trigger_awg(self, c, handle, capture_module_id, awg_id):
         try:
+            awg_id = pickle.loads(awg_id) # None の可能性があるので bytes で受ける
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.select_trigger_awg(capture_module_id, awg_id)
             return pickle.dumps(None)
