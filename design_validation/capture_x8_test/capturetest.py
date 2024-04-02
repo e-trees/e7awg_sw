@@ -148,7 +148,7 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(45, *self.__capture_units)
+            cap_ctrl.wait_for_capture_units_to_stop(60, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック

@@ -147,7 +147,7 @@ class SawtoothWave(ParameterizedWave):
     ) -> None:
         """
         Args:
-            num_cycles (int): サイクル数
+            num_cycles (int or float): サイクル数
             frequency (int or float): 周波数 (単位: Hz)
             amplitude (int or float): 振幅
             phase (int or float): 位相 (単位: radian)
@@ -224,7 +224,7 @@ class SquareWave(ParameterizedWave):
     ) -> None:
         """
         Args:
-            num_cycles (int): サイクル数
+            num_cycles (int or float): サイクル数
             frequency (int or float): 周波数 (単位: Hz)
             amplitude (int or float): 振幅
             phase (int or float): 位相 (単位: radian)
@@ -297,7 +297,7 @@ class GaussianPulse(ParameterizedWave):
     ) -> None:
         """
         Args:
-            num_cycles (int): サイクル数
+            num_cycles (int or float): サイクル数
             frequency (int or float): 周波数 (単位: Hz)
             amplitude (int or float): 振幅
             phase (int or float): 位相 (単位: radian)

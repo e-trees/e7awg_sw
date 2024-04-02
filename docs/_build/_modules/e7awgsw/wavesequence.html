@@ -1366,7 +1366,7 @@
             
   <h1>e7awgsw.wavesequence のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span> <span class="nn">copy</span>
+
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">overload</span>
@@ -1540,7 +1540,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list of WaveChunk: 現在登録されている波形チャンクのリスト</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_wait_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1573,7 +1573,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span>
 
     <span class="nd">@num_repeats</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_repeats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスを繰り返す回数</span>
 
 <span class="sd">        Args:</span>
@@ -1622,7 +1622,7 @@
 
 <div class="viewcode-block" id="WaveSequence.all_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">all_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_wait_words</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)</span>
 
 <span class="sd">        Args:</span>
@@ -1968,7 +1968,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            list of int: 波形データのサンプルリスト</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__samples</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__samples</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WaveData.sample">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveData.sample">[ドキュメント]</a>
@@ -2040,7 +2040,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-03-29" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-04-02" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

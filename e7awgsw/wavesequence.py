@@ -1,5 +1,5 @@
 from __future__ import annotations
-import copy
+
 import struct
 from typing_extensions import Self
 from typing import Any, Final, overload
@@ -159,7 +159,7 @@ class WaveSequence(object):
         Returns:
             list of WaveChunk: 現在登録されている波形チャンクのリスト
         """
-        return copy.copy(self.__chunks)
+        return list(self.__chunks)
 
     @property
     def num_wait_samples(self) -> int:
@@ -192,7 +192,7 @@ class WaveSequence(object):
         return self.__num_repeats
 
     @num_repeats.setter
-    def num_repeats(self, value: int):
+    def num_repeats(self, value: int) -> None:
         """波形シーケンスを繰り返す回数
 
         Args:
@@ -236,7 +236,7 @@ class WaveSequence(object):
         """
         return self.__WaveSampleList(self, include_wait_words, *self.__loggers)
 
-    def all_samples(self, include_wait_words = True) -> list[tuple[int, int]]:
+    def all_samples(self, include_wait_words: bool = True) -> list[tuple[int, int]]:
         """この波形シーケンスに含まれる全波形サンプルを返す (繰り返しも含む)
 
         Args:
@@ -566,7 +566,7 @@ class WaveData(object):
         Returns:
             list of int: 波形データのサンプルリスト
         """
-        return copy.copy(self.__samples)
+        return list(self.__samples)
 
     def sample(self, idx: int) -> tuple[int, int]:
         """引数で指定したサンプルを返す

@@ -246,7 +246,7 @@ class CaptureParam(object):
         return list(self.__comp_fir_coefs)
 
     @complex_fir_coefs.setter
-    def complex_fir_coefs(self, val: Sequence[complex]):
+    def complex_fir_coefs(self, val: Sequence[complex]) -> None:
         try:
             if not isinstance(val, Sequence):
                 raise ValueError('Invalid coefficient list  ({})'.format(val))
@@ -395,7 +395,7 @@ class CaptureParam(object):
     
 
     def calc_capture_samples(self) -> int:
-        """現在のキャプチャパラメータで保存されるサンプル数もしくは,  四値化結果の個数を計算する.
+        """信号処理機構が有効な場合のこのキャプチャパラメータで保存されるサンプル数もしくは四値化結果の個数を計算する.
 
         Returns:
             int: 現在のキャプチャパラメータで保存されるサンプル数

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, TypeVar, overload
+from typing import Any, overload
 from typing_extensions import Self
 from collections.abc import Sequence, Iterator
 

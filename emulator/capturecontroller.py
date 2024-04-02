@@ -8,6 +8,7 @@ from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CapturePar
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 from capture import CaptureUnit
 
+
 class CaptureController(object):
 
     __NUM_REG_BITS: Final = 32

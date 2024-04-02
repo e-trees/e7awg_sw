@@ -229,7 +229,8 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
     def _enable_start_trigger(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
             cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.enable_start_trigger(self.__handler, cap_units)
+            result = self.__server.enable_start_trigger(self.__handler, cap_units)
+            self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
@@ -238,7 +239,8 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
     def _disable_start_trigger(self, *capture_unit_id_list: CaptureUnit) -> None:
         try:
             cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
-            self.__server.disable_start_trigger(self.__handler, cap_units)
+            result = self.__server.disable_start_trigger(self.__handler, cap_units)
+            self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from typing import Final
 from typing_extensions import Self
 from enum import IntEnum, Enum
-from typing import Final
 
 class DspUnit(IntEnum):
     """キャプチャユニットが持つ信号処理モジュールの列挙型"""

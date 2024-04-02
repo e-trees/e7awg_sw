@@ -2,8 +2,7 @@ import logging
 import datetime
 import os
 import sys
-from logging import getLogger, FileHandler, Formatter, Logger
-from typing import Any
+from logging import getLogger, FileHandler, NullHandler, StreamHandler, Formatter, Logger
 
 os.makedirs('./log', exist_ok = True)
 formatter = Formatter(
@@ -17,9 +16,9 @@ file_logger.setLevel(logging.INFO)
 file_logger.addHandler(fh)
 
 null_logger = getLogger('nullLibLog')
-null_logger.addHandler(logging.NullHandler())
+null_logger.addHandler(NullHandler())
 
-sh = logging.StreamHandler(sys.stderr)
+sh = StreamHandler(sys.stderr)
 sh.setFormatter(formatter)
 stderr_logger = getLogger('stderrLog')
 stderr_logger.addHandler(sh)
