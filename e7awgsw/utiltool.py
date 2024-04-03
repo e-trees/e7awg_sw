@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import numpy as np
+from collections.abc import Sequence
 
 try:
     import matplotlib
@@ -8,12 +11,19 @@ finally:
     import matplotlib.pyplot as plt
 
 
-def plot_graph(sampling_rate, samples, title, filepath, color = '#b44c97', marker = None):
+def plot_graph(
+    sampling_rate: float,
+    samples: Sequence[float],
+    title: str,
+    filepath: str,
+    color: str = '#b44c97',
+    marker: str | None = None
+) -> None:
     """時刻とサンプル値のグラフをファイルに保存する
 
     Args:
         sampling_rate (int or float): samples を取得した際のサンプリングレート. (単位: Hz)
-        samples (list of [float | int]): グラフに出力するサンプル値のリスト.
+        samples (Sequence of [float | int]): グラフに出力するサンプル値のリスト.
         title (string): グラフのタイトル.
         filepath (string): グラフを保存するファイルのパス.
         color (string): グラフの線の色. 16進RGB値で指定する. (例: '#102030')
@@ -29,7 +39,14 @@ def plot_graph(sampling_rate, samples, title, filepath, color = '#b44c97', marke
     return
 
 
-def plot_samples(samples, title, filepath, color = '#b44c97', marker = None, x_label = 'Sample No'):
+def plot_samples(
+    samples: Sequence[float],
+    title: str,
+    filepath: str,
+    color: str = '#b44c97',
+    marker: str | None = None,
+    x_label: str = 'Sample No'
+) -> None:
     """サンプル値をグラフとしてファイルに保存する
 
     Args:

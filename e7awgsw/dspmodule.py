@@ -1,7 +1,15 @@
-import numpy as np
-from e7awgsw import DspUnit, DecisionFunc, CaptureParam
+from __future__ import annotations
 
-def dsp(samples, capture_param):
+import numpy as np
+from collections.abc import Sequence
+from .hwdefs import DspUnit, DecisionFunc
+from .captureparam import CaptureParam
+
+def dsp(
+    samples: list[tuple[int, int]],
+    capture_param: CaptureParam
+) -> list[tuple[float, float]] | list[int]:
+
     if len(samples) < capture_param.num_samples_to_process:
         samples.extend([(0, 0)] * (capture_param.num_samples_to_process - len(samples)))
     else:
@@ -26,8 +34,8 @@ def dsp(samples, capture_param):
         samples_list = [ [(0,0)] * 7 + samples ]
 
     # I と Q に分離
-    i_samples_list = [] # [ [s00, s01, ... s0n], [s'10, s'11, ..s'1m] ... ]
-    q_samples_list = []
+    i_samples_list: list = [] # [ [s00, s01, ... s0n], [s'10, s'11, ..s'1m] ... ]
+    q_samples_list: list = []
     for samples in samples_list:
         i_samples_list.append([sample[0] for sample in samples])
         q_samples_list.append([sample[1] for sample in samples])
@@ -71,8 +79,8 @@ def dsp(samples, capture_param):
     # complex_windowは有効/無効に関わらず固定小数点数の小数点数位置を30bitずらす
     num_frac_bits = 30
 
-    i_samples = sum(i_samples_list, [])
-    q_samples = sum(q_samples_list, [])
+    i_samples: list = sum(i_samples_list, [])
+    q_samples: list = sum(q_samples_list, [])
     i_samples = [int_to_float(i_sample, num_frac_bits) for i_sample in i_samples]
     q_samples = [int_to_float(q_sample, num_frac_bits) for q_sample in q_samples]
 
@@ -89,7 +97,10 @@ def dsp(samples, capture_param):
     return list(zip(i_samples, q_samples))
 
 
-def complex_fir(samples, coefs):
+def complex_fir(
+    samples: list[tuple[int, int]],
+    coefs: Sequence[complex]
+) -> list[tuple[int, int]]:
     num_taps = len(coefs)
     num_samples = len(samples)
     samples = ([(0, 0)] * (num_taps - 1)) + samples
@@ -105,16 +116,20 @@ def complex_fir(samples, coefs):
     return result
 
 
-def complex_mult_int(re_0, im_0, re_1, im_1):
+def complex_mult_int(re_0: float, im_0: float, re_1: float, im_1: float) -> tuple[int, int]:
     return (int(re_0) * int(re_1) - int(im_0) * int(im_1),
             int(re_0) * int(im_1) + int(im_0) * int(re_1))
 
 
-def complex_add_int(re_0, im_0, re_1, im_1):
+def complex_add_int(re_0: float, im_0: float, re_1: float, im_1: float) -> tuple[int, int]:
     return (int(re_0) + int(re_1), int(im_0) + int(im_1))
 
 
-def remove_samples_in_post_blank(samples, sum_section_list, num_integ_sections):
+def remove_samples_in_post_blank(
+    samples: list[int],
+    sum_section_list: Sequence[tuple[int, int]],
+    num_integ_sections: int
+) -> list[list[int]]:
     result = []
     idx = 0
     for _ in range(num_integ_sections):
@@ -126,7 +141,12 @@ def remove_samples_in_post_blank(samples, sum_section_list, num_integ_sections):
     return result
 
 
-def decimation(samples, sum_section_list, num_integ_sections, num_fir_taps):
+def decimation(
+    samples: list[tuple[int, int]],
+    sum_section_list: Sequence[tuple[int, int]],
+    num_integ_sections: int,
+    num_fir_taps: int
+) -> list[list[tuple[int, int]]]:
     """
     間引き処理は, 各総和区間内のサンプル数を 1/8 に減らす.
     間引き前のサンプル数を N, 間引き後のサンプル数を M とすると
@@ -143,13 +163,13 @@ def decimation(samples, sum_section_list, num_integ_sections, num_fir_taps):
             samples_left = samples[idx:idx + sum_section_len:4][0:num_samples_left]
             
             # 後段の FIR 用のデータを付加する
-            proceding = [(0, 0) if j < 0 else samples[j] for j in range(idx - (num_fir_taps - 1) * 4, idx, 4)]
-            result.append(proceding + samples_left)
+            preceding = [(0, 0) if j < 0 else samples[j] for j in range(idx - (num_fir_taps - 1) * 4, idx, 4)]
+            result.append(preceding + samples_left)
             idx += sum_section_len + post_blank_len
     return result
 
 
-def real_fir(samples_list, coefs):
+def real_fir(samples_list: list[list[int]], coefs: Sequence[int]) -> list[list[int]]:
     num_taps = len(coefs)
     result = []
     for samples in samples_list:
@@ -164,7 +184,11 @@ def real_fir(samples_list, coefs):
     return result
 
 
-def complex_window(i_samples_list, q_samples_list, coefs):
+def complex_window(
+    i_samples_list: list[list[int]],
+    q_samples_list: list[list[int]],
+    coefs: Sequence[complex]
+) -> tuple[list[list[int]], list[list[int]]]:
     i_result = []
     q_result = []
     num_taps = len(coefs)
@@ -184,7 +208,11 @@ def complex_window(i_samples_list, q_samples_list, coefs):
     return (i_result, q_result)
 
 
-def summation(samples_list, sum_start_word_no, num_words_to_sum):
+def summation(
+    samples_list: list[list[int]],
+    sum_start_word_no: int,
+    num_words_to_sum: int
+) -> list[list[int]]:
     result = []
     for samples in samples_list:
         num_samples = len(samples)
@@ -200,12 +228,16 @@ def summation(samples_list, sum_start_word_no, num_words_to_sum):
     return result
 
 
-def integration(sample_list, num_sum_sections, num_integ_sections):
+def integration(
+    samples_list: list[list[int]],
+    num_sum_sections: int,
+    num_integ_sections: int
+) -> list[list[int]]:
     result = []
     for i in range(num_sum_sections):
-        integ_list = [0] * len(sample_list[i])
+        integ_list = [0] * len(samples_list[i])
         for j in range(num_integ_sections):
-            samples = sample_list[j * num_sum_sections + i]
+            samples = samples_list[j * num_sum_sections + i]
             for k in range(len(integ_list)):
                 integ_list[k] += samples[k]
         result.append(integ_list)
@@ -213,7 +245,11 @@ def integration(sample_list, num_sum_sections, num_integ_sections):
 
 
 def classification(
-    i_sample_list, q_sample_list, decision_func_params_0, decision_func_params_1):
+    i_sample_list: list[np.float32],
+    q_sample_list: list[np.float32],
+    decision_func_params_0: tuple[np.float32, np.float32, np.float32],
+    decision_func_params_1: tuple[np.float32, np.float32, np.float32]
+) -> list[int]:
     result = []
     a0, b0, c0 = decision_func_params_0
     a1, b1, c1 = decision_func_params_1
@@ -233,15 +269,15 @@ def classification(
     return result
 
 
-def float_to_raw_bits(val):
+def float_to_raw_bits(val: np.float32) -> int:
     return int.from_bytes(val.tobytes(), 'little')
 
 
-def rawbits_to_float(val):
+def rawbits_to_float(val: int) -> np.float32:
     return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
 
 
-def int_to_float(val, num_frac_bits = 30):
+def int_to_float(val: int, num_frac_bits: int = 30) -> np.float32:
     negative = False
     val = val & 0x1_FFFFFFFFFF_FFFFFFFFFF_FFFFFFFFFF
     if val & 0x1_0000000000_0000000000_0000000000:

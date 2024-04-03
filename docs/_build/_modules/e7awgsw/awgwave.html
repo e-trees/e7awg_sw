@@ -373,6 +373,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc"><code class="docutils literal notranslate"><span class="pre">DecisionFunc</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U0"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U0</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U1"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.includes"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.includes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.of()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DspUnit"><code class="docutils literal notranslate"><span class="pre">DspUnit</span></code></a><ul>
@@ -706,6 +709,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc"><code class="docutils literal notranslate"><span class="pre">DecisionFunc</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U0"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U0</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U1"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.includes"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.includes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.of()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.DspUnit"><code class="docutils literal notranslate"><span class="pre">DspUnit</span></code></a><ul>
@@ -786,6 +792,7 @@
             
   <h1>e7awgsw.awgwave のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
 <div class="viewcode-block" id="ParameterizedWave">
@@ -796,14 +803,15 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.ParameterizedWave.__init__">[ドキュメント]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_cycles</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
-        <span class="n">phase</span><span class="p">,</span>
-        <span class="n">offset</span><span class="p">):</span>
+        <span class="n">num_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            num_cycles (int or float): サイクル数</span>
 <span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
 <span class="sd">            amplitude (int or float): 振幅</span>
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
@@ -832,16 +840,16 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">num_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">num_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;サイクル数</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            int: サイクル数</span>
+<span class="sd">            int or float: サイクル数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_cycles</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;周波数 (単位: Hz)</span>
 
 <span class="sd">        Returns:</span>
@@ -850,7 +858,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__frequency</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;位相 (単位: radian)</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -859,7 +867,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__phase</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;振幅</span>
 
 <span class="sd">        Returns:</span>
@@ -868,7 +876,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__amplitude</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">offset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;振幅オフセット</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -879,9 +887,10 @@
 <div class="viewcode-block" id="ParameterizedWave.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.ParameterizedWave.gen_samples">[ドキュメント]</a>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">pass</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="SinWave">
@@ -893,15 +902,16 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SinWave.__init__">[ドキュメント]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_cycles</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">num_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            num_cycles (int or float): サイクル数</span>
 <span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
 <span class="sd">            amplitude (int or float): 振幅</span>
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
@@ -912,7 +922,7 @@
 
 <div class="viewcode-block" id="SinWave.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SinWave.gen_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;このオブジェクトのパラメータに従う sin 波のサンプルリストを生成する</span>
 
 <span class="sd">        Args:</span>
@@ -942,16 +952,17 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SawtoothWave.__init__">[ドキュメント]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_cycles</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">num_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">crest_pos</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">crest_pos</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            num_cycles (int or float): サイクル数</span>
 <span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
 <span class="sd">            amplitude (int or float): 振幅</span>
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
@@ -970,7 +981,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">crest_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">crest_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ノコギリ波の頂点の位置</span>
 
 <span class="sd">        Returns:</span>
@@ -980,7 +991,7 @@
 
 <div class="viewcode-block" id="SawtoothWave.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SawtoothWave.gen_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;このオブジェクトのパラメータに従うノコギリ波のサンプルリストを生成する</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1027,16 +1038,17 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SquareWave.__init__">[ドキュメント]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_cycles</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">num_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">duty_cycle</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duty_cycle</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            num_cycles (int or float): サイクル数</span>
 <span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
 <span class="sd">            amplitude (int or float): 振幅</span>
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
@@ -1052,7 +1064,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">duty_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;デューティ比</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1062,7 +1074,7 @@
 
 <div class="viewcode-block" id="SquareWave.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.SquareWave.gen_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;このオブジェクトのパラメータに従う方形波のサンプルリストを生成する</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1107,18 +1119,18 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.GaussianPulse.__init__">[ドキュメント]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_cycles</span><span class="p">,</span>
-        <span class="n">frequency</span><span class="p">,</span>
-        <span class="n">amplitude</span><span class="p">,</span>
+        <span class="n">num_cycles</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">phase</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">offset</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">duration</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
-        <span class="n">variance</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">variance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
-<span class="sd">            num_cycles (int): サイクル数</span>
+<span class="sd">            num_cycles (int or float): サイクル数</span>
 <span class="sd">            frequency (int or float): 周波数 (単位: Hz)</span>
 <span class="sd">            amplitude (int or float): 振幅</span>
 <span class="sd">            phase (int or float): 位相 (単位: radian)</span>
@@ -1140,7 +1152,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ガウスパルスの長さ</span>
 
 <span class="sd">        Returns:</span>
@@ -1149,7 +1161,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__duration</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">variance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;ガウスパルスの広がり具合</span>
 
 <span class="sd">        Returns:</span>
@@ -1159,7 +1171,7 @@
 
 <div class="viewcode-block" id="GaussianPulse.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.GaussianPulse.gen_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;このオブジェクトのパラメータに従うガウスパルスのサンプルリストを生成する</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
@@ -1192,6 +1204,7 @@
 </div>
 
 
+
 <div class="viewcode-block" id="IqWave">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.IqWave">[ドキュメント]</a>
 <span class="k">class</span> <span class="nc">IqWave</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1199,7 +1212,7 @@
 
 <div class="viewcode-block" id="IqWave.__init__">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.IqWave.__init__">[ドキュメント]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_wave</span><span class="p">,</span> <span class="n">q_wave</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i_wave</span><span class="p">:</span> <span class="n">ParameterizedWave</span><span class="p">,</span> <span class="n">q_wave</span><span class="p">:</span> <span class="n">ParameterizedWave</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            i_wave (ParameterizedWave): I 相の波形オブジェクト</span>
@@ -1216,12 +1229,17 @@
 <div class="viewcode-block" id="IqWave.convert_to_iq_format">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.IqWave.convert_to_iq_format">[ドキュメント]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">convert_to_iq_format</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">i_samples</span><span class="p">,</span> <span class="n">q_samples</span><span class="p">,</span> <span class="n">padding_size</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">convert_to_iq_format</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">i_samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">q_samples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">padding_size</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;I 相と Q 相のサンプルリストをまとめて I/Q データフォーマットに変換する</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            i_samples (int): I 相のサンプルリスト</span>
-<span class="sd">            q_samples (int): Q 相のサンプルリスト</span>
+<span class="sd">            i_samples (Sequence of int): I 相のサンプルリスト</span>
+<span class="sd">            q_samples (Sequence of int): Q 相のサンプルリスト</span>
 <span class="sd">            padding_size (int): 戻り値の I/Q 波形データのサンプル数が, この値の倍数になるように I/Q サンプルリストに 0 データを追加する.</span>
 
 <span class="sd">        Returns:</span>
@@ -1240,7 +1258,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">i_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">i_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParameterizedWave</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;I 相の波形オブジェクト</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1249,7 +1267,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__i_wave</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">q_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">q_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParameterizedWave</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Q 相の波形オブジェクト</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -1259,7 +1277,7 @@
 
 <div class="viewcode-block" id="IqWave.gen_samples">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.awgwave.IqWave.gen_samples">[ドキュメント]</a>
-    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">padding_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">padding_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;I/Q 波形を生成する</span>
 
 <span class="sd">        Args:</span>
@@ -1308,7 +1326,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-01-25" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-04-03" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

@@ -137,7 +137,7 @@ class CaptureTest(object):
         with (self.__create_awg_ctrl() as awg_ctrl,
               self.__create_cap_ctrl() as cap_ctrl):
             # 初期化
-            self.__setup_modules(awg_ctrl, cap_ctrl)        
+            self.__setup_modules(awg_ctrl, cap_ctrl)
             # 波形シーケンスの設定
             awg_to_wave_sequence = self.__set_wave_sequence(awg_ctrl)
             # キャプチャパラメータの設定
@@ -147,7 +147,7 @@ class CaptureTest(object):
             # 波形送信完了待ち
             awg_ctrl.wait_for_awgs_to_stop(10, *self.__awg_to_capture_module.keys())
             # キャプチャ完了待ち
-            cap_ctrl.wait_for_capture_units_to_stop(45, *self.__capture_units)
+            cap_ctrl.wait_for_capture_units_to_stop(60, *self.__capture_units)
             # キャプチャデータ取得
             capture_unit_to_capture_data = self.__get_capture_data(cap_ctrl)
             # エラーチェック

@@ -1,7 +1,9 @@
 import threading
 import struct
+from typing import Final, Callable, Any
+from collections.abc import Sequence
 from enum import IntEnum
-from e7awgsw import WaveSequence
+from e7awgsw import WaveSequence, AWG
 from e7awgsw.memorymap import WaveParamRegs
 from e7awgsw.hwparam import WAVE_SAMPLE_SIZE
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
@@ -9,11 +11,11 @@ from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
 
 class Awg:
 
-    PARAM_REG_SIZE = 4 # bytes
-    __NUM_PARAM_REGS = 256
-    __MAX_PARAM_REG_ADDR = __NUM_PARAM_REGS * PARAM_REG_SIZE
+    PARAM_REG_SIZE: Final = 4 # bytes
+    __NUM_PARAM_REGS: Final = 256
+    __MAX_PARAM_REG_ADDR: Final = __NUM_PARAM_REGS * PARAM_REG_SIZE
 
-    def __init__(self, id, mem_reader):
+    def __init__(self, id: AWG, mem_reader: Callable[[int, int], bytearray]) -> None:
         self.__state = AwgState.IDLE
         self.__state_lock = threading.RLock()
         self.__param_regs = [0] * self.__NUM_PARAM_REGS
@@ -23,44 +25,44 @@ class Awg:
         self.__set_default_params()
 
     @property
-    def id(self):
+    def id(self) -> AWG:
         return self.__id
 
-    def assert_reset(self):
+    def assert_reset(self) -> None:
         """AWG をリセット状態にする"""
         with self.__state_lock:
             self.__state = AwgState.RESET
 
 
-    def diassert_reset(self):
+    def diassert_reset(self) -> None:
         """AWG のリセットを解除する"""
         with self.__state_lock:
             if self.__state == AwgState.RESET:
                 self.__state = AwgState.IDLE
 
 
-    def preload(self):
+    def preload(self) -> None:
         """AWG の波形出力準備を行う"""
         with self.__state_lock:
             if (self.__state == AwgState.IDLE) or (self.__state == AwgState.COMPLETE):
                 self.__state = AwgState.READY
 
 
-    def terminate(self):
+    def terminate(self) -> None:
         """AWG を強制停止する"""
         with self.__state_lock:
             if (self.__state == AwgState.READY) or (self.__state == AwgState.GEN_WAVE):
                 self.__state = AwgState.COMPLETE
 
 
-    def set_to_idle(self):
+    def set_to_idle(self) -> None:
         """AWG が complete 状態のとき IDLE 状態にする"""
         with self.__state_lock:
             if (self.__state == AwgState.COMPLETE):
                 self.__state = AwgState.IDLE
 
 
-    def generate_wave(self):
+    def generate_wave(self) -> tuple[bool, Sequence[tuple[int, int]]]:
         """波形を生成する"""
         with self.__state_lock:
             if self.__state != AwgState.READY:
@@ -89,38 +91,39 @@ class Awg:
         return (False, [])
 
 
-    def __read_chunk(self, addr, num_words):
+    def __read_chunk(self, addr: int, num_words: int) -> list[tuple[int, int]]:
         rd_size = num_words * WaveSequence.NUM_SAMPLES_IN_AWG_WORD * WAVE_SAMPLE_SIZE
         rd_data = self.__mem_reader(addr, rd_size)
         half_sample_size = WAVE_SAMPLE_SIZE // 2
         num_samples = len(rd_data) // half_sample_size
-        samples = [rd_data[i * half_sample_size : (i + 1) * half_sample_size] for i in range(num_samples)]
+        samples: Any = [rd_data[i * half_sample_size : (i + 1) * half_sample_size]
+                        for i in range(num_samples)]
         samples = [struct.unpack('<h', sample)[0] for sample in samples]
         return list(zip(samples[0::2], samples[1::2]))
 
 
-    def is_ready(self):
+    def is_ready(self) -> bool:
         """AWG が ready 状態かどうか調べる"""
         return self.__state == AwgState.READY
 
 
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """AWG が complete 状態かどうか調べる"""
         return self.__state == AwgState.COMPLETE
 
 
-    def is_busy(self):
+    def is_busy(self) -> bool:
         """AWG が busy 状態かどうか調べる"""
         state = self.__state
         return (state == AwgState.GEN_WAVE) or (state == AwgState.READY)
 
 
-    def is_wakeup(self):
+    def is_wakeup(self) -> bool:
         """AWG が wakeup 状態かどうか調べる"""
         return self.__state != AwgState.RESET
 
 
-    def set_param(self, addr, data):
+    def set_param(self, addr: int, data: int) -> None:
         """波形パラメータを設定する
         
         Args:
@@ -150,11 +153,14 @@ class Awg:
         self.__param_regs[reg_idx] = data
 
 
-    def get_param(self, addr):
+    def get_param(self, addr: int) -> int:
         """波形パラメータを取得する
         
         Args:
             addr (int): パラメータレジスタのアドレス
+
+        Returns:
+            int: 波形パラメータ
         """
         try:
             if (addr % self.PARAM_REG_SIZE != 0):
@@ -174,7 +180,7 @@ class Awg:
         return self.__param_regs[reg_idx]
 
 
-    def __set_default_params(self):
+    def __set_default_params(self) -> None:
         self.set_param(WaveParamRegs.Offset.NUM_REPEATS, 1)
         self.set_param(WaveParamRegs.Offset.NUM_CHUNKS, 1)
         for chunk_no in range(WaveSequence.MAX_CHUNKS):
@@ -185,8 +191,8 @@ class Awg:
 
 
 class AwgState(IntEnum):
-    RESET = 0
-    IDLE  = 1
-    READY = 2
-    GEN_WAVE = 3
-    COMPLETE = 4
+    RESET: Final = 0
+    IDLE: Final  = 1
+    READY: Final = 2
+    GEN_WAVE: Final = 3
+    COMPLETE: Final = 4

@@ -373,6 +373,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc"><code class="docutils literal notranslate"><span class="pre">DecisionFunc</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U0"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U0</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U1"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.includes"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.includes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.of()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DspUnit"><code class="docutils literal notranslate"><span class="pre">DspUnit</span></code></a><ul>
@@ -706,6 +709,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc"><code class="docutils literal notranslate"><span class="pre">DecisionFunc</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U0"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U0</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.U1"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.U1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.all"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.includes"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.includes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DecisionFunc.of"><code class="docutils literal notranslate"><span class="pre">DecisionFunc.of()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.DspUnit"><code class="docutils literal notranslate"><span class="pre">DspUnit</span></code></a><ul>
@@ -787,10 +793,9 @@
   <h1>e7awgsw.labrad.awgcapture_server のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">concurrent</span> <span class="kn">import</span> <span class="n">futures</span>
-<span class="kn">from</span> <span class="nn">labrad.server</span> <span class="kn">import</span> <span class="n">ThreadedServer</span><span class="p">,</span> <span class="n">setting</span>
-<span class="kn">from</span> <span class="nn">labrad</span> <span class="kn">import</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">labrad.server</span> <span class="kn">import</span> <span class="n">ThreadedServer</span><span class="p">,</span> <span class="n">setting</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span> <span class="nn">labrad</span> <span class="kn">import</span> <span class="n">util</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">e7awgsw</span> <span class="kn">import</span> <span class="n">AwgCtrl</span><span class="p">,</span> <span class="n">CaptureCtrl</span>
 
 <div class="viewcode-block" id="AwgCaptureServer">
@@ -813,14 +818,12 @@
 
     <span class="k">def</span> <span class="nf">__get_awgctrl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">:</span>
-            <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awgctrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">awgctrl</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awgctrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span>
 
 
     <span class="k">def</span> <span class="nf">__get_capturectrl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handle</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">:</span>
-            <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__capturectrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">capturectrl</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__capturectrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="AwgCaptureServer.create_awgctrl">
@@ -832,10 +835,9 @@
                 <span class="n">handle</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handle</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__awgctrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span> <span class="o">=</span> <span class="n">AwgCtrl</span><span class="p">(</span><span class="n">ipaddr</span><span class="p">,</span> <span class="n">validate_args</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__handle</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">handle</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">handle</span><span class="p">))</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -847,13 +849,12 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">:</span>
                 <span class="n">ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awgctrls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
                 <span class="n">ctrl</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>    
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
-
+        
 <div class="viewcode-block" id="AwgCaptureServer.set_wave_sequence">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.set_wave_sequence">[ドキュメント]</a>
     <span class="nd">@setting</span><span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">awg_id</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">wave_seq</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
@@ -862,12 +863,11 @@
             <span class="n">wave_seq</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">wave_seq</span><span class="p">)</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">set_wave_sequence</span><span class="p">(</span><span class="n">awg_id</span><span class="p">,</span> <span class="n">wave_seq</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.initialize_awgs">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_awgs">[ドキュメント]</a>
@@ -876,12 +876,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.start_awgs">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.start_awgs">[ドキュメント]</a>
@@ -890,12 +889,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">start_awgs</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.terminate_awgs">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.terminate_awgs">[ドキュメント]</a>
@@ -904,12 +902,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">terminate_awgs</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.reset_awgs">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.reset_awgs">[ドキュメント]</a>
@@ -918,12 +915,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">reset_awgs</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.wait_for_awgs_to_stop">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.wait_for_awgs_to_stop">[ドキュメント]</a>
@@ -933,12 +929,11 @@
             <span class="n">timeout</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">wait_for_awgs_to_stop</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.set_wave_startable_block_timing">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.set_wave_startable_block_timing">[ドキュメント]</a>
@@ -948,12 +943,11 @@
             <span class="n">interval</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">set_wave_startable_block_timing</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.get_wave_startable_block_timing">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_wave_startable_block_timing">[ドキュメント]</a>
@@ -962,13 +956,12 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awg_id_to_interval</span> <span class="o">=</span> <span class="n">awgctrl</span><span class="o">.</span><span class="n">get_wave_startable_block_timing</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">awg_id_to_interval</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">awg_id_to_interval</span><span class="p">)</span></div>
-
-
-
+        
 <div class="viewcode-block" id="AwgCaptureServer.check_awg_err">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.check_awg_err">[ドキュメント]</a>
     <span class="nd">@setting</span><span class="p">(</span><span class="mi">110</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">awg_id_list</span><span class="o">=</span><span class="s1">&#39;*w&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
@@ -976,12 +969,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awg_id_to_err_list</span> <span class="o">=</span> <span class="n">awgctrl</span><span class="o">.</span><span class="n">check_err</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">awg_id_to_err_list</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
         
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">awg_id_to_err_list</span><span class="p">)</span></div>
-
-
 
 <div class="viewcode-block" id="AwgCaptureServer.awg_version">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.awg_version">[ドキュメント]</a>
@@ -990,10 +982,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">awgctrl</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1004,10 +995,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">awgctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_awgctrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">awgctrl</span><span class="o">.</span><span class="n">clear_awg_stop_flags</span><span class="p">(</span><span class="o">*</span><span class="n">awg_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>        </div>
 
 
 
@@ -1020,12 +1010,11 @@
                 <span class="n">handle</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__handle</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__capturectrls</span><span class="p">[</span><span class="n">handle</span><span class="p">]</span> <span class="o">=</span> <span class="n">CaptureCtrl</span><span class="p">(</span><span class="n">ipaddr</span><span class="p">,</span> <span class="n">validate_args</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__handle</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">handle</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">handle</span><span class="p">))</span></div>
 
-        
 
 <div class="viewcode-block" id="AwgCaptureServer.discard_capturectrl">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl">[ドキュメント]</a>
@@ -1035,10 +1024,9 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="p">:</span>
                 <span class="n">ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__capturectrls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
                 <span class="n">ctrl</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1050,12 +1038,11 @@
             <span class="n">param</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">set_capture_params</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
+        
 
 <div class="viewcode-block" id="AwgCaptureServer.initialize_capture_units">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_capture_units">[ドキュメント]</a>
@@ -1064,12 +1051,11 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
-
-
+       
 
 <div class="viewcode-block" id="AwgCaptureServer.get_capture_data">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data">[ドキュメント]</a>
@@ -1079,10 +1065,9 @@
             <span class="n">num_samples</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">cap_data</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">get_capture_data</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_data</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
     
@@ -1093,10 +1078,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">num_samples</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">num_captured_samples</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1107,10 +1091,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">start_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1121,24 +1104,23 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">reset_capture_units</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="AwgCaptureServer.select_trigger_awg">
 <a class="viewcode-back" href="../../../e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.select_trigger_awg">[ドキュメント]</a>
-    <span class="nd">@setting</span><span class="p">(</span><span class="mi">208</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">capture_module_id</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">awg_id</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+    <span class="nd">@setting</span><span class="p">(</span><span class="mi">208</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">capture_module_id</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">awg_id</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">select_trigger_awg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">handle</span><span class="p">,</span> <span class="n">capture_module_id</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="n">awg_id</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">awg_id</span><span class="p">)</span> <span class="c1"># None の可能性があるので bytes で受ける</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">select_trigger_awg</span><span class="p">(</span><span class="n">capture_module_id</span><span class="p">,</span> <span class="n">awg_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1149,10 +1131,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">enable_start_trigger</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1163,10 +1144,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">disable_start_trigger</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1178,10 +1158,9 @@
             <span class="n">timeout</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">wait_for_capture_units_to_stop</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1192,10 +1171,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">cap_unit_id_to_err_list</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">check_err</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_unit_id_to_err_list</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_unit_id_to_err_list</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1206,10 +1184,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">version</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1221,10 +1198,9 @@
             <span class="n">num_samples</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">cap_data</span> <span class="o">=</span> <span class="n">capturectrl</span><span class="o">.</span><span class="n">get_classification_results</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">cap_data</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1235,10 +1211,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">clear_capture_stop_flags</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1249,10 +1224,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">enable_dsp</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
 
@@ -1263,10 +1237,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">capturectrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_capturectrl</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
             <span class="n">capturectrl</span><span class="o">.</span><span class="n">disable_dsp</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 </div>
 
 
@@ -1285,7 +1258,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-01-25" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-04-03" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

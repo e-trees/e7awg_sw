@@ -1,17 +1,22 @@
+from __future__ import annotations
 
-class ClassificationResult:
+from typing import Any, overload
+from typing_extensions import Self
+from collections.abc import Sequence, Iterator
+
+class ClassificationResult(Sequence[int]):
     """四値化結果を保持するクラス"""
 
-    def __init__(self, result, num_results):
-        self.__result = result
+    def __init__(self, result: bytes, num_results: int) -> None:
+        self.__result = bytes(result)
         self.__len = num_results
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         len = min(self.__len, 12)
         items = []
         for i in range(len):
@@ -21,27 +26,28 @@ class ClassificationResult:
         return '[' + ', '.join(items) + ']'
 
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[int]:
         return self.Iter(self)
 
+    
+    @overload
+    def __getitem__(self, index: int) -> int: ...
 
-    def __getitem__(self, key):
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[int]: ...
+
+
+    def __getitem__(self, key: int | slice) -> int | Sequence[int]:
         if isinstance(key, int):
-            if key < 0:
-                key += self.__len
-            if (key < 0) or (self.__len <= key):
-                raise IndexError('The index [{}] is out of range.'.format(key))
-            i = key // 4
-            j = key % 4
-            return 0x3 & (self.__result[i] >> (j * 2))
-
+            return self.get(key)
         elif isinstance(key, slice):
             num_results = 0
             count = 0
             bits = [0,0,0,0]
             new_result = bytearray()
             for i in range(*key.indices(self.__len)):
-                bits[count] = self[i]
+                bits[count] = self.get(i)
                 num_results += 1
                 count += 1
                 if count % 4 == 0:
@@ -55,11 +61,22 @@ class ClassificationResult:
         else:
             raise TypeError('Invalid argument type.')
 
+    
+    def get(self, key: int) -> int:
+        if key < 0:
+            key += self.__len
+        if (key < 0) or (self.__len <= key):
+            raise IndexError('The index [{}] is out of range.'.format(key))
+        i = key // 4
+        j = key % 4
+        return 0x3 & (self.__result[i] >> (j * 2))
 
-    def __len__(self):
+
+    def __len__(self) -> int:
         return self.__len
 
-    def __contains__(self, item):
+
+    def __contains__(self, item: object) -> bool:
         for i in range(self.__len):
             if self[i] == item:
                 return True
@@ -67,35 +84,41 @@ class ClassificationResult:
         return False
 
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         try:
-            if len(other) != self.__len:
+            if self is other:
+                return True
+                        
+            if (other is None) or (len(self) != len(other)):
                 return False
 
-            for i in range(self.__len):
+            for i in range(len(self)):
                 if self[i] != other[i]:
                     return False
 
             return True
         except:
-            cls_name = other.__class__.__name__
-            raise NotImplementedError(
-                'comparison between ClassificationResult and {} is not supported'.format(cls_name))
+            return NotImplemented
 
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+    def __ne__(self, other: object) -> bool:
+        return not self == other
 
 
-    class Iter(object):
+    class Iter(Iterator[int]):
 
-        def __init__(self, outer):
+        def __init__(self, outer: ClassificationResult):
             self._i = 0
             self.__outer = outer
 
-        def __next__(self):
+
+        def __iter__(self) -> Self:
+            return self
+
+            
+        def __next__(self) -> int:
             if self._i == len(self.__outer):
                 raise StopIteration()
-            val = self.__outer[self._i]
+            val = self.__outer.get(self._i)
             self._i += 1
             return val

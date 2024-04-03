@@ -1,14 +1,16 @@
 import os
 import argparse
-from awg import Awg
 import capture
+from typing import Final
+from awg import Awg
 from hbm import Hbm
 from awgcontroller import AwgController
+from collections.abc import Sequence, Mapping
 from capturecontroller import CaptureController
 from upldispatcher import UplDispatcher
 from e7awgsw import CaptureUnit, CaptureModule, AWG
 
-CAPTURE_START_DELAY = 15 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)
+CAPTURE_START_DELAY: Final = 15 # キャプチャスタートからキャプチャディレイをカウントし始めるまでの準備時間 (単位 : ワード)
 
 # AWG とキャプチャモジュールのデータバスの接続関係
 awg_to_capture_module = {
@@ -19,9 +21,12 @@ awg_to_capture_module = {
 }
 
 
-def on_wave_generated(awg_id_to_wave, cap_ctrl):
+def on_wave_generated(
+    awg_id_to_wave: Mapping[AWG, Sequence[tuple[int, int]]],
+    cap_ctrl: CaptureController
+) -> None:
     """AWG が起動したときのイベントハンドラ"""
-    cap_mod_to_wave = {
+    cap_mod_to_wave: dict[CaptureModule, Sequence[tuple[int, int]]] = {
         CaptureModule.U0: [],
         CaptureModule.U1: [],
         CaptureModule.U2: [],

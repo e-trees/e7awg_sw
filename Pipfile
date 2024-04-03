@@ -8,6 +8,7 @@ sphinx = "*"
 sphinx-sizzle-theme = "*"
 build = "*"
 e7awgsw = {editable = true, path = "."}
+mypy = "*"
 
 [dev-packages]
 

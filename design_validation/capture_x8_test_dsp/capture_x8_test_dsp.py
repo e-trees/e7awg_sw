@@ -93,7 +93,7 @@ def main(num_tests, ip_addr, capture_modules, use_labrad, server_ip_addr, only_a
         for test_id in failed_tests:
             print("Test {} failed.".format(test_id))
     else:
-        print("All tests succeeded.".format(failed_tests))
+        print('All tests succeeded.')
 
 
 if __name__ == "__main__":
