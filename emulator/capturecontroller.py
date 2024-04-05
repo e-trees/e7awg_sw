@@ -6,7 +6,7 @@ from e7awgsw import CaptureModule, AWG
 from e7awgsw import CaptureUnit as CapUnit
 from e7awgsw.memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
-from capture import CaptureUnit
+from capture import CaptureUnit, DummyCaptureUnit
 
 
 class CaptureController(object):
@@ -14,7 +14,7 @@ class CaptureController(object):
     __NUM_REG_BITS: Final = 32
 
     def __init__(self) -> None:
-        self.__cap_units: dict[CapUnit, CaptureUnit] = {}
+        self.__cap_units: dict[CapUnit, CaptureUnit | DummyCaptureUnit] = {}
         self.__capture_ctrl_regs: dict[int, RoRegister | RwRegister] = {}
         self.__capture_master_ctrl_regs: dict[int, RoRegister | RwRegister]  = {
             CaptureMasterCtrlRegs.Offset.VERSION : self.__gen_version_reg(),
@@ -35,7 +35,7 @@ class CaptureController(object):
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
 
-    def add_capture_unit(self, cap_unit: CaptureUnit) -> None:
+    def add_capture_unit(self, cap_unit: CaptureUnit | DummyCaptureUnit) -> None:
         self.__cap_units[cap_unit.id] = cap_unit
         base_addr = CaptureCtrlRegs.Addr.capture(cap_unit.id)
         self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.CTRL] = self.__gen_ctrl_reg(cap_unit)
@@ -127,7 +127,7 @@ class CaptureController(object):
         return cap_mod_id_list
 
 
-    def __gen_ctrl_reg(self, cap_unit: CaptureUnit) -> RwRegister:
+    def __gen_ctrl_reg(self, cap_unit: CaptureUnit | DummyCaptureUnit) -> RwRegister:
         ctrl_reg = RwRegister(self.__NUM_REG_BITS, 0)
         ctrl_reg.add_on_change(
             lambda old_bits, new_bits: self.__ctrl_reset(cap_unit, True, new_bits[0]),
@@ -148,7 +148,7 @@ class CaptureController(object):
         return ctrl_reg
 
 
-    def __gen_status_reg(self, cap_unit: CaptureUnit) -> RoRegister:
+    def __gen_status_reg(self, cap_unit: CaptureUnit | DummyCaptureUnit) -> RoRegister:
         status_reg = RoRegister(self.__NUM_REG_BITS)
         status_reg.add_on_read(
             lambda: [cap_unit.is_wakeup()],
@@ -165,7 +165,7 @@ class CaptureController(object):
         return status_reg
 
 
-    def __add_on_master_ctrl_write(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit) -> None:
+    def __add_on_master_ctrl_write(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit | DummyCaptureUnit) -> None:
         """マスタコントロールレジスタの書き込み時のイベントハンドラを設定する"""
         bit_idx = CaptureMasterCtrlRegs.Bit.capture(cap_unit_id)
         ctrl_target_sel_reg = \
@@ -193,7 +193,7 @@ class CaptureController(object):
         )
 
 
-    def __add_on_master_status_read(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit) -> None:
+    def __add_on_master_status_read(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit | DummyCaptureUnit) -> None:
         """マスタステータスレジスタのステータス読み取り時のイベントハンドラを設定する"""
         bit_idx = CaptureMasterCtrlRegs.Bit.capture(cap_unit_id)
         ctrl_target_sel_reg = \
@@ -218,23 +218,23 @@ class CaptureController(object):
         )
 
 
-    def __ctrl_reset(self, cap_unit: CaptureUnit, is_ctrl_target: int, new_val: int) -> None:
+    def __ctrl_reset(self, cap_unit: CaptureUnit | DummyCaptureUnit, is_ctrl_target: int, new_val: int) -> None:
         if is_ctrl_target:
             if new_val == 1:
                 cap_unit.assert_reset()
             if new_val == 0:
-                cap_unit.diassert_reset()
+                cap_unit.deassert_reset()
 
 
     def __ctrl_terminate(
-        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+        self, cap_unit: CaptureUnit | DummyCaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
     ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             cap_unit.terminate()
 
 
     def __ctrl_start(
-        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+        self, cap_unit: CaptureUnit | DummyCaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
     ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             dsp_en_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
@@ -243,7 +243,7 @@ class CaptureController(object):
 
 
     def __ctrl_done_clr(
-        self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
+        self, cap_unit: CaptureUnit | DummyCaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
     ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
             cap_unit.set_to_idle()

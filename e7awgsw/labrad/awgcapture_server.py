@@ -352,6 +352,17 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
+    @setting(218, handle='s', timeout='y', capture_unit_id_list='*w', returns='y')
+    def wait_for_capture_units_idle(self, c, handle, timeout, capture_unit_id_list):
+        try:
+            timeout = pickle.loads(timeout)
+            capturectrl = self.__get_capturectrl(handle)
+            capturectrl.wait_for_capture_units_idle(timeout, *capture_unit_id_list)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
 __server__ = AwgCaptureServer()
 
 if __name__ == '__main__':

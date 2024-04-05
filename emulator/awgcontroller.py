@@ -197,7 +197,7 @@ class AwgController(object):
             if new_val == 1:
                 awg.assert_reset()
             if new_val == 0:
-                awg.diassert_reset()
+                awg.deassert_reset()
 
 
     def __ctrl_terminate(

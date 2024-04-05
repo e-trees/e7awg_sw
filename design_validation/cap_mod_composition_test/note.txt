@@ -1,0 +1,14 @@
+実行方法
+    1. capture_module_test デザインをコンフィギュレーションする
+    2. pipenv shell
+    3. cap_mod_composition.py のあるディレクトリに移動
+    4. python cap_mod_composition.py [--num-cap_units a b] [--server-ipaddr=LabRAD サーバのIPアドレス] [--labrad]
+
+a : キャプチャモジュール 0 が持つキャプチャユニットの数
+b : キャプチャモジュール 1 が持つキャプチャユニットの数
+
+結果の確認
+    All tests succeeded. と表示されればテスト成功
+
+テストの内容
+    テスト対象の FPGA デザインのキャプチャモジュールが持つキャプチャユニットが過不足ないことを確認する.

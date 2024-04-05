@@ -11,7 +11,7 @@ from typing_extensions import Self
 from collections.abc import Sequence, Iterable, Container
 from logging import Logger
 from .hwparam import NUM_SAMPLES_IN_ADC_WORD, CAPTURED_SAMPLE_SIZE, CLASSIFICATION_RESULT_SIZE, \
-    MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT
+    MAX_CAPTURE_SIZE, MAX_INTEG_VEC_ELEMS, WAVE_RAM_PORT, CAPTURE_REG_PORT, CAPTURE_ADDR
 from .memorymap import CaptureMasterCtrlRegs, CaptureCtrlRegs, CaptureParamRegs
 from .udpaccess import CaptureRegAccess, WaveRamAccess
 from .hwdefs import DspUnit, CaptureUnit, CaptureModule, AWG, CaptureErr, DecisionFunc
@@ -297,6 +297,29 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._wait_for_capture_units_to_stop(timeout, *capture_unit_id_list)
 
 
+    def wait_for_capture_units_idle(
+        self, timeout: float, *capture_unit_id_list: CaptureUnit
+    ) -> None:
+        """引数で指定した全てのキャプチャユニットが IDLE 状態になるのを待つ
+
+        Args:
+            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.
+            *capture_unit_id_list (list of CaptureUnit): 波形の保存が終了するのを待つキャプチャユニットの ID
+        
+        Raises:
+            CaptureUnitTimeoutError: タイムアウトした場合
+        """
+        if self._validate_args:
+            try:
+                self._validate_timeout(timeout)
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+
+        self._wait_for_capture_units_idle(timeout, *capture_unit_id_list)
+
+
     def check_err(self, *capture_unit_id_list: CaptureUnit) -> dict[CaptureUnit, list[CaptureErr]]:
         """引数で指定したキャプチャユニットのエラーをチェックする.
 
@@ -438,6 +461,12 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
     
     @abstractmethod
+    def _wait_for_capture_units_idle(
+        self, timeout: float, *capture_unit_id_list: CaptureUnit
+    ) -> None:
+        pass
+
+    @abstractmethod
     def _check_err(
         self, *capture_unit_id_list: CaptureUnit
     ) -> dict[CaptureUnit, list[CaptureErr]]:
@@ -449,11 +478,8 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
 class CaptureCtrl(CaptureCtrlBase):
 
-    # キャプチャモジュールが波形データを保存するアドレス
-    __CAPTURE_ADDR: Final = [
-        0x10000000,  0x30000000,  0x50000000,  0x70000000,
-        0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
-        0x150000000, 0x170000000]
+    # キャプチャユニットが波形データを保存するアドレス
+    __CAPTURE_ADDR: Final = CAPTURE_ADDR
     # キャプチャ RAM のワードサイズ (bytes)
     __CAPTURE_RAM_WORD_SIZE: Final = 32 # bytes
 
@@ -798,6 +824,31 @@ class CaptureCtrl(CaptureCtrlBase):
             elapsed_time = time.time() - start
             if elapsed_time > timeout:
                 msg = 'Capture unit stop timeout'
+                log_error(msg, *self._loggers)
+                raise CaptureUnitTimeoutError(msg)
+            time.sleep(0.01)
+
+
+    def _wait_for_capture_units_idle(
+        self, timeout: float, *capture_unit_id_list: CaptureUnit
+    ) -> None:
+        start = time.time()
+        while True:
+            all_stopped = True
+            for capture_unit_id in capture_unit_id_list:
+                val = self.__reg_access.read_bits(
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.STATUS,
+                    CaptureCtrlRegs.Bit.STATUS_BUSY, 1)
+                if val == 1:
+                    all_stopped = False
+                    break
+            if all_stopped:
+                return
+
+            elapsed_time = time.time() - start
+            if elapsed_time > timeout:
+                msg = 'Capture unit idle timeout'
                 log_error(msg, *self._loggers)
                 raise CaptureUnitTimeoutError(msg)
             time.sleep(0.01)

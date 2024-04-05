@@ -55,6 +55,16 @@ class CaptureUnit(IntEnum):
 
     @classmethod
     def get_module(cls, val: int) -> CaptureModule:
+        """引数で指定したキャプチャユニットが FPGA デザイン上に存在する場合, それを保持しているキャプチャモジュールの ID を取得する.
+
+        | 引数で指定したキャプチャユニットが存在しているかどうかは, コンフィギュレーションされている FPGA デザインを確認すること.
+
+        Args:
+            val (CaptureUnit): この ID のキャプチャユニットを保持するキャプチャモジュールの ID を取得する
+        
+        Returns:
+            CaptureModule: val で指定したキャプチャユニットを保持するキャプチャモジュールの ID
+        """
         if not CaptureUnit.includes(val):
             raise ValueError('Invalid capture unit ID {}'.format(val))
         unit_to_mod: dict[int, CaptureModule] = {
@@ -97,7 +107,9 @@ class CaptureModule(IntEnum):
 
     @classmethod
     def get_units(cls, *capmod_id_list: int) -> list[CaptureUnit]:
-        """引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する
+        """引数で指定したキャプチャモジュールが保持している可能性のあるキャプチャユニットの ID を取得する.
+
+        | 実際にキャプチャモジュールが保持しているキャプチャユニットは, コンフィギュレーションされている FPGA デザインを確認すること.
 
         Args:
             *capmod_id_list (list of CaptureModule): キャプチャユニットを取得するキャプチャモジュール ID

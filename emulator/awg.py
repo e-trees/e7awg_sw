@@ -34,7 +34,7 @@ class Awg:
             self.__state = AwgState.RESET
 
 
-    def diassert_reset(self) -> None:
+    def deassert_reset(self) -> None:
         """AWG のリセットを解除する"""
         with self.__state_lock:
             if self.__state == AwgState.RESET:

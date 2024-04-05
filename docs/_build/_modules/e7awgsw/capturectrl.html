@@ -251,6 +251,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.set_capture_params"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.set_capture_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.start_capture_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.start_capture_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.version"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.wait_for_capture_units_idle"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.wait_for_capture_units_idle()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.wait_for_capture_units_to_stop"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.wait_for_capture_units_to_stop()</span></code></a></li>
 </ul>
 </li>
@@ -587,6 +588,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.set_capture_params"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.set_capture_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.start_capture_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.start_capture_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.version"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.wait_for_capture_units_idle"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.wait_for_capture_units_idle()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.wait_for_capture_units_to_stop"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.wait_for_capture_units_to_stop()</span></code></a></li>
 </ul>
 </li>
@@ -804,7 +806,7 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Container</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_ADC_WORD</span><span class="p">,</span> <span class="n">CAPTURED_SAMPLE_SIZE</span><span class="p">,</span> <span class="n">CLASSIFICATION_RESULT_SIZE</span><span class="p">,</span> \
-    <span class="n">MAX_CAPTURE_SIZE</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="n">CAPTURE_REG_PORT</span>
+    <span class="n">MAX_CAPTURE_SIZE</span><span class="p">,</span> <span class="n">MAX_INTEG_VEC_ELEMS</span><span class="p">,</span> <span class="n">WAVE_RAM_PORT</span><span class="p">,</span> <span class="n">CAPTURE_REG_PORT</span><span class="p">,</span> <span class="n">CAPTURE_ADDR</span>
 <span class="kn">from</span> <span class="nn">.memorymap</span> <span class="kn">import</span> <span class="n">CaptureMasterCtrlRegs</span><span class="p">,</span> <span class="n">CaptureCtrlRegs</span><span class="p">,</span> <span class="n">CaptureParamRegs</span>
 <span class="kn">from</span> <span class="nn">.udpaccess</span> <span class="kn">import</span> <span class="n">CaptureRegAccess</span><span class="p">,</span> <span class="n">WaveRamAccess</span>
 <span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">DspUnit</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="p">,</span> <span class="n">CaptureModule</span><span class="p">,</span> <span class="n">AWG</span><span class="p">,</span> <span class="n">CaptureErr</span><span class="p">,</span> <span class="n">DecisionFunc</span>
@@ -1137,6 +1139,32 @@
 
 
 
+<div class="viewcode-block" id="CaptureCtrlBase.wait_for_capture_units_idle">
+<a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.wait_for_capture_units_idle">[ドキュメント]</a>
+    <span class="k">def</span> <span class="nf">wait_for_capture_units_idle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;引数で指定した全てのキャプチャユニットが IDLE 状態になるのを待つ</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            timeout (int or float): タイムアウト値 (単位: 秒). タイムアウトした場合, 例外を発生させる.</span>
+<span class="sd">            *capture_unit_id_list (list of CaptureUnit): 波形の保存が終了するのを待つキャプチャユニットの ID</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            CaptureUnitTimeoutError: タイムアウトした場合</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_args</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_capture_units_idle</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="CaptureCtrlBase.check_err">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrlBase.check_err">[ドキュメント]</a>
     <span class="k">def</span> <span class="nf">check_err</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CaptureUnit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CaptureErr</span><span class="p">]]:</span>
@@ -1284,6 +1312,12 @@
         <span class="k">pass</span>
     
     <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_wait_for_capture_units_idle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_check_err</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CaptureUnit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CaptureErr</span><span class="p">]]:</span>
@@ -1298,11 +1332,8 @@
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.capturectrl.CaptureCtrl">[ドキュメント]</a>
 <span class="k">class</span> <span class="nc">CaptureCtrl</span><span class="p">(</span><span class="n">CaptureCtrlBase</span><span class="p">):</span>
 
-    <span class="c1"># キャプチャモジュールが波形データを保存するアドレス</span>
-    <span class="n">__CAPTURE_ADDR</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="mh">0x10000000</span><span class="p">,</span>  <span class="mh">0x30000000</span><span class="p">,</span>  <span class="mh">0x50000000</span><span class="p">,</span>  <span class="mh">0x70000000</span><span class="p">,</span>
-        <span class="mh">0x90000000</span><span class="p">,</span>  <span class="mh">0xB0000000</span><span class="p">,</span>  <span class="mh">0xD0000000</span><span class="p">,</span>  <span class="mh">0xF0000000</span><span class="p">,</span>
-        <span class="mh">0x150000000</span><span class="p">,</span> <span class="mh">0x170000000</span><span class="p">]</span>
+    <span class="c1"># キャプチャユニットが波形データを保存するアドレス</span>
+    <span class="n">__CAPTURE_ADDR</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">CAPTURE_ADDR</span>
     <span class="c1"># キャプチャ RAM のワードサイズ (bytes)</span>
     <span class="n">__CAPTURE_RAM_WORD_SIZE</span><span class="p">:</span> <span class="n">Final</span> <span class="o">=</span> <span class="mi">32</span> <span class="c1"># bytes</span>
 
@@ -1658,6 +1689,31 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
 
 
+    <span class="k">def</span> <span class="nf">_wait_for_capture_units_idle</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">all_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">read_bits</span><span class="p">(</span>
+                    <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span>
+                    <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">STATUS</span><span class="p">,</span>
+                    <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">STATUS_BUSY</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">all_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">all_stopped</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Capture unit idle timeout&#39;</span>
+                <span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CaptureUnitTimeoutError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+
+
     <span class="k">def</span> <span class="nf">_check_err</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">CaptureUnit</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CaptureErr</span><span class="p">]]:</span>
@@ -1772,7 +1828,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-04-03" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-04-05" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

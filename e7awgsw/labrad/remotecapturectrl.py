@@ -200,6 +200,19 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _wait_for_capture_units_idle(
+        self, timeout: float, *capture_unit_id_list: CaptureUnit
+    ) -> None:
+        try:
+            to = pickle.dumps(timeout)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.wait_for_capture_units_idle(self.__handler, to, cap_units)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _check_err(
         self, *capture_unit_id_list: CaptureUnit
     ) -> dict[CaptureUnit, list[CaptureErr]]:
