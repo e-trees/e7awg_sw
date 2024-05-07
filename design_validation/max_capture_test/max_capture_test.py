@@ -10,21 +10,19 @@ def main(num_tests, ip_addr, use_labrad, server_ip_addr, res_root_dir, cap_unit_
     failed_tests = []
     for test_id in range(num_tests):
         print("---- test {:03d} / {:03d} ----".format(test_id, num_tests - 1))
+        res_dir = '{}/cap_{}/{:03d}/with_cls'.format(res_root_dir, cap_unit_id, test_id)
+        test = CaptureTest(res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr)
+        result = test.run_test(True)
+        if not result:
+            print('failure - with classification\n')
+            failed_tests.append('{} classification'.format(test_id))
 
-        if (cap_unit_id != CaptureUnit.U8) and (cap_unit_id != CaptureUnit.U9):
-            res_dir = '{}/cap_{}/{:03d}/classification'.format(res_root_dir, cap_unit_id, test_id)
-            test = CaptureTest(res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr)
-            result = test.run_test(True)
-            if not result:
-                print('failure classification\n')
-                failed_tests.append('classification {}'.format(test_id))
-
-        res_dir = '{}/cap_{}/{:03d}/no_dsp'.format(res_root_dir, cap_unit_id, test_id)
+        res_dir = '{}/cap_{}/{:03d}/without_cls'.format(res_root_dir, cap_unit_id, test_id)
         test = CaptureTest(res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr)
         result = test.run_test(False)
         if not result:
-            print('failure no dsp\n')
-            failed_tests.append('no dsp {}'.format(test_id))
+            print('failure - without classification\n')
+            failed_tests.append('{} without classification'.format(test_id))
 
     if failed_tests:
         for test_id in failed_tests:

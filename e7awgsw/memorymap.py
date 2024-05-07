@@ -170,20 +170,19 @@ class CaptureMasterCtrlRegs(object):
     ADDR: Final = 0x0
 
     class Offset(object):
-        VERSION: Final         = 0x0
-        TRIG_AWG_SEL_0: Final  = 0x4
-        TRIG_AWG_SEL_1: Final  = 0x8
-        AWG_TRIG_MASK: Final   = 0xC
-        CTRL_TARGET_SEL: Final = 0x10
-        CTRL: Final            = 0x14
-        WAKEUP_STATUS: Final   = 0x18
-        BUSY_STATUS: Final     = 0x1C
-        DONE_STATUS: Final     = 0x20
-        OVERFLOW_ERR: Final    = 0x24
-        WRITE_ERR: Final       = 0x28
-        TRIG_AWG_SEL_2: Final  = 0x2C
-        TRIG_AWG_SEL_3: Final  = 0x30
-        DSP_ENABLE: Final      = 0x34
+        VERSION: Final            = 0x0
+        CAP_MOD_TRIG_SEL_0: Final = 0x4
+        CAP_MOD_TRIG_SEL_1: Final = 0x8
+        AWG_TRIG_MASK: Final      = 0xC
+        CTRL_TARGET_SEL: Final    = 0x10
+        CTRL: Final               = 0x14
+        WAKEUP_STATUS: Final      = 0x18
+        BUSY_STATUS: Final        = 0x1C
+        DONE_STATUS: Final        = 0x20
+        OVERFLOW_ERR: Final       = 0x24
+        WRITE_ERR: Final          = 0x28
+        CAP_MOD_TRIG_SEL_2: Final = 0x2C
+        CAP_MOD_TRIG_SEL_3: Final = 0x30
 
     class Bit(object):
         CTRL_RESET: Final     = 0
@@ -235,9 +234,10 @@ class CaptureCtrlRegs(object):
             return cls.__LIST[idx]
 
     class Offset(object):
-        CTRL: Final   = 0x0
-        STATUS: Final = 0x4
-        ERR: Final    = 0x8
+        CTRL: Final        = 0x0
+        STATUS: Final      = 0x4
+        ERR: Final         = 0x8
+        CAP_MOD_SEL: Final = 0xC
 
     class Bit(object):
         CTRL_RESET: Final     = 0

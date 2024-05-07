@@ -1,9 +1,14 @@
-import sys
 import argparse
-from e7awgsw import AwgCtrl, CaptureCtrl, CaptureModule, AWG
+from e7awgsw import AwgCtrl, CaptureCtrl, CaptureUnit, CaptureModule, AWG
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
 IP_ADDR = '10.0.0.16'
+CAP_MOD_TO_UNITS = {
+    CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+    CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+    CaptureModule.U2 : [CaptureUnit.U8],
+    CaptureModule.U3 : [CaptureUnit.U9]
+}
 
 def create_awg_ctrl(use_labrad, server_ip_addr):
     if use_labrad:
@@ -20,9 +25,10 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 
 
 def main(do_init, awgs, capture_modules, use_labrad, server_ip_addr):
+    capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
+    capture_units = sum(capture_units, []) # flatten
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
-        capture_units = CaptureModule.get_units(*capture_modules)
         # 初期化 (リセット含む)
         if do_init:
             awg_ctrl.initialize(*awgs)

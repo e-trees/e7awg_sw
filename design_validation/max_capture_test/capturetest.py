@@ -3,20 +3,12 @@ import numpy as np
 import random
 from testutil import gen_random_int_list
 from e7awgsw import AWG, AwgCtrl, WaveSequence
-from e7awgsw import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
+from e7awgsw import DspUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
 from e7awgsw import hwparam
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 from e7awgsw.dspmodule import classification, int_to_float
 
 class CaptureTest(object):
-
-    # テストデザインにおけるキャプチャモジュールと AWG の接続関係
-    __CAP_MOD_TO_AWG = {
-        CaptureModule.U0 : AWG.U2,
-        CaptureModule.U1 : AWG.U15,
-        CaptureModule.U2 : AWG.U3,
-        CaptureModule.U3 : AWG.U4
-    }
 
     def __init__(self, res_dir, ip_addr, cap_unit_id, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
@@ -24,8 +16,8 @@ class CaptureTest(object):
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
         self.__capture_units = [cap_unit_id]
-        self.__capture_module = CaptureUnit.get_module(cap_unit_id)
-        self.__awg = self.__CAP_MOD_TO_AWG[self.__capture_module]
+        self.__capture_module = CaptureModule.U0
+        self.__awg = AWG.U2
         os.makedirs(self.__res_dir, exist_ok = True)
     
     def __save_wave_samples(self, expected, capture_unit_to_capture_data):
@@ -81,15 +73,6 @@ class CaptureTest(object):
         txt_file.write(str(wave_seq))
         txt_file.close()
 
-    def __convert_to_float(self, samples):
-        """
-        AWG が出力するサンプルを Capture がそのまま保存したときの浮動小数点データに変換する
-        """
-        iq_samples = []
-        for i_data, q_data in samples:
-            iq_samples.append((float(i_data), float(q_data)))
-        return iq_samples
-
     def __gen_capture_param(self, wave_seq, do_classification):
         capture_param = CaptureParam()
         capture_param.num_integ_sections = 1
@@ -108,6 +91,8 @@ class CaptureTest(object):
     def __setup_modules(self, awg_ctrl, cap_ctrl):
         awg_ctrl.initialize(self.__awg)
         cap_ctrl.initialize(*self.__capture_units)
+        # キャプチャモジュールの構成を設定
+        cap_ctrl.construct_capture_module(self.__capture_module, *self.__capture_units)
         # キャプチャモジュールをスタートする AWG の設定
         cap_ctrl.select_trigger_awg(self.__capture_module, self.__awg)
         # スタートトリガの有効化

@@ -260,12 +260,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.check_err"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.check_err()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.clear_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.clear_capture_stop_flags()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_dsp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.construct_capture_module"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.construct_capture_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.disable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_start_trigger()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_capture_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_classification_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_module_to_trigger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_module_to_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_trigger_to_modules"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_trigger_to_modules()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_unit_to_module"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_unit_to_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.initialize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.num_captured_samples"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.num_captured_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.reset_capture_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.reset_capture_units()</span></code></a></li>
@@ -371,7 +374,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.U2"><code class="docutils literal notranslate"><span class="pre">CaptureModule.U2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.U3"><code class="docutils literal notranslate"><span class="pre">CaptureModule.U3</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.all"><code class="docutils literal notranslate"><span class="pre">CaptureModule.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.get_units"><code class="docutils literal notranslate"><span class="pre">CaptureModule.get_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.includes"><code class="docutils literal notranslate"><span class="pre">CaptureModule.includes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.of"><code class="docutils literal notranslate"><span class="pre">CaptureModule.of()</span></code></a></li>
 </ul>
@@ -388,7 +390,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.U8"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.U8</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.U9"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.U9</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.all"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.get_module"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.get_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.includes"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.includes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.of"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.of()</span></code></a></li>
 </ul>
@@ -597,12 +598,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.check_err"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.check_err()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.clear_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.clear_capture_stop_flags()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_dsp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.construct_capture_module"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.construct_capture_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.disable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.disable_start_trigger()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_start_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.enable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_capture_data"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_capture_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_classification_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_trigger"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_module_to_trigger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_module_to_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_trigger_to_modules"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_trigger_to_modules()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_unit_to_module"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.get_unit_to_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.initialize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.num_captured_samples"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.num_captured_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.capturectrl.CaptureCtrlBase.reset_capture_units"><code class="docutils literal notranslate"><span class="pre">CaptureCtrlBase.reset_capture_units()</span></code></a></li>
@@ -708,7 +712,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.U2"><code class="docutils literal notranslate"><span class="pre">CaptureModule.U2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.U3"><code class="docutils literal notranslate"><span class="pre">CaptureModule.U3</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.all"><code class="docutils literal notranslate"><span class="pre">CaptureModule.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.get_units"><code class="docutils literal notranslate"><span class="pre">CaptureModule.get_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.includes"><code class="docutils literal notranslate"><span class="pre">CaptureModule.includes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule.of"><code class="docutils literal notranslate"><span class="pre">CaptureModule.of()</span></code></a></li>
 </ul>
@@ -725,7 +728,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.U8"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.U8</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.U9"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.U9</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.all"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.all()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.get_module"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.get_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.includes"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.includes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit.of"><code class="docutils literal notranslate"><span class="pre">CaptureUnit.of()</span></code></a></li>
 </ul>
@@ -841,16 +843,20 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.check_capture_unit_err"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.check_capture_unit_err()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_awg_stop_flags"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.clear_awg_stop_flags()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.clear_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.clear_capture_stop_flags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.construct_capture_module"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.construct_capture_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_awgctrl"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.create_awgctrl()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.create_capturectrl"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.create_capturectrl()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.disable_dsp"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.disable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.disable_start_trigger"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.disable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_awgctrl"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.discard_awgctrl()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.discard_capturectrl"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.discard_capturectrl()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_dsp"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.enable_dsp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.enable_start_trigger"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.enable_start_trigger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_data"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_capture_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_capture_stop_flags"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_capture_stop_flags()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_classification_results"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_classification_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_module_to_trigger"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_module_to_trigger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_module_to_units"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_module_to_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_trigger_to_modules"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_trigger_to_modules()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_unit_to_module"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_unit_to_module()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.get_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.get_wave_startable_block_timing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.initialize_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_capture_units"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.initialize_capture_units()</span></code></a></li>
@@ -1665,9 +1671,29 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp">
-<span class="sig-name descname"><span class="pre">disable_dsp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.disable_dsp"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.disable_dsp" title="Link to this definition">¶</a></dt>
-<dd><p>キャプチャユニット 0 ~ 7 の DSP 機構を無効化する.</p>
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.construct_capture_module">
+<span class="sig-name descname"><span class="pre">construct_capture_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capture_module_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">capture_unit_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><span class="pre">CaptureUnit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.construct_capture_module"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.construct_capture_module" title="Link to this definition">¶</a></dt>
+<dd><p>capture_module_id で指定したキャプチャモジュールにキャプチャユニットを割り当てる.</p>
+<div class="line-block">
+<div class="line">本メソッドを複数回呼び出して, 同じキャプチャモジュールに異なるキャプチャユニットを割り当てた場合,</div>
+<div class="line">最後に割り当てたキャプチャユニットだけが, そのキャプチャモジュールに割り当てられる.</div>
+<div class="line"><br /></div>
+<div class="line">本メソッドを複数回呼び出して, 異なるキャプチャモジュールに同じキャプチャユニットを割り当てた場合,</div>
+<div class="line">そのキャプチャユニットは, 最後に割り当てたキャプチャモジュールに割り当てられ,</div>
+<div class="line">元々割り当てられていたキャプチャモジュールとの関係は消える.</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>capture_module_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><em class="hover">CaptureModule</em></a>) -- キャプチャユニットを割り当てるキャプチャモジュールの ID.</p></li>
+<li><p><strong>*capture_unit_id_list</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><em class="hover">CaptureUnit</em></a>) -- <div class="line-block">
+<div class="line">capture_module_id で指定したキャプチャモジュールに割り当てられるキャプチャユニット.</div>
+<div class="line">1 つも指定しなかった場合, このキャプチャモジュールは, 割り当てられたキャプチャユニットが無い状態となる.</div>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1682,16 +1708,6 @@
 <dd class="field-odd"><p><strong>*capture_unit_id_list</strong> (<em class="hover">list</em><em> of </em><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><em class="hover">CaptureUnit</em></a>) -- AWG からのスタートトリガを無効にするキャプチャユニットの ID</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp">
-<span class="sig-name descname"><span class="pre">enable_dsp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.enable_dsp"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.enable_dsp" title="Link to this definition">¶</a></dt>
-<dd><p>キャプチャユニット 0 ~ 7 の DSP 機構を有効化する.</p>
-<div class="line-block">
-<div class="line">キャプチャデータに信号処理を適用する場合, DSP 機構を有効にしてかつ,</div>
-<div class="line">DSP ユニットをキャプチャパラメータで有効化する必要がある.</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1749,6 +1765,90 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_trigger">
+<span class="sig-name descname"><span class="pre">get_module_to_trigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><span class="pre">AWG</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_module_to_trigger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_trigger" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャモジュールとスタートトリガの対応関係を取得する</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><div class="line-block">
+<div class="line">key : キャプチャモジュール ID</div>
+<div class="line">value : key のキャプチャモジュールにスタートトリガを入力する AWG の ID.</div>
+<div class="line-block">
+<div class="line">このキャプチャモジュールにスタートトリガを入力する AWG が無い場合は None.</div>
+</div>
+</div>
+</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_units">
+<span class="sig-name descname"><span class="pre">get_module_to_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><span class="pre">CaptureUnit</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_module_to_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_module_to_units" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャモジュールとキャプチャユニットの対応関係を取得する</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><div class="line-block">
+<div class="line">key : キャプチャモジュール ID</div>
+<div class="line">value : key のキャプチャモジュールに割り当てられた全てのキャプチャユニットの ID のリスト.</div>
+<div class="line-block">
+<div class="line">このキャプチャモジュールに割り当てられたキャプチャユニットが無い場合は空のリスト.</div>
+</div>
+</div>
+</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_trigger_to_modules">
+<span class="sig-name descname"><span class="pre">get_trigger_to_modules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><span class="pre">AWG</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_trigger_to_modules"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_trigger_to_modules" title="Link to this definition">¶</a></dt>
+<dd><p>スタートトリガとキャプチャモジュールの対応関係を取得する</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><div class="line-block">
+<div class="line">key : AWG ID</div>
+<div class="line">value : key の AWG がスタートトリガを入力する全てのキャプチャモジュールの ID のリスト.</div>
+<div class="line-block">
+<div class="line">この AWG が, どのキャプチャモジュールにもスタートトリガを入力しない場合は空のリスト.</div>
+</div>
+</div>
+</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.get_unit_to_module">
+<span class="sig-name descname"><span class="pre">get_unit_to_module</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><span class="pre">CaptureUnit</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.get_unit_to_module"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.get_unit_to_module" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャユニットとキャプチャモジュールの対応関係を取得する</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p><div class="line-block">
+<div class="line">key : キャプチャユニット ID</div>
+<div class="line">value : key のキャプチャユニットが割り当てられたキャプチャモジュールの ID.</div>
+<div class="line-block">
+<div class="line">このキャプチャユニットが, どのキャプチャモジュールにも割り当てられていない場合は None.</div>
+</div>
+</div>
+</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.capturectrl.CaptureCtrlBase.initialize">
 <span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">capture_unit_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><span class="pre">CaptureUnit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/capturectrl.html#CaptureCtrlBase.initialize"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.capturectrl.CaptureCtrlBase.initialize" title="Link to this definition">¶</a></dt>
 <dd><p>引数で指定したキャプチャユニットを初期化する</p>
@@ -1801,7 +1901,7 @@
 </p></li>
 <li><p><strong>awg_id</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a><em> or </em><em class="hover">None</em>) -- <div class="line-block">
 <div class="line">capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.</div>
-<div class="line">None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.</div>
+<div class="line">None を指定すると, どの AWG もこのキャプチャモジュールをスタートしなくなる.</div>
 </div>
 </p></li>
 </ul>
@@ -2609,26 +2709,6 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureModule.get_units">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">capmod_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><span class="pre">CaptureUnit</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureModule.get_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.get_units" title="Link to this definition">¶</a></dt>
-<dd><p>引数で指定したキャプチャモジュールが保持している可能性のあるキャプチャユニットの ID を取得する.</p>
-<div class="line-block">
-<div class="line">実際にキャプチャモジュールが保持しているキャプチャユニットは, コンフィギュレーションされている FPGA デザインを確認すること.</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*capmod_id_list</strong> (<em class="hover">list</em><em> of </em><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><em class="hover">CaptureModule</em></a>) -- キャプチャユニットを取得するキャプチャモジュール ID</p>
-</dd>
-<dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>capmod_id_list に対応するキャプチャモジュールが保持するキャプチャユニットのリスト</p>
-</dd>
-<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit">CaptureUnit</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureModule.includes">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureModule.includes"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureModule.includes" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2699,26 +2779,6 @@
 <dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.all">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureUnit.all"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.all" title="Link to this definition">¶</a></dt>
 <dd><p>全キャプチャユニットの ID をリストとして返す</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="e7awgsw.hwdefs.CaptureUnit.get_module">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule"><span class="pre">CaptureModule</span></a></span></span><a class="reference internal" href="_modules/e7awgsw/hwdefs.html#CaptureUnit.get_module"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwdefs.CaptureUnit.get_module" title="Link to this definition">¶</a></dt>
-<dd><p>引数で指定したキャプチャユニットが FPGA デザイン上に存在する場合, それを保持しているキャプチャモジュールの ID を取得する.</p>
-<div class="line-block">
-<div class="line">引数で指定したキャプチャユニットが存在しているかどうかは, コンフィギュレーションされている FPGA デザインを確認すること.</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.CaptureUnit" title="e7awgsw.hwdefs.CaptureUnit"><em class="hover">CaptureUnit</em></a>) -- この ID のキャプチャユニットを保持するキャプチャモジュールの ID を取得する</p>
-</dd>
-<dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>val で指定したキャプチャユニットを保持するキャプチャモジュールの ID</p>
-</dd>
-<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#e7awgsw.hwdefs.CaptureModule" title="e7awgsw.hwdefs.CaptureModule">CaptureModule</a></p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -3376,7 +3436,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-04-05" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-05-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

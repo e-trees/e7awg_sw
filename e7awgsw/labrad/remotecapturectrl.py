@@ -176,6 +176,16 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
+    def _get_capture_stop_flags(self, *capture_unit_id_list: CaptureUnit) -> list[bool]:
+        try:
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.get_capture_stop_flags(self.__handler, cap_units)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _select_trigger_awg(self, capture_module_id: CaptureModule, awg_id: AWG | None) -> None:
         try:
             cap_mod = int(capture_module_id)
@@ -245,19 +255,49 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def _enable_dsp(self) -> None:
+    def _construct_capture_module(
+        self, capture_module_id: CaptureModule, *capture_unit_id_list: CaptureUnit) -> None:
         try:
-            result = self.__server.enable_dsp(self.__handler)
+            cap_mod = int(capture_module_id)
+            cap_units = [int(capture_unit_id) for capture_unit_id in capture_unit_id_list]
+            result = self.__server.construct_capture_module(self.__handler, cap_mod, cap_units)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _disable_dsp(self) -> None:
+    def _get_unit_to_module(self) -> dict[CaptureUnit, CaptureModule | None]:
         try:
-            result = self.__server.disable_dsp(self.__handler)
-            self.__decode_and_check(result)
+            result = self.__server.get_unit_to_module(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+    
+    def _get_module_to_units(self) -> dict[CaptureModule, list[CaptureUnit]]:
+        try:
+            result = self.__server.get_module_to_units(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _get_module_to_trigger(self) -> dict[CaptureModule, AWG | None]:
+        try:
+            result = self.__server.get_module_to_trigger(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _get_trigger_to_modules(self) -> dict[AWG, list[CaptureModule]]:
+        try:
+            result = self.__server.get_trigger_to_modules(self.__handler)
+            return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise

@@ -81,7 +81,6 @@ class CaptureUnit(object):
     def capture_wave(
         self,
         wave_data: Sequence[tuple[int, int]],
-        enables_dsp: bool,
         *,
         is_async: bool = False
     ) -> None:
@@ -93,14 +92,14 @@ class CaptureUnit(object):
             self.__state = CaptureUnitState.CAPTURE_WAVE
 
         if is_async:
-            self.__executor.submit(self.__capture_wave, wave_data, enables_dsp)
+            self.__executor.submit(self.__capture_wave, wave_data)
         else:
-            self.__capture_wave(wave_data, enables_dsp)
+            self.__capture_wave(wave_data)
 
 
-    def __capture_wave(self, wave_data: Sequence[tuple[int, int]], enables_dsp: bool) -> None:
+    def __capture_wave(self, wave_data: Sequence[tuple[int, int]]) -> None:
         try:
-            capture_param = self.__gen_capture_param(enables_dsp)
+            capture_param = self.__gen_capture_param()
             self.__check_capture_size(capture_param)
             num_samples_to_waste = self.__calc_num_samples_to_waste(capture_param.capture_delay)
             samples = wave_data[num_samples_to_waste : capture_param.num_samples_to_process + num_samples_to_waste]
@@ -121,7 +120,7 @@ class CaptureUnit(object):
             raise
 
 
-    def __gen_capture_param(self, enables_dsp: bool) -> CaptureParam:
+    def __gen_capture_param(self) -> CaptureParam:
         param = CaptureParam()
         # 積算区間数
         param.num_integ_sections = self.get_param(CaptureParamRegs.Offset.NUM_INTEG_SECTIONS)
@@ -133,10 +132,9 @@ class CaptureUnit(object):
             num_balnk_words = self.get_param(CaptureParamRegs.Offset.post_blank_length(i))
             param.add_sum_section(num_wave_words, num_balnk_words)
         # 有効 DSP モジュール
-        if (self.__id != CapUnit.U8) and (self.__id != CapUnit.U9) and enables_dsp:
-            dsp_units: Any = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
-            dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
-            param.sel_dsp_units_to_enable(*dsp_units)
+        dsp_units: Any = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
+        dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
+        param.sel_dsp_units_to_enable(*dsp_units)
         # キャプチャディレイ
         param.capture_delay = self.get_param(CaptureParamRegs.Offset.CAPTURE_DELAY)
         # 複素 FIR 係数
@@ -365,119 +363,3 @@ class CaptureUnit(object):
 
     def __rawbits_to_float(self, val: int) -> np.float32:
         return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
-
-
-class DummyCaptureUnit(object):
-
-    PARAM_REG_SIZE: Final = 4 # bytes
-    __NUM_PARAM_REGS: Final = 16384
-    __MAX_PARAM_REG_ADDR: Final = __NUM_PARAM_REGS * PARAM_REG_SIZE
-
-    def __init__(self, id: CapUnit) -> None:
-        self.__state = CaptureUnitState.IDLE
-        self.__state_lock = threading.RLock()
-        self.__id = id
-        self.__loggers = [get_file_logger(), get_stderr_logger()]
-
-
-    @property
-    def id(self) -> CapUnit:
-        return self.__id
-
-
-    def assert_reset(self) -> None:
-        """キャプチャユニットをリセット状態にする"""
-        with self.__state_lock:
-            self.__state = CaptureUnitState.RESET
-
-
-    def deassert_reset(self) -> None:
-        """キャプチャユニットのリセットを解除する"""
-        with self.__state_lock:
-            if self.__state == CaptureUnitState.RESET:
-                self.__state = CaptureUnitState.IDLE
-
-
-    def terminate(self) -> None:
-        """キャプチャユニットを強制停止する"""
-        pass
-
-
-    def set_to_idle(self) -> None:
-        """キャプチャユニット が complete 状態のとき IDLE 状態にする"""
-        pass
-
-
-    def capture_wave(
-        self,
-        wave_data: Sequence[tuple[int, int]],
-        enables_dsp: bool,
-        *,
-        is_async: bool = False
-    ) -> None:
-        pass
-
-
-    def is_complete(self) -> bool:
-        """キャプチャユニットが complete 状態かどうか調べる"""
-        return False
-
-
-    def is_busy(self) -> bool:
-        """キャプチャユニットが busy 状態かどうか調べる"""
-        return False
-
-
-    def is_wakeup(self) -> bool:
-        """キャプチャユニットが wakeup 状態かどうか調べる"""
-        return self.__state != CaptureUnitState.RESET
-
-
-    def set_param(self, addr: int, data: int) -> None:
-        """キャプチャパラメータを設定する
-        
-        Args:
-            addr (int): パラメータレジスタのアドレス
-            data (int): 設定値
-        """
-        try:
-            if addr % self.PARAM_REG_SIZE != 0:
-                raise ValueError(
-                    ('Capture parameter register address must be a multiple of {}.  ({}, AWG_{})'
-                    .format(self.PARAM_REG_SIZE, addr, self.__id)))
-
-            if (addr < 0) or (self.__MAX_PARAM_REG_ADDR < addr):
-                raise ValueError(
-                    'Capture parameter register address must be between 0x0 and 0x{:x} inclusive.  ({}, CaptureUnit_{})'
-                    .format(self.__MAX_PARAM_REG_ADDR, addr, self.__id))
-
-            if (data < 0) or (0xFFFFFFFF < data):
-                raise ValueError(
-                    'Capture parameter register value must be between 0 and {} inclusive.  ({}, CaptureUnit_{})'
-                    .format(0xFFFFFFFF, data, self.__id))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-
-
-    def get_param(self, addr: int) -> int:
-        """キャプチャパラメータを取得する
-        
-        Args:
-            addr (int): パラメータレジスタのアドレス
-        """
-        try:
-            if addr % self.PARAM_REG_SIZE != 0:
-                raise ValueError(
-                    ('Capture parameter register address must be a multiple of {}.  ({}, AWG_{})'
-                    .format(self.PARAM_REG_SIZE, addr, self.__id)))
-
-            if (addr < 0) or (self.__MAX_PARAM_REG_ADDR < addr):
-                raise ValueError(
-                    'Capture parameter register address must be between 0x0 and 0x{:x} inclusive.  ({}, CaptureUnit_{})'
-                    .format(self.__MAX_PARAM_REG_ADDR, addr, self.__id))
-        except Exception as e:
-            log_error(e, *self.__loggers)
-            raise
-        
-        return 0

@@ -209,7 +209,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 | awg_id で指定した AWG の波形送信開始に合わせてキャプチャを開始する.
             awg_id (AWG or None):
                 | capture_module_id で指定したキャプチャモジュールをスタートさせる AWG の ID.
-                | None を指定すると, どの AWG もキャプチャモジュールをスタートしなくなる.
+                | None を指定すると, どの AWG もこのキャプチャモジュールをスタートしなくなる.
         """
         if self._validate_args:
             try:
@@ -241,21 +241,6 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._enable_start_trigger(*capture_unit_id_list)
 
 
-    def enable_dsp(self) -> None:
-        """キャプチャユニット 0 ~ 7 の DSP 機構を有効化する.
-
-        | キャプチャデータに信号処理を適用する場合, DSP 機構を有効にしてかつ, 
-        | DSP ユニットをキャプチャパラメータで有効化する必要がある.
-
-        """
-        self._enable_dsp()
-
-
-    def disable_dsp(self) -> None:
-        """キャプチャユニット 0 ~ 7 の DSP 機構を無効化する."""
-        self._disable_dsp()
-        
-        
     def disable_start_trigger(self, *capture_unit_id_list: CaptureUnit) -> None:
         """引数で指定したキャプチャユニットのスタートトリガを無効化する.
 
@@ -272,6 +257,82 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 raise
 
         self._disable_start_trigger(*capture_unit_id_list)
+
+
+    def construct_capture_module(
+        self, capture_module_id: CaptureModule, *capture_unit_id_list: CaptureUnit) -> None:
+        """capture_module_id で指定したキャプチャモジュールにキャプチャユニットを割り当てる.
+
+        | 本メソッドを複数回呼び出して, 同じキャプチャモジュールに異なるキャプチャユニットを割り当てた場合, 
+        | 最後に割り当てたキャプチャユニットだけが, そのキャプチャモジュールに割り当てられる.
+        |
+        | 本メソッドを複数回呼び出して, 異なるキャプチャモジュールに同じキャプチャユニットを割り当てた場合,
+        | そのキャプチャユニットは, 最後に割り当てたキャプチャモジュールに割り当てられ, 
+        | 元々割り当てられていたキャプチャモジュールとの関係は消える.
+
+        Args:
+            capture_module_id (CaptureModule): キャプチャユニットを割り当てるキャプチャモジュールの ID.
+            *capture_unit_id_list (CaptureUnit):
+                | capture_module_id で指定したキャプチャモジュールに割り当てられるキャプチャユニット.
+                | 1 つも指定しなかった場合, このキャプチャモジュールは, 割り当てられたキャプチャユニットが無い状態となる.
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_module_id(capture_module_id)
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+            
+        self._construct_capture_module(capture_module_id, *capture_unit_id_list)
+
+
+    def get_unit_to_module(self) -> dict[CaptureUnit, CaptureModule | None]:
+        """キャプチャユニットとキャプチャモジュールの対応関係を取得する
+        
+        Returns:
+            dict:
+                | key : キャプチャユニット ID
+                | value : key のキャプチャユニットが割り当てられたキャプチャモジュールの ID.
+                |         このキャプチャユニットが, どのキャプチャモジュールにも割り当てられていない場合は None.
+        """
+        return self._get_unit_to_module()
+
+
+    def get_module_to_units(self) -> dict[CaptureModule, list[CaptureUnit]]:
+        """キャプチャモジュールとキャプチャユニットの対応関係を取得する
+        
+        Returns:
+            dict:
+                | key : キャプチャモジュール ID
+                | value : key のキャプチャモジュールに割り当てられた全てのキャプチャユニットの ID のリスト.
+                |         このキャプチャモジュールに割り当てられたキャプチャユニットが無い場合は空のリスト.
+        """
+        return self._get_module_to_units()
+
+    
+    def get_module_to_trigger(self) -> dict[CaptureModule, AWG | None]:
+        """キャプチャモジュールとスタートトリガの対応関係を取得する
+        
+        Returns:
+            dict:
+                | key : キャプチャモジュール ID
+                | value : key のキャプチャモジュールにスタートトリガを入力する AWG の ID.
+                |         このキャプチャモジュールにスタートトリガを入力する AWG が無い場合は None.
+        """
+        return self._get_module_to_trigger()
+
+
+    def get_trigger_to_modules(self) -> dict[AWG, list[CaptureModule]]:
+        """スタートトリガとキャプチャモジュールの対応関係を取得する
+        
+        Returns:
+            dict:
+                | key : AWG ID
+                | value : key の AWG がスタートトリガを入力する全てのキャプチャモジュールの ID のリスト.
+                |         この AWG が, どのキャプチャモジュールにもスタートトリガを入力しない場合は空のリスト.
+        """
+        return self._get_trigger_to_modules()
 
 
     def wait_for_capture_units_to_stop(
@@ -435,6 +496,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
+    def _get_capture_stop_flags(self, *capture_unit_id_list: CaptureUnit) -> list[bool]:
+        """キャプチャ停止フラグを取得する (デバッグ用)"""
+        pass
+
+    @abstractmethod
     def _select_trigger_awg(self, capture_module_id: CaptureModule, awg_id: AWG | None) -> None:
         pass
     
@@ -447,11 +513,24 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
-    def _enable_dsp(self) -> None:
+    def _construct_capture_module(
+        self, capture_module_id: CaptureModule, *capture_unit_id_list: CaptureUnit) -> None:
         pass
 
     @abstractmethod
-    def _disable_dsp(self) -> None:
+    def _get_unit_to_module(self) -> dict[CaptureUnit, CaptureModule | None]:
+        pass
+
+    @abstractmethod
+    def _get_module_to_units(self) -> dict[CaptureModule, list[CaptureUnit]]:
+        pass
+    
+    @abstractmethod
+    def _get_module_to_trigger(self) -> dict[CaptureModule, AWG | None]:
+        pass
+
+    @abstractmethod
+    def _get_trigger_to_modules(self) -> dict[AWG, list[CaptureModule]]:
         pass
 
     @abstractmethod
@@ -663,7 +742,6 @@ class CaptureCtrl(CaptureCtrlBase):
     def _initialize(self, *capture_unit_id_list: CaptureUnit) -> None:
         self._disable_start_trigger(*capture_unit_id_list)
         self.__deselect_ctrl_target(*capture_unit_id_list)
-        self._enable_dsp()
         for capture_unit_id in capture_unit_id_list:
             self.__reg_access.write(
                 CaptureCtrlRegs.Addr.capture(capture_unit_id), CaptureCtrlRegs.Offset.CTRL, 0)
@@ -704,14 +782,12 @@ class CaptureCtrl(CaptureCtrlBase):
     def _start_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
         with self.__flock:
             self.__select_ctrl_target(*capture_unit_id_list)
-
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 1)
             self.__reg_access.write_bits(
                 CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.CTRL, CaptureMasterCtrlRegs.Bit.CTRL_START, 1, 0)
-            
             self.__deselect_ctrl_target(*capture_unit_id_list)
 
 
@@ -739,6 +815,16 @@ class CaptureCtrl(CaptureCtrlBase):
             self.__deselect_ctrl_target(*capture_unit_id_list)
 
 
+    def _get_capture_stop_flags(self, *capture_unit_id_list: CaptureUnit) -> list[bool]:
+        with self.__flock:
+            return [
+                bool(self.__reg_access.read_bits(
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.STATUS,
+                    CaptureCtrlRegs.Bit.STATUS_DONE, 1))
+                for capture_unit_id in capture_unit_id_list ]
+
+    
     def __select_ctrl_target(self, *capture_unit_id_list: CaptureUnit) -> None:
         """一括制御を有効にするキャプチャユニットを選択する"""
         with self.__flock:
@@ -762,13 +848,13 @@ class CaptureCtrl(CaptureCtrlBase):
     def _select_trigger_awg(self, capture_module_id: CaptureModule, awg_id: AWG | None) -> None:
         with self.__flock:
             if capture_module_id == CaptureModule.U0:
-                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0
+                offset = CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_0
             elif capture_module_id == CaptureModule.U1:
-                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1
+                offset = CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_1
             elif capture_module_id == CaptureModule.U2:
-                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2
+                offset = CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_2
             elif capture_module_id == CaptureModule.U3:
-                offset = CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3
+                offset = CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_3
             
             awg = 0 if (awg_id is None) else (awg_id + 1)
             self.__reg_access.write(CaptureMasterCtrlRegs.ADDR, offset, awg)
@@ -792,16 +878,80 @@ class CaptureCtrl(CaptureCtrlBase):
                     CaptureMasterCtrlRegs.Bit.capture(capture_unit_id), 1, 0)
 
 
-    def _enable_dsp(self) -> None:
+    def _construct_capture_module(
+        self, capture_module_id: CaptureModule, *capture_unit_id_list: CaptureUnit) -> None:
         with self.__flock:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 1)
+            self.__clear_capture_module(capture_module_id)
+            for capture_unit_id in capture_unit_id_list:
+                self.__reg_access.write(
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.CAP_MOD_SEL,
+                    capture_module_id + 1)
 
 
-    def _disable_dsp(self) -> None:
+    def __clear_capture_module(self, capture_module_id: CaptureModule):
+        """引数で指定したキャプチャモジュールからキャプチャユニットを消す"""
         with self.__flock:
-            self.__reg_access.write_bits(
-                CaptureMasterCtrlRegs.ADDR, CaptureMasterCtrlRegs.Offset.DSP_ENABLE, 0, 1, 0)
+            mod_to_units = self.get_module_to_units()
+            for capture_unit_id in mod_to_units[capture_module_id]:
+                self.__reg_access.write(
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.CAP_MOD_SEL,
+                    0)
+
+
+    def _get_unit_to_module(self) -> dict[CaptureUnit, CaptureModule | None]:
+        with self.__flock:
+            unit_to_mod: dict[CaptureUnit, CaptureModule | None] = {}
+            for capture_unit_id in CaptureUnit.all():
+                val = self.__reg_access.read(
+                    CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                    CaptureCtrlRegs.Offset.CAP_MOD_SEL)
+                if val == 0:
+                    unit_to_mod[capture_unit_id] = None
+                else:
+                    unit_to_mod[capture_unit_id] = CaptureModule.of(val - 1)
+
+        return unit_to_mod
+
+
+    def _get_module_to_units(self) -> dict[CaptureModule, list[CaptureUnit]]:
+        mod_to_unit: dict[CaptureModule, list[CaptureUnit]] = {
+            mod : [] for mod in CaptureModule.all()
+        }
+        for unit, mod in self.get_unit_to_module().items():
+            if mod is not None:
+                mod_to_unit[mod].append(unit)
+
+        return mod_to_unit
+
+    
+    def _get_module_to_trigger(self) -> dict[CaptureModule, AWG | None]:
+        with self.__flock:
+            mod_to_trig: dict[CaptureModule, AWG | None] = {}
+            trig_sel_list = [
+                CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_0,
+                CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_1,
+                CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_2,
+                CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_3]
+            for capture_module_id in CaptureModule.all():
+                val = self.__reg_access.read(
+                    CaptureMasterCtrlRegs.ADDR, trig_sel_list[capture_module_id])
+                if val == 0:
+                    mod_to_trig[capture_module_id] = None
+                else:
+                    mod_to_trig[capture_module_id] = AWG.of(val - 1)
+
+        return mod_to_trig
+
+
+    def _get_trigger_to_modules(self) -> dict[AWG, list[CaptureModule]]:
+        trig_to_mod: dict[AWG, list[CaptureModule]] = { awg : [] for awg in AWG.all() }
+        for mod, trig in self.get_module_to_trigger().items():
+            if trig is not None:
+                trig_to_mod[trig].append(mod)
+
+        return trig_to_mod
 
 
     def _wait_for_capture_units_to_stop(

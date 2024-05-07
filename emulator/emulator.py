@@ -41,15 +41,6 @@ def on_wave_generated(
     cap_ctrl.on_wave_generated(awg_id_to_wave.keys(), cap_mod_to_wave)
 
 
-def get_concrete_cap_units(num_cap_units_list):
-    cap_units = [CaptureUnit.U8, CaptureUnit.U9]
-    cap_units_in_cap_mod = [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
-    cap_units.extend(cap_units_in_cap_mod[0:num_cap_units_list[0]])
-    cap_units_in_cap_mod = [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
-    cap_units.extend(cap_units_in_cap_mod[0:num_cap_units_list[1]])
-    return cap_units
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr', default='0.0.0.0')
@@ -57,14 +48,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     hbm = Hbm(0x200000000)
-
-    concrete_cap_units = get_concrete_cap_units(args.num_cap_units)
     cap_ctrl = CaptureController()
     for cap_unit_id in CaptureUnit.all():
-        if cap_unit_id in concrete_cap_units:
-            cap_unit: Any = capture.CaptureUnit(cap_unit_id, hbm.write, CAPTURE_START_DELAY)
-        else:
-            cap_unit = capture.DummyCaptureUnit(cap_unit_id)
+        cap_unit = capture.CaptureUnit(cap_unit_id, hbm.write, CAPTURE_START_DELAY)
         cap_ctrl.add_capture_unit(cap_unit)
 
     awg_ctrl = AwgController()

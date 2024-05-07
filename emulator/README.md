@@ -2,10 +2,7 @@
 
 このファイルのあるディレクトリに移動して
 ```
-python emulator.py [--ipaddr=e7awg の IP アドレス] [--num-cap-units a b]
+python emulator.py [--ipaddr=e7awg の IP アドレス]
 
 ```
 を実行する.
-
-a : キャプチャモジュール 0 が持つキャプチャユニットの数 (1 ~ 4)
-b : キャプチャモジュール 1 が持つキャプチャユニットの数 (1 ~ 4)
