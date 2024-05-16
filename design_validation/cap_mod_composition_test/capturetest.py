@@ -64,8 +64,8 @@ class CaptureTest(object):
 
     def __gen_wave_seqs(self):
         awg_to_wave_seq = {}
-        for awg_id in AWG.all():
-            coef = int(awg_id) + 1
+        for awg in AWG.all():
+            coef = int(awg) + 1
             num_samples = self.__WAVE_LEN * WaveSequence.NUM_SAMPLES_IN_AWG_WORD
             i_data = [(i + 1) * coef for i in range(num_samples)]
             q_data = [-sample for sample in i_data]
@@ -76,7 +76,7 @@ class CaptureTest(object):
                 iq_samples = list(zip(i_data, q_data)),
                 num_blank_words = 0, 
                 num_repeats = 1)
-            awg_to_wave_seq[awg_id] = wave_seq
+            awg_to_wave_seq[awg] = wave_seq
 
         return awg_to_wave_seq
 
@@ -96,11 +96,12 @@ class CaptureTest(object):
     def __setup_modules(self, awg_ctrl, cap_ctrl):
         awg_ctrl.initialize(*self.__awgs)
         cap_ctrl.initialize(*self.__cap_units)
+        cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         cap_ctrl.enable_start_trigger(*self.__cap_units)
 
     def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):
-        for awg_id, wave_seq in awg_to_wave_seq.items():
-            awg_ctrl.set_wave_sequence(awg_id, wave_seq)
+        for awg, wave_seq in awg_to_wave_seq.items():
+            awg_ctrl.set_wave_sequence(awg, wave_seq)
 
     def __set_capture_params(self, cap_ctrl, cap_unit_to_cap_param):
         for cap_unit, capture_param in cap_unit_to_cap_param.items():

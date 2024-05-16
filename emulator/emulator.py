@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import argparse
 import capture
-from typing import Final, Any
+from typing import Final
 from awg import Awg
 from hbm import Hbm
 from awgcontroller import AwgController
@@ -44,7 +44,6 @@ def on_wave_generated(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr', default='0.0.0.0')
-    parser.add_argument('--num-cap-units', default=[4, 4], nargs=2, type=int)
     args = parser.parse_args()
 
     hbm = Hbm(0x200000000)

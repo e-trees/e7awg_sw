@@ -42,8 +42,8 @@ class CaptureTest(object):
             udef_wave_file = self.__res_dir + '/user_defined_wave_{}.txt'.format(awg)
             self.__write_to_file(expected, udef_wave_file)
 
-        for cap_unit_id, cap_data in capture_unit_to_capture_data.items():
-            capture_data_file = self.__res_dir + '/captured_samples_{}.txt'.format(cap_unit_id)
+        for cap_unit, cap_data in capture_unit_to_capture_data.items():
+            capture_data_file = self.__res_dir + '/captured_samples_{}.txt'.format(cap_unit)
             self.__write_to_file(cap_data, capture_data_file)
         
     def __write_to_file(self, iq_data_list, filepath):

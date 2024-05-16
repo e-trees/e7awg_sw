@@ -52,9 +52,9 @@ class CaptureTestDsp(object):
     
     def __save_capture_samples(self, cap_unit_to_cap_data, dir, filename):
         os.makedirs(dir, exist_ok = True)
-        for cap_unit, cap_data_list in cap_unit_to_cap_data.items():
+        for cap_unit, samples in cap_unit_to_cap_data.items():
             filepath = dir + '/' + filename + '_{}.txt'.format(cap_unit)
-            self.__write_to_file(cap_data_list, filepath)
+            self.__write_to_file(samples, filepath)
         
     def __save_capture_params(self, cap_unit_to_cap_param, dir, filename):
         os.makedirs(dir, exist_ok = True)
@@ -63,13 +63,13 @@ class CaptureTestDsp(object):
             with open(filepath, 'w') as txt_file:
                 txt_file.write(str(cap_param))
 
-    def __write_to_file(self, cap_data_list, filepath):
+    def __write_to_file(self, samples, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
-                if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+            for sample in samples:
+                if isinstance(sample, tuple):
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
     def __gen_wave_seq(self, num_samples):
         wave_seq = WaveSequence(
@@ -146,6 +146,7 @@ class CaptureTestDsp(object):
         for awg, cap_mod in self.__awg_to_capture_module.items():
             cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
+        cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         cap_ctrl.enable_start_trigger(*self.__cap_units)
 
     def __set_wave_sequence(self, awg_ctrl, awg_to_wave_seq):
@@ -154,14 +155,14 @@ class CaptureTestDsp(object):
 
     def __get_capture_data(self, cap_ctrl, cls_result):
         cap_unit_to_cap_data = {}
-        for capture_unit_id in self.__cap_units:
-            num_captured_samples = cap_ctrl.num_captured_samples(capture_unit_id)
+        for cap_unit in self.__cap_units:
+            num_captured_samples = cap_ctrl.num_captured_samples(cap_unit)
             if cls_result:
-                cap_unit_to_cap_data[capture_unit_id] = \
-                    cap_ctrl.get_classification_results(capture_unit_id, num_captured_samples)
+                cap_unit_to_cap_data[cap_unit] = \
+                    cap_ctrl.get_classification_results(cap_unit, num_captured_samples)
             else:
-                cap_unit_to_cap_data[capture_unit_id] = \
-                    cap_ctrl.get_capture_data(capture_unit_id, num_captured_samples)
+                cap_unit_to_cap_data[cap_unit] = \
+                    cap_ctrl.get_capture_data(cap_unit, num_captured_samples)
         return cap_unit_to_cap_data
 
     def __calc_exp_data(self, awg_to_wave_seq, cap_unit_to_cap_param):
@@ -177,8 +178,8 @@ class CaptureTestDsp(object):
 
     def __set_capture_params(self, cap_ctrl, cap_unit_to_cap_param):
         # キャプチャパラメータ設定
-        for capture_unit_id, capture_param in cap_unit_to_cap_param.items():
-            cap_ctrl.set_capture_params(capture_unit_id, capture_param)
+        for cap_unit, capture_param in cap_unit_to_cap_param.items():
+            cap_ctrl.set_capture_params(cap_unit, capture_param)
 
     def __gen_test_data(self, *dsp_units):
         # キャプチャパラメータの作成
@@ -211,9 +212,9 @@ class CaptureTestDsp(object):
     def __check_capture_data(self, cap_unit_to_cap_data, cap_unit_to_exp_data):
         """ キャプチャデータが期待値と一致するか確認する """
         all_match = True
-        for capture_unit_id in self.__cap_units:
-            capture_data = cap_unit_to_cap_data[capture_unit_id]
-            exp_data = cap_unit_to_exp_data[capture_unit_id]
+        for cap_unit in self.__cap_units:
+            capture_data = cap_unit_to_cap_data[cap_unit]
+            exp_data = cap_unit_to_exp_data[cap_unit]
             if exp_data != capture_data:
                 all_match = False
         
