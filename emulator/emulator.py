@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import argparse
 import capture
@@ -45,7 +47,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     hbm = Hbm(0x200000000)
-    
     cap_ctrl = CaptureController()
     for cap_unit_id in CaptureUnit.all():
         cap_unit = capture.CaptureUnit(cap_unit_id, hbm.write, CAPTURE_START_DELAY)

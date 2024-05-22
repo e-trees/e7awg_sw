@@ -1,10 +1,5 @@
 import os
-import math
-import time
-import copy
-import random
-import testutil
-from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
+from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam
 from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, \
     CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, \
@@ -14,15 +9,19 @@ from e7awgsw import \
     AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
     WaveGenEndFenceCmdErr, BranchByFlagCmdErr
-from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
-from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
-from e7awgsw import SinWave, IqWave, dsp
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
-from e7awgsw.logger import get_file_logger
 from e7awgsw.hwdefs import FourClassifierChannel
 
 class WaitFlagTest(object):
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+        CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+        CaptureModule.U2 : [CaptureUnit.U8],
+        CaptureModule.U3 : [CaptureUnit.U9]
+    }
 
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
@@ -76,10 +75,11 @@ class WaitFlagTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
-        # キャプチャモジュールをスタートする AWG の設定
+        # キャプチャモジュールの構成とスタートトリガを設定
         for cap_mod in CaptureModule.all():
+            cap_units = self.__CAP_MOD_TO_UNITS[cap_mod]
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
             self.__cap_ctrl.select_trigger_awg(cap_mod, AWG.U2)
-
 
     def __register_wave_sequences(self, keys, wave_sequences):
         key_to_wave_seq = dict(zip(keys, wave_sequences))
@@ -430,7 +430,7 @@ def gen_cmds_7():
     #                | ｜                 [ 952ns ]
     #                  ｜                         ↑
     #            高速FBコマンド開始             四値化結果算出
-
+    
     time = 2250 # 18 [us]
     cmds = [
         # パラメータ更新

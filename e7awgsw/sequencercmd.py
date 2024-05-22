@@ -622,14 +622,7 @@ class FeedbackCalcOnClassificationCmd(SequencerCmd):
         """        
         super().__init__(self.ID, cmd_no, stop_seq)
         capture_unit_id_list = self._to_list(capture_unit_id_list)
-        acceptable_cap_unit_id = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
-        if ((not isinstance(capture_unit_id_list, Iterable)) or 
-            (not capture_unit_id_list)                       or
-            (not all([cap_unit_id in acceptable_cap_unit_id
-                      for cap_unit_id in capture_unit_id_list]))):
-            raise ValueError(
-                "Capture unit ID for feedback value calculation must be between 0 and 7.  '{}'"
-                .format(capture_unit_id_list))
+        self._validate_capture_unit_id(capture_unit_id_list)
 
         if not (isinstance(byte_offset, int) and
                 (0 <= byte_offset and byte_offset < MAX_CAPTURE_SIZE)):

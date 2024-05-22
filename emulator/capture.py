@@ -15,6 +15,13 @@ from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
 
 
+class CaptureUnitState(IntEnum):
+    RESET: Final = 0
+    IDLE: Final  = 1
+    CAPTURE_WAVE: Final = 3
+    COMPLETE: Final = 4
+
+
 class CaptureUnit(object):
 
     PARAM_REG_SIZE: Final = 4 # bytes
@@ -50,7 +57,7 @@ class CaptureUnit(object):
             self.__state = CaptureUnitState.RESET
 
 
-    def diassert_reset(self) -> None:
+    def deassert_reset(self) -> None:
         """キャプチャユニットのリセットを解除する"""
         with self.__state_lock:
             if self.__state == CaptureUnitState.RESET:
@@ -74,7 +81,6 @@ class CaptureUnit(object):
     def capture_wave(
         self,
         wave_data: Sequence[tuple[int, int]],
-        enables_dsp: bool,
         *,
         is_async: bool = False
     ) -> None:
@@ -86,14 +92,14 @@ class CaptureUnit(object):
             self.__state = CaptureUnitState.CAPTURE_WAVE
         
         if is_async:
-            self.__executor.submit(self.__capture_wave, wave_data, enables_dsp)
+            self.__executor.submit(self.__capture_wave, wave_data)
         else:
-            self.__capture_wave(wave_data, enables_dsp)
+            self.__capture_wave(wave_data)
 
 
-    def __capture_wave(self, wave_data: Sequence[tuple[int, int]], enables_dsp: bool) -> None:
+    def __capture_wave(self, wave_data: Sequence[tuple[int, int]]) -> None:
         try:
-            capture_param = self.__gen_capture_param(enables_dsp)
+            capture_param = self.__gen_capture_param()
             self.__check_capture_size(capture_param)
             num_samples_to_waste = self.__calc_num_samples_to_waste(capture_param.capture_delay)
             samples = wave_data[num_samples_to_waste : capture_param.num_samples_to_process + num_samples_to_waste]
@@ -114,7 +120,7 @@ class CaptureUnit(object):
             raise
 
 
-    def __gen_capture_param(self, enables_dsp: bool) -> CaptureParam:
+    def __gen_capture_param(self) -> CaptureParam:
         param = CaptureParam()
         # 積算区間数
         param.num_integ_sections = self.get_param(CaptureParamRegs.Offset.NUM_INTEG_SECTIONS)
@@ -126,10 +132,9 @@ class CaptureUnit(object):
             num_balnk_words = self.get_param(CaptureParamRegs.Offset.post_blank_length(i))
             param.add_sum_section(num_wave_words, num_balnk_words)
         # 有効 DSP モジュール
-        if (self.__id != CapUnit.U8) and (self.__id != CapUnit.U9) and enables_dsp:
-            dsp_units: Any = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
-            dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
-            param.sel_dsp_units_to_enable(*dsp_units)
+        dsp_units: Any = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
+        dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
+        param.sel_dsp_units_to_enable(*dsp_units)
         # キャプチャディレイ
         param.capture_delay = self.get_param(CaptureParamRegs.Offset.CAPTURE_DELAY)
         # 複素 FIR 係数
@@ -358,9 +363,3 @@ class CaptureUnit(object):
 
     def __rawbits_to_float(self, val: int) -> np.float32:
         return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
-
-class CaptureUnitState(IntEnum):
-    RESET: Final = 0
-    IDLE: Final  = 1
-    CAPTURE_WAVE: Final = 3
-    COMPLETE: Final = 4

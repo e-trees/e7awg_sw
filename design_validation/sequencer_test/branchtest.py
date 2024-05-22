@@ -15,6 +15,22 @@ from e7awgsw.udpaccess import WaveRamAccess
 
 class BranchTest(object):
 
+    # テストデザインにおけるキャプチャモジュールと AWG の波形データバスの接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+        CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+        CaptureModule.U2 : [CaptureUnit.U8],
+        CaptureModule.U3 : [CaptureUnit.U9]
+    }
+
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
@@ -72,9 +88,12 @@ class BranchTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__cap_units)
         self.__seq_ctrl.initialize()
+        # キャプチャモジュールの構成を設定
+        for cap_mod, cap_units in self.__CAP_MOD_TO_UNITS.items():
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
         # キャプチャモジュールをスタートする AWG の設定
-        for awg, cap_unit in self.__awg_to_cap_unit.items():
-            self.__cap_ctrl.select_trigger_awg(CaptureUnit.get_module(cap_unit), awg)
+        for cap_mod, awg in self.__CAP_MOD_TO_AWG.items():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
         self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__cap_units)

@@ -10,7 +10,7 @@ AWG から 4.8MHz の余弦波を出力して, 四値化以外の信号処理モ
 import os
 import math
 import argparse
-from e7awgsw import DspUnit, CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
+from e7awgsw import DspUnit, CaptureUnit, CaptureModule, AWG, AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam
 from e7awgsw import IqWave, plot_graph, plot_samples
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
@@ -19,11 +19,22 @@ IP_ADDR = '10.0.0.16'
 CAPTURE_DELAY = 100
 NUM_WAVE_CYCLES = 512
 NUM_WAVE_SEQ_REPEATS = 16
+CAP_MOD_TO_UNITS = {
+    CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+    CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+    CaptureModule.U2 : [CaptureUnit.U8],
+    CaptureModule.U3 : [CaptureUnit.U9]
+}
+
+def construct_capture_modules(cap_ctrl):
+    for cap_mod, cap_units in CAP_MOD_TO_UNITS.items():
+        cap_ctrl.construct_capture_module(cap_mod, *cap_units)
+
 
 def set_trigger_awg(cap_ctrl, awg, capture_modules):
     for cap_mod_id in capture_modules:
         cap_ctrl.select_trigger_awg(cap_mod_id, awg)
-        cap_ctrl.enable_start_trigger(*CaptureModule.get_units(cap_mod_id))
+        cap_ctrl.enable_start_trigger(*CAP_MOD_TO_UNITS[cap_mod_id])
 
 
 def gen_cos_wave(freq, num_cycles, amp):
@@ -193,12 +204,15 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 
 
 def main(awgs, capture_modules, use_labrad, server_ip_addr):
+    capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
+    capture_units = sum(capture_units, []) # flatten
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
-        create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
-        capture_units = CaptureModule.get_units(*capture_modules)
+          create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         # 初期化
         awg_ctrl.initialize(*awgs)
         cap_ctrl.initialize(*capture_units)
+        # キャプチャモジュールの構成を設定
+        construct_capture_modules(cap_ctrl)
         # トリガ AWG の設定
         set_trigger_awg(cap_ctrl, awgs[0], capture_modules)
         # 波形シーケンスの設定

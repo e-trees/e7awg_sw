@@ -2,21 +2,13 @@ import os
 import numpy as np
 import random
 from testutil import gen_random_int_list
-from e7awgsw import AWG, AwgCtrl, WaveSequence
-from e7awgsw import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
+from e7awgsw import AWG, CaptureUnit, AwgCtrl, WaveSequence
+from e7awgsw import DspUnit, CaptureModule, DecisionFunc, CaptureCtrl, CaptureParam
 from e7awgsw import hwparam
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 from e7awgsw.dspmodule import classification, fixed_to_float
 
 class CaptureTest(object):
-
-    # テストデザインにおけるキャプチャモジュールと AWG の接続関係
-    __CAP_MOD_TO_AWG = {
-        CaptureModule.U0 : AWG.U2,
-        CaptureModule.U1 : AWG.U15,
-        CaptureModule.U2 : AWG.U3,
-        CaptureModule.U3 : AWG.U4
-    }
 
     def __init__(self, res_dir, ip_addr, cap_unit, use_labrad, server_ip_addr):
         self.__ip_addr = ip_addr
@@ -24,8 +16,8 @@ class CaptureTest(object):
         self.__server_ip_addr = server_ip_addr
         self.__res_dir = res_dir
         self.__capture_units = [cap_unit]
-        self.__capture_module = CaptureUnit.get_module(cap_unit)
-        self.__awg = self.__CAP_MOD_TO_AWG[self.__capture_module]
+        self.__capture_module = CaptureModule.U0
+        self.__awg = AWG.U2
         os.makedirs(self.__res_dir, exist_ok = True)
     
     def __save_wave_samples(self, expected, cap_unit_to_cap_data):
@@ -34,21 +26,21 @@ class CaptureTest(object):
 
         # キャプチャデータの最初と最後の繰り返しだけ保存する
         exp_len = len(expected)
-        for cap_unit, cap_data in cap_unit_to_cap_data.items():
-            num_repeats = len(cap_data) // exp_len
+        for cap_unit, samples in cap_unit_to_cap_data.items():
+            num_repeats = len(samples) // exp_len
             capture_data_file = self.__res_dir + '/capture_data_{}_head.txt'.format(cap_unit)
-            self.__write_to_file(cap_data[0:exp_len], capture_data_file)
+            self.__write_to_file(samples[0:exp_len], capture_data_file)
             capture_data_file = self.__res_dir + '/capture_data_{}_tail.txt'.format(cap_unit)
-            self.__write_to_file(cap_data[(num_repeats - 1) * exp_len:], capture_data_file)
+            self.__write_to_file(samples[(num_repeats - 1) * exp_len:], capture_data_file)
         
     def __save_capture_params(self, capture_param):
             capture_param_file = self.__res_dir + '/capture_params.txt'
             with open(capture_param_file, 'w') as txt_file:
                 txt_file.write(str(capture_param))
 
-    def __write_to_file(self, cap_data, filepath):
+    def __write_to_file(self, samples, filepath):
         with open(filepath, 'w') as txt_file:
-            for sample in cap_data:
+            for sample in samples:
                 if isinstance(filepath, tuple):
                     txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
@@ -99,6 +91,8 @@ class CaptureTest(object):
     def __setup_modules(self, awg_ctrl, cap_ctrl):
         awg_ctrl.initialize(self.__awg)
         cap_ctrl.initialize(*self.__capture_units)
+        # キャプチャモジュールの構成を設定
+        cap_ctrl.construct_capture_module(self.__capture_module, *self.__capture_units)
         # キャプチャモジュールをスタートする AWG の設定
         cap_ctrl.select_trigger_awg(self.__capture_module, self.__awg)
         # スタートトリガの有効化

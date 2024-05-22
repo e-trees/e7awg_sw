@@ -1,17 +1,13 @@
 import os
 import testutil
 import numpy as np
-from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
+from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam
 from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
     CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveSequenceSelectionCmd, \
     ResponsiveFeedbackCmd, FourClassifierChannel
-from e7awgsw import CaptureParamElem, DspUnit, DecisionFunc
-from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
-from e7awgsw.logger import get_file_logger
-from e7awgsw.udpaccess import WaveRamAccess
 
 # このサンプル値を四値化した結果をもとに, 高速フィードバック命令の2回目の波形を選択する
 SAMPLE_FOR_FOUR_CLS_0 = (2, 1)
@@ -19,19 +15,36 @@ SAMPLE_FOR_FOUR_CLS_1 = (-2, -1)
 
 class ResponsiveFeedbackTest(object):
 
+    # テストデザインにおける AWG とキャプチャモジュールの接続関係
+    __AWG_TO_CAP_MOD = {
+        AWG.U2 : CaptureModule.U0,
+        AWG.U3 : CaptureModule.U2
+    }
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U2, CaptureUnit.U8],
+        CaptureModule.U2 : [CaptureUnit.U9, CaptureUnit.U7],
+    }
+
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U15]
+        self.__awgs = [AWG.U2, AWG.U3]
 
         # 高速フィードバック処理で使用する四値を算出するキャプチャユニット
-        self.__cap_units_with_cls = [CaptureUnit.U2, CaptureUnit.U5]
+        self.__cap_units_with_cls = [
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][0], # U2
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][0]  # U9
+        ]
         # AWG の出力波形を検証するために使用するキャプチャユニット
-        self.__cap_units_plain = [CaptureUnit.U0, CaptureUnit.U7]
-
+        self.__cap_units_plain = [
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][1], # U8
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][1]  # U7
+        ]
         self.__cap_units = self.__cap_units_with_cls + self.__cap_units_plain
         self.__awg_ctrl = self.__create_awg_ctrl()
         self.__cap_ctrl = self.__create_cap_ctrl()
@@ -76,10 +89,14 @@ class ResponsiveFeedbackTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__cap_units)
         self.__seq_ctrl.initialize()
+        # キャプチャモジュールの構成を設定
+        for cap_mod, cap_units in self.__CAP_MOD_TO_UNITS.items():
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
         # キャプチャモジュールをスタートする AWG の設定
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U0, self.__awgs[0])
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U1, self.__awgs[1])
+        for awg, cap_mod in self.__AWG_TO_CAP_MOD.items():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
+        self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__cap_units)
 
 
@@ -355,10 +372,10 @@ def gen_wave_sequences(first_sample_sel):
 
     samples_list = [
         [first] + [(0, i + 1) for i in range(63)], # 1 回目の波形
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 0)
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 1)
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 2)
-        gen_random_iq_words(16)]  # 2 回目の波形 (四値 = 3)
+        gen_random_iq_words(16),  # 四値 = 0 のとき出力される 2 回目の波形
+        gen_random_iq_words(16),  # 四値 = 1 のとき出力される 2 回目の波形
+        gen_random_iq_words(16),  # 四値 = 2 のとき出力される 2 回目の波形
+        gen_random_iq_words(16)]  # 四値 = 3 のとき出力される 2 回目の波形
     
     wave_sequences = []
     for samples in samples_list:

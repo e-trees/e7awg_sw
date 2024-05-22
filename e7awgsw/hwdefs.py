@@ -54,24 +54,6 @@ class CaptureUnit(IntEnum):
         units = cls.all()
         return all([val in units for val in vals])
 
-    @classmethod
-    def get_module(cls, val: int) -> CaptureModule:
-        if not CaptureUnit.includes(val):
-            raise ValueError('Invalid capture unit ID {}'.format(val))
-        unit_to_mod: dict[int, CaptureModule] = {
-            CaptureUnit.U0 : CaptureModule.U0,
-            CaptureUnit.U1 : CaptureModule.U0,
-            CaptureUnit.U2 : CaptureModule.U0,
-            CaptureUnit.U3 : CaptureModule.U0,
-            CaptureUnit.U4 : CaptureModule.U1,
-            CaptureUnit.U5 : CaptureModule.U1,
-            CaptureUnit.U6 : CaptureModule.U1,
-            CaptureUnit.U7 : CaptureModule.U1,
-            CaptureUnit.U8 : CaptureModule.U2,
-            CaptureUnit.U9 : CaptureModule.U3
-        }
-        return unit_to_mod[val]
-
 
 class CaptureModule(IntEnum):
     """キャプチャモジュール (複数のキャプチャユニットをまとめて保持するモジュール) の列挙型"""
@@ -95,30 +77,6 @@ class CaptureModule(IntEnum):
     def includes(cls, *vals: int) -> bool:
         mods = cls.all()
         return all([val in mods for val in vals])
-
-    @classmethod
-    def get_units(cls, *capmod_id_list: int) -> list[CaptureUnit]:
-        """引数で指定したキャプチャモジュールが保持するキャプチャユニットの ID を取得する
-
-        Args:
-            *capmod_id_list (list of CaptureModule): キャプチャユニットを取得するキャプチャモジュール ID
-        
-        Returns:
-            list of CaptureUnit: capmod_id_list に対応するキャプチャモジュールが保持するキャプチャユニットのリスト
-        """
-        units = []
-        for capmod_id in set(capmod_id_list):
-            if capmod_id == cls.U0:
-                units += [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3]
-            elif capmod_id == cls.U1:
-                units += [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7]
-            elif capmod_id == cls.U2:
-                units += [CaptureUnit.U8]
-            elif capmod_id == cls.U3:
-                units += [CaptureUnit.U9]
-            else:
-                raise ValueError('Invalid capture module ID {}'.format(capmod_id))
-        return sorted(units)
 
 
 class DecisionFunc(IntEnum):
@@ -214,6 +172,8 @@ class FeedbackChannel(IntEnum):
     U5: Final = 5
     U6: Final = 6
     U7: Final = 7
+    U8: Final = 8
+    U9: Final = 9
 
     @classmethod
     def all(cls) -> list[Self]:
@@ -293,10 +253,12 @@ class FourClassifierChannel(IntEnum):
     U5: Final = 5
     U6: Final = 6
     U7: Final = 7
+    U8: Final = 8
+    U9: Final = 9
 
     @classmethod
     def all(cls) -> list[Self]:
-        """全フィードバックチャネル の ID をリストとして返す"""
+        """全四値化結果チャネル の ID をリストとして返す"""
         return list(FourClassifierChannel)
 
     @classmethod

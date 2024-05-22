@@ -7,11 +7,10 @@ import testutil
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
 from e7awgsw import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
 from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
-from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
-from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
-from e7awgsw import SinWave, IqWave, dsp
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
+from e7awgsw import dsp
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
+from e7awgsw.hwparam import WAVE_RAM_PORT
 from e7awgsw.logger import get_file_logger
 from e7awgsw.udpaccess import WaveRamAccess
 
@@ -23,14 +22,30 @@ class FeedbackValTest(object):
         0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
         0x150000000, 0x170000000]
 
+    # テストデザインにおけるキャプチャモジュールと AWG の波形データバスの接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+        CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+        CaptureModule.U2 : [CaptureUnit.U8],
+        CaptureModule.U3 : [CaptureUnit.U9]
+    }
+
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U15]
-        self.__capture_units = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
+        self.__awgs = list(self.__CAP_MOD_TO_AWG.values())
+        self.__capture_units = CaptureUnit.all()
 
         self.__awg_ctrl = self.__create_awg_ctrl()
         self.__cap_ctrl = self.__create_cap_ctrl()
@@ -76,9 +91,12 @@ class FeedbackValTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
+        # キャプチャモジュールの構成を設定
+        for cap_mod, cap_units in self.__CAP_MOD_TO_UNITS.items():
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
         # キャプチャモジュールをスタートする AWG の設定
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U0, self.__awgs[0])
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U1, self.__awgs[1])
+        for cap_mod, awg in self.__CAP_MOD_TO_AWG.items():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
         self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
@@ -103,7 +121,8 @@ class FeedbackValTest(object):
 
         cap_unit_to_capture_data = {}
         for cap_unit in self.__capture_units:
-            cap_unit_to_capture_data[cap_unit] = cap_data_getter(cap_unit, num_samples, addr_offset)
+            cap_unit_to_capture_data[cap_unit] = \
+                cap_data_getter(cap_unit, num_samples, addr_offset)
 
         return cap_unit_to_capture_data
 
@@ -194,6 +213,7 @@ class FeedbackValTest(object):
         # フィードバック値書き込み
         fb_val_addr_offset = 128 * 1024 * 1024 + 1
         for cap_addr in self.__CAPTURE_ADDR:
+            # 0xE4 = 4 つのフィードバック値 (2'b00, 2'b01, 2'b10, 2'b11)
             self.__wave_ram_access.write(
                 cap_addr + fb_val_addr_offset, 0xE4.to_bytes(1, 'little'))
         
@@ -229,8 +249,8 @@ class FeedbackValTest(object):
                 samples = wave_sequence.all_samples(False)
                 expected_data = dsp(samples, capture_param)
                 # キャプチャデータ取得
-                cap_unit_to_capture_data = self.__get_capture_data(
-                    capture_param.calc_capture_samples(), 0, False)
+                cap_unit_to_capture_data = \
+                    self.__get_capture_data(capture_param.calc_capture_samples(), 0, False)
                 # 結果比較
                 all_match = True
                 for cap_unit, cap_data in cap_unit_to_capture_data.items():

@@ -1,17 +1,17 @@
 #!/bin/bash
 cd `dirname $0`
 num=0
-num_repeats=2
+num_repeats=10
 while [ $num -lt $num_repeats ]
 do
     echo "loop = "$num
-    python capture_x8_test.py --result-dir=proc_0 --capture-module=0 --num-tests=5 --ipaddr=127.0.0.1 > result_0.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_0 --capture-module=0 --num-tests=30 > result_0.txt 2>&1 &
     pid0=$!
-    python capture_x8_test.py --result-dir=proc_1 --capture-module=1 --num-tests=5 --ipaddr=127.0.0.1  > result_1.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_1 --capture-module=1 --num-tests=30 > result_1.txt 2>&1 &
     pid1=$!
-    python capture_x8_test.py --result-dir=proc_2 --capture-module=2 --num-tests=5 --ipaddr=127.0.0.1  > result_2.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_2 --capture-module=2 --num-tests=30 > result_2.txt 2>&1 &
     pid2=$!
-    python capture_x8_test.py --result-dir=proc_3 --capture-module=3 --num-tests=5 --ipaddr=127.0.0.1  > result_3.txt 2>&1 &
+    python capture_x8_test.py --result-dir=proc_3 --capture-module=3 --num-tests=30 > result_3.txt 2>&1 &
     pid3=$!
     wait $pid0
     res0=$?

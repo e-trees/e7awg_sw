@@ -31,43 +31,43 @@ def main(
             print('-- comp fir --')
             result = test.run_test('comp_fir', DspUnit.COMPLEX_FIR)
             if not result:
-                print('failure comp fir')
+                print('failure - comp fir')
                 failed_tests.append('{} - comp_fir'.format(test_id))
 
             print('\n-- decimation --')
             result = test.run_test('decimation', DspUnit.DECIMATION)
             if not result:
-                print('failure decimation')
+                print('failure - decimation')
                 failed_tests.append('{} - decimation'.format(test_id))
 
             print('\n-- real fir --')
             result = test.run_test('real_fir', DspUnit.REAL_FIR)
             if not result:
-                print('failure real fir')
+                print('failure - real fir')
                 failed_tests.append('{} - real_fir'.format(test_id))
 
             print('\n-- window --')
             result = test.run_test('window', DspUnit.COMPLEX_WINDOW)
             if not result:
-                print('failure window')
+                print('failure - window')
                 failed_tests.append('{} - window'.format(test_id))
 
             print('\n-- sum --')
             result = test.run_test('sum', DspUnit.SUM)
             if not result:
-                print('failure sum')
+                print('failure - sum')
                 failed_tests.append('{} - sum'.format(test_id))
 
             print('\n-- integration --')
             result = test.run_test('integ', DspUnit.INTEGRATION)
             if not result:
-                print('failure integration')
+                print('failure - integration')
                 failed_tests.append('{} - integ'.format(test_id))
 
             print('\n-- classification --')
             result = test.run_test('classification', DspUnit.CLASSIFICATION)
             if not result:
-                print('failure classification')
+                print('failure - classification')
                 failed_tests.append('{} - classification'.format(test_id))
 
             print('\n-- all in integration path --')
@@ -80,7 +80,7 @@ def main(
                 DspUnit.SUM,
                 DspUnit.INTEGRATION)
             if not result:
-                print('failure all in integration path')
+                print('failure - all in integration path')
                 failed_tests.append('{} - all in integration path'.format(test_id))
 
             print('\n-- all in classification path --')
@@ -93,13 +93,13 @@ def main(
                 DspUnit.SUM,
                 DspUnit.CLASSIFICATION)
             if not result:
-                print('failure all in classification path')
+                print('failure - all in classification path')
                 failed_tests.append('{} - all in classification path'.format(test_id))
             
         print('\n-- all --')
         result = test.run_test('all', *DspUnit.all())
         if not result:
-            print('failure all')
+            print('failure - all')
             failed_tests.append('{} - all'.format(test_id))
 
         print()

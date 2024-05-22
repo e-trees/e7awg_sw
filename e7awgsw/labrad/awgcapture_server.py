@@ -363,24 +363,76 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(217, handle='s', returns='y')
-    def enable_dsp(self, c, handle):
+    @setting(217, handle='s', timeout='y', capture_unit_id_list='*w', returns='y')
+    def wait_for_capture_units_idle(self, c, handle, timeout, capture_unit_id_list):
         try:
+            timeout = pickle.loads(timeout)
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.enable_dsp()
+            capturectrl.wait_for_capture_units_idle(timeout, *capture_unit_id_list)
             return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
 
 
-    @setting(218, handle='s', returns='y')
-    def disable_dsp(self, c, handle):
+    @setting(218, handle='s', capture_module_id='w', capture_unit_id_list='*w', returns='y')
+    def construct_capture_module(self, c, handle, capture_module_id, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.disable_dsp()
+            capturectrl.construct_capture_module(capture_module_id, *capture_unit_id_list)
             return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
+
+
+    @setting(219, handle='s', returns='y')
+    def get_unit_to_module(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            unit_to_mod = capturectrl.get_unit_to_module()
+            return pickle.dumps(unit_to_mod)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(220, handle='s', returns='y')
+    def get_module_to_units(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            mod_to_units = capturectrl.get_module_to_units()
+            return pickle.dumps(mod_to_units)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(221, handle='s', returns='y')
+    def get_module_to_trigger(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            mod_to_trig = capturectrl.get_module_to_trigger()
+            return pickle.dumps(mod_to_trig)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(222, handle='s', returns='y')
+    def get_trigger_to_modules(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            trig_to_mods = capturectrl.get_trigger_to_modules()
+            return pickle.dumps(trig_to_mods)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(223, handle='s', capture_unit_id_list='*w', returns='y')
+    def get_capture_stop_flags(self, c, handle, capture_unit_id_list):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            flags = capturectrl._get_capture_stop_flags(*capture_unit_id_list)
+            return pickle.dumps(flags)
+        except Exception as e:
+            return pickle.dumps(e)
+
 
 
     @setting(300, returns='y')

@@ -13,12 +13,17 @@ from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
 
 CAPTURE_DELAY = 0
 SAVE_DIR = "result_seq_send_recv/"
-
+CAP_MOD_TO_UNITS = {
+    CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+    CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+    CaptureModule.U2 : [CaptureUnit.U8],
+    CaptureModule.U3 : [CaptureUnit.U9]
+}
 
 def set_trigger_awg(cap_ctrl, awg, capture_modules):
     for cap_mod_id in capture_modules:
         cap_ctrl.select_trigger_awg(cap_mod_id, awg)
-        cap_ctrl.enable_start_trigger(*CaptureModule.get_units(cap_mod_id))
+        cap_ctrl.enable_start_trigger(*CAP_MOD_TO_UNITS[cap_mod_id])
 
 
 def gen_cos_wave(freq, num_cycles, phase, amp):
@@ -196,13 +201,12 @@ def main(
     seq_ipaddr,
     num_wait_words, 
     save_dir=SAVE_DIR):
-
+    capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
+    capture_units = sum(capture_units, []) # flatten
     with (create_awg_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, awg_cap_ip_addr, server_ip_addr) as cap_ctrl,
           create_sequencer_ctrl(use_labrad, seq_ipaddr, server_ip_addr) as seq_ctrl):
-        
         # 初期化
-        capture_units = CaptureModule.get_units(*capture_modules)
         awg_ctrl.initialize(*awgs)
         cap_ctrl.initialize(*capture_units)
         seq_ctrl.initialize()

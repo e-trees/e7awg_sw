@@ -18,8 +18,8 @@ class CaptureController(object):
         self.__capture_ctrl_regs: dict[int, RoRegister | RwRegister] = {}
         self.__capture_master_ctrl_regs: dict[int, RoRegister | RwRegister]  = {
             CaptureMasterCtrlRegs.Offset.VERSION : self.__gen_version_reg(),
-            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0 : RwRegister(self.__NUM_REG_BITS, 0),
-            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1 : RwRegister(self.__NUM_REG_BITS, 0),
+            CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_0 : RwRegister(self.__NUM_REG_BITS, 0),
+            CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_1 : RwRegister(self.__NUM_REG_BITS, 0),
             CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK : RwRegister(self.__NUM_REG_BITS, 0),
             CaptureMasterCtrlRegs.Offset.CTRL_TARGET_SEL : RwRegister(self.__NUM_REG_BITS, 0),
             CaptureMasterCtrlRegs.Offset.CTRL : RwRegister(self.__NUM_REG_BITS, 0),
@@ -28,9 +28,8 @@ class CaptureController(object):
             CaptureMasterCtrlRegs.Offset.DONE_STATUS : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.OVERFLOW_ERR : RoRegister(self.__NUM_REG_BITS),
             CaptureMasterCtrlRegs.Offset.WRITE_ERR : RoRegister(self.__NUM_REG_BITS),
-            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2 : RwRegister(self.__NUM_REG_BITS, 0),
-            CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3 : RwRegister(self.__NUM_REG_BITS, 0),
-            CaptureMasterCtrlRegs.Offset.DSP_ENABLE : RwRegister(self.__NUM_REG_BITS, 1)
+            CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_2 : RwRegister(self.__NUM_REG_BITS, 0),
+            CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_3 : RwRegister(self.__NUM_REG_BITS, 0)
         }
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
@@ -38,9 +37,15 @@ class CaptureController(object):
     def add_capture_unit(self, cap_unit: CaptureUnit) -> None:
         self.__cap_units[cap_unit.id] = cap_unit
         base_addr = CaptureCtrlRegs.Addr.capture(cap_unit.id)
-        self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.CTRL] = self.__gen_ctrl_reg(cap_unit)
-        self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.STATUS] = self.__gen_status_reg(cap_unit)
-        self.__capture_ctrl_regs[base_addr + CaptureCtrlRegs.Offset.ERR] = RoRegister(self.__NUM_REG_BITS)
+        addr = base_addr + CaptureCtrlRegs.Offset.CTRL
+        self.__capture_ctrl_regs[addr] = self.__gen_ctrl_reg(cap_unit)
+        addr = base_addr + CaptureCtrlRegs.Offset.STATUS
+        self.__capture_ctrl_regs[addr] = self.__gen_status_reg(cap_unit)
+        addr = base_addr + CaptureCtrlRegs.Offset.ERR
+        self.__capture_ctrl_regs[addr] = RoRegister(self.__NUM_REG_BITS)
+        addr = base_addr + CaptureCtrlRegs.Offset.CAP_MOD_SEL
+        self.__capture_ctrl_regs[addr] = self.__gen_cap_mod_reg(cap_unit.id)
+
         self.__add_on_master_ctrl_write(cap_unit.id, cap_unit)
         self.__add_on_master_status_read(cap_unit.id, cap_unit)
 
@@ -98,33 +103,42 @@ class CaptureController(object):
         """
         cap_mod_id_list = self.__get_cap_mod_to_start(awg_id_list)
         trig_mask_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.AWG_TRIG_MASK]
-        dsp_en_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
-        is_dsp_enabled = bool(dsp_en_reg.get_bit(0))
-
+        mod_to_units = self.__get_mod_to_units()
         for cap_mod_id in cap_mod_id_list:
             wave = cap_mod_to_wave[cap_mod_id]
-            for cap_unit_id in CaptureModule.get_units(cap_mod_id):
+            for cap_unit_id in mod_to_units[cap_mod_id]:
                 if (cap_unit_id in self.__cap_units) and trig_mask_reg.get_bit(cap_unit_id):
                     cap_unit = self.__cap_units[cap_unit_id]
-                    cap_unit.capture_wave(wave, is_dsp_enabled, is_async = True)
+                    cap_unit.capture_wave(wave, is_async = True)
 
 
     def __get_cap_mod_to_start(self, awg_id_list: Container[AWG]) -> list[CaptureModule]:
         """AWG からのスタート信号によりスタートに対象となるキャプチャモジュールを取得する"""
-        trig_awg_sel_0_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_0]
-        trig_awg_sel_1_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_1]
-        trig_awg_sel_2_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_2]
-        trig_awg_sel_3_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.TRIG_AWG_SEL_3]
-        cap_mod_id_list = []        
-        if (trig_awg_sel_0_reg.get() - 1) in awg_id_list:
-            cap_mod_id_list.append(CaptureModule.U0)
-        if (trig_awg_sel_1_reg.get() - 1) in awg_id_list:
-            cap_mod_id_list.append(CaptureModule.U1)
-        if (trig_awg_sel_2_reg.get() - 1) in awg_id_list:
-            cap_mod_id_list.append(CaptureModule.U2)
-        if (trig_awg_sel_3_reg.get() - 1) in awg_id_list:
-            cap_mod_id_list.append(CaptureModule.U3)
+        cap_mod_trig_sel_regs = [
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_0],
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_1],
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_2],
+            self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.CAP_MOD_TRIG_SEL_3]
+        ]
+        cap_mod_id_list = []
+        for cap_mod_id in CaptureModule.all():
+            if (cap_mod_trig_sel_regs[cap_mod_id].get() - 1) in awg_id_list:
+                cap_mod_id_list.append(cap_mod_id)
+
         return cap_mod_id_list
+
+
+    def __get_mod_to_units(self) -> dict[CaptureModule, list[CapUnit]]:
+        mod_to_units: dict[CaptureModule, list[CapUnit]] = {
+            cap_mod : [] for cap_mod in CaptureModule.all()
+        }
+        for cap_unit_id in self.__cap_units.keys():
+            addr = CaptureCtrlRegs.Addr.capture(cap_unit_id) + CaptureCtrlRegs.Offset.CAP_MOD_SEL
+            val: Any = self.__read_ctrl_reg(addr)
+            if val != 0:
+                mod_to_units[CaptureModule.of(val - 1)].append(cap_unit_id)
+        
+        return mod_to_units
 
 
     def __gen_ctrl_reg(self, cap_unit: CaptureUnit) -> RwRegister:
@@ -163,6 +177,22 @@ class CaptureController(object):
             CaptureCtrlRegs.Bit.STATUS_DONE
         )
         return status_reg
+
+
+    def __gen_cap_mod_reg(self, cap_unit_id: CapUnit):
+        unit_to_mod = {
+            CapUnit.U0 : CaptureModule.U0,
+            CapUnit.U1 : CaptureModule.U0,
+            CapUnit.U2 : CaptureModule.U0,
+            CapUnit.U3 : CaptureModule.U0,
+            CapUnit.U4 : CaptureModule.U1,
+            CapUnit.U5 : CaptureModule.U1,
+            CapUnit.U6 : CaptureModule.U1,
+            CapUnit.U7 : CaptureModule.U1,
+            CapUnit.U8 : CaptureModule.U2,
+            CapUnit.U9 : CaptureModule.U3
+        }
+        return RwRegister(self.__NUM_REG_BITS, unit_to_mod[cap_unit_id] + 1)
 
 
     def __add_on_master_ctrl_write(self, cap_unit_id: CapUnit, cap_unit: CaptureUnit) -> None:
@@ -223,7 +253,7 @@ class CaptureController(object):
             if new_val == 1:
                 cap_unit.assert_reset()
             if new_val == 0:
-                cap_unit.diassert_reset()
+                cap_unit.deassert_reset()
 
 
     def __ctrl_terminate(
@@ -237,9 +267,7 @@ class CaptureController(object):
         self, cap_unit: CaptureUnit, is_ctrl_target: int, old_val: int, new_val: int
     ) -> None:
         if is_ctrl_target and (old_val == 0) and (new_val == 1):
-            dsp_en_reg = self.__capture_master_ctrl_regs[CaptureMasterCtrlRegs.Offset.DSP_ENABLE]
-            is_dsp_enabled = bool(dsp_en_reg.get_bit(0))
-            cap_unit.capture_wave([], is_dsp_enabled, is_async = True)
+            cap_unit.capture_wave([], is_async = True)
 
 
     def __ctrl_done_clr(
