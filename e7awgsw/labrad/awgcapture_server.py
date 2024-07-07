@@ -1,8 +1,8 @@
 import pickle
 import threading
 from concurrent import futures
-from labrad.server import ThreadedServer, setting
-from labrad import util
+from labrad.server import ThreadedServer, setting  # type: ignore
+from labrad import util  # type: ignore
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
 
 class AwgCaptureServer(ThreadedServer):
@@ -267,9 +267,10 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(208, handle='s', capture_module_id='w', awg_id='w', returns='y')
+    @setting(208, handle='s', capture_module_id='w', awg_id='y', returns='y')
     def select_trigger_awg(self, c, handle, capture_module_id, awg_id):
         try:
+            awg_id = pickle.loads(awg_id) # None の可能性があるので bytes で受ける
             capturectrl = self.__get_capturectrl(handle)
             capturectrl.select_trigger_awg(capture_module_id, awg_id)
             return pickle.dumps(None)
@@ -362,24 +363,76 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(217, handle='s', returns='y')
-    def enable_dsp(self, c, handle):
+    @setting(217, handle='s', timeout='y', capture_unit_id_list='*w', returns='y')
+    def wait_for_capture_units_idle(self, c, handle, timeout, capture_unit_id_list):
         try:
+            timeout = pickle.loads(timeout)
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.enable_dsp()
+            capturectrl.wait_for_capture_units_idle(timeout, *capture_unit_id_list)
             return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
 
 
-    @setting(218, handle='s', returns='y')
-    def disable_dsp(self, c, handle):
+    @setting(218, handle='s', capture_module_id='w', capture_unit_id_list='*w', returns='y')
+    def construct_capture_module(self, c, handle, capture_module_id, capture_unit_id_list):
         try:
             capturectrl = self.__get_capturectrl(handle)
-            capturectrl.disable_dsp()
+            capturectrl.construct_capture_module(capture_module_id, *capture_unit_id_list)
             return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
+
+
+    @setting(219, handle='s', returns='y')
+    def get_unit_to_module(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            unit_to_mod = capturectrl.get_unit_to_module()
+            return pickle.dumps(unit_to_mod)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(220, handle='s', returns='y')
+    def get_module_to_units(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            mod_to_units = capturectrl.get_module_to_units()
+            return pickle.dumps(mod_to_units)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(221, handle='s', returns='y')
+    def get_module_to_trigger(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            mod_to_trig = capturectrl.get_module_to_trigger()
+            return pickle.dumps(mod_to_trig)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(222, handle='s', returns='y')
+    def get_trigger_to_modules(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            trig_to_mods = capturectrl.get_trigger_to_modules()
+            return pickle.dumps(trig_to_mods)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(223, handle='s', capture_unit_id_list='*w', returns='y')
+    def get_capture_stop_flags(self, c, handle, capture_unit_id_list):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            flags = capturectrl._get_capture_stop_flags(*capture_unit_id_list)
+            return pickle.dumps(flags)
+        except Exception as e:
+            return pickle.dumps(e)
+
 
 
     @setting(300, returns='y')
@@ -447,10 +500,10 @@ class AwgCaptureServer(ThreadedServer):
         
 
     @setting(306, handle='s', returns='y')
-    def clear_unprocessed_commands(self, c, handle):
+    def clear_commands(self, c, handle):
         try:
             seqencerctrl = self.__get_sequencerctrl(handle)
-            seqencerctrl.clear_unprocessed_commands()
+            seqencerctrl.clear_commands()
             return pickle.dumps(None)
         except Exception as e:
             return pickle.dumps(e)
@@ -583,6 +636,64 @@ class AwgCaptureServer(ThreadedServer):
             seqencerctrl = self.__get_sequencerctrl(handle)
             version = seqencerctrl.version()
             return pickle.dumps(version)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(320, handle='s', returns='y')
+    def num_stored_commands(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            num_stored_commands = seqencerctrl._num_stored_commands()
+            return pickle.dumps(num_stored_commands)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(321, handle='s', returns='y')
+    def cmd_counter(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            cmd_counter = seqencerctrl._cmd_counter()
+            return pickle.dumps(cmd_counter)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(322, handle='s', returns='y')
+    def reset_cmd_counter(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl._reset_cmd_counter()
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+    
+
+    @setting(323, handle='s', returns='y')
+    def get_branch_flag(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            return pickle.dumps(seqencerctrl.get_branch_flag())
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(324, handle='s', val='b', returns='y')
+    def set_branch_flag(self, c, handle, val):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            seqencerctrl.set_branch_flag(val)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(325, handle='s', returns='y')
+    def get_external_branch_flag(self, c, handle):
+        try:
+            seqencerctrl = self.__get_sequencerctrl(handle)
+            return pickle.dumps(seqencerctrl._get_external_branch_flag())
         except Exception as e:
             return pickle.dumps(e)
 

@@ -1,6 +1,10 @@
+from __future__ import annotations
+
 import sys
 import threading
 import struct
+from typing import Final, Callable, Any
+from collections.abc import Sequence, Container
 from concurrent.futures import ThreadPoolExecutor
 from enum import IntEnum
 import numpy as np
@@ -11,15 +15,27 @@ from e7awgsw.hwparam import MAX_INTEG_VEC_ELEMS
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_warning
 
 
+class CaptureUnitState(IntEnum):
+    RESET: Final = 0
+    IDLE: Final  = 1
+    CAPTURE_WAVE: Final = 3
+    COMPLETE: Final = 4
+
+
 class CaptureUnit(object):
 
-    PARAM_REG_SIZE = 4 # bytes
-    __NUM_PARAM_REGS = 16384
-    __MAX_PARAM_REG_ADDR = __NUM_PARAM_REGS * PARAM_REG_SIZE
+    PARAM_REG_SIZE: Final = 4 # bytes
+    __NUM_PARAM_REGS: Final = 16384
+    __MAX_PARAM_REG_ADDR: Final = __NUM_PARAM_REGS * PARAM_REG_SIZE
     # シミュレータが受付可能なキャプチャ区間の最大サンプル数.  保存可能なサンプル数ではない点に注意.
-    __MAX_SAMPLES_IN_CAPTURE_SECTION = 32 * 1024 * 1024 + 4 
+    __MAX_SAMPLES_IN_CAPTURE_SECTION: Final = 32 * 1024 * 1024 + 4 
 
-    def __init__(self, id, mem_writer, capture_start_delay):
+    def __init__(
+        self,
+        id: CapUnit,
+        mem_writer: Callable[[int, bytes], None],
+        capture_start_delay: int
+    ) -> None:
         self.__state = CaptureUnitState.IDLE
         self.__state_lock = threading.RLock()
         self.__param_regs = [0] * self.__NUM_PARAM_REGS
@@ -31,60 +47,66 @@ class CaptureUnit(object):
         self.__set_default_params()
 
     @property
-    def id(self):
+    def id(self) -> CapUnit:
         return self.__id
 
 
-    def assert_reset(self):
+    def assert_reset(self) -> None:
         """キャプチャユニットをリセット状態にする"""
         with self.__state_lock:
             self.__state = CaptureUnitState.RESET
 
 
-    def diassert_reset(self):
+    def deassert_reset(self) -> None:
         """キャプチャユニットのリセットを解除する"""
         with self.__state_lock:
             if self.__state == CaptureUnitState.RESET:
                 self.__state = CaptureUnitState.IDLE
 
 
-    def terminate(self):
+    def terminate(self) -> None:
         """キャプチャユニットを強制停止する"""
         with self.__state_lock:
             if self.__state == CaptureUnitState.CAPTURE_WAVE:
                 self.__state = CaptureUnitState.COMPLETE
 
 
-    def set_to_idle(self):
+    def set_to_idle(self) -> None:
         """キャプチャユニット が complete 状態のとき IDLE 状態にする"""
         with self.__state_lock:
             if (self.__state == CaptureUnitState.COMPLETE):
                 self.__state = CaptureUnitState.IDLE
 
 
-    def capture_wave(self, wave_data, enables_dsp, *, is_async = False):
+    def capture_wave(
+        self,
+        wave_data: Sequence[tuple[int, int]],
+        *,
+        is_async: bool = False
+    ) -> None:
         """波形をキャプチャする"""
         with self.__state_lock:
-            if (self.__state != CaptureUnitState.IDLE) and (self.__state != CaptureUnitState.COMPLETE):
+            if (self.__state != CaptureUnitState.IDLE) and \
+               (self.__state != CaptureUnitState.COMPLETE):
                 return
             self.__state = CaptureUnitState.CAPTURE_WAVE
         
         if is_async:
-            self.__executor.submit(self.__capture_wave, wave_data, enables_dsp)
+            self.__executor.submit(self.__capture_wave, wave_data)
         else:
-            self.__capture_wave(wave_data, enables_dsp)
+            self.__capture_wave(wave_data)
 
 
-    def __capture_wave(self, wave_data, enables_dsp):
+    def __capture_wave(self, wave_data: Sequence[tuple[int, int]]) -> None:
         try:
-            capture_param = self.__gen_capture_param(enables_dsp)
+            capture_param = self.__gen_capture_param()
             self.__check_capture_size(capture_param)
             num_samples_to_waste = self.__calc_num_samples_to_waste(capture_param.capture_delay)
             samples = wave_data[num_samples_to_waste : capture_param.num_samples_to_process + num_samples_to_waste]
-            samples = dsp(samples, capture_param)
+            cap_samples = dsp(list(samples), capture_param)
 
             is_classification_result = DspUnit.CLASSIFICATION in capture_param.dsp_units_enabled
-            wr_data = self.__serialize_capture_data(samples, is_classification_result)
+            wr_data = self.__serialize_capture_data(cap_samples, is_classification_result)
             addr = self.get_param(CaptureParamRegs.Offset.CAPTURE_ADDR) * 32
             self.__mem_writer(addr, wr_data)
             self.set_param(CaptureParamRegs.Offset.NUM_CAPTURED_SAMPLES, capture_param.calc_capture_samples())
@@ -98,7 +120,7 @@ class CaptureUnit(object):
             raise
 
 
-    def __gen_capture_param(self, enables_dsp):
+    def __gen_capture_param(self) -> CaptureParam:
         param = CaptureParam()
         # 積算区間数
         param.num_integ_sections = self.get_param(CaptureParamRegs.Offset.NUM_INTEG_SECTIONS)
@@ -110,10 +132,9 @@ class CaptureUnit(object):
             num_balnk_words = self.get_param(CaptureParamRegs.Offset.post_blank_length(i))
             param.add_sum_section(num_wave_words, num_balnk_words)
         # 有効 DSP モジュール
-        if (self.__id != CapUnit.U8) and (self.__id != CapUnit.U9) and enables_dsp:
-            dsp_units = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
-            dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
-            param.sel_dsp_units_to_enable(*dsp_units)
+        dsp_units: Any = self.get_param(CaptureParamRegs.Offset.DSP_MODULE_ENABLE)
+        dsp_units = list(filter(lambda unit_id: (dsp_units >> unit_id) & 0x1, DspUnit.all()))
+        param.sel_dsp_units_to_enable(*dsp_units)
         # キャプチャディレイ
         param.capture_delay = self.get_param(CaptureParamRegs.Offset.CAPTURE_DELAY)
         # 複素 FIR 係数
@@ -152,7 +173,7 @@ class CaptureUnit(object):
         return param
 
 
-    def __calc_num_samples_to_waste(self, capture_delay):
+    def __calc_num_samples_to_waste(self, capture_delay: int) -> int:
         """キャプチャスタートから波形データの保存を開始するまでの間に捨てられるサンプル数を計算する"""
         num_samples = (self.__capture_start_delay + capture_delay + 1) * CaptureParam.NUM_SAMPLES_IN_ADC_WORD
         num_samples = (
@@ -161,7 +182,7 @@ class CaptureUnit(object):
         return num_samples
 
 
-    def __check_capture_size(self, param):
+    def __check_capture_size(self, param: CaptureParam) -> None:
         """キャプチャデータ量が正常かどうか調べる"""            
         # シミュレータの最大処理サンプル数のチェック
         if param.num_samples_to_process > self.__MAX_SAMPLES_IN_CAPTURE_SECTION:
@@ -186,7 +207,9 @@ class CaptureUnit(object):
             self.__check_num_sum_samples(param)
 
 
-    def __check_num_integration_samples(self, dsp_units_enabled, num_capture_samples):
+    def __check_num_integration_samples(
+        self, dsp_units_enabled: Container[DspUnit], num_capture_samples: int
+    ) -> None:
         """積算ユニットが保持できる積算値の数をオーバーしていないかチェックする"""
         if DspUnit.SUM in dsp_units_enabled:
             # 総和が有効な場合, 積算の入力ワードの中に 1 サンプルしか含まれていないので, 
@@ -198,29 +221,29 @@ class CaptureUnit(object):
         if num_integ_vec_elems > MAX_INTEG_VEC_ELEMS:
             msg = ("The number of elements in the capture unit {}'s integration result vector is too large.  (max = {}, setting = {})"
                     .format(self.__id, MAX_INTEG_VEC_ELEMS, num_integ_vec_elems))
-            log_error(msg, *self._loggers)
+            log_error(msg, *self.__loggers)
             raise ValueError(msg)
 
 
-    def __check_num_classification_samples(self, num_capture_samples):
+    def __check_num_classification_samples(self, num_capture_samples: int) -> None:
         """四値化結果が保存領域に納まるかチェックする"""
         if num_capture_samples > CaptureCtrl.MAX_CLASSIFICATION_RESULTS:
             msg = ('Capture unit {} has too many classification results.  (max = {}, setting = {})'
                 .format(self.__id, CaptureCtrl.MAX_CLASSIFICATION_RESULTS, num_capture_samples))
-            log_error(msg, *self._loggers)
+            log_error(msg, *self.__loggers)
             raise ValueError(msg)
 
 
-    def __check_num_capture_samples(self, num_capture_samples):
+    def __check_num_capture_samples(self, num_capture_samples: int) -> None:
         """キャプチャサンプルが保存領域に納まるかチェックする"""
         if num_capture_samples > CaptureCtrl.MAX_CAPTURE_SAMPLES:
                 msg = ('Capture unit {} has too many capture samples.  (max = {}, setting = {})'
                     .format(self.__id, CaptureCtrl.MAX_CAPTURE_SAMPLES, num_capture_samples))
-                log_error(msg, *self._loggers)
+                log_error(msg, *self.__loggers)
                 raise ValueError(msg)
 
 
-    def __check_num_sum_samples(self, param):
+    def __check_num_sum_samples(self, param: CaptureParam) -> None:
         """総和結果がオーバーフローしないかチェックする"""
         for sum_sec_no in range(param.num_sum_sections):
             num_words_to_sum = param.num_samples_to_sum(sum_sec_no)
@@ -229,11 +252,11 @@ class CaptureUnit(object):
                        .format(sum_sec_no, self.__id))
                 msg += ('If the number of capture words to be summed exceeds {}, the sum may overflow.  {} was set.\n'
                         .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
-                log_warning(msg, *self._loggers)
+                log_warning(msg, *self.__loggers)
                 print('WARNING: ' + msg)
 
 
-    def __serialize_capture_data(self, data, is_classification_result):
+    def __serialize_capture_data(self, data: list, is_classification_result: bool) -> bytes:
         serialized = bytearray()
         if is_classification_result:
             rem = len(data) % 4
@@ -254,22 +277,22 @@ class CaptureUnit(object):
         return serialized
 
 
-    def is_complete(self):
+    def is_complete(self) -> bool:
         """キャプチャユニットが complete 状態かどうか調べる"""
         return self.__state == CaptureUnitState.COMPLETE
 
 
-    def is_busy(self):
+    def is_busy(self) -> bool:
         """キャプチャユニットが busy 状態かどうか調べる"""
         return self.__state == CaptureUnitState.CAPTURE_WAVE
 
 
-    def is_wakeup(self):
+    def is_wakeup(self) -> bool:
         """キャプチャユニットが wakeup 状態かどうか調べる"""
         return self.__state != CaptureUnitState.RESET
 
 
-    def set_param(self, addr, data):
+    def set_param(self, addr: int, data: int) -> None:
         """キャプチャパラメータを設定する
         
         Args:
@@ -299,7 +322,7 @@ class CaptureUnit(object):
         self.__param_regs[reg_idx] = data
 
 
-    def get_param(self, addr):
+    def get_param(self, addr: int) -> int:
         """キャプチャパラメータを取得する
         
         Args:
@@ -323,7 +346,7 @@ class CaptureUnit(object):
         return self.__param_regs[reg_idx]
 
 
-    def __set_default_params(self):
+    def __set_default_params(self) -> None:
         self.set_param(CaptureParamRegs.Offset.NUM_INTEG_SECTIONS, 1)
         self.set_param(CaptureParamRegs.Offset.NUM_SUM_SECTIONS, 1)
         for i in range(CaptureParam.MAX_SUM_SECTIONS):
@@ -333,16 +356,10 @@ class CaptureUnit(object):
             self.set_param(post_blank_addr, 1)
 
 
-    def __to_int32(self, val):
+    def __to_int32(self, val: int) -> int:
         val = val & 0xffffffff
         return (val ^ 0x80000000) - 0x80000000
 
 
-    def __rawbits_to_float(self, val):
+    def __rawbits_to_float(self, val: int) -> np.float32:
         return np.frombuffer(val.to_bytes(4, 'little'), dtype='float32')[0]
-
-class CaptureUnitState(IntEnum):
-    RESET = 0
-    IDLE  = 1
-    CAPTURE_WAVE = 3
-    COMPLETE = 4

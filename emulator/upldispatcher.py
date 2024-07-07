@@ -1,7 +1,11 @@
 import sys
 import socket
+from typing import Final, Any
 from concurrent.futures import ThreadPoolExecutor
 from awg import Awg
+from hbm import Hbm
+from awgcontroller import AwgController
+from capturecontroller import CaptureController
 import capture as cap
 from e7awgsw.uplpacket import UplPacket
 from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error
@@ -10,9 +14,15 @@ from e7awgsw.hwparam import WAVE_RAM_PORT, AWG_REG_PORT
 
 class UplDispatcher:
 
-    __BUF_SIZE = 16384
+    __BUF_SIZE: Final = 16384
 
-    def __init__(self, ip_addr, hbm, awg_ctrl, cap_ctrl):
+    def __init__(
+        self,
+        ip_addr: str,
+        hbm: Hbm,
+        awg_ctrl: AwgController,
+        cap_ctrl: CaptureController
+    ) -> None:
         self.__hbm = hbm
         self.__awg_ctrl = awg_ctrl
         self.__cap_ctrl = cap_ctrl
@@ -24,12 +34,12 @@ class UplDispatcher:
         self.__loggers = [get_file_logger(), get_stderr_logger()]
 
 
-    def start(self):
+    def start(self) -> None:
         self.__executor.submit(self.__process_hbm_packet)
         self.__executor.submit(self.__process_awg_cap_packet)
 
 
-    def __process_hbm_packet(self):
+    def __process_hbm_packet(self) -> None:
         """HBM へのアクセスを行うためのパケットを処理する"""
         # ThreadPoolExecutor 上で実行されるタスクの例外は, そのタスクの Future が保持するため, 標準エラー出力に表示されない.
         # 意図しない例外が発生したとき, シミュレータの停止をユーザに伝えるために try-except を使ってエラーメッセージを表示する.
@@ -51,19 +61,19 @@ class UplDispatcher:
             raise
 
 
-    def __read_from_hbm(self, packet, reply_addr):
+    def __read_from_hbm(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         rd_data = self.__hbm.read(packet.addr(), packet.num_bytes())
         reply = UplPacket(UplPacket.MODE_WAVE_RAM_READ_REPLY, packet.addr(), len(rd_data), rd_data)
         self.__hbm_sock.sendto(reply.serialize(), reply_addr)
 
 
-    def __write_to_hbm(self, packet, reply_addr):
+    def __write_to_hbm(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         self.__hbm.write(packet.addr(), packet.payload())
         reply = UplPacket(UplPacket.MODE_WAVE_RAM_WRITE_ACK, packet.addr(), len(packet.payload()))
         self.__hbm_sock.sendto(reply.serialize(), reply_addr)
 
 
-    def __process_awg_cap_packet(self):
+    def __process_awg_cap_packet(self) -> None:
         try:
             while True:
                 recv_data, src_addr = self.__awg_cap_sock.recvfrom(self.__BUF_SIZE)
@@ -85,7 +95,7 @@ class UplDispatcher:
             print('The e7awg_hw emulator has stopped!\n', file = sys.stderr)
             raise
 
-    def __read_awg_reg(self, packet, reply_addr):
+    def __read_awg_reg(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         num_regs = packet.num_bytes() // Awg.PARAM_REG_SIZE
         rd_data = bytearray()
         for i in range(num_regs):
@@ -97,11 +107,11 @@ class UplDispatcher:
         self.__awg_cap_sock.sendto(reply.serialize(), reply_addr)
 
 
-    def __write_awg_reg(self, packet, reply_addr):
+    def __write_awg_reg(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         num_regs = packet.num_bytes() // Awg.PARAM_REG_SIZE
         for i in range(num_regs):
             addr = packet.addr() + i * Awg.PARAM_REG_SIZE
-            val = packet.payload()[i * Awg.PARAM_REG_SIZE : (i + 1) * Awg.PARAM_REG_SIZE]
+            val: Any = packet.payload()[i * Awg.PARAM_REG_SIZE : (i + 1) * Awg.PARAM_REG_SIZE]
             val = int.from_bytes(val, 'little')
             self.__awg_ctrl.write_reg(addr, val)
 
@@ -109,7 +119,7 @@ class UplDispatcher:
         self.__awg_cap_sock.sendto(reply.serialize(), reply_addr)
 
 
-    def __read_cap_reg(self, packet, reply_addr):
+    def __read_cap_reg(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         num_regs = packet.num_bytes() // cap.CaptureUnit.PARAM_REG_SIZE
         rd_data = bytearray()
         for i in range(num_regs):
@@ -121,11 +131,11 @@ class UplDispatcher:
         self.__awg_cap_sock.sendto(reply.serialize(), reply_addr)
 
 
-    def __write_cap_reg(self, packet, reply_addr):
+    def __write_cap_reg(self, packet: UplPacket, reply_addr: tuple[str, int]) -> None:
         num_regs = packet.num_bytes() // cap.CaptureUnit.PARAM_REG_SIZE
         for i in range(num_regs):
             addr = packet.addr() + i * cap.CaptureUnit.PARAM_REG_SIZE
-            val = packet.payload()[i * cap.CaptureUnit.PARAM_REG_SIZE : (i + 1) * cap.CaptureUnit.PARAM_REG_SIZE]
+            val: Any = packet.payload()[i * cap.CaptureUnit.PARAM_REG_SIZE : (i + 1) * cap.CaptureUnit.PARAM_REG_SIZE]
             val = int.from_bytes(val, 'little')
             self.__cap_ctrl.write_reg(addr, val)
 

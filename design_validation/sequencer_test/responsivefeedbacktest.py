@@ -1,22 +1,13 @@
 import os
-import math
-import time
-import copy
-import random
 import testutil
 import numpy as np
-from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
+from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam
 from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
     CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveSequenceSelectionCmd, \
     ResponsiveFeedbackCmd, FourClassifierChannel
-from e7awgsw import CaptureParamElem, DspUnit, DecisionFunc
-from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
-from e7awgsw import SinWave, IqWave, dsp
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
-from e7awgsw.logger import get_file_logger
-from e7awgsw.udpaccess import WaveRamAccess
 
 # このサンプル値を四値化した結果をもとに, 高速フィードバック命令の2回目の波形を選択する
 SAMPLE_FOR_FOUR_CLS_0 = (2, 1)
@@ -24,19 +15,36 @@ SAMPLE_FOR_FOUR_CLS_1 = (-2, -1)
 
 class ResponsiveFeedbackTest(object):
 
+    # テストデザインにおける AWG とキャプチャモジュールの接続関係
+    __AWG_TO_CAP_MOD = {
+        AWG.U2 : CaptureModule.U0,
+        AWG.U3 : CaptureModule.U2
+    }
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U2, CaptureUnit.U8],
+        CaptureModule.U2 : [CaptureUnit.U9, CaptureUnit.U7],
+    }
+
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U15]
+        self.__awgs = [AWG.U2, AWG.U3]
 
         # 高速フィードバック処理で使用する四値を算出するキャプチャユニット
-        self.__cap_units_with_cls = [CaptureUnit.U2, CaptureUnit.U5]
+        self.__cap_units_with_cls = [
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][0], # U2
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][0]  # U9
+        ]
         # AWG の出力波形を検証するために使用するキャプチャユニット
-        self.__cap_units_plain = [CaptureUnit.U0, CaptureUnit.U7]
-
+        self.__cap_units_plain = [
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][1], # U8
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][1]  # U7
+        ]
         self.__cap_units = self.__cap_units_with_cls + self.__cap_units_plain
         self.__awg_ctrl = self.__create_awg_ctrl()
         self.__cap_ctrl = self.__create_cap_ctrl()
@@ -81,17 +89,21 @@ class ResponsiveFeedbackTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__cap_units)
         self.__seq_ctrl.initialize()
+        # キャプチャモジュールの構成を設定
+        for cap_mod, cap_units in self.__CAP_MOD_TO_UNITS.items():
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
         # キャプチャモジュールをスタートする AWG の設定
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U0, self.__awgs[0])
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U1, self.__awgs[1])
+        for awg, cap_mod in self.__AWG_TO_CAP_MOD.items():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
+        self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__cap_units)
 
 
     def __register_wave_sequences(self, keys, wave_sequences):        
         key_to_wave_seq = dict(zip(keys, wave_sequences))
-        for awg_id in self.__awgs:
-            self.__awg_ctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+        for awg in self.__awgs:
+            self.__awg_ctrl.register_wave_sequences(awg, key_to_wave_seq)
 
 
     def __register_capture_params(self, keys, params):
@@ -114,18 +126,18 @@ class ResponsiveFeedbackTest(object):
 
     def __check_err(self):
         awg_to_err = self.__awg_ctrl.check_err(*self.__awgs)
-        for awg_id, err_list in awg_to_err.items():
-            print('awg {} err'.format(awg_id))
+        for awg, err_list in awg_to_err.items():
+            print('awg {} err'.format(awg))
             for err in err_list:
                 print('    {}'.format(err))
         
         cap_unit_to_err = self.__cap_ctrl.check_err(*self.__cap_units)
-        for cap_unit_id, err_list in cap_unit_to_err.items():
-            print('capture unit {} err'.format(cap_unit_id))
+        for cap_unit, err_list in cap_unit_to_err.items():
+            print('capture unit {} err'.format(cap_unit))
             for err in err_list:
                 print('    {}'.format(err))
 
-        seq_err_list = self.__cap_ctrl.check_err()
+        seq_err_list = self.__seq_ctrl.check_err()
         for seq_err in seq_err_list:
             print(seq_err, '\n')
 
@@ -195,12 +207,12 @@ class ResponsiveFeedbackTest(object):
             cap_unit_to_exp_cap_data, test_name, 'resp_fb_{}_expected'.format(test_no))
 
 
-    def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
+    def __save_wave_samples(self, cap_unit_to_cap_data, test_name, filename):
         dir = self.__res_dir + '/' + test_name
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
-            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data_list, capture_data_file)
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
+            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit)
+            self.__write_to_file(cap_data, capture_data_file)
 
 
     def __save_capture_params(self, capture_param, test_name, filename):
@@ -216,18 +228,18 @@ class ResponsiveFeedbackTest(object):
         for cap_unit, wave_0, wave_1 in list(zip(cap_units, data_0, data_1)):
             if wave_0 != wave_1:
                 all_match = False
-                print('resp fb {}, cap_unit {} error'.format(test_no, err_cap_unit))
+                print('resp fb {}, cap_unit {} error'.format(test_no, cap_unit))
         return all_match
 
 
     @classmethod
-    def __write_to_file(cls, cap_data_list, filepath):
+    def __write_to_file(cls, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
-                if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+            for sample in cap_data:
+                if isinstance(sample, tuple):
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
 
     def run_test(self, test_name):
@@ -282,6 +294,8 @@ class ResponsiveFeedbackTest(object):
             self.__seq_ctrl.start_sequencer()
             # コマンドの処理終了待ち
             self.__seq_ctrl.wait_for_sequencer_to_stop(5)
+            # コマンドキューをクリア
+            self.__seq_ctrl.clear_commands()
             # エラー出力
             is_err_detected = self.__check_err()
             # キャプチャパラメータ保存
@@ -358,10 +372,10 @@ def gen_wave_sequences(first_sample_sel):
 
     samples_list = [
         [first] + [(0, i + 1) for i in range(63)], # 1 回目の波形
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 0)
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 1)
-        gen_random_iq_words(16),  # 2 回目の波形 (四値 = 2)
-        gen_random_iq_words(16)]  # 2 回目の波形 (四値 = 3)
+        gen_random_iq_words(16),  # 四値 = 0 のとき出力される 2 回目の波形
+        gen_random_iq_words(16),  # 四値 = 1 のとき出力される 2 回目の波形
+        gen_random_iq_words(16),  # 四値 = 2 のとき出力される 2 回目の波形
+        gen_random_iq_words(16)]  # 四値 = 3 のとき出力される 2 回目の波形
     
     wave_sequences = []
     for samples in samples_list:

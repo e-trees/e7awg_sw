@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 import time
 import socket
 import os
 import stat
+from types import TracebackType
+from typing import Final
+from typing_extensions import Self
+from collections.abc import Sequence, Mapping
+from logging import Logger
 from abc import ABCMeta, abstractmethod
-from .wavesequence import WaveSequence
+from .wavesequence import WaveSequence, WaveChunk
 from .hwparam import WAVE_RAM_PORT, AWG_REG_PORT, MAX_WAVE_REGISTRY_ENTRIES, WAVE_RAM_WORD_SIZE
 from .memorymap import AwgMasterCtrlRegs, AwgCtrlRegs, WaveParamRegs
 from .udpaccess import AwgRegAccess, WaveRamAccess, ParamRegistryAccess
@@ -14,11 +21,17 @@ from .hwdefs import AWG, AwgErr
 
 class AwgCtrlBase(object, metaclass = ABCMeta):
     #: AWG のサンプリングレート (単位=サンプル数/秒)
-    SAMPLING_RATE = 500000000
+    SAMPLING_RATE: Final = 500000000
     #: 波形レジストリの最大エントリ数
-    MAX_WAVE_REGISTRY_ENTRIES = MAX_WAVE_REGISTRY_ENTRIES
+    MAX_WAVE_REGISTRY_ENTRIES: Final = MAX_WAVE_REGISTRY_ENTRIES
 
-    def __init__(self, ip_addr, validate_args, enable_lib_log, logger):
+    def __init__(    
+        self,
+        ip_addr: str,
+        validate_args: bool,
+        enable_lib_log: bool,
+        logger: Logger
+    ) -> None:
         self._validate_args = validate_args
         self._loggers = [logger]
         if enable_lib_log:
@@ -32,7 +45,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 raise
 
 
-    def set_wave_sequence(self, awg_id, wave_seq):
+    def set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
         """波形シーケンスを AWG に設定する.
 
         | この関数を呼んだ後で register_wave_sequences を呼ぶと, AWG に設定したデータが消えることに注意.
@@ -52,7 +65,11 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._set_wave_sequence(awg_id, wave_seq)
 
 
-    def register_wave_sequences(self, awg_id, key_to_wave_seq):
+    def register_wave_sequences(
+        self,
+        awg_id: AWG,
+        key_to_wave_seq: Mapping[int | None, WaveSequence]
+    ) -> None:
         """awg_id で指定した AWG が持つ波形レジストリに波形シーケンスを登録する
 
         | 同じ awg_id で複数回呼ぶと, 前回レジストリに登録したデータが消えることに注意.
@@ -61,7 +78,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             awg_id (AWG): 登録先の波形レジストリを持つ AWG の ID
             key_to_wave_seq ({int -> WaveSequence}):
-                | 波形レジストリの登録位置を示すキーと登録する波形シーケンスの dict.
+                | 波形レジストリの登録位置を示すキーと登録する波形シーケンスの Map.
                 | キーは 0 ~ 511 まで指定可能.
                 | キーを None にした場合, 対応する波形シーケンスはレジストリではなく, AWG に直接セットされる.
         """
@@ -81,7 +98,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._register_wave_sequences(awg_id, key_to_wave_seq)
 
 
-    def initialize(self, *awg_id_list):
+    def initialize(self, *awg_id_list: AWG) -> None:
         """引数で指定した AWG を初期化する.
 
         | このクラスの他のメソッドを呼び出す前に呼ぶこと.
@@ -99,7 +116,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._initialize(*awg_id_list)
 
 
-    def start_awgs(self, *awg_id_list):
+    def start_awgs(self, *awg_id_list: AWG) -> None:
         """引数で指定した AWG の波形送信を開始する.
 
         Args:
@@ -115,7 +132,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._start_awgs(*awg_id_list)
 
 
-    def terminate_awgs(self, *awg_id_list):
+    def terminate_awgs(self, *awg_id_list: AWG) -> None:
         """引数で指定した AWG を強制終了する.
 
         Args:
@@ -131,7 +148,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._terminate_awgs(*awg_id_list)
 
 
-    def reset_awgs(self, *awg_id_list):
+    def reset_awgs(self, *awg_id_list: AWG) -> None:
         """引数で指定したAWGをリセットする
 
         | JESD204C の送信カウンタと AWG の SOF カウンタがずれる可能性があるため, HW で対処するまでは呼んではならない. (2022/07/06)
@@ -149,7 +166,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._reset_awgs(*awg_id_list)
 
 
-    def clear_awg_stop_flags(self, *awg_id_list):
+    def clear_awg_stop_flags(self, *awg_id_list: AWG) -> None:
         """引数で指定した全ての AWG の波形出力終了フラグを下げる
 
         Args:
@@ -165,7 +182,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._clear_awg_stop_flags(*awg_id_list)
 
 
-    def wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+    def wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         """引数で指定した全ての AWG の波形の送信が終了するのを待つ
 
         Args:
@@ -186,7 +203,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._wait_for_awgs_to_stop(timeout, *awg_id_list)
 
 
-    def set_wave_startable_block_timing(self, interval, *awg_id_list):
+    def set_wave_startable_block_timing(self, interval: int, *awg_id_list: AWG) -> None:
         """引数で指定した AWG に波形を送信可能なタイミングを設定する.
 
         | AWG は出力した波形ブロックの数をカウントしており, これが interval の倍数となるブロックの先頭から波形の送信を始める.
@@ -210,7 +227,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._set_wave_startable_block_timing(interval, *awg_id_list)
 
 
-    def get_wave_startable_block_timing(self, *awg_id_list):
+    def get_wave_startable_block_timing(self, *awg_id_list: AWG) -> dict[AWG, int]:
         """引数で指定した AWG から波形を送信可能なタイミングを取得する.
 
         Args:
@@ -232,7 +249,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         return self._get_wave_startable_block_timing(*awg_id_list)
 
 
-    def check_err(self, *awg_id_list):
+    def check_err(self, *awg_id_list: AWG) -> dict[AWG, list[AwgErr]]:
         """引数で指定した AWG のエラーをチェックする.
 
         エラーのあった AWG ごとにエラーの種類を返す.
@@ -244,7 +261,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             {AWG -> list of AwgErr}:
             | key = AWG ID
             | value = 発生したエラーのリスト
-            | エラーが無かった場合は空の Dict.
+            | エラーが無かった場合は空の dict.
         """
         if self._validate_args:
             try:
@@ -256,7 +273,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         return self._check_err(*awg_id_list)
 
 
-    def version(self):
+    def version(self) -> str:
         """AWG のバージョンを取得する
 
         Returns:
@@ -265,7 +282,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         return self._version()
 
 
-    def _validate_ip_addr(self, ip_addr):
+    def _validate_ip_addr(self, ip_addr: str) -> None:
         try:
             if ip_addr != 'localhost':
                 socket.inet_aton(ip_addr)
@@ -273,31 +290,31 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             raise ValueError('Invalid IP address {}'.format(ip_addr))
 
 
-    def _validate_awg_id(self, *awg_id_list):
+    def _validate_awg_id(self, *awg_id_list: AWG) -> None:
         if not AWG.includes(*awg_id_list):
             raise ValueError('Invalid AWG ID {}'.format(awg_id_list))
 
 
-    def _validate_wave_sequence(self, wave_seq):
+    def _validate_wave_sequence(self, wave_seq: WaveSequence) -> None:
         if not isinstance(wave_seq, WaveSequence):
             raise ValueError('Invalid wave sequence {}'.format(wave_seq))
         if wave_seq.num_chunks <= 0:
             raise ValueError('A wave sequence must have at least one chunk.')
 
 
-    def _validate_timeout(self, timeout):
+    def _validate_timeout(self, timeout: float) -> None:
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
 
 
-    def _validate_wave_start_interval(self, interval):
+    def _validate_wave_start_interval(self, interval: int) -> None:
         if not (isinstance(interval, int) and (1 <= interval and interval <= 0xFFFFFFFF)):
             raise ValueError(
                 "The wave start interval must be an integer between {} and {} inclusive.  '{}' was set."
                 .format(1, 0xFFFFFFFF, interval))
 
 
-    def _validate_wave_registry_key(self, key):
+    def _validate_wave_registry_key(self, key: int | None) -> None:
         if key is None:
             return
         if ((not isinstance(key, int)) or
@@ -309,83 +326,85 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     @abstractmethod
-    def _set_wave_sequence(self, awg_id, wave_seq):
+    def _set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
         pass
 
     @abstractmethod
-    def _register_wave_sequences(self, awg_id, key_to_wave_seq):
+    def _register_wave_sequences(
+        self, awg_id: AWG, key_to_wave_seq: Mapping[int | None, WaveSequence]) -> None:
         pass
 
     @abstractmethod
-    def _initialize(self, *awg_id_list):
+    def _initialize(self, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _start_awgs(self, *awg_id_list):
+    def _start_awgs(self, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _terminate_awgs(self, *awg_id_list):
+    def _terminate_awgs(self, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _reset_awgs(self, *awg_id_list):
+    def _reset_awgs(self, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _clear_awg_stop_flags(self, *awg_id_list):
+    def _clear_awg_stop_flags(self, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+    def _wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _set_wave_startable_block_timing(self, interval, *awg_id_list):
+    def _set_wave_startable_block_timing(self, interval: int, *awg_id_list: AWG) -> None:
         pass
 
     @abstractmethod
-    def _get_wave_startable_block_timing(self, *awg_id_list):
+    def _get_wave_startable_block_timing(self, *awg_id_list: AWG) -> dict[AWG, int]:
         pass
 
     @abstractmethod
-    def _check_err(self, *awg_id_list):
+    def _check_err(self, *awg_id_list: AWG) -> dict[AWG, list[AwgErr]]:
         pass
 
     @abstractmethod
-    def _version(self):
+    def _version(self) -> str:
         pass
 
 
 class AwgCtrl(AwgCtrlBase):
 
     # AWG が読み取る波形データの格納先アドレス
-    __AWG_WAVE_SRC_ADDR = [
+    __AWG_WAVE_SRC_ADDR: Final = [
         0x0,         0x20000000,  0x40000000,  0x60000000,
         0x80000000,  0xA0000000,  0xC0000000,  0xE0000000,
         0x100000000, 0x120000000, 0x140000000, 0x160000000, 
         0x180000000, 0x1A0000000, 0x1C0000000, 0x1E0000000]
     # 波形 RAM のワードサイズ (bytes)
-    __WAVE_RAM_WORD_SIZE = WAVE_RAM_WORD_SIZE
+    __WAVE_RAM_WORD_SIZE: Final = WAVE_RAM_WORD_SIZE
     # 1 波形シーケンスのサンプルデータに割り当てられる最大 RAM サイズ (bytes)
-    __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE = 256 * 1024 * 1024
+    __MAX_RAM_SIZE_FOR_WAVE_SEQUENCE: Final = 256 * 1024 * 1024
     # 波形レジストリの先頭アドレス
-    __WAVE_REGISTRY_ADDR_LIST = [
+    __WAVE_REGISTRY_ADDR_LIST: Final = [
         0x01FF00000, 0x03FF00000, 0x05FF00000, 0x07FF00000,
         0x09FF00000, 0x0BFF00000, 0x0DFF00000, 0x0FFF00000,
         0x11FF00000, 0x13FF00000, 0x15FF00000, 0x17FF00000,
         0x19FF00000, 0x1BFF00000, 0x1DFF00000, 0x1F2000000]
     # 波形シーケンス 1 つ当たりのレジストリのサイズ (bytes)
-    __WAVE_SEQ_REGISTRY_SIZE = 0x400
+    __WAVE_SEQ_REGISTRY_SIZE: Final = 0x400
 
 
     def __init__(
         self,
-        ip_addr,
+        ip_addr: str,
         *,
-        validate_args = True,
-        enable_lib_log = True,
-        logger = get_null_logger()):
+        validate_args: bool = True,
+        enable_lib_log: bool = True,
+        logger: Logger = get_null_logger()
+    ) -> None:
         """
         Args:
             ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
@@ -408,15 +427,20 @@ class AwgCtrl(AwgCtrlBase):
         self.__flock = ReentrantFileLock(filepath)
 
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+    ) -> None:
         self.close()
 
 
-    def close(self):
+    def close(self) -> None:
         """このコントローラと関連付けられたすべてのリソースを開放する.
 
         | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
@@ -427,12 +451,12 @@ class AwgCtrl(AwgCtrlBase):
             self.__flock.discard()
         except Exception as e:
             log_error(e, *self._loggers)
-        self.__flock = None
+        self.__flock = None  # type: ignore
         self.__reg_access.close()
         self.__registry_access.close()
 
 
-    def _set_wave_sequence(self, awg_id, wave_seq):
+    def _set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
         self.__check_wave_seq_data_size(awg_id, wave_seq)
         chunk_addr_list = self.__calc_chunk_addr(awg_id, wave_seq, 0)
         addr = WaveParamRegs.Addr.awg(awg_id)
@@ -440,7 +464,8 @@ class AwgCtrl(AwgCtrlBase):
         self.__send_wave_samples(wave_seq, chunk_addr_list)
 
     
-    def _register_wave_sequences(self, awg_id, key_to_wave_seq):
+    def _register_wave_sequences(
+        self, awg_id: AWG, key_to_wave_seq: Mapping[int | None, WaveSequence]) -> None:
         self.__check_wave_seq_data_size(awg_id, *key_to_wave_seq.values())
         addr_offset = 0
         for key, wave_seq in key_to_wave_seq.items():
@@ -455,7 +480,13 @@ class AwgCtrl(AwgCtrlBase):
             addr_offset += self.__calc_wave_seq_data_size(wave_seq)
 
 
-    def __set_wave_params(self, accessor, addr, wave_seq, chunk_addr_list):
+    def __set_wave_params(
+        self,
+        accessor: AwgRegAccess | ParamRegistryAccess,
+        addr: int,
+        wave_seq: WaveSequence,
+        chunk_addr_list: Sequence[int]
+    ) -> None:
         accessor.write(addr, WaveParamRegs.Offset.NUM_WAIT_WORDS, wave_seq.num_wait_words)
         accessor.write(addr, WaveParamRegs.Offset.NUM_REPEATS, wave_seq.num_repeats)
         accessor.write(addr, WaveParamRegs.Offset.NUM_CHUNKS, wave_seq.num_chunks)
@@ -471,13 +502,15 @@ class AwgCtrl(AwgCtrlBase):
             accessor.write(addr, chunk_offs + WaveParamRegs.Offset.NUM_CHUNK_REPEATS, chunk.num_repeats)
 
 
-    def __send_wave_samples(self, wave_seq, chunk_addr_list):
+    def __send_wave_samples(self, wave_seq: WaveSequence, chunk_addr_list: Sequence[int]) -> None:
         for chunk_idx in range(wave_seq.num_chunks):
             wave_data = wave_seq.chunk(chunk_idx).wave_data
             self.__wave_ram_access.write(chunk_addr_list[chunk_idx], wave_data.serialize())
 
 
-    def __calc_chunk_addr(self, awg_id, wave_seq, addr_offset):
+    def __calc_chunk_addr(
+        self, awg_id: AWG, wave_seq: WaveSequence, addr_offset: int
+    ) -> list[int]:
         addr_list = []
         for chunk in wave_seq.chunk_list:
             addr_list.append(self.__AWG_WAVE_SRC_ADDR[awg_id] + addr_offset)
@@ -485,18 +518,19 @@ class AwgCtrl(AwgCtrlBase):
         return addr_list
 
 
-    def __calc_wave_seq_data_size(self, wave_seq):
+    def __calc_wave_seq_data_size(self, wave_seq: WaveSequence) -> int:
         size = 0
         for chunk in wave_seq.chunk_list:
             size += self.__calc_wave_chunk_data_size(chunk)
         return size
 
 
-    def __calc_wave_chunk_data_size(self, chunk):
-        return ((chunk.wave_data.num_bytes + self.__WAVE_RAM_WORD_SIZE - 1) // self.__WAVE_RAM_WORD_SIZE) * self.__WAVE_RAM_WORD_SIZE
+    def __calc_wave_chunk_data_size(self, chunk: WaveChunk) -> int:
+        return ((chunk.wave_data.num_bytes + self.__WAVE_RAM_WORD_SIZE - 1) // self.__WAVE_RAM_WORD_SIZE) \
+            * self.__WAVE_RAM_WORD_SIZE
 
 
-    def __check_wave_seq_data_size(self, awg_id, *wave_seq_list):
+    def __check_wave_seq_data_size(self, awg_id: AWG, *wave_seq_list: WaveSequence) -> None:
         """波形シーケンスのサンプルデータが格納領域に収まるかチェックする"""
         size = sum([self.__calc_wave_seq_data_size(wave_seq) for wave_seq in wave_seq_list])
         if size > self.__MAX_RAM_SIZE_FOR_WAVE_SEQUENCE:
@@ -508,7 +542,7 @@ class AwgCtrl(AwgCtrlBase):
             raise ValueError(msg)
 
 
-    def _initialize(self, *awg_id_list):
+    def _initialize(self, *awg_id_list: AWG) -> None:
         self.__deselect_ctrl_target(*awg_id_list)
         for awg_id in awg_id_list:
             self.__reg_access.write(AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, 0)
@@ -520,7 +554,7 @@ class AwgCtrl(AwgCtrlBase):
             self.set_wave_sequence(awg_id, wave_seq)
 
 
-    def __select_ctrl_target(self, *awg_id_list):
+    def __select_ctrl_target(self, *awg_id_list: AWG) -> None:
         """一括制御を有効にする AWG を選択する"""
         with self.__flock:
             for awg_id in awg_id_list:
@@ -530,7 +564,7 @@ class AwgCtrl(AwgCtrlBase):
                     AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 1)
 
 
-    def __deselect_ctrl_target(self, *awg_id_list):
+    def __deselect_ctrl_target(self, *awg_id_list: AWG) -> None:
         """一括制御を無効にする AWG を選択する"""
         with self.__flock:
             for awg_id in awg_id_list:
@@ -540,7 +574,7 @@ class AwgCtrl(AwgCtrlBase):
                     AwgMasterCtrlRegs.Bit.awg(awg_id), 1, 0)
 
 
-    def _start_awgs(self, *awg_id_list):
+    def _start_awgs(self, *awg_id_list: AWG) -> None:
         with self.__flock:
             self.__select_ctrl_target(*awg_id_list)
             
@@ -562,7 +596,7 @@ class AwgCtrl(AwgCtrlBase):
             self.__deselect_ctrl_target(*awg_id_list)
 
 
-    def _terminate_awgs(self, *awg_id_list):
+    def _terminate_awgs(self, *awg_id_list: AWG) -> None:
         for awg_id in awg_id_list:
             self.__reg_access.write_bits(
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_TERMINATE, 1, 1)
@@ -571,7 +605,7 @@ class AwgCtrl(AwgCtrlBase):
                 AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, AwgCtrlRegs.Bit.CTRL_TERMINATE, 1, 0)
 
 
-    def _reset_awgs(self, *awg_id_list):
+    def _reset_awgs(self, *awg_id_list: AWG) -> None:
         with self.__flock:
             self.__select_ctrl_target(*awg_id_list)
             self.__reg_access.write_bits(
@@ -583,7 +617,7 @@ class AwgCtrl(AwgCtrlBase):
             self.__deselect_ctrl_target(*awg_id_list)
 
 
-    def _clear_awg_stop_flags(self, *awg_id_list):
+    def _clear_awg_stop_flags(self, *awg_id_list: AWG) -> None:
         with self.__flock:
             self.__select_ctrl_target(*awg_id_list)
             self.__reg_access.write_bits(
@@ -595,7 +629,7 @@ class AwgCtrl(AwgCtrlBase):
             self.__deselect_ctrl_target(*awg_id_list)
 
 
-    def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+    def _wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         start = time.time()
         while True:
             all_stopped = True
@@ -616,7 +650,7 @@ class AwgCtrl(AwgCtrlBase):
             time.sleep(0.01)
 
 
-    def __wait_for_awgs_ready(self, timeout, *awg_id_list):
+    def __wait_for_awgs_ready(self, timeout: float, *awg_id_list: AWG) -> None:
         start = time.time()
         while True:
             all_ready = True
@@ -639,7 +673,7 @@ class AwgCtrl(AwgCtrlBase):
             time.sleep(0.01)
 
 
-    def __wait_for_awgs_idle(self, timeout, *awg_id_list):
+    def __wait_for_awgs_idle(self, timeout: float, *awg_id_list: AWG) -> None:
         start = time.time()
         while True:
             all_idle = True
@@ -660,13 +694,13 @@ class AwgCtrl(AwgCtrlBase):
             time.sleep(0.01)
 
 
-    def _set_wave_startable_block_timing(self, interval, *awg_id_list):
+    def _set_wave_startable_block_timing(self, interval: int, *awg_id_list: AWG) -> None:
         for awg_id in awg_id_list:
             self.__reg_access.write(
                 WaveParamRegs.Addr.awg(awg_id), WaveParamRegs.Offset.WAVE_STARTABLE_BLOCK_INTERVAL, interval)
 
 
-    def _get_wave_startable_block_timing(self, *awg_id_list):
+    def _get_wave_startable_block_timing(self, *awg_id_list: AWG) -> dict[AWG, int]:
         awg_id_to_timimg = {}
         for awg_id in awg_id_list:
             timing = self.__reg_access.read(
@@ -675,7 +709,7 @@ class AwgCtrl(AwgCtrlBase):
         return awg_id_to_timimg
 
 
-    def _check_err(self, *awg_id_list):
+    def _check_err(self, *awg_id_list: AWG) -> dict[AWG, list[AwgErr]]:
         awg_to_err = {}
         for awg_id in awg_id_list:
             err_list = []
@@ -694,7 +728,7 @@ class AwgCtrl(AwgCtrlBase):
         return awg_to_err
 
 
-    def _version(self):
+    def _version(self) -> str:
         data = self.__reg_access.read(AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.VERSION)
         ver_char = chr(0xFF & (data >> 24))
         ver_year = 0xFF & (data >> 16)
@@ -704,7 +738,7 @@ class AwgCtrl(AwgCtrlBase):
         return '{}:20{:02}/{:02}/{:02}-{}'.format(ver_char, ver_year, ver_month, ver_day, ver_id)
 
 
-    def __get_lock_dir(self):
+    def __get_lock_dir(self) -> str:
         """
         ロックファイルを置くディレクトリを取得する.
         このディレクトリは環境変数 (E7AWG_HW_LOCKDIR) で指定され, アクセス権限は 777 でなければならない.
@@ -712,7 +746,7 @@ class AwgCtrl(AwgCtrlBase):
         """
         dirpath = os.getenv('E7AWG_HW_LOCKDIR', '/usr/local/etc/e7awg_hw/lock')
         if not os.path.isdir(dirpath):
-            err = FileNotFoundError(
+            err: OSError = FileNotFoundError(
                 'Cannot find the directory for lock files.\n'
                 "Create a directory '/usr/local/etc/e7awg_hw/lock' "
                 "or set the E7AWG_HW_LOCKDIR environment variable to the path of another directory"

@@ -7,11 +7,10 @@ import testutil
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam, plot_graph
 from e7awgsw import AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd
 from e7awgsw import AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr
-from e7awgsw import FeedbackChannel, CaptureParamElem, DspUnit, DecisionFunc
-from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl
-from e7awgsw import SinWave, IqWave, dsp
+from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
+from e7awgsw import dsp
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
-from e7awgsw.hwparam import MAX_CAPTURE_SIZE, CAPTURE_DATA_ALIGNMENT_SIZE, WAVE_RAM_PORT
+from e7awgsw.hwparam import WAVE_RAM_PORT
 from e7awgsw.logger import get_file_logger
 from e7awgsw.udpaccess import WaveRamAccess
 
@@ -23,14 +22,30 @@ class FeedbackValTest(object):
         0x90000000,  0xB0000000,  0xD0000000,  0xF0000000,
         0x150000000, 0x170000000]
 
+    # テストデザインにおけるキャプチャモジュールと AWG の波形データバスの接続関係
+    __CAP_MOD_TO_AWG = {
+        CaptureModule.U0 : AWG.U2,
+        CaptureModule.U1 : AWG.U15,
+        CaptureModule.U2 : AWG.U3,
+        CaptureModule.U3 : AWG.U4
+    }
+
+    # キャプチャモジュールとキャプチャユニットの対応関係
+    __CAP_MOD_TO_UNITS = {
+        CaptureModule.U0 : [CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3],
+        CaptureModule.U1 : [CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7],
+        CaptureModule.U2 : [CaptureUnit.U8],
+        CaptureModule.U3 : [CaptureUnit.U9]
+    }
+
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
         self.__awg_cap_ip_addr = awg_cap_ip_addr
         self.__seq_ip_addr = seq_ip_addr
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U15]
-        self.__capture_units = CaptureModule.get_units(CaptureModule.U0, CaptureModule.U1)
+        self.__awgs = list(self.__CAP_MOD_TO_AWG.values())
+        self.__capture_units = CaptureUnit.all()
 
         self.__awg_ctrl = self.__create_awg_ctrl()
         self.__cap_ctrl = self.__create_cap_ctrl()
@@ -76,17 +91,21 @@ class FeedbackValTest(object):
         self.__awg_ctrl.initialize(*self.__awgs)
         self.__cap_ctrl.initialize(*self.__capture_units)
         self.__seq_ctrl.initialize()
+        # キャプチャモジュールの構成を設定
+        for cap_mod, cap_units in self.__CAP_MOD_TO_UNITS.items():
+            self.__cap_ctrl.construct_capture_module(cap_mod, *cap_units)
         # キャプチャモジュールをスタートする AWG の設定
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U0, self.__awgs[0])
-        self.__cap_ctrl.select_trigger_awg(CaptureModule.U1, self.__awgs[1])
+        for cap_mod, awg in self.__CAP_MOD_TO_AWG.items():
+            self.__cap_ctrl.select_trigger_awg(cap_mod, awg)
         # スタートトリガの有効化
+        self.__cap_ctrl.disable_start_trigger(*CaptureUnit.all())
         self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
 
 
     def __register_wave_sequences(self, keys, wave_sequences):
         key_to_wave_seq = dict(zip(keys, wave_sequences))
-        for awg_id in self.__awgs:
-            self.__awg_ctrl.register_wave_sequences(awg_id, key_to_wave_seq)
+        for awg in self.__awgs:
+            self.__awg_ctrl.register_wave_sequences(awg, key_to_wave_seq)
 
 
     def __register_capture_params(self, keys, params):
@@ -101,26 +120,27 @@ class FeedbackValTest(object):
             cap_data_getter = self.__cap_ctrl.get_capture_data
 
         cap_unit_to_capture_data = {}
-        for cap_unit_id in self.__capture_units:
-            cap_unit_to_capture_data[cap_unit_id] = cap_data_getter(cap_unit_id, num_samples, addr_offset)
+        for cap_unit in self.__capture_units:
+            cap_unit_to_capture_data[cap_unit] = \
+                cap_data_getter(cap_unit, num_samples, addr_offset)
 
         return cap_unit_to_capture_data
 
 
     def __check_err(self):
         awg_to_err = self.__awg_ctrl.check_err(*self.__awgs)
-        for awg_id, err_list in awg_to_err.items():
-            print(awg_id)
+        for awg, err_list in awg_to_err.items():
+            print(awg)
             for err in err_list:
                 print('    {}'.format(err))
         
         cap_unit_to_err = self.__cap_ctrl.check_err(*self.__capture_units)
-        for cap_unit_id, err_list in cap_unit_to_err.items():
-            print('{} err'.format(cap_unit_id))
+        for cap_unit, err_list in cap_unit_to_err.items():
+            print('{} err'.format(cap_unit))
             for err in err_list:
                 print('    {}'.format(err))
 
-        seq_err_list = self.__cap_ctrl.check_err()
+        seq_err_list = self.__seq_ctrl.check_err()
         for seq_err in seq_err_list:
             print(seq_err, '\n')
 
@@ -137,14 +157,14 @@ class FeedbackValTest(object):
         cap_param_keys,
         feedback_val_addr,
         elem_offset,
-        feedback_channel_id):
+        feedback_channel):
         time = 3000 # 24 [us]
         cmds = [
             CaptureAddrSetCmd(1, self.__capture_units, 0),
             FeedbackCalcOnClassificationCmd(2, self.__capture_units, feedback_val_addr, elem_offset),
             # パラメータ更新
-            WaveSequenceSetCmd(3, self.__awgs, wave_seq_keys, feedback_channel_id),
-            CaptureParamSetCmd(4, self.__capture_units, cap_param_keys, feedback_channel_id),            
+            WaveSequenceSetCmd(3, self.__awgs, wave_seq_keys, feedback_channel),
+            CaptureParamSetCmd(4, self.__capture_units, cap_param_keys, feedback_channel),
             # AWG スタートとキャプチャ停止待ち
             AwgStartCmd(5, self.__awgs, time, wait = True),
             CaptureEndFenceCmd(
@@ -153,12 +173,12 @@ class FeedbackValTest(object):
         return cmds
 
 
-    def __save_wave_samples(self, capture_unit_to_capture_data, test_name, filename):
+    def __save_wave_samples(self, cap_unit_to_cap_data, test_name, filename):
         dir = self.__res_dir + '/' + test_name
         os.makedirs(dir, exist_ok = True)
-        for cap_unit_id, cap_data_list in capture_unit_to_capture_data.items():
-            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit_id)
-            self.__write_to_file(cap_data_list, capture_data_file)
+        for cap_unit, cap_data in cap_unit_to_cap_data.items():
+            capture_data_file = dir + '/' + filename + '_{}.txt'.format(cap_unit)
+            self.__write_to_file(cap_data, capture_data_file)
 
 
     def __save_capture_params(self, capture_param, test_name, file_suffx):
@@ -169,13 +189,13 @@ class FeedbackValTest(object):
             txt_file.write(str(capture_param))
 
     @classmethod
-    def __write_to_file(cls, cap_data_list, filepath):
+    def __write_to_file(cls, cap_data, filepath):
         with open(filepath, 'w') as txt_file:
-            for cap_data in cap_data_list:
+            for sample in cap_data:
                 if isinstance(cap_data, tuple):
-                    txt_file.write("{}    {}\n".format(cap_data[0], cap_data[1]))
+                    txt_file.write("{}    {}\n".format(sample[0], sample[1]))
                 else:
-                    txt_file.write("{}\n".format(cap_data))
+                    txt_file.write("{}\n".format(sample))
 
 
     def run_test(self, test_name):
@@ -193,11 +213,12 @@ class FeedbackValTest(object):
         # フィードバック値書き込み
         fb_val_addr_offset = 128 * 1024 * 1024 + 1
         for cap_addr in self.__CAPTURE_ADDR:
+            # 0xE4 = 4 つのフィードバック値 (2'b00, 2'b01, 2'b10, 2'b11)
             self.__wave_ram_access.write(
                 cap_addr + fb_val_addr_offset, 0xE4.to_bytes(1, 'little'))
         
         success = True
-        for feedback_channel_id in self.__capture_units:
+        for feedback_channel in self.__capture_units:
             for elem_offset in [0, 1, 2, 3]:
                 # コマンド作成
                 cmds = self.__gen_cmds(
@@ -205,7 +226,7 @@ class FeedbackValTest(object):
                     cap_param_keys,
                     fb_val_addr_offset,
                     elem_offset,
-                    feedback_channel_id)
+                    feedback_channel)
                 # コマンドを送信
                 self.__seq_ctrl.push_commands(cmds)
                 # コマンドエラーレポート送信の有効化
@@ -214,37 +235,39 @@ class FeedbackValTest(object):
                 self.__seq_ctrl.start_sequencer()
                 # コマンドの処理終了待ち
                 self.__seq_ctrl.wait_for_sequencer_to_stop(5)
+                # コマンドキューをクリア
+                self.__seq_ctrl.clear_commands()
                 # エラー出力
                 is_err_detected = self.__check_err()
 
                 wave_sequence = wave_sequences[elem_offset]
                 capture_param = cap_params[elem_offset]
                 self.__save_capture_params(
-                    capture_param, test_name, 'fb_{}_elem_{}'.format(feedback_channel_id, elem_offset))
+                    capture_param, test_name, 'fb_{}_elem_{}'.format(feedback_channel, elem_offset))
 
                 # 期待値データ算出
                 samples = wave_sequence.all_samples(False)
                 expected_data = dsp(samples, capture_param)
                 # キャプチャデータ取得
-                cap_unit_to_capture_data = self.__get_capture_data(
-                    capture_param.calc_capture_samples(), 0, False)
+                cap_unit_to_capture_data = \
+                    self.__get_capture_data(capture_param.calc_capture_samples(), 0, False)
                 # 結果比較
                 all_match = True
                 for cap_unit, cap_data in cap_unit_to_capture_data.items():
                     if expected_data != cap_data:
                         all_match = False
                         print('fb {}, elem {}, cap_unit {} error'.format(
-                            feedback_channel_id, elem_offset, cap_unit))
+                            feedback_channel, elem_offset, cap_unit))
 
                 # 波形データを保存
                 self.__save_wave_samples(
                     cap_unit_to_capture_data,
                     test_name,
-                    'fb_{}_elem_{}_captured'.format(feedback_channel_id, elem_offset))
+                    'fb_{}_elem_{}_captured'.format(feedback_channel, elem_offset))
                 self.__save_wave_samples(
                     {'' : expected_data},
                     test_name,
-                    'fb_{}_elem_{}_expected'.format(feedback_channel_id, elem_offset))
+                    'fb_{}_elem_{}_expected'.format(feedback_channel, elem_offset))
 
                 if (not all_match) or is_err_detected:
                     success = False

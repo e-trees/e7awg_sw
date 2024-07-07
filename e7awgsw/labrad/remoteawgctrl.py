@@ -1,7 +1,14 @@
-import labrad
+from __future__ import annotations
+
+import labrad # type: ignore
 import pickle
+from types import TracebackType
+from typing_extensions import Self, Any
+from collections.abc import Mapping
 from e7awgsw.awgctrl import AwgCtrlBase
 from e7awgsw.logger import get_null_logger, log_error
+from e7awgsw import AWG, WaveSequence, AwgErr
+from logging import Logger
 
 
 class RemoteAwgCtrl(AwgCtrlBase):
@@ -9,11 +16,12 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
     def __init__(
         self,
-        remote_server_ip_addr,
-        awg_ctrl_ip_addr,
+        remote_server_ip_addr: str,
+        awg_ctrl_ip_addr: str,
         *,
-        enable_lib_log = True,
-        logger = get_null_logger()):
+        enable_lib_log: bool = True,
+        logger: Logger = get_null_logger()
+    ) -> None:
         """
         Args:
             remote_server_ip_addr (string): LabRAD サーバの IP アドレス  (例 '192.168.0.2', 'localhost')
@@ -38,21 +46,26 @@ class RemoteAwgCtrl(AwgCtrlBase):
             raise
 
 
-    def __get_awg_ctrl_handler(self, ip_addr):
+    def __get_awg_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
         handler = self.__server.create_awgctrl(ip_addr)
         return self.__decode_and_check(handler)
 
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None
+    ) -> None:
         self.disconnect()
 
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """LabRAD サーバとの接続を切り, このコントローラと関連付けられたすべてのリソースを開放する.
 
         | このクラスのインスタンスを with 構文による後処理の対象にした場合, このメソッドを明示的に呼ぶ必要はない.
@@ -77,122 +90,122 @@ class RemoteAwgCtrl(AwgCtrlBase):
         self.__client = None
 
 
-    def _set_wave_sequence(self, awg_id, wave_seq):
+    def _set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
         try:
-            awg_id = int(awg_id)
-            wave_seq = pickle.dumps(wave_seq)
-            result = self.__server.set_wave_sequence(self.__handler, awg_id, wave_seq)
+            wseq = pickle.dumps(wave_seq)
+            result = self.__server.set_wave_sequence(self.__handler, int(awg_id), wseq)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _register_wave_sequences(self, awg_id, key_to_wave_seq):
+    def _register_wave_sequences(
+        self, awg_id: AWG, key_to_wave_seq: Mapping[int | None, WaveSequence]
+    ) -> None:
         try:
-            awg_id = int(awg_id)
-            key_to_wave_seq = pickle.dumps(key_to_wave_seq)
-            result = self.__server.register_wave_sequences(self.__handler, awg_id, key_to_wave_seq)
+            key_to_wseq = pickle.dumps(key_to_wave_seq)
+            result = self.__server.register_wave_sequences(
+                self.__handler, int(awg_id), key_to_wseq)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _initialize(self, *awg_id_list):
+    def _initialize(self, *awg_id_list: AWG) -> None:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.initialize_awgs(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.initialize_awgs(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _start_awgs(self, *awg_id_list):
+    def _start_awgs(self, *awg_id_list: AWG) -> None:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.start_awgs(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.start_awgs(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _terminate_awgs(self, *awg_id_list):
+    def _terminate_awgs(self, *awg_id_list: AWG) -> None:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.terminate_awgs(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.terminate_awgs(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _reset_awgs(self, *awg_id_list):
+    def _reset_awgs(self, *awg_id_list: AWG) -> None:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.reset_awgs(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.reset_awgs(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _clear_awg_stop_flags(self, *awg_id_list):
+    def _clear_awg_stop_flags(self, *awg_id_list: AWG) -> None:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.clear_awg_stop_flags(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.clear_awg_stop_flags(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _wait_for_awgs_to_stop(self, timeout, *awg_id_list):
+    def _wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         try:
-            timeout = pickle.dumps(timeout)
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.wait_for_awgs_to_stop(self.__handler, timeout, awg_id_list)
+            to = pickle.dumps(timeout)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.wait_for_awgs_to_stop(self.__handler, to, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _set_wave_startable_block_timing(self, interval, *awg_id_list):
+    def _set_wave_startable_block_timing(self, interval: int, *awg_id_list: AWG) -> None:
         try:
-            interval = pickle.dumps(interval)
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.set_wave_startable_block_timing(
-                self.__handler, interval, awg_id_list)
+            itrv = pickle.dumps(interval)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.set_wave_startable_block_timing(self.__handler, itrv, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _get_wave_startable_block_timing(self, *awg_id_list):
+    def _get_wave_startable_block_timing(self, *awg_id_list: AWG) -> dict[AWG, int]:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.get_wave_startable_block_timing(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.get_wave_startable_block_timing(self.__handler, awgs)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _check_err(self, *awg_id_list):
+    def _check_err(self, *awg_id_list: AWG) -> dict[AWG, list[AwgErr]]:
         try:
-            awg_id_list = [int(awg_id) for awg_id in awg_id_list]
-            result = self.__server.check_awg_err(self.__handler, awg_id_list)
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.check_awg_err(self.__handler, awgs)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
 
 
-    def _version(self):
+    def _version(self) -> str:
         try:
             result = self.__server.awg_version(self.__handler)
             return self.__decode_and_check(result)
@@ -201,7 +214,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
             raise
 
 
-    def __decode_and_check(self, data):
+    def __decode_and_check(self, data: bytes) -> Any:
         data = pickle.loads(data)
         if isinstance(data, Exception):
             raise data

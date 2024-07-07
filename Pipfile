@@ -8,6 +8,9 @@ sphinx = "*"
 sphinx-sizzle-theme = "*"
 build = "*"
 e7awgsw = {editable = true, path = "."}
+deprecated = "*"
+mypy = "*"
+types-deprecated = "*"
 
 [dev-packages]
 

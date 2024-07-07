@@ -9,7 +9,6 @@ def main(
     capture_modules,
     use_labrad,
     server_ip_addr,
-    only_all,
     skip_test,
     output_sim_data):
     random.seed(10)
@@ -39,7 +38,7 @@ def main(
         for test_id in failed_tests:
             print("Test {} failed.".format(test_id))
     else:
-        print("All tests succeeded.".format(failed_tests))
+        print('All tests succeeded.')
 
 
 if __name__ == "__main__":
@@ -49,7 +48,6 @@ if __name__ == "__main__":
     parser.add_argument('--capture-module')
     parser.add_argument('--server-ipaddr', default='localhost')
     parser.add_argument('--labrad', action='store_true')
-    parser.add_argument('--only-all', action='store_true')
     parser.add_argument('--skip-test', action='store_true')
     parser.add_argument('--output-sim-data', action='store_true')
     args = parser.parse_args()
@@ -64,6 +62,5 @@ if __name__ == "__main__":
         capture_modules,
         args.labrad,
         args.server_ipaddr,
-        args.only_all,
         args.skip_test,
         args.output_sim_data)
