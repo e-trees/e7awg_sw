@@ -1,0 +1,2 @@
+num words : 75942
+sum : 00484ae7

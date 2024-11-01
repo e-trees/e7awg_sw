@@ -7,30 +7,21 @@ from .logger import log_error
 
 class RegAccess(object):
     
-    REG_SIZE: Final = 4 # bytes
-
-    def __init__(
-        self,
-        ip_addr: str,
-        port: int,
-        wr_mode_id: int,
-        rd_mode_id: int,
-        *loggers: Logger
-    ) -> None:
-        self.__udp_rw = UdpRw(
-            ip_addr, port, self.REG_SIZE, wr_mode_id, rd_mode_id, *loggers)
+    def __init__(self, udp_rw: UdpRw, reg_size: int) -> None:
+        self.__udp_rw = udp_rw
+        self.__reg_size = reg_size # bytes
 
 
     def write(self, addr: int, offset: int, val: int) -> None:
         wr_addr = addr + offset
-        val = val & ((1 << (self.REG_SIZE * 8)) - 1)
-        wr_data = val.to_bytes(self.REG_SIZE, 'little')
+        val = val & ((1 << (self.__reg_size * 8)) - 1)
+        wr_data = val.to_bytes(self.__reg_size, 'little')
         self.__udp_rw.write(wr_addr, wr_data)
 
 
     def read(self, addr: int, offset: int) -> int:
         rd_addr = addr + offset
-        rd_data = self.__udp_rw.read(rd_addr, self.REG_SIZE)
+        rd_data = self.__udp_rw.read(rd_addr, self.__reg_size)
         return int.from_bytes(rd_data, 'little')
 
 
@@ -38,8 +29,7 @@ class RegAccess(object):
         self, addr: int, offset: int, bit_pos: int, num_bits: int, val: int
     ) -> None:
         reg_val = self.read(addr, offset)
-        reg_val = \
-            (reg_val & ~self.__get_mask(bit_pos, num_bits)) | \
+        reg_val = (reg_val & ~self.__get_mask(bit_pos, num_bits)) | \
             ((val << bit_pos) & self.__get_mask(bit_pos, num_bits))
         self.write(addr, offset, reg_val)
 
@@ -54,16 +44,16 @@ class RegAccess(object):
         wr_addr = addr + offset
         wr_data = bytearray()
         for val in vals:
-            val = val & ((1 << (self.REG_SIZE * 8)) - 1)
-            wr_data += val.to_bytes(self.REG_SIZE, 'little')
+            val = val & ((1 << (self.__reg_size * 8)) - 1)
+            wr_data += val.to_bytes(self.__reg_size, 'little')
         self.__udp_rw.write(wr_addr, wr_data)
 
 
     def multi_read(self, addr: int, offset: int, num_regs: int) -> list[int]:
         rd_addr = addr + offset
-        rd_data = self.__udp_rw.read(rd_addr, self.REG_SIZE * num_regs)
+        rd_data = self.__udp_rw.read(rd_addr, self.__reg_size * num_regs)
         return [
-            int.from_bytes(rd_data[i * self.REG_SIZE : (i + 1) * self.REG_SIZE], 'little') 
+            int.from_bytes(rd_data[i * self.__reg_size : (i + 1) * self.__reg_size], 'little') 
             for i in range(num_regs)]
     
 
@@ -71,87 +61,86 @@ class RegAccess(object):
         return ((1 << size) - 1) << index
 
 
-class AwgRegAccess(object):
+    def close(self) -> None:
+        self.__udp_rw.close()
+
+
+    @property
+    def my_ip_addr(self) -> str:
+        return self.__udp_rw.my_ip_addr
+
+
+    @property
+    def my_port(self) -> int:
+        return self.__udp_rw.my_port
+
+
+class AwgRegAccess(RegAccess):
+
+    MIN_RW_SIZE: Final = 4 # bytes
+    REG_SIZE: Final = 4 # bytes
 
     def __init__(self, ip_addr: str, port: int, *loggers: Logger) -> None:
-        self.__reg_access = RegAccess(
-            ip_addr, port, UplPacket.MODE_AWG_REG_WRITE, UplPacket.MODE_AWG_REG_READ, *loggers)
-
-    def write(self, addr: int, offset: int, val: int) -> None:
-        self.__reg_access.write(addr, offset, val)
-
-    def read(self, addr: int, offset: int) -> int:
-        return self.__reg_access.read(addr, offset)
-
-    def write_bits(
-        self, addr: int, offset: int, bit_pos: int, num_bits: int, val: int
-    ) -> None:
-        self.__reg_access.write_bits(addr, offset, bit_pos, num_bits, val)
-
-    def read_bits(self, addr: int, offset: int, bit_pos: int, num_bits: int) -> int:
-        return self.__reg_access.read_bits(addr, offset, bit_pos, num_bits)
-
-
-class CaptureRegAccess(object):
-
-    def __init__(self, ip_addr: str, port: int, *loggers: Logger) -> None:
-        self.__reg_access = RegAccess(
+        udp_rw = UdpRw(
             ip_addr,
             port,
+            self.MIN_RW_SIZE,
+            UplPacket.MODE_AWG_REG_WRITE,
+            UplPacket.MODE_AWG_REG_READ,
+            *loggers)
+
+        super().__init__(udp_rw, self.REG_SIZE)
+
+
+class CaptureRegAccess(RegAccess):
+
+    MIN_RW_SIZE: Final = 4 # bytes
+    REG_SIZE: Final = 4 # bytes
+
+    def __init__(self, ip_addr: str, port: int, *loggers: Logger) -> None:
+        udp_rw = UdpRw(
+            ip_addr,
+            port,
+            self.MIN_RW_SIZE,
             UplPacket.MODE_CAPTURE_REG_WRITE,
             UplPacket.MODE_CAPTURE_REG_READ,
             *loggers)
 
-    def write(self, addr: int, offset: int, val: int) -> None:
-        self.__reg_access.write(addr, offset, val)
-
-    def read(self, addr: int, offset: int) -> int:
-        return self.__reg_access.read(addr, offset)
-
-    def write_bits(
-        self, addr: int, offset: int, bit_pos: int, num_bits: int, val: int
-    ) -> None:
-        self.__reg_access.write_bits(addr, offset, bit_pos, num_bits, val)
-
-    def read_bits(self, addr: int, offset: int, bit_pos: int, num_bits: int) -> int:
-        return self.__reg_access.read_bits(addr, offset, bit_pos, num_bits)
-
-    def multi_write(self, addr: int, offset: int, *vals: int) -> None:
-        self.__reg_access.multi_write(addr, offset, *vals)
-
-    def multi_read(self, addr: int, offset: int, num_regs: int) -> list[int]:
-        return self.__reg_access.multi_read(addr, offset, num_regs)
+        super().__init__(udp_rw, self.REG_SIZE)
 
 
 class WaveRamAccess(object):
 
-    MIN_RW_SIZE: Final = 32 # bytes
-
-    def __init__(self, ip_addr: str, port: int, *loggers: Logger) -> None:
+    def __init__(self, ip_addr: str, port: int, word_size: int, *loggers: Logger) -> None:
         self.__udp_rw = UdpRw(
             ip_addr,
             port,
-            self.MIN_RW_SIZE,
+            word_size,
             UplPacket.MODE_WAVE_RAM_WRITE,
             UplPacket.MODE_WAVE_RAM_READ,
             *loggers)
 
+
     def write(self, addr: int, data: bytes) -> None:
         self.__udp_rw.write(addr, data)
 
+
     def read(self, addr: int, size: int) -> bytes:
         return self.__udp_rw.read(addr, size)
+
+
+    def close(self) -> None:
+        self.__udp_rw.close()
 
 
 class UdpRw(object):
 
     BUFSIZE: Final = 16384 # bytes
     #MAX_RW_SIZE: Final = 3616 # bytes
-    MAX_RW_SIZE: Final = 1440 # bytes
+    MAX_RW_SIZE: Final = 1408 # bytes
     TIMEOUT: Final = 25 # sec
 
-    def __init__(
-        self,
+    def __init__(self,
         ip_addr: str,
         port: int,
         min_rw_size: int,
@@ -167,6 +156,7 @@ class UdpRw(object):
         self.__wr_mode_id = wr_mode_id
         self.__rd_mode_id = rd_mode_id
         self.__loggers = loggers
+ 
 
     def write(self, addr: int, data: bytes) -> None:
         size_remaining = len(data)
@@ -180,14 +170,21 @@ class UdpRw(object):
 
 
     def __send_data(self, addr: int, data: bytes) -> None:
+        # アドレス端数調整
+        frac_len = addr % self.__min_rw_size
+        if frac_len != 0:
+            addr = addr // self.__min_rw_size * self.__min_rw_size
+            rd_data = self.read(addr, self.__min_rw_size)
+            data = rd_data[0 : frac_len] + data
+        
+        # データ端数調整
         data_len = len(data)
         frac_len = data_len % self.__min_rw_size
-        # 端数調整
         if frac_len != 0:
             rd_addr = addr + (data_len // self.__min_rw_size * self.__min_rw_size)
             rd_data = self.read(rd_addr, self.__min_rw_size)
-            additional_data = rd_data[frac_len : self.__min_rw_size]
-            data = data + additional_data
+            data = data + rd_data[frac_len : self.__min_rw_size]
+
         try:
             send_packet = UplPacket(self.__wr_mode_id, addr, len(data), data)
             self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
@@ -205,6 +202,7 @@ class UdpRw(object):
             log_error(e, *self.__loggers)
             raise
 
+
     def read(self, addr: int, size: int) -> bytes:
         size_remaining = size
         rd_data = bytearray()
@@ -218,14 +216,17 @@ class UdpRw(object):
 
     def __recv_data(self, addr: int, size: int) -> bytes:
         # 端数調整
-        rd_size = (size + self.__min_rw_size - 1) // self.__min_rw_size * self.__min_rw_size
-        
+        rd_addr = addr // self.__min_rw_size * self.__min_rw_size
+        rd_offset = addr - rd_addr
+        ext_size = size + rd_offset
+        rd_size = (ext_size + self.__min_rw_size - 1) // self.__min_rw_size * self.__min_rw_size
+
         try:
-            send_packet = UplPacket(self.__rd_mode_id, addr, rd_size)
+            send_packet = UplPacket(self.__rd_mode_id, rd_addr, rd_size)
             self.__sock.sendto(send_packet.serialize(), self.__dest_addr)
             recv_data, dev_addr = self.__sock.recvfrom(self.BUFSIZE)
             recv_packet = UplPacket.deserialize(recv_data)
-            if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != addr):
+            if (recv_packet.num_bytes() != rd_size) or (recv_packet.addr() != rd_addr):
                 err_msg = self.__gen_err_msg(
                     'upl read err', dev_addr, recv_data,
                     addr, rd_size, recv_packet.addr(), recv_packet.num_bytes())
@@ -237,7 +238,8 @@ class UdpRw(object):
             log_error(e, *self.__loggers)
             raise
 
-        return recv_packet.payload()[0 : size]
+        return recv_packet.payload()[rd_offset : rd_offset + size]
+
 
     def __gen_err_msg(
         self,
@@ -257,6 +259,20 @@ class UdpRw(object):
         msg += '  expected addr : {}, expected data len : {}\n'.format(exp_addr, exp_data_len)
         msg += '  actual addr : {}, actual data len : {}\n'.format(actual_addr, actual_data_len)
         return msg
+
+    def close(self) -> None:
+        self.__sock.close()
+
+
+    @property
+    def my_ip_addr(self) -> str:
+        return self.__sock.getsockname()[0]
+
+
+    @property
+    def my_port(self) -> int:
+        return self.__sock.getsockname()[1]
+
 
 def get_my_ip_addr(ip_addr: str) -> str:
     """ip_addr にパケットを送る際のこのマシンの IP アドレスを取得する"""

@@ -28,12 +28,12 @@ class AwgCaptureServer(ThreadedServer):
             return self.__capturectrls[handle]
 
 
-    @setting(100, returns='y')
-    def create_awgctrl(self, c, ipaddr):
+    @setting(100, ipaddr='s', dsign_type='w', returns='y')
+    def create_awgctrl(self, c, ipaddr, dsign_type):
         try:
             with self.__lock:
                 handle = str(self.__handle)
-                self.__awgctrls[handle] = AwgCtrl(ipaddr, validate_args = False)
+                self.__awgctrls[handle] = AwgCtrl(ipaddr, dsign_type, validate_args = False)
                 self.__handle += 1
             return pickle.dumps(str(handle))
         except Exception as e:
@@ -164,12 +164,32 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)        
 
 
-    @setting(200, returns='y')
-    def create_capturectrl(self, c, ipaddr):
+    @setting(113, handle='s', returns='y')
+    def awg_sampling_rate(self, c, handle):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            sampling_rate = awgctrl.sampling_rate()
+            return pickle.dumps(sampling_rate)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(114, handle='s', awg_id_list='*w', returns='y')
+    def prepare_awgs(self, c, handle, awg_id_list):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            awgctrl.prepare_awgs(*awg_id_list)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(200, ipaddr='s', dsign_type='w', returns='y')
+    def create_capturectrl(self, c, ipaddr, dsign_type):
         try:
             with self.__lock:
                 handle = str(self.__handle)
-                self.__capturectrls[handle] = CaptureCtrl(ipaddr, validate_args = False)
+                self.__capturectrls[handle] = CaptureCtrl(ipaddr, dsign_type, validate_args = False)
                 self.__handle += 1
             return pickle.dumps(str(handle))
         except Exception as e:
@@ -208,12 +228,13 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
        
 
-    @setting(204, handle='s', capture_unit_id='w', num_samples='y', returns='y')
-    def get_capture_data(self, c, handle, capture_unit_id, num_samples):
+    @setting(204, handle='s', capture_unit_id='w', num_samples='y', addr_offset='y', returns='y')
+    def get_capture_data(self, c, handle, capture_unit_id, num_samples, addr_offset):
         try:
             num_samples = pickle.loads(num_samples)
+            offset = pickle.loads(addr_offset)
             capturectrl = self.__get_capturectrl(handle)
-            cap_data = capturectrl.get_capture_data(capture_unit_id, num_samples)
+            cap_data = capturectrl.get_capture_data(capture_unit_id, num_samples, offset)
             return pickle.dumps(cap_data)
         except Exception as e:
             return pickle.dumps(e)
@@ -311,12 +332,13 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(214, handle='s', capture_unit_id='w', num_samples='y', returns='y')
-    def get_classification_results(self, c, handle, capture_unit_id, num_samples):
+    @setting(214, handle='s', capture_unit_id='w', num_samples='y', addr_offset='y', returns='y')
+    def get_classification_results(self, c, handle, capture_unit_id, num_samples, addr_offset):
         try:
             num_samples = pickle.loads(num_samples)
+            offset = pickle.loads(addr_offset)
             capturectrl = self.__get_capturectrl(handle)
-            cap_data = capturectrl.get_classification_results(capture_unit_id, num_samples)
+            cap_data = capturectrl.get_classification_results(capture_unit_id, num_samples, offset)
             return pickle.dumps(cap_data)
         except Exception as e:
             return pickle.dumps(e)
@@ -399,6 +421,36 @@ class AwgCaptureServer(ThreadedServer):
             capturectrl = self.__get_capturectrl(handle)
             flags = capturectrl._get_capture_stop_flags(*capture_unit_id_list)
             return pickle.dumps(flags)
+        except Exception as e:
+            return pickle.dumps(e)
+        
+
+    @setting(223, handle='s', returns='y')
+    def max_capture_samples(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            max_cap_samples = capturectrl.max_capture_samples()
+            return pickle.dumps(max_cap_samples)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(224, handle='s', returns='y')
+    def max_classification_results(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            max_cls_results = capturectrl.max_classification_results()
+            return pickle.dumps(max_cls_results)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(225, handle='s', returns='y')
+    def capture_unit_sampling_rate(self, c, handle):
+        try:
+            capturectrl = self.__get_capturectrl(handle)
+            sampling_rate = capturectrl.sampling_rate()
+            return pickle.dumps(sampling_rate)
         except Exception as e:
             return pickle.dumps(e)
 

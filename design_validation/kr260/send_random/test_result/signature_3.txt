@@ -1,0 +1,2 @@
+num words : 38931
+sum : ff69fc68

@@ -1,0 +1,2 @@
+num words : 52772
+sum : 00f721bc

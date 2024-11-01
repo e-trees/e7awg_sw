@@ -1,0 +1,2 @@
+num words : 265598
+sum : 00dca0d2

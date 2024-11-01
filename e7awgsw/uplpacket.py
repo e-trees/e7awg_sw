@@ -18,6 +18,8 @@ class UplPacket(object):
     MODE_CAPTURE_REG_WRITE: Final      = 0x42
     MODE_CAPTURE_REG_WRITE_ACK: Final  = 0x43
 
+    MODE_OTHERS: Final = 0xFF
+
     def __init__(
         self,
         mode: int,

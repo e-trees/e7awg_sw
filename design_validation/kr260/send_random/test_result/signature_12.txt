@@ -1,0 +1,2 @@
+num words : 108853
+sum : ff3f1520

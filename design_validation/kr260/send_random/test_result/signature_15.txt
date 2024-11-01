@@ -1,0 +1,2 @@
+num words : 146252
+sum : fdbddef4

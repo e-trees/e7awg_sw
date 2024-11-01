@@ -11,6 +11,7 @@ __all__ = [
     'AWG',
     'AwgErr',
     'CaptureErr',
+    'E7AwgHwType',
     'AwgTimeoutError',
     'CaptureUnitTimeoutError',
     'SinWave',
@@ -22,7 +23,7 @@ __all__ = [
     'plot_samples',
     'dsp']
 
-from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, AWG, AwgErr, CaptureErr
+from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, AWG, AwgErr, CaptureErr, E7AwgHwType
 from .awgctrl import AwgCtrl
 from .capturectrl import CaptureCtrl
 from .wavesequence import WaveSequence

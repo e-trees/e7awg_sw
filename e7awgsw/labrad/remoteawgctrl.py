@@ -6,7 +6,7 @@ from types import TracebackType
 from typing_extensions import Self, Any
 from e7awgsw.awgctrl import AwgCtrlBase
 from e7awgsw.logger import get_null_logger, log_error
-from e7awgsw import AWG, WaveSequence, AwgErr
+from e7awgsw import AWG, WaveSequence, AwgErr, E7AwgHwType
 from logging import Logger
 
 
@@ -17,6 +17,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
         self,
         remote_server_ip_addr: str,
         awg_ctrl_ip_addr: str,
+        design_type: E7AwgHwType = E7AwgHwType.SIMPLE_MULTI,
         *,
         enable_lib_log: bool = True,
         logger: Logger = get_null_logger()
@@ -30,7 +31,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
                 | False -> ライブラリの標準のログ機能を無効にする.
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        super().__init__(awg_ctrl_ip_addr, True, enable_lib_log, logger)
+        super().__init__(awg_ctrl_ip_addr, design_type, True, enable_lib_log, logger)
         self.__client = None
         self.__handler = None
 
@@ -47,7 +48,7 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
     def __get_awg_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
-        handler = self.__server.create_awgctrl(ip_addr)
+        handler = self.__server.create_awgctrl(ip_addr, self._design_type)
         return self.__decode_and_check(handler)
 
 
@@ -113,6 +114,16 @@ class RemoteAwgCtrl(AwgCtrlBase):
         try:
             awgs = [int(awg_id) for awg_id in awg_id_list]
             result = self.__server.start_awgs(self.__handler, awgs)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _prepare_awgs(self, *awg_id_list: AWG) -> None:
+        try:
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.prepare_awgs(self.__handler, awgs)
             self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -185,6 +196,15 @@ class RemoteAwgCtrl(AwgCtrlBase):
         try:
             awgs = [int(awg_id) for awg_id in awg_id_list]
             result = self.__server.check_awg_err(self.__handler, awgs)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _sampling_rate(self) -> int:
+        try:
+            result = self.__server.awg_sampling_rate(self.__handler)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)

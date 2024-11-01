@@ -6,9 +6,10 @@ from typing_extensions import Self, Any
 from types import TracebackType
 from collections.abc import Sequence
 from logging import Logger
-from e7awgsw import CaptureUnit, CaptureParam, CaptureModule, AWG, CaptureErr
+from e7awgsw import CaptureUnit, CaptureParam, CaptureModule, AWG, CaptureErr, E7AwgHwType
 from e7awgsw.capturectrl import CaptureCtrlBase
 from e7awgsw.logger import get_null_logger, log_error
+
 
 class RemoteCaptureCtrl(CaptureCtrlBase):
     """ LabRAD サーバを通してキャプチャユニットを制御するためのクラス """
@@ -17,6 +18,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
         self,
         remote_server_ip_addr: str,
         capture_ctrl_ip_addr: str,
+        design_type: E7AwgHwType = E7AwgHwType.SIMPLE_MULTI,
         *,
         enable_lib_log: bool = True,
         logger: Logger = get_null_logger()
@@ -30,7 +32,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
                 | False -> ライブラリの標準のログ機能を無効にする.
             logger (logging.Logger): ユーザ独自のログ出力に用いる Logger オブジェクト
         """
-        super().__init__(capture_ctrl_ip_addr, True, enable_lib_log, logger)
+        super().__init__(capture_ctrl_ip_addr, design_type, True, enable_lib_log, logger)
         self.__client = None
         self.__handler = None
 
@@ -47,7 +49,7 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
 
     def __get_capture_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
-        handler = self.__server.create_capturectrl(ip_addr)
+        handler = self.__server.create_capturectrl(ip_addr, self._design_type)
         return self.__decode_and_check(handler)
 
 
@@ -111,12 +113,13 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
 
 
     def _get_capture_data(
-        self, capture_unit_id: CaptureUnit, num_samples: int
+        self, capture_unit_id: CaptureUnit, num_samples: int, addr_offset: int
     ) -> list[tuple[float, float]]:
         try:
             cap_unit = int(capture_unit_id)
             n_samples = pickle.dumps(num_samples)
-            result = self.__server.get_capture_data(self.__handler, cap_unit, n_samples)
+            offset = pickle.dumps(addr_offset)
+            result = self.__server.get_capture_data(self.__handler, cap_unit, n_samples, offset)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -124,12 +127,14 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
 
 
     def _get_classification_results(
-        self, capture_unit_id: CaptureUnit, num_samples: int
+        self, capture_unit_id: CaptureUnit, num_samples: int, addr_offset: int
     ) -> Sequence[int]:
         try:
             cap_unit = int(capture_unit_id)
             n_samples = pickle.dumps(num_samples)
-            result = self.__server.get_classification_results(self.__handler, cap_unit, n_samples)
+            offset = pickle.dumps(addr_offset)
+            result = self.__server.get_classification_results(
+                self.__handler, cap_unit, n_samples, offset)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
@@ -297,6 +302,33 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
     def _get_trigger_to_modules(self) -> dict[AWG, list[CaptureModule]]:
         try:
             result = self.__server.get_trigger_to_modules(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _max_capture_samples(self) -> int:
+        try:
+            result = self.__server.max_capture_samples(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _max_classification_results(self) -> int:
+        try:
+            result = self.__server.max_classification_results(self.__handler)
+            return self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _sampling_rate(self) -> int:
+        try:
+            result = self.__server.capture_unit_sampling_rate(self.__handler)
             return self.__decode_and_check(result)
         except Exception as e:
             log_error(e, *self._loggers)
