@@ -71,77 +71,12 @@ class CaptureTestDsp(object):
                 else:
                     txt_file.write("{}\n".format(sample))
 
-    # def __gen_wave_seq(self, num_samples):
-    #     wave_seq = WaveSequence(
-    #         num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
-    #         num_repeats = 1)
-
-    #     num_chunk_samples = 256 * 1024
-    #     num_chunk_repeats = num_samples // num_chunk_samples + 1
-    #     i_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
-    #     q_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
-    #     wave_seq.add_chunk(
-    #         iq_samples = list(zip(i_data, q_data)),
-    #         num_blank_words = 0, 
-    #         num_repeats = num_chunk_repeats)
-
-    #     return wave_seq
-
-    # def __gen_capture_param(self, *dsp_units):
-    #     capture_param = CaptureParam()
-    #     capture_param.complex_fir_coefs = [
-    #         complex(
-    #             random.randint(CaptureParam.MIN_FIR_COEF_VAL, CaptureParam.MAX_FIR_COEF_VAL), 
-    #             random.randint(CaptureParam.MIN_FIR_COEF_VAL, CaptureParam.MAX_FIR_COEF_VAL))
-    #         for _ in range(CaptureParam.NUM_COMPLEX_FIR_COEFS)]
-
-    #     capture_param.real_fir_i_coefs = gen_random_int_list(
-    #         CaptureParam.NUM_REAL_FIR_COEFS, CaptureParam.MIN_FIR_COEF_VAL, CaptureParam.MAX_FIR_COEF_VAL)
-    #     capture_param.real_fir_q_coefs = gen_random_int_list(
-    #         CaptureParam.NUM_REAL_FIR_COEFS, CaptureParam.MIN_FIR_COEF_VAL, CaptureParam.MAX_FIR_COEF_VAL)
-
-    #     capture_param.complex_window_coefs = [
-    #         complex(
-    #             random.randint(CaptureParam.MIN_WINDOW_COEF_VAL, CaptureParam.MAX_WINDOW_COEF_VAL), 
-    #             random.randint(CaptureParam.MIN_WINDOW_COEF_VAL, CaptureParam.MAX_WINDOW_COEF_VAL))
-    #         for _ in range(CaptureParam.NUM_COMPLEXW_WINDOW_COEFS)]
-
-    #     max_sum_sec_len = 80
-    #     capture_param.sum_start_word_no = 0
-    #     capture_param.num_words_to_sum = random.randint(1, max_sum_sec_len)
-
-    #     # sum 無し, integ あり
-    #     if (DspUnit.INTEGRATION in dsp_units) and (not DspUnit.SUM in dsp_units):
-    #         num_sum_sections = 4096 // max_sum_sec_len
-    #         capture_param.num_integ_sections = 1024
-    #     # sum あり, integ あり
-    #     elif (DspUnit.INTEGRATION in dsp_units) and (DspUnit.SUM in dsp_units):
-    #         num_sum_sections = 4096
-    #         capture_param.num_integ_sections = 5
-    #     else:
-    #         num_sum_sections = 512
-    #         capture_param.num_integ_sections = 4
-    #     for _ in range(num_sum_sections):
-    #         # 総和区間長が 3 ワード以下の場合 decimation から値が出てこなくなるので 4 ワード以上を指定する
-    #         capture_param.add_sum_section(random.randint(4, max_sum_sec_len), random.randint(1, 24))
-
-    #     a0 = np.float32(random.randint(
-    #         CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
-    #     b0 = np.float32(random.randint(
-    #         CaptureParam.MIN_DECISION_FUNC_COEF_VAL, CaptureParam.MAX_DECISION_FUNC_COEF_VAL))
-    #     c0 = np.float32(random.randint(-10000, 10000))
-    #     capture_param.set_decision_func_params(DecisionFunc.U0, a0, b0, c0)
-    #     capture_param.set_decision_func_params(DecisionFunc.U1, b0, -a0, -c0)
-    #     capture_param.sel_dsp_units_to_enable(*dsp_units)
-
-    #     return capture_param
-
     def __gen_wave_seq(self, num_samples):
         wave_seq = WaveSequence(
             num_wait_words = 16, # <- キャプチャのタイミングがズレるので変更しないこと.
             num_repeats = 1)
 
-        num_chunk_samples = 256
+        num_chunk_samples = 256 * 1024
         num_chunk_repeats = num_samples // num_chunk_samples + 1
         i_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
         q_data = gen_random_int_list(num_chunk_samples, -32768, 32767)
@@ -171,7 +106,7 @@ class CaptureTestDsp(object):
                 random.randint(CaptureParam.MIN_WINDOW_COEF_VAL, CaptureParam.MAX_WINDOW_COEF_VAL))
             for _ in range(CaptureParam.NUM_COMPLEXW_WINDOW_COEFS)]
 
-        max_sum_sec_len = 20
+        max_sum_sec_len = 80
         capture_param.sum_start_word_no = 0
         capture_param.num_words_to_sum = random.randint(1, max_sum_sec_len)
 
@@ -200,6 +135,7 @@ class CaptureTestDsp(object):
         capture_param.sel_dsp_units_to_enable(*dsp_units)
 
         return capture_param
+
 
     def __setup_modules(self, awg_ctrl, cap_ctrl):
         awg_ctrl.initialize(*self.__awgs)

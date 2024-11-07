@@ -48,16 +48,16 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
-        if self._validate_args:
-            try:
-                self._unit_params = CaptureUnitParams.of(self._design_type)
-                self._ram_params = CaptureRamParams.of(self._design_type)
+        try:
+            self._unit_params = CaptureUnitParams.of(self._design_type)
+            self._ram_params = CaptureRamParams.of(self._design_type)
+            if self._validate_args:
                 self._validate_ip_addr(ip_addr)
                 if design_type != E7AwgHwType.SIMPLE_MULTI:
                     raise 
-            except Exception as e:
-                log_error(e, *self._loggers)
-                raise
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
 
 
     def set_capture_params(self, capture_unit_id: CaptureUnit, param: CaptureParam) -> None:
@@ -446,6 +446,15 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             キャプチャユニットのサンプリングレート (単位: サンプル数/秒)
         """
         return self._sampling_rate()
+
+
+    def design_type(self) -> E7AwgHwType:
+        """このオブジェクトが制御対象とする e7awg_hw の種類を取得する.
+
+        Returns:
+            このオブジェクトが制御対象とする e7awg_hw の種類
+        """
+        return self._design_type
 
 
     def version(self) -> str:

@@ -45,8 +45,8 @@ class CaptureUnit(IntEnum):
     U8: Final = 8
     U9: Final = 9
 
-    # @deprecated('Use CaptureUnit.on(...) instead')
     @classmethod
+    @deprecated("Use 'sorted(CaptureUnit.on(...))' instead")
     def all(cls) -> list[Self]:
         """全キャプチャユニットの ID をリストとして返す
         
@@ -60,18 +60,17 @@ class CaptureUnit(IntEnum):
         units = list(CaptureUnit)
         if not val in units:
             raise ValueError("Cannot convert {} to CaptureUnit".format(val))
-        return cast(Self, units[val])
+        return cast(Self, CaptureUnit(val))
 
-
-    # @deprecated('Use CaptureUnit.on(...).issuperset(vals) instead')
     @classmethod
+    @deprecated("Use 'CaptureUnit.on(...).issuperset(vals)' instead")
     def includes(cls, *vals: int) -> bool:
         units = list(CaptureUnit)
         return all([val in units for val in vals])
 
     @classmethod
     def on(cls, design_type: E7AwgHwType) -> set[Self]:
-        """引数で指定した e7awg_hw デザインに含まれる全てのキャプチャユニットの ID をリストに格納して返す"""
+        """引数で指定した e7awg_hw デザインに含まれる全てのキャプチャユニットの ID をセットに格納して返す"""
         units = set()
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             units = {
@@ -88,8 +87,8 @@ class CaptureModule(IntEnum):
     U2: Final = 2
     U3: Final = 3
 
-    # @deprecated('Use CaptureModule.on(...) instead')
     @classmethod
+    @deprecated("Use 'sorted(CaptureModule.on(...))' instead")
     def all(cls) -> list[Self]:
         """全キャプチャモジュールの ID をリストとして返す"""
         return list(CaptureModule)
@@ -99,18 +98,17 @@ class CaptureModule(IntEnum):
         mods = list(CaptureModule)
         if not val in mods:
             raise ValueError("Cannot convert {} to CaptureModule".format(val))
-        return cast(Self, mods[val])
+        return cast(Self, CaptureModule(val))
 
-
-    # @deprecated('Use CaptureModule.on(...).issuperset(vals) instead')
     @classmethod
+    @deprecated("Use 'CaptureModule.on(...).issuperset(vals)' instead")
     def includes(cls, *vals: int) -> bool:
         mods = list(CaptureModule)
         return all([val in mods for val in vals])
 
     @classmethod
     def on(cls, design_type: E7AwgHwType) -> set[Self]:
-        """引数で指定した e7awg_hw デザインに含まれる全てのキャプチャモジュールの ID をリストに格納して返す"""
+        """引数で指定した e7awg_hw デザインに含まれる全てのキャプチャモジュールの ID をセットに格納して返す"""
         mods = set()
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             mods = { CaptureModule.U0, CaptureModule.U1, CaptureModule.U2, CaptureModule.U3 }
@@ -132,7 +130,7 @@ class DecisionFunc(IntEnum):
     def of(cls, val: int) -> Self:
         if not cls.includes(val):
             raise ValueError("connot convert {} to DecisionFunc".format(val))
-        return cls.all()[val]
+        return cast(Self, DecisionFunc(val))
 
     @classmethod
     def includes(cls, *vals: int) -> bool:
@@ -159,8 +157,8 @@ class AWG(IntEnum):
     U14: Final = 14
     U15: Final = 15
 
-    # @deprecated('Use AWG.on(...) instead')
     @classmethod
+    @deprecated("Use 'sorted(AWG.on(...))' instead")
     def all(cls) -> list[Self]:
         """全 AWG の ID をリストとして返す
         
@@ -174,17 +172,17 @@ class AWG(IntEnum):
         awgs = list(AWG)
         if not val in awgs:
             raise ValueError("connot convert {} to AWG".format(val))
-        return cast(Self, awgs[val])
+        return cast(Self, AWG(val))
 
-    # @deprecated('Use AWG.on(...).issuperset(vals) instead')
     @classmethod
+    @deprecated("Use 'AWG.on(...).issuperset(vals)' instead")
     def includes(cls, *vals: int) -> bool:
         awgs = list(AWG)
         return all([val in awgs for val in vals])
     
     @classmethod
     def on(cls, design_type: E7AwgHwType) -> set[Self]:
-        """引数で指定した e7awg_hw デザインに含まれる全ての AWG の ID をリストに格納して返す"""
+        """引数で指定した e7awg_hw デザインに含まれる全ての AWG の ID をセットに格納して返す"""
         awgs = set()
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             awgs = {

@@ -48,7 +48,8 @@ class RemoteAwgCtrl(AwgCtrlBase):
 
     def __get_awg_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
-        handler = self.__server.create_awgctrl(ip_addr, self._design_type)
+        design_type = pickle.dumps(self._design_type)
+        handler = self.__server.create_awgctrl(ip_addr, design_type)
         return self.__decode_and_check(handler)
 
 

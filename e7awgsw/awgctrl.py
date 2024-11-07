@@ -39,14 +39,14 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
-        if self._validate_args:
-            try:
-                self._awg_params = AwgParams.of(design_type)
-                self._ram_params = WaveRamParams.of(design_type)
+        try:
+            self._awg_params = AwgParams.of(design_type)
+            self._ram_params = WaveRamParams.of(design_type)
+            if self._validate_args:
                 self._validate_ip_addr(ip_addr)
-            except Exception as e:
-                log_error(e, *self._loggers)
-                raise
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
     
 
     def set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
@@ -262,6 +262,15 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             AWG のサンプリングレート (単位: サンプル数/秒)
         """
         return self._sampling_rate()
+
+
+    def design_type(self) -> E7AwgHwType:
+        """このオブジェクトが制御対象とする e7awg_hw の種類を取得する.
+
+        Returns:
+            このオブジェクトが制御対象とする e7awg_hw の種類
+        """
+        return self._design_type
 
 
     def version(self) -> str:

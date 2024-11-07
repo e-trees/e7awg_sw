@@ -467,6 +467,16 @@ class WaveSequence(object):
         return self.sample_size * self.__awg_params.num_samples_in_word()
 
 
+    @property
+    def design_type(self) -> E7AwgHwType:
+        """このオブジェクトに設定された e7awg_hw の種類
+        
+        Returns:
+            E7AwgHwType: このオブジェクトに設定された e7awg_hw の種類
+        """
+        return self.__design_type
+
+
     def __str__(self) -> str:
         ret = ('num wait words : {}\n'.format(self.__num_wait_words) +
                'num sequence repeats : {}\n'.format(self.__num_repeats) +
@@ -800,7 +810,7 @@ class WaveData(object):
     def num_bytes(self) -> int:
         """波形データのバイト数
 
-        AWG から出力されるデータ (Real データ) のバイト数と一致しないことに注意.
+        KR260 デザインでは, AWG から出力されるデータ (Real データ) のバイト数と一致しないことに注意.
         
         Returns:
             int: 波形データのバイト数

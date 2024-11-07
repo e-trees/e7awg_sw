@@ -28,12 +28,13 @@ class AwgCaptureServer(ThreadedServer):
             return self.__capturectrls[handle]
 
 
-    @setting(100, ipaddr='s', dsign_type='w', returns='y')
-    def create_awgctrl(self, c, ipaddr, dsign_type):
+    @setting(100, ipaddr='s', design_type='y', returns='y')
+    def create_awgctrl(self, c, ipaddr, design_type):
         try:
             with self.__lock:
                 handle = str(self.__handle)
-                self.__awgctrls[handle] = AwgCtrl(ipaddr, dsign_type, validate_args = False)
+                design_type = pickle.loads(design_type)
+                self.__awgctrls[handle] = AwgCtrl(ipaddr, design_type, validate_args = False)
                 self.__handle += 1
             return pickle.dumps(str(handle))
         except Exception as e:
@@ -184,12 +185,13 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
-    @setting(200, ipaddr='s', dsign_type='w', returns='y')
-    def create_capturectrl(self, c, ipaddr, dsign_type):
+    @setting(200, ipaddr='s', design_type='y', returns='y')
+    def create_capturectrl(self, c, ipaddr, design_type):
         try:
             with self.__lock:
                 handle = str(self.__handle)
-                self.__capturectrls[handle] = CaptureCtrl(ipaddr, dsign_type, validate_args = False)
+                design_type = pickle.loads(design_type)
+                self.__capturectrls[handle] = CaptureCtrl(ipaddr, design_type, validate_args = False)
                 self.__handle += 1
             return pickle.dumps(str(handle))
         except Exception as e:

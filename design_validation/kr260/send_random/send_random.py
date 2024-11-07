@@ -121,7 +121,7 @@ if __name__ == "__main__":
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    awgs = AWG.on(E7AwgHwType.KR260)
+    awgs = sorted(AWG.on(E7AwgHwType.KR260))
     if args.awgs is not None:
         awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
 

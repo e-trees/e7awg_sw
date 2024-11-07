@@ -49,7 +49,8 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
 
     def __get_capture_ctrl_handler(self, ip_addr: str) -> str:
         """サーバ上の AWG Controller のハンドラを取得する"""
-        handler = self.__server.create_capturectrl(ip_addr, self._design_type)
+        design_type = pickle.dumps(self._design_type)
+        handler = self.__server.create_capturectrl(ip_addr, design_type)
         return self.__decode_and_check(handler)
 
 
