@@ -37,6 +37,6 @@ if __name__ == "__main__":
 
     awgs = sorted(AWG.on(E7AwgHwType.SIMPLE_MULTI))
     if args.awgs is not None:
-        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+        awgs = [AWG(int(x)) for x in args.awgs.split(',')]
 
     main(args.labrad, server_ip_addr, awgs)

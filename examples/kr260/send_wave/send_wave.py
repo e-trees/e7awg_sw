@@ -99,6 +99,6 @@ if __name__ == "__main__":
 
     awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.KR260))
     if args.awgs is not None:
-        awgs = [e7s.AWG.of(int(x)) for x in args.awgs.split(',')]
+        awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
 
     main(awgs, args.num_wait_words, timeout=args.timeout)

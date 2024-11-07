@@ -332,7 +332,7 @@ if __name__ == "__main__":
 
     capture_modules = sorted(CaptureModule.on(E7AwgHwType.SIMPLE_MULTI))
     if args.capture_module is not None:
-        capture_modules = [CaptureModule.of(int(args.capture_module))]
+        capture_modules = [CaptureModule(int(args.capture_module))]
 
     server_ip_addr = 'localhost'
     if args.server_ipaddr is not None:

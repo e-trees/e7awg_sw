@@ -56,6 +56,7 @@ class CaptureUnit(IntEnum):
         return list(CaptureUnit)
 
     @classmethod
+    @deprecated("Use 'CaptureUnit(val)' instead")
     def of(cls, val) -> Self:
         units = list(CaptureUnit)
         if not val in units:
@@ -94,6 +95,7 @@ class CaptureModule(IntEnum):
         return list(CaptureModule)
 
     @classmethod
+    @deprecated("Use 'CaptureModule(val)' instead")
     def of(cls, val: int) -> Self:
         mods = list(CaptureModule)
         if not val in mods:
@@ -127,6 +129,7 @@ class DecisionFunc(IntEnum):
         return list(DecisionFunc)
 
     @classmethod
+    @deprecated("Use 'DecisionFunc(val)' instead")
     def of(cls, val: int) -> Self:
         if not cls.includes(val):
             raise ValueError("connot convert {} to DecisionFunc".format(val))
@@ -168,6 +171,7 @@ class AWG(IntEnum):
         return list(AWG)
 
     @classmethod
+    @deprecated("Use 'AWG(val)' instead")
     def of(cls, val: int) -> Self:
         awgs = list(AWG)
         if not val in awgs:

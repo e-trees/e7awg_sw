@@ -213,11 +213,11 @@ if __name__ == "__main__":
 
     awgs = sorted(AWG.on(E7AwgHwType.SIMPLE_MULTI))
     if args.awgs is not None:
-        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+        awgs = [AWG(int(x)) for x in args.awgs.split(',')]
 
     capture_modules = sorted(CaptureModule.on(E7AwgHwType.SIMPLE_MULTI))
     if args.capture_module is not None:
-        capture_modules = [CaptureModule.of(int(args.capture_module))]
+        capture_modules = [CaptureModule(int(args.capture_module))]
 
     main(
         awgs,
