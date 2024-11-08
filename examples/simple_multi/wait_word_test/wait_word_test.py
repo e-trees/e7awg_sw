@@ -42,7 +42,6 @@ def gen_cos_wave(freq, num_cycles, amp, hw_specs):
 
 
 def gen_wave_seq(shift, hw_specs):
-    wave_seq = WaveSequence(0, 1, E7AwgHwType.SIMPLE_MULTI)
     samples = gen_cos_wave(4e6, 8, 32760, hw_specs)
     num_wait_words = 16 + int(len(samples) * shift / hw_specs.awg.num_samples_in_word)
     wave_seq = WaveSequence(
