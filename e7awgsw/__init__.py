@@ -21,7 +21,8 @@ __all__ = [
     'IqWave',
     'plot_graph',
     'plot_samples',
-    'dsp']
+    'dsp',
+    'E7AwgHwSpecs']
 
 from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, AWG, AwgErr, CaptureErr, E7AwgHwType
 from .awgctrl import AwgCtrl
@@ -32,3 +33,4 @@ from .utiltool import plot_graph, plot_samples
 from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
 from .dspmodule import dsp
+from .hwspec import E7AwgHwSpecs

@@ -5,7 +5,7 @@ from typing_extensions import Self
 from typing import Any, Final, overload
 from collections.abc import Sequence, Iterator
 from logging import Logger
-from .hwparam import NUM_SAMPLES_IN_AWG_WORD, AwgParams
+from .hwspec import E7AwgHwSpecs, AwgSpecs
 from .hwdefs import E7AwgHwType
 from .logger import get_file_logger, get_null_logger, log_error
 
@@ -48,6 +48,8 @@ class WaveSequence(object):
                 |     KR260        : 1 サンプル
                 |     ZCU111       : 8 サンプル
             num_repeats (int): 波形シーケンスを繰り返す回数
+            design_type (E7AwgHwType):
+                | このオブジェクトで定義したユーザ定義波形を出力する AWG が含まれる e7awg_hw の種類
             enable_lib_log (bool):
                 | True -> ライブラリの標準のログ機能を有効にする.
                 | False -> ライブラリの標準のログ機能を無効にする.
@@ -59,18 +61,18 @@ class WaveSequence(object):
 
         try:
             self.__design_type = design_type
-            self.__awg_params = AwgParams.of(design_type)
+            self.__awg_specs: AwgSpecs = E7AwgHwSpecs(design_type).awg # type: ignore
             if not (isinstance(num_wait_words, int) and 
-                    (0 <= num_wait_words and num_wait_words <= self.max_wait_words)):
+                    (0 <= num_wait_words and num_wait_words <= self.__awg_specs.max_wait_words)):
                 raise ValueError(
                     "The number of wait words must be an integer between {} and {} inclusive.  '{}' was set."
-                    .format(0, self.max_wait_words, num_repeats))
+                    .format(0, self.__awg_specs.max_wait_words, num_repeats))
 
             if not (isinstance(num_repeats, int) and 
-                    (1 <= num_repeats and num_repeats <= self.max_sequence_repeats)):
+                    (1 <= num_repeats and num_repeats <= self.__awg_specs.max_sequence_repeats)):
                 raise ValueError(
                     "The number of times to repeat a wave sequence must be an integer between {} and {} inclusive.  '{}' was set."
-                    .format(1, self.max_sequence_repeats, num_repeats))
+                    .format(1, self.__awg_specs.max_sequence_repeats, num_repeats))
         except Exception as e:
             log_error(e, *self.__loggers)
             raise
@@ -98,7 +100,8 @@ class WaveSequence(object):
                 | 各サンプルの I データと Q データを格納したタプルのシーケンス.
                 | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.
                 | シーケンスの要素数は smallest_unit_of_wave_len の倍数でなければならない.
-                | タプルの各要素は (sample_size / 2) [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)
+                | タプルの各要素は, コンストラクタの design_type に指定した e7awg_hw の AWG が出力する
+                | サンプルサイズ [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)
             num_blank_words (int): 
                 | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.
                 | 単位は AWG ワード.
@@ -112,20 +115,21 @@ class WaveSequence(object):
             if not isinstance(iq_samples, Sequence):
                 raise ValueError('Invalid sample list  ({})'.format(iq_samples))
             
-            if (len(self.__chunks) == self.max_chunks):
-                raise ValueError("No more wave chunks can be added. (max=" + str(self.max_chunks) + ")")
+            if (len(self.__chunks) == self.__awg_specs.max_chunks):
+                raise ValueError(
+                    "No more wave chunks can be added. (max=" + str(self.__awg_specs.max_chunks) + ")")
             
             num_samples = len(iq_samples)
             if num_samples == 0:
                 raise ValueError('Empty sample list was set.')
 
-            if num_samples % self.smallest_unit_of_wave_len != 0:
+            if num_samples % self.__awg_specs.smallest_unit_of_wave_len != 0:
                 raise ValueError(
                     'The number of samples in a wave chunk must be a multiple of {}.  ({} was set.)'
-                    .format(self.smallest_unit_of_wave_len, num_samples))
+                    .format(self.__awg_specs.smallest_unit_of_wave_len, num_samples))
 
             try:
-                max = (1 << (self.sample_size // 2 * 8)) - 1
+                max = (1 << (self.__sample_size // 2 * 8)) - 1
                 min = (max + 1) // -2
                 # サンプルサイズで表せる数かどうかチェック
                 for iq_sample in iq_samples:
@@ -140,16 +144,16 @@ class WaveSequence(object):
                     .format(iq_sample))
 
             if not (isinstance(num_blank_words, int) and 
-                    (0 <= num_blank_words and num_blank_words <= self.max_post_blank)):
+                    (0 <= num_blank_words and num_blank_words <= self.__awg_specs.max_post_blank)):
                 raise ValueError(
                     "Post blank length must be an integer between {} and {} inclusive.  '{}' was set."
-                    .format(0, self.max_post_blank, num_blank_words))
+                    .format(0, self.__awg_specs.max_post_blank, num_blank_words))
 
             if not (isinstance(num_repeats, int) and 
-                    (1 <= num_repeats and num_repeats <= self.max_chunk_repeats)):
+                    (1 <= num_repeats and num_repeats <= self.__awg_specs.max_chunk_repeats)):
                 raise ValueError(
                     "The number of times to repeat a wave chunk must be an integer between {} and {} inclusive.  '{}' was set."
-                    .format(1, self.max_chunk_repeats, num_repeats))
+                    .format(1, self.__awg_specs.max_chunk_repeats, num_repeats))
         except Exception as e:
             log_error(e, *self.__loggers)
             raise
@@ -158,8 +162,8 @@ class WaveSequence(object):
             iq_samples,
             num_blank_words,
             num_repeats,
-            self.sample_size,
-            self.__awg_params.num_samples_in_word()))
+            self.__sample_size,
+            self.__awg_specs.num_samples_in_word))
 
 
     @property
@@ -201,7 +205,7 @@ class WaveSequence(object):
         Returns:
             int: ユーザ定義波形の先頭に付く 0 データのサンプル数.
         """
-        return self.num_wait_words * self.num_samples_in_awg_word
+        return self.num_wait_words * self.__awg_specs.num_samples_in_word
 
 
     @property
@@ -247,7 +251,7 @@ class WaveSequence(object):
         Returns:
             int: このユーザ定義波形の全サンプル数
         """
-        return self.num_all_words * self.num_samples_in_awg_word
+        return self.num_all_words * self.__awg_specs.num_samples_in_word
 
 
     @property
@@ -316,21 +320,22 @@ class WaveSequence(object):
                 | True -> 16進数として保存
                 | False -> 10進数として保存
         """
+        awg_word_size = self.__sample_size * self.__awg_specs.num_samples_in_word
         try:
             with open(filepath, 'w') as txt_file:
-                first_zeros = '0\n' * (self.__num_wait_words * self.num_samples_in_awg_word)
+                first_zeros = '0\n' * (self.__num_wait_words * self.__awg_specs.num_samples_in_word)
                 txt_file.write(first_zeros)
                 for _ in range(self.__num_repeats):
                     for chunk in self.__chunks:
                         for _ in range(chunk.num_repeats):
                             for i_data, q_data in chunk.wave_data.samples:
                                 if to_hex:
-                                    i_data = i_data & ((1 << (self.awg_word_size // 2 * 8)) - 1)
-                                    q_data = q_data & ((1 << (self.awg_word_size // 2 * 8)) - 1)
+                                    i_data = i_data & ((1 << (awg_word_size // 2 * 8)) - 1)
+                                    q_data = q_data & ((1 << (awg_word_size // 2 * 8)) - 1)
                                     txt_file.write('{:04x}, {:04x}\n'.format(i_data, q_data))
                                 else:
                                     txt_file.write('{:7d}, {:7d}\n'.format(i_data, q_data))
-                            num_repeats = chunk.num_blank_words * self.num_samples_in_awg_word
+                            num_repeats = chunk.num_blank_words * self.__awg_specs.num_samples_in_word
                             if to_hex:
                                 post_chunk_zeros = '{:04x}, {:04x}\n'.format(0, 0) * num_repeats
                             else:
@@ -353,7 +358,7 @@ class WaveSequence(object):
         Returns:
             int: 波形チャンクに指定可能な最大ポストブランク長
         """
-        return 0xFFFF_FFFF
+        return self.__awg_spec.max_post_blank
 
 
     @property
@@ -363,12 +368,12 @@ class WaveSequence(object):
         Returns:
             int: 波形チャンクの最大リピート回数
         """
-        return 0xFFFF_FFFF
+        return self.__awg_spec.max_chunk_repeats
 
 
     @property
     def max_wait_words(self) -> int:
-        """波形シーケンスの先頭に付く 0 データの最大の長さ (単位: AWG ワード)
+        """ユーザ定義波形の先頭に付く 0 データの最大の長さ (単位: AWG ワード)
         
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
         |     simple multi : 4 サンプル
@@ -376,9 +381,9 @@ class WaveSequence(object):
         |     ZCU111       : 8 サンプル
 
         Returns:
-            int: 波形シーケンスの先頭に付く 0 データの最大の長さ
+            int: ユーザ定義波形の先頭に付く 0 データの最大の長さ
         """
-        return 0xFFFF_FFFF
+        return self.__awg_spec.max_wait_words
 
 
     @property
@@ -388,7 +393,7 @@ class WaveSequence(object):
         Returns:
             int: 波形シーケンスの最大リピート回数
         """
-        return 0xFFFF_FFFF
+        return self.__awg_spec.max_sequence_repeats
 
 
     @property
@@ -398,7 +403,7 @@ class WaveSequence(object):
         Returns:
             int: 波形シーケンスに登録可能な最大チャンク数
         """
-        return 16
+        return self.__awg_spec.max_chunks
     
 
     @property
@@ -408,7 +413,7 @@ class WaveSequence(object):
         Returns:
             int: 1 波形ブロックに含まれるサンプル数
         """
-        return self.__awg_params.num_sample_in_wave_block()
+        return self.__awg_spec.num_samples_in_wave_block
 
 
     @property
@@ -418,7 +423,7 @@ class WaveSequence(object):
         Returns:
             int: 波形チャンクの波形パートを構成可能なサンプル数の最小単位
         """
-        return self.__awg_params.smallest_unit_of_wave_len()
+        return self.__awg_spec.smallest_unit_of_wave_len
 
 
     @property
@@ -433,11 +438,11 @@ class WaveSequence(object):
         Returns:
             int: 1 AWG ワード当たりのサンプル数
         """
-        return self.__awg_params.num_samples_in_word()
+        return self.__awg_spec.num_samples_in_word
 
 
     @property
-    def sample_size(self):
+    def __sample_size(self):
         """
         ユーザ定義波形のサンプルのサイズ.  (Bytes)
         
@@ -447,24 +452,9 @@ class WaveSequence(object):
             int: ユーザ定義波形のサンプルのサイズ.
         """
         if self.__design_type == E7AwgHwType.KR260:
-            return self.__awg_params.sample_size() * 2
+            return self.__awg_specs.sample_size * 2
 
-        return self.__awg_params.sample_size()
-
-    @property
-    def awg_word_size(self):
-        """
-        1 AWG ワードのサイズ (Bytes)
-
-        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi : 4 サンプル
-        |     KR260        : 1 サンプル
-        |     ZCU111       : 8 サンプル
-
-        Returns:
-            int: 1 AWG ワードのサイズ
-        """
-        return self.sample_size * self.__awg_params.num_samples_in_word()
+        return self.__awg_specs.sample_size
 
 
     @property

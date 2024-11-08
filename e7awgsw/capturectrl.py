@@ -22,6 +22,7 @@ from .exception import CaptureUnitTimeoutError
 from .logger import get_file_logger, get_null_logger, log_error, log_warning
 from .lock import ReentrantFileLock
 from .classification import ClassificationResult
+from .hwspec import E7AwgHwSpecs, CaptureUnitSpecs
 
 class CaptureCtrlBase(object, metaclass = ABCMeta):
 
@@ -49,6 +50,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             self._loggers.append(get_file_logger())
 
         try:
+            self._cap_specs: CaptureUnitSpecs = E7AwgHwSpecs(self._design_type).cap_unit # type: ignore
             self._unit_params = CaptureUnitParams.of(self._design_type)
             self._ram_params = CaptureRamParams.of(self._design_type)
             if self._validate_args:
@@ -643,7 +645,7 @@ class CaptureCtrl(CaptureCtrlBase):
             ip_addr (string): キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
             design_type (E7AwgHwType):
                 | このオブジェクトで制御するキャプチャユニットが含まれる e7awg_hw の種類
-                | キャプチャユニットを持つデザインを指定してください.
+                | キャプチャユニットを持つデザインを指定すること.
             validate_args(bool):
                 | True -> 引数のチェックを行う
                 | False -> 引数のチェックを行わない
@@ -1167,18 +1169,20 @@ class CaptureCtrl(CaptureCtrlBase):
         self, target_name: str, num_capture_samples: int
     ) -> None:
         """四値化結果が保存領域に納まるかチェックする"""
-        if num_capture_samples > self.MAX_CLASSIFICATION_RESULTS:
+        max_cls_results = self._cap_specs.max_classification_results
+        if num_capture_samples > max_cls_results:
             msg = ('{} has too many classification results.  (max = {}, setting = {})'
-                .format(target_name, self.MAX_CLASSIFICATION_RESULTS, num_capture_samples))
+                .format(target_name, max_cls_results, num_capture_samples))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
 
     def __check_num_capture_samples(self, target_name: str, num_capture_samples: int) -> None:
         """キャプチャサンプルが保存領域に納まるかチェックする"""
-        if num_capture_samples > self.MAX_CAPTURE_SAMPLES:
+        max_cap_samples = self._cap_specs.max_capture_samples
+        if num_capture_samples > max_cap_samples:
             msg = ('{} has too many capture samples.  (max = {}, setting = {})'
-                .format(target_name, self.MAX_CAPTURE_SAMPLES, num_capture_samples))
+                .format(target_name, max_cap_samples, num_capture_samples))
             log_error(msg, *self._loggers)
             raise ValueError(msg)
 
@@ -1197,17 +1201,15 @@ class CaptureCtrl(CaptureCtrlBase):
 
 
     def _max_capture_samples(self) -> int:
-        return self._ram_params.max_size_for_capture_data() \
-            // self._unit_params.output_sample_size()
+        return self._cap_specs.max_capture_samples
 
 
     def _max_classification_results(self) -> int:
-        return self._ram_params.max_size_for_capture_data() * 8 \
-            // self._unit_params.classification_result_size()
+        return self._cap_specs.max_classification_results
 
 
     def _sampling_rate(self) -> int:
-        return self._unit_params.sampling_rate()
+        return self._cap_specs.sampling_rate
 
 
     def _version(self) -> str:

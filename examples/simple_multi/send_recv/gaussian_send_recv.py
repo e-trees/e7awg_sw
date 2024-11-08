@@ -3,8 +3,8 @@
 """
 import os
 import argparse
-from e7awgsw import CaptureUnit, CaptureModule, AWG, \
-    AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam, plot_graph, E7AwgHwType
+from e7awgsw import CaptureUnit, CaptureModule, AWG, AwgCtrl, \
+    CaptureCtrl, WaveSequence, CaptureParam, plot_graph, E7AwgHwType, E7AwgHwSpecs
 from e7awgsw import SquareWave, GaussianPulse, IqWave
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
@@ -29,7 +29,7 @@ def set_trigger_awg(cap_ctrl, awg, capture_modules):
         cap_ctrl.enable_start_trigger(*CAP_MOD_TO_UNITS[cap_mod_id])
 
 
-def gen_wave_seq(sampling_rate):
+def gen_wave_seq(hw_specs):
     wave_seq = WaveSequence(
         num_wait_words = 16,
         num_repeats = 1,
@@ -40,8 +40,8 @@ def gen_wave_seq(sampling_rate):
         i_wave = GaussianPulse(num_cycles = 1, frequency = 2e6, amplitude = 20000, duration = 6.0, variance = 0.4)
         q_wave = SquareWave(num_cycles = 1, frequency = 2e6, amplitude = 0, duty_cycle = 0.0)
         iq_samples = IqWave(i_wave, q_wave).gen_samples(
-            sampling_rate = sampling_rate,
-            padding_size = wave_seq.smallest_unit_of_wave_len)
+            sampling_rate = hw_specs.awg.sampling_rate,
+            padding_size = hw_specs.awg.smallest_unit_of_wave_len)
 
         wave_seq.add_chunk(
             iq_samples = iq_samples,
@@ -50,9 +50,9 @@ def gen_wave_seq(sampling_rate):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs):
+def set_wave_sequence(awg_ctrl, awgs, hw_specs):
     awg_to_wave_sequence = {}
-    wave_seq = gen_wave_seq(awg_ctrl.sampling_rate())
+    wave_seq = gen_wave_seq(hw_specs)
     for awg_id in awgs:
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
@@ -143,6 +143,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 def main(awgs, capture_modules, use_labrad, server_ip_addr):
     capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
     capture_units = sum(capture_units, []) # flatten
+    hw_specs = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI)
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         # 初期化
@@ -153,7 +154,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         # トリガ AWG の設定
         set_trigger_awg(cap_ctrl, awgs[0], capture_modules)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, hw_specs)
         # キャプチャパラメータの設定
         set_capture_params(cap_ctrl, awg_to_wave_sequence[awgs[0]], capture_units)
         # 波形送信スタート
@@ -168,8 +169,8 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
         # 波形保存
         awg_to_wave_data = {awg: wave_seq.all_samples(False) for awg, wave_seq in awg_to_wave_sequence.items()}
-        save_wave_data('awg', awg_ctrl.sampling_rate(), awg_to_wave_data)
-        save_wave_data('capture', cap_ctrl.sampling_rate(), capture_unit_to_capture_data)
+        save_wave_data('awg', hw_specs.awg.sampling_rate, awg_to_wave_data)
+        save_wave_data('capture', hw_specs.cap_unit.sampling_rate, capture_unit_to_capture_data)
         print('end')
 
 

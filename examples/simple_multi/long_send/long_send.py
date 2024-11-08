@@ -3,12 +3,12 @@ AWG から 50MHz の余弦波を出力して, 信号処理モジュールを全�
 """
 import math
 import argparse
-from e7awgsw import AWG, AwgCtrl, WaveSequence, SinWave, IqWave, E7AwgHwType
+from e7awgsw import AWG, AwgCtrl, WaveSequence, SinWave, IqWave, E7AwgHwType, E7AwgHwSpecs
 from e7awgsw.labrad import RemoteAwgCtrl
 
 IP_ADDR = '10.0.0.16'
 
-def gen_wave_seq(freq, amp, sampling_rate):
+def gen_wave_seq(freq, amp, hw_specs):
     wave_seq = WaveSequence(
         num_wait_words = 16,
         num_repeats = 0xFFFFFFFF,
@@ -20,8 +20,8 @@ def gen_wave_seq(freq, amp, sampling_rate):
         i_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = amp, phase = math.pi / 2)
         q_wave = SinWave(num_cycles = 8, frequency = freq, amplitude = amp)
         iq_samples = IqWave(i_wave, q_wave).gen_samples(
-            sampling_rate = sampling_rate,
-            padding_size = wave_seq.smallest_unit_of_wave_len)
+            sampling_rate = hw_specs.awg.sampling_rate,
+            padding_size = hw_specs.awg.smallest_unit_of_wave_len)
 
         wave_seq.add_chunk(
             iq_samples = iq_samples,
@@ -30,7 +30,7 @@ def gen_wave_seq(freq, amp, sampling_rate):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs):
+def set_wave_sequence(awg_ctrl, awgs, hw_specs):
     awg_to_wave_sequence = {}
 
     freqs = [
@@ -69,7 +69,7 @@ def set_wave_sequence(awg_ctrl, awgs):
 
     for awg_id in awgs:
         print("{}: freq={}, amp={}".format(awg_id, freqs[awg_id], amps[awg_id]))
-        wave_seq = gen_wave_seq(freqs[awg_id], amps[awg_id], awg_ctrl.sampling_rate()) # 5 MHz  5MHz x 8 周期では切れ目のない波形はできない
+        wave_seq = gen_wave_seq(freqs[awg_id], amps[awg_id], hw_specs) # 5 MHz  5MHz x 8 周期では切れ目のない波形はできない
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -83,11 +83,12 @@ def create_awg_ctrl(use_labrad, server_ip_addr):
 
 
 def main(use_labrad, server_ip_addr, awgs):
+    hw_specs = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI)
     with create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl:
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, hw_specs)
         # 波形送信スタート
         awg_ctrl.start_awgs(*awgs)
         print('end')

@@ -13,6 +13,7 @@ class AwgMasterCtrlRegs(object):
         DONE_STATUS: Final         = 0x18
         READ_ERR: Final            = 0x1C
         SAMPLE_SHORTAGE_ERR: Final = 0x20
+        PAUSED_STATUS: Final       = 0x24
 
     class Bit(object):
         CTRL_RESET: Final     = 0
@@ -20,6 +21,9 @@ class AwgMasterCtrlRegs(object):
         CTRL_START: Final     = 2
         CTRL_TERMINATE: Final = 3
         CTRL_DONE_CLR: Final  = 4
+        CTRL_PAUSE: Final     = 5
+        CTRL_RESUME: Final    = 6
+
         AWG_0: Final  = 0
         AWG_1: Final  = 1
         AWG_2: Final  = 2

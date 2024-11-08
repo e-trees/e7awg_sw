@@ -168,6 +168,36 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         self._clear_awg_stop_flags(*awg_id_list)
 
 
+    def pause_awgs(self, *awg_id_list: AWG) -> None:
+        """引数で指定した全ての AWG の波形出力を一時停止させる
+
+        Args:
+            *awg_id_list (AWG): 波形出力を一時停止させる AWG の ID
+        """
+        try:
+            self._validate_awg_id(*awg_id_list)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+        self._pause_awgs(*awg_id_list)
+
+
+    def resume_awgs(self, *awg_id_list: AWG) -> None:
+        """引数で指定した全ての AWG の波形出力を再開させる
+
+        Args:
+            *awg_id_list (AWG): 波形出力を再開させる AWG の ID
+        """
+        try:
+            self._validate_awg_id(*awg_id_list)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+        self._resume_awgs(*awg_id_list)
+
+
     def wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         """引数で指定した全ての AWG の波形の送信が終了するのを待つ
 
@@ -195,7 +225,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         Args:
             interval (int):
                 | この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.
-                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
+                | 単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)
+                |     simple multi : 64 サンプル
+                |     KR260 : 16 サンプル
+                |     ZCU111 : 128 サンプル
             *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID
         """
         if self._validate_args:
@@ -219,7 +252,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             {awg_id -> int}: 
                 | key = AWG ID
                 | value =  波形を送信可能なタイミング
-                | 単位は波形ブロック. (1 波形ブロックは 64 サンプル)
+                | 単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)
+                |     simple multi : 64 サンプル
+                |     KR260 : 16 サンプル
+                |     ZCU111 : 128 サンプル
         """
         if self._validate_args:
             try:
@@ -343,6 +379,14 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         pass
 
     @abstractmethod
+    def _pause_awgs(self, *awg_id_list: AWG) -> None:
+        pass
+
+    @abstractmethod
+    def _resume_awgs(self, *awg_id_list: AWG) -> None:
+        pass
+
+    @abstractmethod
     def _wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         pass
 
@@ -381,6 +425,8 @@ class AwgCtrl(AwgCtrlBase):
         """
         Args:
             ip_addr (string): AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')
+            design_type (E7AwgHwType):
+                | このオブジェクトで制御する AWG が含まれる e7awg_hw の種類
             validate_args(bool):
                 | True -> 引数のチェックを行う
                 | False -> 引数のチェックを行わない
@@ -702,6 +748,38 @@ class AwgCtrl(AwgCtrlBase):
 
     def _sampling_rate(self) -> int:
         return self._awg_params.sampling_rate()
+
+
+    def _pause_awgs(self, *awg_id_list: AWG) -> None:
+        """引数で指定した全ての AWG の波形出力を一時停止させる
+
+        Args:
+            *awg_id_list (AWG): 波形出力を一時停止させる AWG の ID
+        """
+        self.__select_ctrl_target(*awg_id_list)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PAUSE, 1, 0)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PAUSE, 1, 1)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_PAUSE, 1, 0)
+        self.__deselect_ctrl_target(*awg_id_list)
+
+
+    def _resume_awgs(self, *awg_id_list: AWG) -> None:
+        """引数で指定した全ての AWG の波形出力を再開させる
+
+        Args:
+            *awg_id_list (AWG): 波形出力を再開させる AWG の ID
+        """
+        self.__select_ctrl_target(*awg_id_list)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESUME, 1, 0)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESUME, 1, 1)
+        self.__reg_access.write_bits(
+            AwgMasterCtrlRegs.ADDR, AwgMasterCtrlRegs.Offset.CTRL, AwgMasterCtrlRegs.Bit.CTRL_RESUME, 1, 0)
+        self.__deselect_ctrl_target(*awg_id_list)
 
 
     def _version(self) -> str:

@@ -4,7 +4,7 @@
 import os
 import argparse
 from e7awgsw import CaptureUnit, CaptureModule, CaptureCtrl, CaptureParam, \
-    plot_graph, E7AwgHwType
+    plot_graph, E7AwgHwType, E7AwgHwSpecs
 from e7awgsw.labrad import RemoteCaptureCtrl
 
 IP_ADDR = '10.0.0.16'
@@ -94,6 +94,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 def main(num_capture_words, capture_modules, use_labrad, server_ip_addr):
     capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
     capture_units = sum(capture_units, []) # flatten
+    hw_specs = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI)
     with create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl:
         # 初期化
         cap_ctrl.initialize(*capture_units)
@@ -110,7 +111,7 @@ def main(num_capture_words, capture_modules, use_labrad, server_ip_addr):
         # キャプチャデータ取得
         capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
         # 波形保存
-        save_wave_data('capture', CaptureCtrl.SAMPLING_RATE, capture_unit_to_capture_data)
+        save_wave_data('capture', hw_specs.cap_unit.sampling_rate, capture_unit_to_capture_data)
         print('end')
 
 
@@ -122,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument('--labrad', action='store_true')
     parser.add_argument('--server-ipaddr')
     args = parser.parse_args()
-    
+
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
     

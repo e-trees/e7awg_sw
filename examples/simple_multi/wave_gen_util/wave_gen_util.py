@@ -3,7 +3,7 @@
 """
 import os
 import math
-from e7awgsw import AwgCtrl, SinWave, SawtoothWave, SquareWave, GaussianPulse, plot_graph
+from e7awgsw import SinWave, SawtoothWave, SquareWave, GaussianPulse, plot_graph, E7AwgHwSpecs, E7AwgHwType
 
 def to_degree(val):
     return 180 * val / math.pi
@@ -11,7 +11,7 @@ def to_degree(val):
 if __name__ == "__main__":
     dir = "./result/"
     os.makedirs(dir, exist_ok = True)
-    sampling_rate = 500_000_000
+    sampling_rate = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI).awg.sampling_rate
 
     # sin
     wave = SinWave(num_cycles = 2, frequency = 5e6, amplitude = 1000)

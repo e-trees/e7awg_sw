@@ -13,6 +13,11 @@ class UplPacket(object):
     MODE_AWG_REG_WRITE: Final      = 0x12
     MODE_AWG_REG_WRITE_ACK: Final  = 0x13
 
+    MODE_DOUT_REG_READ: Final       = 0x30
+    MODE_DOUT_REG_READ_REPLY: Final = 0x31
+    MODE_DOUT_REG_WRITE: Final      = 0x32
+    MODE_DOUT_REG_WRITE_ACK: Final  = 0x33
+
     MODE_CAPTURE_REG_READ: Final       = 0x40
     MODE_CAPTURE_REG_READ_REPLY: Final = 0x41
     MODE_CAPTURE_REG_WRITE: Final      = 0x42
@@ -70,6 +75,14 @@ class UplPacket(object):
             return "AWG REG WRITE-ACK"
         elif mode == self.MODE_AWG_REG_READ_REPLY:
             return "AWG REG READ-REPLY"
+        elif mode == self.MODE_DOUT_REG_READ:
+            return "DIGITAL OUTPUT REG READ"
+        elif mode == self.MODE_DOUT_REG_READ_REPLY:
+            return "DIGITAL OUTPUT REG READ-REPLY"
+        elif mode == self.MODE_DOUT_REG_WRITE:
+            return "DIGITAL OUTPUT REG WRITE"
+        elif mode == self.MODE_DOUT_REG_WRITE_ACK:
+            return "DIGITAL OUTPUT REG WRITE-ACK"
         elif mode == self.MODE_CAPTURE_REG_READ:
             return "CAPTURE REG READ"
         elif mode == self.MODE_CAPTURE_REG_WRITE:
@@ -78,6 +91,8 @@ class UplPacket(object):
             return "CAPTURE REG WRITE-ACK"
         elif mode == self.MODE_CAPTURE_REG_READ_REPLY:
             return "CAPTURE REG READ-REPLY"
+        elif mode == self.MODE_OTHERS:
+            return "OTHERS"
         return ""
 
 
@@ -98,9 +113,11 @@ class UplPacket(object):
             ((mode == cls.MODE_AWG_REG_READ_REPLY)     or
              (mode == cls.MODE_CAPTURE_REG_READ_REPLY) or
              (mode == cls.MODE_WAVE_RAM_READ_REPLY)    or
+             (mode == cls.MODE_DOUT_REG_READ_REPLY)    or
              (mode == cls.MODE_AWG_REG_WRITE)          or 
              (mode == cls.MODE_CAPTURE_REG_WRITE)      or 
-             (mode == cls.MODE_WAVE_RAM_WRITE))):
+             (mode == cls.MODE_WAVE_RAM_WRITE)         or
+             (mode == cls.MODE_DOUT_REG_WRITE))):
             payload = data[8 : 8 + num_bytes]
 
         return cls(mode, addr, num_bytes, payload)

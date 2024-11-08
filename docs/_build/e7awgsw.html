@@ -192,8 +192,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.design_type"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.design_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.get_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.get_wave_startable_block_timing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.pause_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.pause_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.prepare_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.prepare_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.reset_awgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.resume_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.resume_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.sampling_rate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_sequence()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.set_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_startable_block_timing()</span></code></a></li>
@@ -432,6 +434,37 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwspec">e7awgsw.hwspec module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs"><code class="docutils literal notranslate"><span class="pre">AwgSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_chunk_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunk_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_chunks"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_post_blank"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_post_blank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_sequence_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_sequence_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_wait_words"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_wait_words</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_wave_block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_word"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_word</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.sample_size"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sample_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sampling_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.smallest_unit_of_wave_len</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_capture_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_classification_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.sampling_rate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.awg"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.awg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.cap_unit"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.cap_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.design_type"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.design_type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#e7awgsw.utiltool.plot_graph"><code class="docutils literal notranslate"><span class="pre">plot_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#e7awgsw.utiltool.plot_samples"><code class="docutils literal notranslate"><span class="pre">plot_samples()</span></code></a></li>
@@ -474,7 +507,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.add_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.add_chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.all_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.all_samples_lazy"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples_lazy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.awg_word_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.awg_word_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.chunk_list"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.del_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.del_chunk()</span></code></a></li>
@@ -492,7 +524,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_samples_in_wave_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_wait_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_samples</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_wait_words"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_words</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.sample_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.sample_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.save_as_text"><code class="docutils literal notranslate"><span class="pre">WaveSequence.save_as_text()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">WaveSequence.smallest_unit_of_wave_len</span></code></a></li>
 </ul>
@@ -559,8 +590,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.design_type"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.design_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.get_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.get_wave_startable_block_timing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.pause_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.pause_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.prepare_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.prepare_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.reset_awgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.resume_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.resume_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.sampling_rate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_sequence()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.awgctrl.AwgCtrlBase.set_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_startable_block_timing()</span></code></a></li>
@@ -799,6 +832,37 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.hwspec">e7awgsw.hwspec module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs"><code class="docutils literal notranslate"><span class="pre">AwgSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_chunk_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunk_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_chunks"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_post_blank"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_post_blank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_sequence_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_sequence_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.max_wait_words"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_wait_words</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_wave_block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_word"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_word</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.sample_size"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sample_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sampling_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.smallest_unit_of_wave_len</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_capture_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_classification_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.sampling_rate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.awg"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.awg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.cap_unit"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.cap_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwspec.E7AwgHwSpecs.design_type"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.design_type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-e7awgsw.utiltool">e7awgsw.utiltool module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#e7awgsw.utiltool.plot_graph"><code class="docutils literal notranslate"><span class="pre">plot_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#e7awgsw.utiltool.plot_samples"><code class="docutils literal notranslate"><span class="pre">plot_samples()</span></code></a></li>
@@ -841,7 +905,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.add_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.add_chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.all_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.all_samples_lazy"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples_lazy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.awg_word_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.awg_word_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.chunk_list"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.del_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.del_chunk()</span></code></a></li>
@@ -859,7 +922,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_samples_in_wave_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_wait_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_samples</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.num_wait_words"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_words</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.sample_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.sample_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.save_as_text"><code class="docutils literal notranslate"><span class="pre">WaveSequence.save_as_text()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.wavesequence.WaveSequence.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">WaveSequence.smallest_unit_of_wave_len</span></code></a></li>
 </ul>
@@ -978,6 +1040,10 @@
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ip_addr</strong> (<em class="hover">string</em>) -- AWG 制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</p></li>
+<li><p><strong>design_type</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><em class="hover">E7AwgHwType</em></a>) -- <div class="line-block">
+<div class="line">このオブジェクトで制御する AWG が含まれる e7awg_hw の種類</div>
+</div>
+</p></li>
 <li><p><strong>validate_args</strong> (<em class="hover">bool</em>) -- <div class="line-block">
 <div class="line">True -&gt; 引数のチェックを行う</div>
 <div class="line">False -&gt; 引数のチェックを行わない</div>
@@ -1078,7 +1144,12 @@
 <dd class="field-even"><p><div class="line-block">
 <div class="line">key = AWG ID</div>
 <div class="line">value =  波形を送信可能なタイミング</div>
-<div class="line">単位は波形ブロック. (1 波形ブロックは 64 サンプル)</div>
+<div class="line">単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)</div>
+<div class="line-block">
+<div class="line">simple multi : 64 サンプル</div>
+<div class="line">KR260 : 16 サンプル</div>
+<div class="line">ZCU111 : 128 サンプル</div>
+</div>
 </div>
 </p>
 </dd>
@@ -1098,6 +1169,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>*awg_id_list</strong> (<em class="hover">list</em><em> of </em><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a>) -- 初期化する AWG の ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.pause_awgs">
+<span class="sig-name descname"><span class="pre">pause_awgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">awg_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><span class="pre">AWG</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.pause_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.pause_awgs" title="Link to this definition">¶</a></dt>
+<dd><p>引数で指定した全ての AWG の波形出力を一時停止させる</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*awg_id_list</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a>) -- 波形出力を一時停止させる AWG の ID</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1124,6 +1206,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>*awg_id_list</strong> (<em class="hover">list</em><em> of </em><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a>) -- リセットする AWG の ID</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.awgctrl.AwgCtrlBase.resume_awgs">
+<span class="sig-name descname"><span class="pre">resume_awgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">awg_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><span class="pre">AWG</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/awgctrl.html#AwgCtrlBase.resume_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.awgctrl.AwgCtrlBase.resume_awgs" title="Link to this definition">¶</a></dt>
+<dd><p>引数で指定した全ての AWG の波形出力を再開させる</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*awg_id_list</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a>) -- 波形出力を再開させる AWG の ID</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1165,7 +1258,12 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>interval</strong> (<em class="hover">int</em>) -- <div class="line-block">
 <div class="line">この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.</div>
-<div class="line">単位は波形ブロック. (1 波形ブロックは 64 サンプル)</div>
+<div class="line">単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)</div>
+<div class="line-block">
+<div class="line">simple multi : 64 サンプル</div>
+<div class="line">KR260 : 16 サンプル</div>
+<div class="line">ZCU111 : 128 サンプル</div>
+</div>
 </div>
 </p></li>
 <li><p><strong>*awg_id_list</strong> (<em class="hover">list</em><em> of </em><a class="reference internal" href="#e7awgsw.hwdefs.AWG" title="e7awgsw.hwdefs.AWG"><em class="hover">AWG</em></a>) -- 波形を送信可能なタイミングを設定する AWG の ID</p></li>
@@ -1679,7 +1777,7 @@
 <li><p><strong>ip_addr</strong> (<em class="hover">string</em>) -- キャプチャユニット制御モジュールに割り当てられた IP アドレス (例 '10.0.0.16')</p></li>
 <li><p><strong>design_type</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><em class="hover">E7AwgHwType</em></a>) -- <div class="line-block">
 <div class="line">このオブジェクトで制御するキャプチャユニットが含まれる e7awg_hw の種類</div>
-<div class="line">キャプチャユニットを持つデザインを指定してください.</div>
+<div class="line">キャプチャユニットを持つデザインを指定すること.</div>
 </div>
 </p></li>
 <li><p><strong>validate_args</strong> (<em class="hover">bool</em>) -- <div class="line-block">
@@ -3085,6 +3183,260 @@
 </dd></dl>
 
 </section>
+<section id="module-e7awgsw.hwspec">
+<span id="e7awgsw-hwspec-module"></span><h2>e7awgsw.hwspec module<a class="headerlink" href="#module-e7awgsw.hwspec" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">e7awgsw.hwspec.</span></span><span class="sig-name descname"><span class="pre">AwgSpecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">awg_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AwgParams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#AwgSpecs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs" title="Link to this definition">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class hover docutils literal notranslate" data-hoverref="e7awgsw.hwspec.object"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">awg_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AwgParams</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#AwgSpecs.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>AWG の性能値をまとめたクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.max_chunk_repeats">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_chunk_repeats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.max_chunk_repeats" title="Link to this definition">¶</a></dt>
+<dd><p>波形チャンクの最大リピート回数</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形チャンクの最大リピート回数</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.max_chunks">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_chunks</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.max_chunks" title="Link to this definition">¶</a></dt>
+<dd><p>波形シーケンスに登録可能な最大チャンク数</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形シーケンスに登録可能な最大チャンク数</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.max_post_blank">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_post_blank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.max_post_blank" title="Link to this definition">¶</a></dt>
+<dd><p>AWG ワード)</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形チャンクに指定可能な最大ポストブランク長</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形チャンクに指定可能な最大ポストブランク長 (単位</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.max_sequence_repeats">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_sequence_repeats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.max_sequence_repeats" title="Link to this definition">¶</a></dt>
+<dd><p>波形シーケンスの最大リピート回数</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形シーケンスの最大リピート回数</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.max_wait_words">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_wait_words</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.max_wait_words" title="Link to this definition">¶</a></dt>
+<dd><p>AWG ワード)</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形シーケンスの先頭に付く 0 データの最大の長さ</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形シーケンスの先頭に付く 0 データの最大の長さ (単位</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_samples_in_wave_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block" title="Link to this definition">¶</a></dt>
+<dd><p>1 波形ブロックに含まれるサンプル数</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 波形ブロックに含まれるサンプル数</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.num_samples_in_word">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_samples_in_word</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.num_samples_in_word" title="Link to this definition">¶</a></dt>
+<dd><p>1 AWG ワード当たりのサンプル数</p>
+<div class="line-block">
+<div class="line">e7awg_hw の種類によって異なる. (I/Q データの場合は 2 相まとめて 1 サンプルとカウント)</div>
+<div class="line-block">
+<div class="line">simple multi : 4 サンプル</div>
+<div class="line">KR260        : 1 サンプル</div>
+<div class="line">ZCU111       : 8 サンプル</div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 AWG ワード当たりのサンプル数</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.sample_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_size</span></span><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.sample_size" title="Link to this definition">¶</a></dt>
+<dd><p>AWG が出力する 1 サンプルのサイズ.  (Bytes)</p>
+<div class="line-block">
+<div class="line">I/Q データの場合は 2 相まとめて 1 サンプルとカウント</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AWG が出力する 1 サンプルのサイズ.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.sampling_rate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.sampling_rate" title="Link to this definition">¶</a></dt>
+<dd><p>AWG のサンプリングレート.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>サンプル数/秒)</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>AWG のサンプリングレート (単位</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">smallest_unit_of_wave_len</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len" title="Link to this definition">¶</a></dt>
+<dd><p>波形チャンクの波形パート (= ポストブランクではない部分) を構成可能なサンプル数の最小単位</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>波形チャンクの波形パートを構成可能なサンプル数の最小単位</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.CaptureUnitSpecs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">e7awgsw.hwspec.</span></span><span class="sig-name descname"><span class="pre">CaptureUnitSpecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cap_unit_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaptureUnitParams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_ram_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaptureRamParams</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#CaptureUnitSpecs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.CaptureUnitSpecs" title="Link to this definition">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class hover docutils literal notranslate" data-hoverref="e7awgsw.hwspec.object"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.CaptureUnitSpecs.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cap_unit_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaptureUnitParams</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap_ram_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CaptureRamParams</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#CaptureUnitSpecs.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.CaptureUnitSpecs.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャユニットの性能値をまとめたクラス</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_capture_samples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples" title="Link to this definition">¶</a></dt>
+<dd><p>1 キャプチャユニットが保存可能なサンプル数.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 キャプチャユニットが保存可能なサンプル数</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_classification_results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results" title="Link to this definition">¶</a></dt>
+<dd><p>1 キャプチャユニットが保存可能な四値化結果の数.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>1 キャプチャユニットが保存可能な四値化結果の数</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャユニットのサンプリングレート.</p>
+<dl class="field-list simple">
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>サンプル数/秒)</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p>キャプチャユニットのサンプリングレート (単位</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.E7AwgHwSpecs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">e7awgsw.hwspec.</span></span><span class="sig-name descname"><span class="pre">E7AwgHwSpecs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">design_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><span class="pre">E7AwgHwType</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#E7AwgHwSpecs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.E7AwgHwSpecs" title="Link to this definition">¶</a></dt>
+<dd><p>ベースクラス: <code class="xref py py-class hover docutils literal notranslate" data-hoverref="e7awgsw.hwspec.object"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.E7AwgHwSpecs.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">design_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><span class="pre">E7AwgHwType</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/hwspec.html#E7AwgHwSpecs.__init__"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.hwspec.E7AwgHwSpecs.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>e7awg_hw の性能値 (AWG のサンプリングレートなど) を取得するクラス</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>design_type</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><em class="hover">E7AwgHwType</em></a>) -- 性能値を取得する e7awg_hw の種類</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.E7AwgHwSpecs.awg">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">awg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#e7awgsw.hwspec.AwgSpecs" title="e7awgsw.hwspec.AwgSpecs"><span class="pre">AwgSpecs</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#e7awgsw.hwspec.E7AwgHwSpecs.awg" title="Link to this definition">¶</a></dt>
+<dd><p>AWG の性能値をまとめたオブジェクト</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.E7AwgHwSpecs.cap_unit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cap_unit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#e7awgsw.hwspec.CaptureUnitSpecs" title="e7awgsw.hwspec.CaptureUnitSpecs"><span class="pre">CaptureUnitSpecs</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#e7awgsw.hwspec.E7AwgHwSpecs.cap_unit" title="Link to this definition">¶</a></dt>
+<dd><p>キャプチャユニットの性能値をまとめたオブジェクト</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="e7awgsw.hwspec.E7AwgHwSpecs.design_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">design_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><span class="pre">E7AwgHwType</span></a></em><a class="headerlink" href="#e7awgsw.hwspec.E7AwgHwSpecs.design_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-e7awgsw.utiltool">
 <span id="e7awgsw-utiltool-module"></span><h2>e7awgsw.utiltool module<a class="headerlink" href="#module-e7awgsw.utiltool" title="Link to this heading">¶</a></h2>
 <dl class="py function">
@@ -3424,6 +3776,10 @@
 </div>
 </p></li>
 <li><p><strong>num_repeats</strong> (<em class="hover">int</em>) -- 波形シーケンスを繰り返す回数</p></li>
+<li><p><strong>design_type</strong> (<a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><em class="hover">E7AwgHwType</em></a>) -- <div class="line-block">
+<div class="line">このオブジェクトで定義したユーザ定義波形を出力する AWG が含まれる e7awg_hw の種類</div>
+</div>
+</p></li>
 <li><p><strong>enable_lib_log</strong> (<em class="hover">bool</em>) -- <div class="line-block">
 <div class="line">True -&gt; ライブラリの標準のログ機能を有効にする.</div>
 <div class="line">False -&gt; ライブラリの標準のログ機能を無効にする.</div>
@@ -3446,7 +3802,8 @@
 <div class="line">各サンプルの I データと Q データを格納したタプルのシーケンス.</div>
 <div class="line">タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.</div>
 <div class="line">シーケンスの要素数は smallest_unit_of_wave_len の倍数でなければならない.</div>
-<div class="line">タプルの各要素は (sample_size / 2) [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)</div>
+<div class="line">タプルの各要素は, コンストラクタの design_type に指定した e7awg_hw の AWG が出力する</div>
+<div class="line">サンプルサイズ [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)</div>
 </div>
 </p></li>
 <li><p><strong>num_blank_words</strong> (<em class="hover">int</em>) -- <div class="line-block">
@@ -3507,28 +3864,6 @@
 </dd>
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Sequence of (int, int)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.awg_word_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">awg_word_size</span></span><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.awg_word_size" title="Link to this definition">¶</a></dt>
-<dd><p>1 AWG ワードのサイズ (Bytes)</p>
-<div class="line-block">
-<div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
-<div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
-</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">戻り値<span class="colon">:</span></dt>
-<dd class="field-odd"><p>1 AWG ワードのサイズ</p>
-</dd>
-<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3664,13 +3999,13 @@
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">戻り値<span class="colon">:</span></dt>
-<dd class="field-odd"><p>波形シーケンスの先頭に付く 0 データの最大の長さ</p>
+<dd class="field-odd"><p>ユーザ定義波形の先頭に付く 0 データの最大の長さ</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
 </dd>
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>波形シーケンスの先頭に付く 0 データの最大の長さ (単位</p>
+<dd class="field-odd"><p>ユーザ定義波形の先頭に付く 0 データの最大の長さ (単位</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3812,23 +4147,6 @@
 </dl>
 </dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.sample_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_size</span></span><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.sample_size" title="Link to this definition">¶</a></dt>
-<dd><p>ユーザ定義波形のサンプルのサイズ.  (Bytes)</p>
-<div class="line-block">
-<div class="line">I データと Q データはまとめて 1 サンプルとカウントする.</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">戻り値<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ユーザ定義波形のサンプルのサイズ.</p>
-</dd>
-<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.wavesequence.WaveSequence.save_as_text">
 <span class="sig-name descname"><span class="pre">save_as_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_hex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/e7awgsw/wavesequence.html#WaveSequence.save_as_text"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.wavesequence.WaveSequence.save_as_text" title="Link to this definition">¶</a></dt>
@@ -3875,7 +4193,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-11-08" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

@@ -62,6 +62,14 @@ e7awgsw.hwdefs module
    :undoc-members:
    :show-inheritance:
 
+e7awgsw.hwspec module
+---------------------
+
+.. automodule:: e7awgsw.hwspec
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 e7awgsw.utiltool module
 -----------------------
 

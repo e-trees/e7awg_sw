@@ -4,26 +4,26 @@ AWG から 50MHz の余弦波を出力して, 信号処理モジュールを全�
 import os
 import argparse
 import random
-from e7awgsw import AWG, AwgCtrl, WaveSequence, E7AwgHwType
+import e7awgsw as e7s
 
 IP_ADDR = '10.0.0.16'
 SAVE_DIR = "result_send_random/"
 
-def gen_random_wave(wave_seq):
+def gen_random_wave(hw_specs):
     samples = [random.randint(-32768, 32767)
-            for _ in range(wave_seq.smallest_unit_of_wave_len)]
+            for _ in range(hw_specs.awg.smallest_unit_of_wave_len)]
     return samples * random.randint(24, 40)
 
 
-def gen_random_wave_seq(num_wait_words, awg_id):
-    wave_seq = WaveSequence(
+def gen_random_wave_seq(num_wait_words, awg_id, hw_specs):
+    wave_seq = e7s.WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = random.randint(1, 2),
-        design_type = E7AwgHwType.KR260)
-    num_chunks = (awg_id % wave_seq.max_chunks) + 1
+        design_type = e7s.E7AwgHwType.KR260)
+    num_chunks = (awg_id % hw_specs.awg.max_chunks) + 1
 
     for _ in range(num_chunks):
-        i_samples = gen_random_wave(wave_seq)
+        i_samples = gen_random_wave(hw_specs)
         q_samples = [0] * len(i_samples)
         wave_seq.add_chunk(
             iq_samples = list(zip(i_samples, q_samples)),
@@ -32,10 +32,10 @@ def gen_random_wave_seq(num_wait_words, awg_id):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs, num_wait_words):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
     awg_to_wave_sequence = {}
     for awg_id in awgs:
-        wave_seq = gen_random_wave_seq(num_wait_words, awg_id)        
+        wave_seq = gen_random_wave_seq(num_wait_words, awg_id, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -84,11 +84,12 @@ def main(
     save_dir=SAVE_DIR,
     timeout=5):
     random.seed(10)
-    with (AwgCtrl(IP_ADDR, E7AwgHwType.KR260) as awg_ctrl):
+    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.KR260)
+    with (e7s.AwgCtrl(IP_ADDR, e7s.E7AwgHwType.KR260) as awg_ctrl):
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
         # 波形送信スタート
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
@@ -121,9 +122,9 @@ if __name__ == "__main__":
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    awgs = sorted(AWG.on(E7AwgHwType.KR260))
+    awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.KR260))
     if args.awgs is not None:
-        awgs = [AWG.of(int(x)) for x in args.awgs.split(',')]
+        awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
 
     main(
         awgs,

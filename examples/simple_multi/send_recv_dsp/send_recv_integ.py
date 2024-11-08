@@ -5,8 +5,8 @@ import os
 import math
 import argparse
 from collections import namedtuple
-from e7awgsw import DspUnit, CaptureUnit, CaptureModule, AWG, \
-    AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam, E7AwgHwType
+from e7awgsw import DspUnit, CaptureUnit, CaptureModule, AWG, AwgCtrl, \
+    CaptureCtrl, WaveSequence, CaptureParam, E7AwgHwType, E7AwgHwSpecs
 from e7awgsw import SinWave, IqWave, plot_graph, plot_samples
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
@@ -84,7 +84,7 @@ def gen_readout_wave_samples(params, num_pre_blank_samples, sampling_rate):
     return (i_samples, q_samples)
 
 
-def gen_ctrl_wave_seq(params, num_all_samples, i_samples, q_samples):
+def gen_ctrl_wave_seq(params, num_all_samples, i_samples, q_samples, hw_specs):
     """
     control 波形シーケンス作成
     """
@@ -92,9 +92,9 @@ def gen_ctrl_wave_seq(params, num_all_samples, i_samples, q_samples):
         num_wait_words = params.num_wait_words,
         num_repeats = 1,
         design_type = E7AwgHwType.SIMPLE_MULTI)
-    iq_samples = IqWave.convert_to_iq_format(i_samples, q_samples, wave_seq.smallest_unit_of_wave_len)
+    iq_samples = IqWave.convert_to_iq_format(i_samples, q_samples, hw_specs.awg.smallest_unit_of_wave_len)
     num_blank_samples = num_all_samples - len(iq_samples)
-    num_blank_words = num_blank_samples // wave_seq.num_samples_in_awg_word
+    num_blank_words = num_blank_samples // hw_specs.awg.num_samples_in_word
     wave_seq.add_chunk(
         iq_samples = iq_samples,
         num_blank_words = num_blank_words, 
@@ -103,7 +103,7 @@ def gen_ctrl_wave_seq(params, num_all_samples, i_samples, q_samples):
     return wave_seq
 
 
-def gen_readout_wave_seq(params, i_samples, q_samples, sampling_rate):
+def gen_readout_wave_seq(params, i_samples, q_samples, hw_specs):
     """
     readout 波形シーケンス作成
     """
@@ -111,12 +111,12 @@ def gen_readout_wave_seq(params, i_samples, q_samples, sampling_rate):
         num_wait_words = params.num_wait_words,
         num_repeats = 1,
         design_type = E7AwgHwType.SIMPLE_MULTI)
-    iq_samples = IqWave.convert_to_iq_format(i_samples, q_samples, wave_seq.smallest_unit_of_wave_len)
+    iq_samples = IqWave.convert_to_iq_format(i_samples, q_samples, hw_specs.awg.smallest_unit_of_wave_len)
     # I/Q サンプルに付加された 0 データの分 readout 波形のブランクを短くする
     num_added_samples = len(iq_samples) - len(i_samples)
     num_blank_samples = max(
-        int(sampling_rate * params.readout_blank_len / 1e3) - num_added_samples, 0)
-    num_blank_words = num_blank_samples // wave_seq.num_samples_in_awg_word
+        int(hw_specs.awg.sampling_rate * params.readout_blank_len / 1e3) - num_added_samples, 0)
+    num_blank_words = num_blank_samples // hw_specs.awg.num_samples_in_word
     wave_seq.add_chunk(
         iq_samples = iq_samples,
         num_blank_words = num_blank_words, 
@@ -125,17 +125,20 @@ def gen_readout_wave_seq(params, i_samples, q_samples, sampling_rate):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, params):
+def set_wave_sequence(awg_ctrl, params, hw_specs):
     # サンプル作成
-    ctrl_i_samples, ctrl_q_samples = gen_ctrl_wave_samples(params, awg_ctrl.sampling_rate())
+    ctrl_i_samples, ctrl_q_samples = gen_ctrl_wave_samples(params, hw_specs.awg.sampling_rate)
     ro_i_samples, ro_q_samples = \
-        gen_readout_wave_samples(params, len(ctrl_i_samples), awg_ctrl.sampling_rate())
+        gen_readout_wave_samples(params, len(ctrl_i_samples), hw_specs.awg.sampling_rate)
 
     # 波形シーケンス作成
-    ro_wave_seq = \
-        gen_readout_wave_seq(params, ro_i_samples, ro_q_samples, awg_ctrl.sampling_rate())
+    ro_wave_seq = gen_readout_wave_seq(params, ro_i_samples, ro_q_samples, hw_specs)
     ctrl_wave_seq = gen_ctrl_wave_seq(
-        params, ro_wave_seq.chunk(0).num_samples, ctrl_i_samples, ctrl_q_samples)
+        params,
+        ro_wave_seq.chunk(0).num_samples,
+        ctrl_i_samples,
+        ctrl_q_samples,
+        hw_specs)
 
     # control 波形と readout 波形の長さが一致することを確認
     assert ctrl_wave_seq.num_all_words == ro_wave_seq.num_all_words
@@ -152,8 +155,8 @@ def set_wave_sequence(awg_ctrl, params):
     }
 
 
-def set_capture_params(cap_ctrl, ctrl_wave_seq, ro_wave_seq, capture_units):
-    capture_param = gen_capture_param(ctrl_wave_seq, ro_wave_seq, cap_ctrl.sampling_rate())
+def set_capture_params(cap_ctrl, ctrl_wave_seq, ro_wave_seq, capture_units, hw_specs):
+    capture_param = gen_capture_param(ctrl_wave_seq, ro_wave_seq, hw_specs.cap_unit.sampling_rate)
     for captu_unit_id in capture_units:
         cap_ctrl.set_capture_params(captu_unit_id, capture_param)
 
@@ -279,6 +282,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 def main(wave_params, capture_modules, use_labrad, server_ip_addr):
     capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
     capture_units = sum(capture_units, []) # flatten
+    hw_specs = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI)
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         # 初期化
@@ -289,13 +293,14 @@ def main(wave_params, capture_modules, use_labrad, server_ip_addr):
         # トリガ AWG の設定
         set_trigger_awg(cap_ctrl, AWG_LIST.ctrl_awg_0, capture_modules)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, wave_params)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, wave_params, hw_specs)
         # キャプチャパラメータの設定
         set_capture_params(
             cap_ctrl,
             awg_to_wave_sequence[AWG_LIST.ctrl_awg_0],
             awg_to_wave_sequence[AWG_LIST.readout_awg_0],
-            capture_units)
+            capture_units,
+            hw_specs)
         # 波形送信スタート
         awg_ctrl.start_awgs(*AWG_LIST)
         # 波形送信完了待ち
@@ -309,7 +314,7 @@ def main(wave_params, capture_modules, use_labrad, server_ip_addr):
 
         # 波形保存
         # awg_to_wave_data = {awg: wave_seq.all_samples(False) for awg, wave_seq in awg_to_wave_sequence.items()}
-        # save_wave_data('awg', awg_ctrl.sampling_rate(), awg_to_wave_data) # 時間がかかるので削除
+        # save_wave_data('awg', hw_specs.awg.sampling_rate, awg_to_wave_data) # 時間がかかるので削除
         save_sample_data('capture', capture_unit_to_capture_data)
         print('end')
 

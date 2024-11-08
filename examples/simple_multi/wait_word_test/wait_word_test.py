@@ -4,8 +4,8 @@ AWG の WAIT WORD (波形シーケンスの先頭に付く 0 データの長さ)
 import os
 import math
 import argparse
-from e7awgsw import CaptureUnit, CaptureModule, AWG, \
-    AwgCtrl, CaptureCtrl, WaveSequence, CaptureParam, E7AwgHwType
+from e7awgsw import CaptureUnit, CaptureModule, AWG, AwgCtrl, \
+    CaptureCtrl, WaveSequence, CaptureParam, E7AwgHwType, E7AwgHwSpecs
 from e7awgsw import SinWave, IqWave, plot_graph
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl
 
@@ -30,21 +30,21 @@ def set_trigger_awg(cap_ctrl, awg, capture_modules):
         cap_ctrl.enable_start_trigger(*CAP_MOD_TO_UNITS[cap_mod_id])
 
 
-def gen_cos_wave(freq, num_cycles, amp, sampling_rate, smallest_unit_of_wave_len):
+def gen_cos_wave(freq, num_cycles, amp, hw_specs):
     """
     freq : MHz
     """
     i_wave = SinWave(num_cycles = num_cycles, frequency = freq, amplitude = amp, phase = math.pi / 2)
     q_wave = SinWave(num_cycles = num_cycles, frequency = freq, amplitude = amp)
     return IqWave(i_wave, q_wave).gen_samples(
-        sampling_rate = sampling_rate, 
-        padding_size = smallest_unit_of_wave_len)
+        sampling_rate = hw_specs.awg.sampling_rate, 
+        padding_size = hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def gen_wave_seq(shift, sampling_rate):
+def gen_wave_seq(shift, hw_specs):
     wave_seq = WaveSequence(0, 1, E7AwgHwType.SIMPLE_MULTI)
-    samples = gen_cos_wave(4e6, 8, 32760, sampling_rate, wave_seq.smallest_unit_of_wave_len)
-    num_wait_words = 16 + int(len(samples) * shift / wave_seq.num_samples_in_awg_word)
+    samples = gen_cos_wave(4e6, 8, 32760, hw_specs)
+    num_wait_words = 16 + int(len(samples) * shift / hw_specs.awg.num_samples_in_word)
     wave_seq = WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1,
@@ -58,10 +58,10 @@ def gen_wave_seq(shift, sampling_rate):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs):
+def set_wave_sequence(awg_ctrl, awgs, hw_specs):
     awg_to_wave_sequence = {}
     for awg_id in awgs:
-        wave_seq = gen_wave_seq(awg_id / 8, awg_ctrl.sampling_rate())
+        wave_seq = gen_wave_seq(awg_id / 8, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -151,6 +151,7 @@ def create_capture_ctrl(use_labrad, server_ip_addr):
 def main(awgs, capture_modules, use_labrad, server_ip_addr):
     capture_units = [CAP_MOD_TO_UNITS[cap_mod] for cap_mod in capture_modules]
     capture_units = sum(capture_units, []) # flatten
+    hw_specs = E7AwgHwSpecs(E7AwgHwType.SIMPLE_MULTI)
     with (create_awg_ctrl(use_labrad, server_ip_addr) as awg_ctrl,
           create_capture_ctrl(use_labrad, server_ip_addr) as cap_ctrl):
         # 初期化
@@ -161,7 +162,7 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         # キャプチャモジュールの構成を設定
         construct_capture_modules(cap_ctrl)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, hw_specs)
         # 最大波形シーケンス長の特定
         max_wave_seq_len = max([wave_seq.num_all_words for awg_id, wave_seq in awg_to_wave_sequence.items()])
         # キャプチャパラメータの設定
@@ -178,8 +179,8 @@ def main(awgs, capture_modules, use_labrad, server_ip_addr):
         capture_unit_to_capture_data = get_capture_data(cap_ctrl, capture_units)
         # 波形保存
         awg_to_wave_data = {awg: wave_seq.all_samples(True) for awg, wave_seq in awg_to_wave_sequence.items()}
-        save_wave_data('awg', awg_ctrl.sampling_rate(), awg_to_wave_data)
-        save_wave_data('capture', cap_ctrl.sampling_rate(), capture_unit_to_capture_data)
+        save_wave_data('awg', hw_specs.awg.sampling_rate, awg_to_wave_data)
+        save_wave_data('capture', hw_specs.cap_unit.sampling_rate, capture_unit_to_capture_data)
         print('end')
 
 

@@ -109,6 +109,23 @@ class CaptureRegAccess(RegAccess):
         super().__init__(udp_rw, self.REG_SIZE)
 
 
+class DoutRegAccess(RegAccess):
+
+    MIN_RW_SIZE: Final = 4 # bytes
+    REG_SIZE: Final = 4 # bytes
+
+    def __init__(self, ip_addr: str, port: int, *loggers: Logger) -> None:
+        udp_rw = UdpRw(
+            ip_addr,
+            port,
+            self.MIN_RW_SIZE,
+            UplPacket.MODE_DOUT_REG_WRITE,
+            UplPacket.MODE_DOUT_REG_READ,
+            *loggers)
+
+        super().__init__(udp_rw, self.REG_SIZE)
+
+
 class WaveRamAccess(object):
 
     def __init__(self, ip_addr: str, port: int, word_size: int, *loggers: Logger) -> None:

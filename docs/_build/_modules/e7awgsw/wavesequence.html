@@ -170,8 +170,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.design_type"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.design_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.get_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.get_wave_startable_block_timing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.pause_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.pause_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.prepare_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.prepare_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.reset_awgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.resume_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.resume_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.sampling_rate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_sequence()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.set_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_startable_block_timing()</span></code></a></li>
@@ -410,6 +412,37 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwspec">e7awgsw.hwspec module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs"><code class="docutils literal notranslate"><span class="pre">AwgSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_chunk_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunk_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_chunks"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_post_blank"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_post_blank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_sequence_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_sequence_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_wait_words"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_wait_words</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_wave_block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.num_samples_in_word"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_word</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.sample_size"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sample_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sampling_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.smallest_unit_of_wave_len</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_capture_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_classification_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.sampling_rate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.awg"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.awg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.cap_unit"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.cap_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.design_type"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.design_type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.utiltool.plot_graph"><code class="docutils literal notranslate"><span class="pre">plot_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.utiltool.plot_samples"><code class="docutils literal notranslate"><span class="pre">plot_samples()</span></code></a></li>
@@ -452,7 +485,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.add_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.add_chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples_lazy"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples_lazy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.awg_word_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.awg_word_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk_list"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.del_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.del_chunk()</span></code></a></li>
@@ -470,7 +502,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_samples_in_wave_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_wait_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_samples</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_wait_words"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_words</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.sample_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.sample_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.save_as_text"><code class="docutils literal notranslate"><span class="pre">WaveSequence.save_as_text()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">WaveSequence.smallest_unit_of_wave_len</span></code></a></li>
 </ul>
@@ -537,8 +568,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.design_type"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.design_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.get_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.get_wave_startable_block_timing()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.initialize"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.pause_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.pause_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.prepare_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.prepare_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.reset_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.reset_awgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.resume_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.resume_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.sampling_rate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.set_wave_sequence"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_sequence()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.awgctrl.AwgCtrlBase.set_wave_startable_block_timing"><code class="docutils literal notranslate"><span class="pre">AwgCtrlBase.set_wave_startable_block_timing()</span></code></a></li>
@@ -777,6 +810,37 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.hwspec">e7awgsw.hwspec module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs"><code class="docutils literal notranslate"><span class="pre">AwgSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_chunk_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunk_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_chunks"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_chunks</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_post_blank"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_post_blank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_sequence_repeats"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_sequence_repeats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.max_wait_words"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.max_wait_words</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_wave_block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.num_samples_in_word"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.num_samples_in_word</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.sample_size"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sample_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.sampling_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.AwgSpecs.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">AwgSpecs.smallest_unit_of_wave_len</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.max_capture_samples"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_capture_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.max_classification_results"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.max_classification_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.CaptureUnitSpecs.sampling_rate"><code class="docutils literal notranslate"><span class="pre">CaptureUnitSpecs.sampling_rate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.__init__"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.awg"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.awg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.cap_unit"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.cap_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwspec.E7AwgHwSpecs.design_type"><code class="docutils literal notranslate"><span class="pre">E7AwgHwSpecs.design_type</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../e7awgsw.html#module-e7awgsw.utiltool">e7awgsw.utiltool module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.utiltool.plot_graph"><code class="docutils literal notranslate"><span class="pre">plot_graph()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.utiltool.plot_samples"><code class="docutils literal notranslate"><span class="pre">plot_samples()</span></code></a></li>
@@ -819,7 +883,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.add_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.add_chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.all_samples_lazy"><code class="docutils literal notranslate"><span class="pre">WaveSequence.all_samples_lazy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.awg_word_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.awg_word_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.chunk_list"><code class="docutils literal notranslate"><span class="pre">WaveSequence.chunk_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.del_chunk"><code class="docutils literal notranslate"><span class="pre">WaveSequence.del_chunk()</span></code></a></li>
@@ -837,7 +900,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_samples_in_wave_block"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_samples_in_wave_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_wait_samples"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_samples</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.num_wait_words"><code class="docutils literal notranslate"><span class="pre">WaveSequence.num_wait_words</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.sample_size"><code class="docutils literal notranslate"><span class="pre">WaveSequence.sample_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.save_as_text"><code class="docutils literal notranslate"><span class="pre">WaveSequence.save_as_text()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.wavesequence.WaveSequence.smallest_unit_of_wave_len"><code class="docutils literal notranslate"><span class="pre">WaveSequence.smallest_unit_of_wave_len</span></code></a></li>
 </ul>
@@ -860,7 +922,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">overload</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Iterator</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
-<span class="kn">from</span> <span class="nn">.hwparam</span> <span class="kn">import</span> <span class="n">NUM_SAMPLES_IN_AWG_WORD</span><span class="p">,</span> <span class="n">AwgParams</span>
+<span class="kn">from</span> <span class="nn">.hwspec</span> <span class="kn">import</span> <span class="n">E7AwgHwSpecs</span><span class="p">,</span> <span class="n">AwgSpecs</span>
 <span class="kn">from</span> <span class="nn">.hwdefs</span> <span class="kn">import</span> <span class="n">E7AwgHwType</span>
 <span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">get_file_logger</span><span class="p">,</span> <span class="n">get_null_logger</span><span class="p">,</span> <span class="n">log_error</span>
 
@@ -907,6 +969,8 @@
 <span class="sd">                |     KR260        : 1 サンプル</span>
 <span class="sd">                |     ZCU111       : 8 サンプル</span>
 <span class="sd">            num_repeats (int): 波形シーケンスを繰り返す回数</span>
+<span class="sd">            design_type (E7AwgHwType):</span>
+<span class="sd">                | このオブジェクトで定義したユーザ定義波形を出力する AWG が含まれる e7awg_hw の種類</span>
 <span class="sd">            enable_lib_log (bool):</span>
 <span class="sd">                | True -&gt; ライブラリの標準のログ機能を有効にする.</span>
 <span class="sd">                | False -&gt; ライブラリの標準のログ機能を無効にする.</span>
@@ -918,18 +982,18 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__design_type</span> <span class="o">=</span> <span class="n">design_type</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span> <span class="o">=</span> <span class="n">AwgParams</span><span class="o">.</span><span class="n">of</span><span class="p">(</span><span class="n">design_type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="p">:</span> <span class="n">AwgSpecs</span> <span class="o">=</span> <span class="n">E7AwgHwSpecs</span><span class="p">(</span><span class="n">design_type</span><span class="p">)</span><span class="o">.</span><span class="n">awg</span> <span class="c1"># type: ignore</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_wait_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_wait_words</span> <span class="ow">and</span> <span class="n">num_wait_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_wait_words</span><span class="p">)):</span>
+                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_wait_words</span> <span class="ow">and</span> <span class="n">num_wait_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_wait_words</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;The number of wait words must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_wait_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_wait_words</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_sequence_repeats</span><span class="p">)):</span>
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_sequence_repeats</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;The number of times to repeat a wave sequence must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_sequence_repeats</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_sequence_repeats</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
             <span class="k">raise</span>
@@ -963,7 +1027,8 @@
 <span class="sd">                | 各サンプルの I データと Q データを格納したタプルのシーケンス.</span>
 <span class="sd">                | タプルの 0 番目に I データを格納して 1 番目に Q データを格納する.</span>
 <span class="sd">                | シーケンスの要素数は smallest_unit_of_wave_len の倍数でなければならない.</span>
-<span class="sd">                | タプルの各要素は (sample_size / 2) [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)</span>
+<span class="sd">                | タプルの各要素は, コンストラクタの design_type に指定した e7awg_hw の AWG が出力する</span>
+<span class="sd">                | サンプルサイズ [Bytes] で表せる整数値でなければならない. (符号付, 符号なしは問わない)</span>
 <span class="sd">            num_blank_words (int): </span>
 <span class="sd">                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</span>
 <span class="sd">                | 単位は AWG ワード.</span>
@@ -977,20 +1042,21 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid sample list  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">))</span>
             
-            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_chunks</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No more wave chunks can be added. (max=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_chunks</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_chunks</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;No more wave chunks can be added. (max=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_chunks</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
             
             <span class="n">num_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">iq_samples</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">num_samples</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Empty sample list was set.&#39;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">num_samples</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">num_samples</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s1">&#39;The number of samples in a wave chunk must be a multiple of </span><span class="si">{}</span><span class="s1">.  (</span><span class="si">{}</span><span class="s1"> was set.)&#39;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="nb">max</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="nb">max</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__sample_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
                 <span class="nb">min</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="o">-</span><span class="mi">2</span>
                 <span class="c1"># サンプルサイズで表せる数かどうかチェック</span>
                 <span class="k">for</span> <span class="n">iq_sample</span> <span class="ow">in</span> <span class="n">iq_samples</span><span class="p">:</span>
@@ -1005,16 +1071,16 @@
                     <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">iq_sample</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_blank_words</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_blank_words</span> <span class="ow">and</span> <span class="n">num_blank_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_post_blank</span><span class="p">)):</span>
+                    <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">num_blank_words</span> <span class="ow">and</span> <span class="n">num_blank_words</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_post_blank</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;Post blank length must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_post_blank</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_post_blank</span><span class="p">,</span> <span class="n">num_blank_words</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">num_repeats</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> 
-                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_chunk_repeats</span><span class="p">)):</span>
+                    <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">num_repeats</span> <span class="ow">and</span> <span class="n">num_repeats</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_chunk_repeats</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;The number of times to repeat a wave chunk must be an integer between </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> inclusive.  &#39;</span><span class="si">{}</span><span class="s2">&#39; was set.&quot;</span>
-                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_chunk_repeats</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">max_chunk_repeats</span><span class="p">,</span> <span class="n">num_repeats</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">__loggers</span><span class="p">)</span>
             <span class="k">raise</span>
@@ -1023,8 +1089,8 @@
             <span class="n">iq_samples</span><span class="p">,</span>
             <span class="n">num_blank_words</span><span class="p">,</span>
             <span class="n">num_repeats</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample_size</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">num_samples_in_word</span><span class="p">()))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__sample_size</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span><span class="p">))</span></div>
 
 
 
@@ -1070,7 +1136,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: ユーザ定義波形の先頭に付く 0 データのサンプル数.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wait_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_samples_in_awg_word</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_wait_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span>
 
 
     <span class="nd">@property</span>
@@ -1116,7 +1182,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: このユーザ定義波形の全サンプル数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_all_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_samples_in_awg_word</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_all_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span>
 
 
     <span class="nd">@property</span>
@@ -1193,21 +1259,22 @@
 <span class="sd">                | True -&gt; 16進数として保存</span>
 <span class="sd">                | False -&gt; 10進数として保存</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">awg_word_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sample_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">txt_file</span><span class="p">:</span>
-                <span class="n">first_zeros</span> <span class="o">=</span> <span class="s1">&#39;0</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_samples_in_awg_word</span><span class="p">)</span>
+                <span class="n">first_zeros</span> <span class="o">=</span> <span class="s1">&#39;0</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_wait_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span><span class="p">)</span>
                 <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">first_zeros</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_repeats</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chunks</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">num_repeats</span><span class="p">):</span>
                             <span class="k">for</span> <span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span> <span class="ow">in</span> <span class="n">chunk</span><span class="o">.</span><span class="n">wave_data</span><span class="o">.</span><span class="n">samples</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
-                                    <span class="n">i_data</span> <span class="o">=</span> <span class="n">i_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">awg_word_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-                                    <span class="n">q_data</span> <span class="o">=</span> <span class="n">q_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">awg_word_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                                    <span class="n">i_data</span> <span class="o">=</span> <span class="n">i_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">awg_word_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                                    <span class="n">q_data</span> <span class="o">=</span> <span class="n">q_data</span> <span class="o">&amp;</span> <span class="p">((</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">awg_word_size</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
                                     <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
                                 <span class="k">else</span><span class="p">:</span>
                                     <span class="n">txt_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:7d}</span><span class="s1">, </span><span class="si">{:7d}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">))</span>
-                            <span class="n">num_repeats</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_samples_in_awg_word</span>
+                            <span class="n">num_repeats</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">num_blank_words</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">num_samples_in_word</span>
                             <span class="k">if</span> <span class="n">to_hex</span><span class="p">:</span>
                                 <span class="n">post_chunk_zeros</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:04x}</span><span class="s1">, </span><span class="si">{:04x}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_repeats</span>
                             <span class="k">else</span><span class="p">:</span>
@@ -1231,7 +1298,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 波形チャンクに指定可能な最大ポストブランク長</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mh">0xFFFF_FFFF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">max_post_blank</span>
 
 
     <span class="nd">@property</span>
@@ -1241,12 +1308,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 波形チャンクの最大リピート回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mh">0xFFFF_FFFF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">max_chunk_repeats</span>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">max_wait_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;波形シーケンスの先頭に付く 0 データの最大の長さ (単位: AWG ワード)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ユーザ定義波形の先頭に付く 0 データの最大の長さ (単位: AWG ワード)</span>
 <span class="sd">        </span>
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
 <span class="sd">        |     simple multi : 4 サンプル</span>
@@ -1254,9 +1321,9 @@
 <span class="sd">        |     ZCU111       : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            int: 波形シーケンスの先頭に付く 0 データの最大の長さ</span>
+<span class="sd">            int: ユーザ定義波形の先頭に付く 0 データの最大の長さ</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mh">0xFFFF_FFFF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">max_wait_words</span>
 
 
     <span class="nd">@property</span>
@@ -1266,7 +1333,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 波形シーケンスの最大リピート回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mh">0xFFFF_FFFF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">max_sequence_repeats</span>
 
 
     <span class="nd">@property</span>
@@ -1276,7 +1343,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 波形シーケンスに登録可能な最大チャンク数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mi">16</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">max_chunks</span>
     
 
     <span class="nd">@property</span>
@@ -1286,7 +1353,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 1 波形ブロックに含まれるサンプル数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">num_sample_in_wave_block</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">num_samples_in_wave_block</span>
 
 
     <span class="nd">@property</span>
@@ -1296,7 +1363,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 波形チャンクの波形パートを構成可能なサンプル数の最小単位</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">smallest_unit_of_wave_len</span>
 
 
     <span class="nd">@property</span>
@@ -1311,11 +1378,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: 1 AWG ワード当たりのサンプル数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">num_samples_in_word</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_spec</span><span class="o">.</span><span class="n">num_samples_in_word</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__sample_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ユーザ定義波形のサンプルのサイズ.  (Bytes)</span>
 <span class="sd">        </span>
@@ -1325,24 +1392,9 @@
 <span class="sd">            int: ユーザ定義波形のサンプルのサイズ.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">KR260</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">sample_size</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">sample_size</span> <span class="o">*</span> <span class="mi">2</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">sample_size</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">awg_word_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        1 AWG ワードのサイズ (Bytes)</span>
-
-<span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: 1 AWG ワードのサイズ</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_params</span><span class="o">.</span><span class="n">num_samples_in_word</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__awg_specs</span><span class="o">.</span><span class="n">sample_size</span>
 
 
     <span class="nd">@property</span>
@@ -1775,7 +1827,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2024-11-08" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

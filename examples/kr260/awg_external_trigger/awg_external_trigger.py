@@ -14,27 +14,26 @@ NUM_FREQ = 1 # MHz
 NUM_CYCLES = 4
 AMPLITUDE = 30000
 
-def gen_cos_wave(num_cycles, freq, amp, sampling_rate, smallest_unit_of_wave_len):
+def gen_cos_wave(num_cycles, freq, amp, hw_specs):
     """
     freq : MHz
     """
     samples = e7s.SinWave(num_cycles, freq * 1e6, amp, phase = math.pi / 2) \
-        .gen_samples(sampling_rate)
+        .gen_samples(hw_specs.awg.sampling_rate)
     # 波形データに 0 データを足して, その長さを波形パートを構成可能なサンプル数の最小単位の倍数に合わせる.
-    reminder = len(samples) % smallest_unit_of_wave_len
+    reminder = len(samples) % hw_specs.awg.smallest_unit_of_wave_len
     if reminder != 0:
-        zeros = [0] * (smallest_unit_of_wave_len - reminder)
+        zeros = [0] * (hw_specs.awg.smallest_unit_of_wave_len - reminder)
         samples.extend(zeros)
     return samples
 
 
-def gen_cos_wave_seq(num_wait_words, num_chunks, sampling_rate):
+def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
     wave_seq = e7s.WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1,
         design_type = e7s.E7AwgHwType.KR260)
-    i_samples = gen_cos_wave(
-        NUM_CYCLES, NUM_FREQ, AMPLITUDE, sampling_rate, wave_seq.smallest_unit_of_wave_len)
+    i_samples = gen_cos_wave(NUM_CYCLES, NUM_FREQ, AMPLITUDE, hw_specs)
     q_samples = [0] * len(i_samples)
     for _ in range(num_chunks):
         wave_seq.add_chunk(
@@ -44,10 +43,10 @@ def gen_cos_wave_seq(num_wait_words, num_chunks, sampling_rate):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs, num_wait_words):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
     awg_to_wave_sequence = {}
     for awg_id in awgs:
-        wave_seq = gen_cos_wave_seq(num_wait_words, 1, awg_ctrl.sampling_rate())
+        wave_seq = gen_cos_wave_seq(num_wait_words, 1, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -70,11 +69,12 @@ def output_graph(awg_to_wave_seq):
 
 
 def main(awgs, num_wait_words, timeout):
+    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.KR260)
     with (e7s.AwgCtrl(IP_ADDR, e7s.E7AwgHwType.KR260) as awg_ctrl):
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
         # AWG を外部トリガを受け付ける状態にする.
         awg_ctrl.prepare_awgs(*awgs)
         input("Disconnect Pin 27 from Pin 25 on the carrier board and press 'Enter'")
