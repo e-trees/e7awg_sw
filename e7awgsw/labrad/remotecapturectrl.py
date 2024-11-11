@@ -309,33 +309,6 @@ class RemoteCaptureCtrl(CaptureCtrlBase):
             raise
 
 
-    def _max_capture_samples(self) -> int:
-        try:
-            result = self.__server.max_capture_samples(self.__handler)
-            return self.__decode_and_check(result)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def _max_classification_results(self) -> int:
-        try:
-            result = self.__server.max_classification_results(self.__handler)
-            return self.__decode_and_check(result)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
-    def _sampling_rate(self) -> int:
-        try:
-            result = self.__server.capture_unit_sampling_rate(self.__handler)
-            return self.__decode_and_check(result)
-        except Exception as e:
-            log_error(e, *self._loggers)
-            raise
-
-
     def _version(self) -> str:
         try:
             result = self.__server.capture_unit_version(self.__handler)

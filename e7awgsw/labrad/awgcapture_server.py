@@ -165,17 +165,7 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)        
 
 
-    @setting(113, handle='s', returns='y')
-    def awg_sampling_rate(self, c, handle):
-        try:
-            awgctrl = self.__get_awgctrl(handle)
-            sampling_rate = awgctrl.sampling_rate()
-            return pickle.dumps(sampling_rate)
-        except Exception as e:
-            return pickle.dumps(e)
-
-
-    @setting(114, handle='s', awg_id_list='*w', returns='y')
+    @setting(113, handle='s', awg_id_list='*w', returns='y')
     def prepare_awgs(self, c, handle, awg_id_list):
         try:
             awgctrl = self.__get_awgctrl(handle)
@@ -426,36 +416,6 @@ class AwgCaptureServer(ThreadedServer):
         except Exception as e:
             return pickle.dumps(e)
         
-
-    @setting(223, handle='s', returns='y')
-    def max_capture_samples(self, c, handle):
-        try:
-            capturectrl = self.__get_capturectrl(handle)
-            max_cap_samples = capturectrl.max_capture_samples()
-            return pickle.dumps(max_cap_samples)
-        except Exception as e:
-            return pickle.dumps(e)
-
-
-    @setting(224, handle='s', returns='y')
-    def max_classification_results(self, c, handle):
-        try:
-            capturectrl = self.__get_capturectrl(handle)
-            max_cls_results = capturectrl.max_classification_results()
-            return pickle.dumps(max_cls_results)
-        except Exception as e:
-            return pickle.dumps(e)
-
-
-    @setting(225, handle='s', returns='y')
-    def capture_unit_sampling_rate(self, c, handle):
-        try:
-            capturectrl = self.__get_capturectrl(handle)
-            sampling_rate = capturectrl.sampling_rate()
-            return pickle.dumps(sampling_rate)
-        except Exception as e:
-            return pickle.dumps(e)
-
 
 __server__ = AwgCaptureServer()
 

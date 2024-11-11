@@ -423,33 +423,6 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         return self._check_err(*capture_unit_id_list)
 
 
-    def max_capture_samples(self) -> int:
-        """ 1 キャプチャユニットが保存可能なサンプル数を取得する.
-
-        Returns:
-            1 キャプチャユニットが保存可能なサンプル数
-        """
-        return self._max_capture_samples()
-
-
-    def max_classification_results(self) -> int:
-        """ 1 キャプチャユニットが保存可能な四値化結果の数を取得する.
-
-        Returns:
-            1 キャプチャユニットが保存可能な四値化結果の数
-        """
-        return self._max_classification_results()
-
-
-    def sampling_rate(self) -> int:
-        """キャプチャユニットのサンプリングレートを取得する.
-
-        Returns:
-            キャプチャユニットのサンプリングレート (単位: サンプル数/秒)
-        """
-        return self._sampling_rate()
-
-
     def design_type(self) -> E7AwgHwType:
         """このオブジェクトが制御対象とする e7awg_hw の種類を取得する.
 
@@ -610,18 +583,6 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     def _check_err(
         self, *capture_unit_id_list: CaptureUnit
     ) -> dict[CaptureUnit, list[CaptureErr]]:
-        pass
-
-    @abstractmethod
-    def _max_capture_samples(self) -> int:
-        pass
-
-    @abstractmethod
-    def _max_classification_results(self) -> int:
-        pass
-
-    @abstractmethod
-    def _sampling_rate(self) -> int:
         pass
 
     @abstractmethod
@@ -1198,18 +1159,6 @@ class CaptureCtrl(CaptureCtrlBase):
                         .format(CaptureParam.MAX_SUM_RANGE_LEN, num_words_to_sum))
                 log_warning(msg, *self._loggers)
                 print('WARNING: ' + msg)
-
-
-    def _max_capture_samples(self) -> int:
-        return self._cap_specs.max_capture_samples
-
-
-    def _max_classification_results(self) -> int:
-        return self._cap_specs.max_classification_results
-
-
-    def _sampling_rate(self) -> int:
-        return self._cap_specs.sampling_rate
 
 
     def _version(self) -> str:

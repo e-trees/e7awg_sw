@@ -291,15 +291,6 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         return self._check_err(*awg_id_list)
 
 
-    def sampling_rate(self) -> int:
-        """AWG のサンプリングレートを取得する.
-
-        Returns:
-            AWG のサンプリングレート (単位: サンプル数/秒)
-        """
-        return self._sampling_rate()
-
-
     def design_type(self) -> E7AwgHwType:
         """このオブジェクトが制御対象とする e7awg_hw の種類を取得する.
 
@@ -400,10 +391,6 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _check_err(self, *awg_id_list: AWG) -> dict[AWG, list[AwgErr]]:
-        pass
-
-    @abstractmethod
-    def _sampling_rate(self) -> int:
         pass
 
     @abstractmethod
@@ -744,10 +731,6 @@ class AwgCtrl(AwgCtrlBase):
                 awg_to_err[awg_id] = err_list
         
         return awg_to_err
-
-
-    def _sampling_rate(self) -> int:
-        return self._awg_params.sampling_rate()
 
 
     def _pause_awgs(self, *awg_id_list: AWG) -> None:
