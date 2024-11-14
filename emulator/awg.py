@@ -191,8 +191,8 @@ class Awg:
 
 
 class AwgState(IntEnum):
-    RESET: Final = 0
-    IDLE: Final  = 1
-    READY: Final = 2
-    GEN_WAVE: Final = 3
-    COMPLETE: Final = 4
+    RESET    = 0
+    IDLE     = 1
+    READY    = 2
+    GEN_WAVE = 3
+    COMPLETE = 4

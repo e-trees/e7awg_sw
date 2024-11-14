@@ -60,8 +60,9 @@ class WaveSequence(object):
             self.__loggers.append(get_file_logger())
 
         try:
-            self.__design_type = design_type
+            self.__validate_design_type(design_type)
             self._awg_specs: AwgSpecs = E7AwgHwSpecs(design_type).awg # type: ignore
+
             if not (isinstance(num_wait_words, int) and 
                     (0 <= num_wait_words and num_wait_words <= self._awg_specs.max_wait_words)):
                 raise ValueError(
@@ -80,6 +81,7 @@ class WaveSequence(object):
         self.__chunks: list[WaveChunk] = []
         self.__num_wait_words = num_wait_words
         self.__num_repeats = num_repeats
+        self.__design_type = design_type
 
 
     def del_chunk(self, index: int) -> None:
@@ -390,6 +392,13 @@ class WaveSequence(object):
     def __is_in_range(self, min: int, max: int, val: int) -> bool:
         return (min <= val) and (val <= max)
     
+
+    def __validate_design_type(self, design_type: E7AwgHwType) -> None:
+        if design_type != E7AwgHwType.SIMPLE_MULTI and \
+           design_type != E7AwgHwType.KR260 and \
+           design_type != E7AwgHwType.ZCU111:
+            raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
+
 
     class __WaveSampleList(Sequence[tuple[int, int]]):
 

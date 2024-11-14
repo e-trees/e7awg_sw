@@ -9,7 +9,9 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   e7awgsw.digitaloutput
    e7awgsw.labrad
+   e7awgsw.zcu111
 
 Submodules
 ----------

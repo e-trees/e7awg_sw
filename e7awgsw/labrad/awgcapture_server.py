@@ -175,6 +175,26 @@ class AwgCaptureServer(ThreadedServer):
             return pickle.dumps(e)
 
 
+    @setting(114, handle='s', awg_id_list='*w', returns='y')
+    def pause_awgs(self, c, handle, awg_id_list):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            awgctrl.pause_awgs(*awg_id_list)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
+    @setting(115, handle='s', awg_id_list='*w', returns='y')
+    def resume_awgs(self, c, handle, awg_id_list):
+        try:
+            awgctrl = self.__get_awgctrl(handle)
+            awgctrl.resume_awgs(*awg_id_list)
+            return pickle.dumps(None)
+        except Exception as e:
+            return pickle.dumps(e)
+
+
     @setting(200, ipaddr='s', design_type='y', returns='y')
     def create_capturectrl(self, c, ipaddr, design_type):
         try:

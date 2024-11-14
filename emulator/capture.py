@@ -16,10 +16,10 @@ from e7awgsw.logger import get_file_logger, get_stderr_logger, log_error, log_wa
 
 
 class CaptureUnitState(IntEnum):
-    RESET: Final = 0
-    IDLE: Final  = 1
-    CAPTURE_WAVE: Final = 3
-    COMPLETE: Final = 4
+    RESET        = 0
+    IDLE         = 1
+    CAPTURE_WAVE = 3
+    COMPLETE     = 4
 
 
 class CaptureUnit(object):

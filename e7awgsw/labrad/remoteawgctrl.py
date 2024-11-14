@@ -161,6 +161,26 @@ class RemoteAwgCtrl(AwgCtrlBase):
             raise
 
 
+    def _pause_awgs(self, *awg_id_list: AWG) -> None:
+        try:
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.pause_awgs(self.__handler, awgs)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
+    def _resume_awgs(self, *awg_id_list: AWG) -> None:
+        try:
+            awgs = [int(awg_id) for awg_id in awg_id_list]
+            result = self.__server.resume_awgs(self.__handler, awgs)
+            self.__decode_and_check(result)
+        except Exception as e:
+            log_error(e, *self._loggers)
+            raise
+
+
     def _wait_for_awgs_to_stop(self, timeout: float, *awg_id_list: AWG) -> None:
         try:
             to = pickle.dumps(timeout)

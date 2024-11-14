@@ -35,15 +35,17 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     ) -> None:
         self._validate_args = validate_args
         self._loggers = [logger]
-        self._design_type = design_type
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
         try:
-            self._awg_params = AwgParams.of(design_type)
-            self._ram_params = WaveRamParams.of(design_type)
             if self._validate_args:
                 self._validate_ip_addr(ip_addr)
+                self._validate_design_type(design_type)
+
+            self._design_type = design_type
+            self._awg_params = AwgParams.of(design_type)
+            self._ram_params = WaveRamParams.of(design_type)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
@@ -341,6 +343,13 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 .format(1, 0xFFFFFFFF, interval))
 
 
+    def _validate_design_type(self, design_type: E7AwgHwType) -> None:
+        if design_type != E7AwgHwType.SIMPLE_MULTI and \
+           design_type != E7AwgHwType.KR260 and \
+           design_type != E7AwgHwType.ZCU111:
+            raise ValueError("e7awg_hw ({}) doesn't have any AWGs.".format(design_type))
+
+
     @abstractmethod
     def _set_wave_sequence(self, awg_id: AWG, wave_seq: WaveSequence) -> None:
         pass
@@ -547,7 +556,7 @@ class AwgCtrl(AwgCtrlBase):
         for awg_id in awg_id_list:
             self.__reg_access.write(AwgCtrlRegs.Addr.awg(awg_id), AwgCtrlRegs.Offset.CTRL, 0)
         self.reset_awgs(*awg_id_list)
-        wave_seq = WaveSequence(0, 1)
+        wave_seq = WaveSequence(0, 1, self._design_type)
         wave_seq.add_chunk([(0,0)] * self._awg_params.smallest_unit_of_wave_len() , 0, 1)
         for awg_id in awg_id_list:
             self.set_wave_startable_block_timing(1, awg_id)

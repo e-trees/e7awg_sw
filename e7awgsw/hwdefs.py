@@ -6,20 +6,20 @@ from enum import IntEnum, Enum
 
 class E7AwgHwType(Enum):
     """e7awg_hw の種類"""
-    SIMPLE_MULTI: Final = 0
-    ZCU111: Final       = 1
-    KR260: Final        = 2
+    SIMPLE_MULTI = 0
+    ZCU111       = 1
+    KR260        = 2
 
 
 class DspUnit(IntEnum):
     """キャプチャユニットが持つ信号処理モジュールの列挙型"""
-    COMPLEX_FIR: Final    = 0 #: 複素 FIR フィルタ
-    DECIMATION: Final     = 1 #: 間引き
-    REAL_FIR: Final       = 2 #: 実 FIR フィルタ
-    COMPLEX_WINDOW: Final = 3 #: 窓関数
-    SUM: Final            = 4 #: 総和
-    INTEGRATION: Final    = 5 #: 積算
-    CLASSIFICATION: Final = 6 #: 四値化
+    COMPLEX_FIR    = 0 #: 複素 FIR フィルタ
+    DECIMATION     = 1 #: 間引き
+    REAL_FIR       = 2 #: 実 FIR フィルタ
+    COMPLEX_WINDOW = 3 #: 窓関数
+    SUM            = 4 #: 総和
+    INTEGRATION    = 5 #: 積算
+    CLASSIFICATION = 6 #: 四値化
     
     @classmethod
     def all(cls) -> list[Self]:
@@ -34,16 +34,16 @@ class DspUnit(IntEnum):
 
 class CaptureUnit(IntEnum):
     """キャプチャユニットの ID"""
-    U0: Final = 0
-    U1: Final = 1
-    U2: Final = 2
-    U3: Final = 3
-    U4: Final = 4
-    U5: Final = 5
-    U6: Final = 6
-    U7: Final = 7
-    U8: Final = 8
-    U9: Final = 9
+    U0 = 0
+    U1 = 1
+    U2 = 2
+    U3 = 3
+    U4 = 4
+    U5 = 5
+    U6 = 6
+    U7 = 7
+    U8 = 8
+    U9 = 9
 
     @classmethod
     @deprecated("Use 'sorted(CaptureUnit.on(...))' instead")
@@ -83,10 +83,10 @@ class CaptureUnit(IntEnum):
 
 class CaptureModule(IntEnum):
     """キャプチャモジュール (複数のキャプチャユニットをまとめて保持するモジュール) の列挙型"""
-    U0: Final = 0
-    U1: Final = 1
-    U2: Final = 2
-    U3: Final = 3
+    U0 = 0
+    U1 = 1
+    U2 = 2
+    U3 = 3
 
     @classmethod
     @deprecated("Use 'sorted(CaptureModule.on(...))' instead")
@@ -120,8 +120,8 @@ class CaptureModule(IntEnum):
 
 class DecisionFunc(IntEnum):
     """四値化処理の判定式の ID"""
-    U0: Final = 0 #: 判定式 0
-    U1: Final = 1 #: 判定式 1
+    U0 = 0 #: 判定式 0
+    U1 = 1 #: 判定式 1
     
     @classmethod
     def all(cls) -> list[Self]:
@@ -143,22 +143,22 @@ class DecisionFunc(IntEnum):
 
 class AWG(IntEnum):
     """AWG の ID"""
-    U0: Final  = 0 
-    U1: Final  = 1 
-    U2: Final  = 2 
-    U3: Final  = 3 
-    U4: Final  = 4 
-    U5: Final  = 5 
-    U6: Final  = 6 
-    U7: Final  = 7 
-    U8: Final  = 8 
-    U9: Final  = 9 
-    U10: Final = 10
-    U11: Final = 11
-    U12: Final = 12
-    U13: Final = 13
-    U14: Final = 14
-    U15: Final = 15
+    U0 = 0 
+    U1 = 1 
+    U2 = 2 
+    U3 = 3 
+    U4 = 4 
+    U5 = 5 
+    U6 = 6 
+    U7 = 7 
+    U8 = 8 
+    U9 = 9 
+    U10 = 10
+    U11 = 11
+    U12 = 12
+    U13 = 13
+    U14 = 14
+    U15 = 15
 
     @classmethod
     @deprecated("Use 'sorted(AWG.on(...))' instead")
@@ -208,8 +208,17 @@ class AWG(IntEnum):
 class AwgErr(Enum):
     """AWG エラーの列挙型"""
 
-    MEM_RD: Final          = 0
-    SAMPLE_SHORTAGE: Final = 1
+    MEM_RD          = 0
+    SAMPLE_SHORTAGE = 1
+
+    @classmethod
+    def to_msg(cls, err):
+        if err == cls.MEM_RD:
+            return 'Failed to read waveform.'
+        if err == cls.SAMPLE_SHORTAGE:
+            return 'Wave samples were not sent to a DAC in time.'
+        
+        raise ValueError('unknown AWG error {}'.format(err))
 
     @classmethod
     def all(cls) -> list[AwgErr]:
@@ -225,8 +234,17 @@ class AwgErr(Enum):
 class CaptureErr(Enum):
     """キャプチャユニットエラーの列挙型"""
 
-    MEM_WR: Final   = 0
-    OVERFLOW: Final = 1
+    MEM_WR   = 0
+    OVERFLOW = 1
+
+    @classmethod
+    def to_msg(cls, err):
+        if err == cls.MEM_WR:
+            return 'Failed to write capture data.'
+        if err == cls.OVERFLOW:
+            return 'A capture data fifo overflowed.'
+        
+        raise ValueError('unknown capture error {}'.format(err))
 
     @classmethod
     def all(cls) -> list[Self]:
@@ -237,4 +255,3 @@ class CaptureErr(Enum):
     def includes(cls, *vals: int) -> bool:
         errs = cls.all()
         return all([val in errs for val in vals])
-    

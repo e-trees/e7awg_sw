@@ -1,0 +1,3 @@
+
+class DigitalOutTimeoutError(Exception):
+    pass

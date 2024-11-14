@@ -1,6 +1,8 @@
 from typing import Optional
 from .hwdefs import E7AwgHwType
 from .hwparam import AwgParams, CaptureUnitParams, CaptureRamParams
+from .zcu111.rfdcparam import RfdcParams
+from .digitaloutput.doutparam import DigitalOutParams
 
 class AwgSpecs:
     
@@ -157,6 +159,58 @@ class CaptureUnitSpecs:
         return self.__cap_unit_params.sampling_rate()
 
 
+class DigitalOutSpecs:
+
+    def __init__(self, dout_params: DigitalOutParams):
+        """ディジタル出力モジュールの性能値をまとめたクラス"""
+        self.__dout_params = dout_params
+
+
+    @property
+    def max_patterns(self) -> int:
+        """ディジタル出力モジュールに設定可能な最大パターン数"""
+        return self.__dout_params.max_patterns()
+
+
+    @property
+    def min_time(self) -> int:
+        """ビットパターンの出力時間として設定可能な最小値"""
+        return self.__dout_params.min_time()
+
+
+    @property
+    def max_time(self) -> int:
+        """ビットパターンの出力時間として設定可能な最大値"""
+        return self.__dout_params.max_time()
+
+
+class RfdcSpecs:
+
+    def __init__(self, rfdc_params: RfdcParams):
+        """RF Data Converter の性能値をまとめたクラス"""
+        self.__rfdc_params = rfdc_params
+
+
+    @property
+    def inf_mixer_phase(self) -> float:
+        return self.__rfdc_params.inf_mixer_phase()
+
+
+    @property
+    def sup_mixer_phase(self) -> float:
+        return self.__rfdc_params.sup_mixer_phase()
+
+
+    @property
+    def min_mixer_freq(self) -> float:
+        return self.__rfdc_params.min_mixer_freq()
+
+
+    @property
+    def max_mixer_freq(self) -> float:
+        return self.__rfdc_params.max_mixer_freq()
+
+
 class E7AwgHwSpecs:
 
     def __init__(self, design_type: E7AwgHwType) -> None:
@@ -167,16 +221,21 @@ class E7AwgHwSpecs:
             design_type (E7AwgHwType): 性能値を取得する e7awg_hw の種類
         """
         self.__design_type = design_type
-        self.__awg_params = AwgParams.of(design_type)
-        self.__awg_specs = AwgSpecs(self.__awg_params)
+        self.__awg_specs = AwgSpecs(AwgParams.of(design_type))
 
-        self.__cap_unit_params: Optional[CaptureUnitParams] = None
-        self.__cap_ram_params: Optional[CaptureRamParams] = None
         self.__cap_unit_specs: Optional[CaptureUnitSpecs] = None
         if design_type == E7AwgHwType.SIMPLE_MULTI:
-            self.__cap_unit_params = CaptureUnitParams.of(design_type)
-            self.__cap_ram_params = CaptureRamParams.of(design_type)
-            self.__cap_unit_specs = CaptureUnitSpecs(self.__cap_unit_params, self.__cap_ram_params)
+            self.__cap_unit_specs = CaptureUnitSpecs(
+                CaptureUnitParams.of(design_type),
+                CaptureRamParams.of(design_type))
+
+        self.__dout_specs: Optional[DigitalOutSpecs] = None
+        if design_type == E7AwgHwType.ZCU111:
+            self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
+
+        self.__rfdc_specs: Optional[RfdcSpecs] = None
+        if design_type == E7AwgHwType.ZCU111:
+            self.__rfdc_specs = RfdcSpecs(RfdcParams.of(design_type))
 
 
     @property
@@ -194,3 +253,15 @@ class E7AwgHwSpecs:
     def cap_unit(self) -> Optional[CaptureUnitSpecs]:
         """キャプチャユニットの性能値をまとめたオブジェクト"""
         return self.__cap_unit_specs
+
+
+    @property
+    def digital_out(self) -> Optional[DigitalOutSpecs]:
+        """ディジタル出力モジュールの性能値をまとめたオブジェクト"""
+        return self.__dout_specs
+
+
+    @property
+    def rfdf(self) -> Optional[RfdcSpecs]:
+        """RF Data Converter のパラメータを保持するクラス"""
+        return self.__rfdc_specs

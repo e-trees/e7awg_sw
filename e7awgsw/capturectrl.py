@@ -45,18 +45,18 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     ) -> None:
         self._validate_args = validate_args
         self._loggers = [logger]
-        self._design_type = design_type
         if enable_lib_log:
             self._loggers.append(get_file_logger())
 
         try:
+            if self._validate_args:
+                self._validate_ip_addr(ip_addr)
+                self._validate_design_type(design_type)
+
+            self._design_type = design_type
             self._cap_specs: CaptureUnitSpecs = E7AwgHwSpecs(self._design_type).cap_unit # type: ignore
             self._unit_params = CaptureUnitParams.of(self._design_type)
             self._ram_params = CaptureRamParams.of(self._design_type)
-            if self._validate_args:
-                self._validate_ip_addr(ip_addr)
-                if design_type != E7AwgHwType.SIMPLE_MULTI:
-                    raise 
         except Exception as e:
             log_error(e, *self._loggers)
             raise
@@ -491,6 +491,11 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
     def _validate_timeout(self, timeout: float) -> None:
         if (not isinstance(timeout, (int, float))) or (timeout < 0):
             raise ValueError('Invalid timeout {}'.format(timeout))
+
+
+    def _validate_design_type(self, design_type: E7AwgHwType) -> None:
+        if design_type != E7AwgHwType.SIMPLE_MULTI:
+            raise ValueError("e7awg_hw ({}) doesn't have any capture units.".format(design_type))
 
 
     @abstractmethod
@@ -970,7 +975,7 @@ class CaptureCtrl(CaptureCtrlBase):
                 if val == 0:
                     unit_to_mod[capture_unit_id] = None
                 else:
-                    unit_to_mod[capture_unit_id] = CaptureModule.of(val - 1)
+                    unit_to_mod[capture_unit_id] = CaptureModule(val - 1)
 
         return unit_to_mod
 
@@ -1000,7 +1005,7 @@ class CaptureCtrl(CaptureCtrlBase):
                 if val == 0:
                     mod_to_trig[capture_module_id] = None
                 else:
-                    mod_to_trig[capture_module_id] = AWG.of(val - 1)
+                    mod_to_trig[capture_module_id] = AWG(val - 1)
 
         return mod_to_trig
 
