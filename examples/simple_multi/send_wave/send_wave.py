@@ -5,15 +5,14 @@ import os
 import math
 import argparse
 import e7awgsw as e7s
-import e7awgsw.zcu111 as e7sz
 
 # AWG Controller の IP アドレス.
 IP_ADDR = '10.0.0.16'
 
 # AWG から出力する余弦波のパラメータ
-NUM_FREQ = 1 # MHz
+NUM_FREQ = 2.5 # MHz
 NUM_CYCLES = 4
-AMPLITUDE = 28000
+AMPLITUDE = 5000
 
 def gen_cos_wave(num_cycles, freq, amp, hw_specs):
     """
@@ -33,7 +32,7 @@ def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
     wave_seq = e7s.WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1,
-        design_type = e7s.E7AwgHwType.ZCU111)
+        design_type = e7s.E7AwgHwType.SIMPLE_MULTI)
     i_samples = gen_cos_wave(NUM_CYCLES, NUM_FREQ, AMPLITUDE, hw_specs)
     q_samples = [0] * len(i_samples)
     for _ in range(num_chunks):
@@ -69,57 +68,9 @@ def output_graph(awg_to_wave_seq):
         e7s.plot_samples(samples, 'waveform', dirpath + "waveform.png")
 
 
-def setup_dacs(rfdc_ctrl):
-    """DAC の設定を行う"""
-    for tile in list(e7sz.DacTile):
-        # FIFO 無効化
-        rfdc_ctrl.disable_dac_fifo(tile)
-        for channel in list(e7sz.DacChannel):
-            # ミキサの設定 
-            # 周波数 = 0 [MHz], 初期位相 = 0 [degrees], 振幅 = 0.7
-            rfdc_ctrl.set_dac_mixer_settings(tile, channel, 0, 0, e7sz.MixerScale.V0P7)
-            # DAC 割り込みクリア
-            rfdc_ctrl.clear_dac_interrupts(tile, channel, *list(e7sz.RfdcInterrupt))
-            # DAC 割り込み有効化
-            rfdc_ctrl.enable_dac_interrupts(tile, channel, *list(e7sz.RfdcInterrupt))
-        # FIFO 有効化
-        rfdc_ctrl.enable_dac_fifo(tile)
-    # DAC タイルを同期させる.  ミキサの設定を行ってから実行する必要がある.
-    rfdc_ctrl.sync_dac_tiles()
-
-
-def get_dac_interrupts(rfdc_ctrl):
-    """全ての DAC の割り込みを取得する"""
-    dac_to_interrupts = {}
-    for tile in list(e7sz.DacTile):
-        dac_to_interrupts[tile] = {}
-        for channel in list(e7sz.DacChannel):
-            dac_to_interrupts[tile][channel] = rfdc_ctrl.get_dac_interrupts(tile, channel)
-    
-    return dac_to_interrupts
-
-
-def output_rfdc_interrupt_details(dac_to_interrupts):
-    """RF Data Converter の割り込みを出力する"""
-    for tile, channel_to_interrupts in dac_to_interrupts.items():
-        for channel, interrupts in channel_to_interrupts.items():
-            if len(interrupts) != 0:
-                print('Interrupts on DAC tile {}, channel {}'.format(tile, channel))
-            for interrupt in interrupts:
-                print('  ', e7sz.RfdcInterrupt.to_msg(interrupt))
-
-
 def main(awgs, num_wait_words, timeout):
-    zcu111_ip_addr = '192.168.1.3'
-    fpga_ip_addr = IP_ADDR
-    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.ZCU111)
-    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-          e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
-        # FPGA コンフィギュレーション
-        e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
-        # DAC のセットアップ
-        setup_dacs(rfdc_ctrl)
+    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.SIMPLE_MULTI)
+    with (e7s.AwgCtrl(IP_ADDR, e7s.E7AwgHwType.SIMPLE_MULTI) as awg_ctrl):
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
@@ -128,9 +79,6 @@ def main(awgs, num_wait_words, timeout):
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
         awg_ctrl.wait_for_awgs_to_stop(timeout, *awgs)
-        # DAC 割り込みチェック
-        dac_to_interrupts = get_dac_interrupts(rfdc_ctrl)
-        output_rfdc_interrupt_details(dac_to_interrupts)
         # エラーチェック
         check_err(awg_ctrl, awgs)
         # 波形保存
@@ -149,12 +97,8 @@ if __name__ == "__main__":
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.ZCU111))
+    awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.SIMPLE_MULTI))
     if args.awgs is not None:
         awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
-    
-    # AWG は最大 5 つまで同時に動作可能.
-    # 5 つを超えると DRAM からの波形データ読み出しが間に合わなくなるので, 動作させる AWG を最大 5 つに制限する.
-    awgs = awgs[0:5]
 
     main(awgs, args.num_wait_words, timeout=args.timeout)
