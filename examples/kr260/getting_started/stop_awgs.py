@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if args.server_ipaddr is not None:
         server_ip_addr = args.server_ipaddr
 
-    awgs = sorted(AWG.on(E7AwgHwType.SIMPLE_MULTI))
+    awgs = sorted(AWG.on(E7AwgHwType.KR260))
     if args.awgs is not None:
         awgs = [AWG(int(x)) for x in args.awgs.split(',')]
 
