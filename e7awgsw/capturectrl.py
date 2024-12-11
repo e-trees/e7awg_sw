@@ -671,6 +671,7 @@ class CaptureCtrl(CaptureCtrlBase):
             log_error(e, *self._loggers)
         self.__flock = None # type: ignore
         self.__reg_access.close()
+        self.__wave_ram_access.close()
         self.__registry_access.close()
 
 

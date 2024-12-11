@@ -32,6 +32,7 @@ __all__ = [
     'ResponsiveFeedbackCmd',
     'WaveSequenceSelectionCmd',
     'BranchByFlagCmd',
+    'AwgStartWithExtTrigAndClsValCmd',
     'SequencerCmdErr',
     'AwgStartCmdErr',
     'CaptureEndFenceCmdErr',
@@ -43,6 +44,7 @@ __all__ = [
     'ResponsiveFeedbackCmdErr',
     'WaveSequenceSelectionCmdErr',
     'BranchByFlagCmdErr',
+    'AwgStartWithExtTrigAndClsValCmdErr',
     'SequencerCtrl',
     'plot_graph',
     'plot_samples',
@@ -60,12 +62,13 @@ from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
 from .sequencercmd import \
     SequencerCmd, AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
     CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd, \
-    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd, BranchByFlagCmd
+    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd, BranchByFlagCmd, \
+    AwgStartWithExtTrigAndClsValCmd
 from .sequencercmd import \
     SequencerCmdErr, AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
     WaveGenEndFenceCmdErr, ResponsiveFeedbackCmdErr, WaveSequenceSelectionCmdErr, \
-    BranchByFlagCmdErr
+    BranchByFlagCmdErr, AwgStartWithExtTrigAndClsValCmdErr
 from .sequencerctrl import SequencerCtrl
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
 from .dspmodule import dsp

@@ -107,7 +107,14 @@ class SequencerCmd(object, metaclass = ABCMeta):
                     .format(0, max_registry_key, key_table))
 
 
-    def _validate_four_cls_channel_id(self, four_cls_channel_id: FourClassifierChannel) -> None:
+    def _validate_four_cls_channel_id(
+        self, four_cls_channel_id: FourClassifierChannel, ext_trig_flag: bool
+    ) -> None:
+        if ext_trig_flag and four_cls_channel_id != FourClassifierChannel.U0:
+            raise ValueError(
+                "Invalid four-classifier value channel ID for External Trigger.'{}'."
+                .format(four_cls_channel_id))
+
         if not FourClassifierChannel.includes(four_cls_channel_id):
             raise ValueError(
                 "Invalid four-classifier value channel ID '{}'".format(four_cls_channel_id))
@@ -891,9 +898,12 @@ class WaveSequenceSelectionCmd(SequencerCmd):
         awg_id_list: Iterable[AWG] | AWG,
         key_table: Sequence[int] | int,
         four_cls_channel_id: FourClassifierChannel = FourClassifierChannel.U0,
+        ext_trig_flag: bool = False,
         stop_seq: bool = False
     ) -> None:
-        """高速フィードバック処理で AWG に設定する波形シーケンスを選択するコマンド.
+        """以下の 2 つのコマンドで AWG に設定する波形シーケンスを選択するコマンド.
+            - 高速フィードバックコマンド
+            - 四値付き外部トリガ待ち AWG スタートコマンド
 
         Args:
             cmd_no (int): コマンド番号
@@ -909,11 +919,14 @@ class WaveSequenceSelectionCmd(SequencerCmd):
             stop_seq (bool):
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+            ext_trig_flag (bool):
+                | true の場合, 外部トリガ用の四値チャネルセットから, four_cls_channel_id で指定した四値チャネルを参照する.
+                | false の場合, e7awg_hw 内部のキャプチャユニットに対応する四値チャネルセットを参照する.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
         awg_id_list = self._to_list(awg_id_list)
         self._validate_awg_id(awg_id_list)
-        self._validate_four_cls_channel_id(four_cls_channel_id)
+        self._validate_four_cls_channel_id(four_cls_channel_id, ext_trig_flag)
         self._validate_key_table(key_table, MAX_WAVE_REGISTRY_ENTRIES - 1)
         if isinstance(key_table, int):
             key_table = [key_table] * 4
@@ -921,6 +934,7 @@ class WaveSequenceSelectionCmd(SequencerCmd):
         self.__awg_id_list: list[AWG] = awg_id_list
         self.__four_cls_channel_id = four_cls_channel_id
         self.__key_table = list(key_table)
+        self.__ext_trig_flag = ext_trig_flag
         self.__cmd_bytes = self.__gen_cmd_bytes()
 
 
@@ -939,6 +953,11 @@ class WaveSequenceSelectionCmd(SequencerCmd):
         return list(self.__key_table)
 
 
+    @property
+    def ext_trig_flag(self) -> bool:
+        return self.__ext_trig_flag
+
+
     def __gen_cmd_bytes(self) -> bytes:
         awg_id_bits = self._to_bit_field(self.__awg_id_list)
         key_table_bits = 0
@@ -951,7 +970,8 @@ class WaveSequenceSelectionCmd(SequencerCmd):
             self.cmd_no              << 8  |
             awg_id_bits              << 24 |
             self.four_cls_channel_id << 40 |
-            key_table_bits           << 44)
+            key_table_bits           << 44 |
+            self.ext_trig_flag       << 127)
         return cmd.to_bytes(16, 'little')
 
 
@@ -1012,6 +1032,96 @@ class BranchByFlagCmd(SequencerCmd):
             self.cmd_id                << 1 |
             self.cmd_no                << 8 |
             (self.cmd_offset & 0xFFFF) << 24)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self) -> bytes:
+        return self.__cmd_bytes
+
+
+    def size(self) -> int:
+        return len(self.__cmd_bytes)
+
+
+class AwgStartWithExtTrigAndClsValCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID: Final = 11
+    #: タイムアウト時間に指定可能な最大値
+    MAX_TIMEOUT: Final = 0xFFFFFFFF_FFFFFFFF
+
+    def __init__(
+        self,
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        timeout: int,
+        wait: bool = False,
+        stop_seq: bool = False
+    ) -> None:
+        """四値付き外部トリガ待ち AWG スタートコマンド
+
+        | 本コマンドは, 
+        |   1. 四値化結果の更新待ち
+        |   2. 更新された四値化結果に応じて波形シーケンスを AWG に設定
+        |   3. 外部 AWG スタートトリガの入力待ち
+        |   4. AWG から波形を出力
+        | を行う.
+        |
+        | 本コマンドの処理で参照する四値化結果のチャネルと波形シーケンスの ID は,
+        | WaveSequenceSelectionCmd オブジェクトで作れるシーケンサコマンドを使って指定する.
+
+        Args:
+            cmd_no (int): コマンド番号
+            awg_id_list (Iterable of AWG | AWG): 波形を出力する AWG のリスト
+            timeout (int):
+                | 1 回目に AWG をスタートする時刻.
+                | 本コマンドの処理開始時点を 0 として, timeout * 8[ns] までに外部 AWG スタートトリガが入力されない場合, 
+                | 本コマンドはエラーとなる.
+            wait (bool):
+                | True -> AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
+                | False -> AWG をスタートした後, このコマンドを終了する.
+            stop_seq (bool): 
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        awg_id_list = self._to_list(awg_id_list)
+        self._validate_awg_id(awg_id_list)
+
+        if not (isinstance(timeout, int) and (timeout <= self.MAX_TIMEOUT)):
+            raise ValueError(
+                "'timeout' must be less than or equal to {}.  '{}' was set."
+                .format(self.MAX_TIMEOUT, timeout))
+
+        self.__awg_id_list: list[AWG] = awg_id_list
+        self.__timeout = timeout
+        self.__wait = wait
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
+
+
+    @property
+    def timeout(self) -> int:
+        return self.__timeout
+
+
+    @property
+    def wait(self) -> bool:
+        return self.__wait
+
+
+    def __gen_cmd_bytes(self) -> bytes:
+        awg_id_list = self._to_bit_field(self.__awg_id_list)
+        cmd = (
+            int(self.stop_seq)          |
+            self.cmd_id          << 1   |
+            self.cmd_no          << 8   |
+            awg_id_list          << 24  |
+            self.timeout         << 40  |
+            self.wait            << 104)
         return cmd.to_bytes(16, 'little')
 
 
@@ -1463,3 +1573,77 @@ class BranchByFlagCmdErr(SequencerCmdErr):
             '  - terminated         : {}\n'.format(self.is_terminated) +
             '  - out of range error : {}\n'.format(self.out_of_range_err) +
             '  - cmd_counter        : {}'.format(self.cmd_counter))
+
+
+class AwgStartWithExtTrigAndClsValCmdErr(SequencerCmdErr):
+
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        awg_id_list: Iterable[AWG],
+        read_err: bool,
+        write_err: bool,
+        timeout_err: bool
+    ) -> None:
+        """四値付き外部トリガ待ち AWG スタートコマンドのエラー情報を保持するクラス"""
+        super().__init__(AwgStartWithExtTrigAndClsValCmd.ID, cmd_no, is_terminated)
+        self.__awg_id_list = list(awg_id_list)
+        self.__read_err = read_err
+        self.__write_err = write_err
+        self.__timeout_err = timeout_err
+
+
+    @property
+    def awg_id_list(self) -> list[AWG]:
+        """スタートできなかった AWG の ID のリスト
+        
+        Returns:
+            list of AWG: スタートできなかった AWG の ID のリスト
+        """
+        return list(self.__awg_id_list)
+
+
+    @property
+    def read_err(self) -> bool:
+        """読み出しエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの読み出しエラーが発生した場合 True
+        """
+        return self.__read_err
+
+
+    @property
+    def write_err(self) -> bool:
+        """書き込みエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True
+        """
+        return self.__write_err
+
+
+    @property
+    def timeout_err(self) -> bool:
+        """タイムアウトフラグ
+
+        Returns:
+            bool: 
+                | 四値付き外部トリガ待ち AWG スタートコマンドで指定したタイムアウト時間が過ぎるまでに,
+                | 外部 AWG スタートトリガが入力されなかった場合 true
+        """
+        return self.__timeout_err
+
+
+    def __str__(self) -> str:
+        awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
+        return (
+            'AwgStartWithExtTrigAndClsValCmdErr\n' +
+            '  - command ID    : {}\n'.format(self.cmd_id) +
+            '  - command No    : {}\n'.format(self.cmd_no) +
+            '  - terminated    : {}\n'.format(self.is_terminated) +
+            '  - AWG IDs       : {}\n'.format(awg_id_list) +
+            '  - read error    : {}\n'.format(self.read_err) +
+            '  - write error   : {}\n'.format(self.write_err) +
+            '  - timeout error : {}'.format(self.timeout_err))

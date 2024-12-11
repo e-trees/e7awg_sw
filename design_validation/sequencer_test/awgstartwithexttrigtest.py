@@ -3,28 +3,32 @@ import testutil
 import numpy as np
 from e7awgsw import CaptureUnit, CaptureModule, AWG, WaveSequence, CaptureParam
 from e7awgsw import \
-    AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
-    CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveSequenceSelectionCmd, \
-    ResponsiveFeedbackCmd, FourClassifierChannel
+    AwgStartCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
+    CaptureAddrSetCmd, WaveSequenceSelectionCmd, \
+    FourClassifierChannel, AwgStartWithExtTrigAndClsValCmd
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
 
-# このサンプル値を四値化した結果をもとに, 高速フィードバック命令の2回目の波形を選択する
+# このサンプル値を四値化した結果をもとに, 四値付き外部トリガ待ち AWG スタートコマンドが波形を選択する
 SAMPLE_FOR_FOUR_CLS_0 = (2, 1)
 SAMPLE_FOR_FOUR_CLS_1 = (-2, -1) 
 
-class ResponsiveFeedbackTest(object):
+class AwgStartWithExtTrigTest(object):
 
-    # テストデザインにおける AWG とキャプチャモジュールの接続関係
+    # AWG とキャプチャモジュールの接続関係
     __AWG_TO_CAP_MOD = {
-        AWG.U2 : CaptureModule.U0,
-        AWG.U3 : CaptureModule.U2
+        AWG.U2  : CaptureModule.U0,
+        AWG.U15 : CaptureModule.U1,
+        AWG.U3  : CaptureModule.U2,
+        AWG.U4  : CaptureModule.U3
     }
 
     # キャプチャモジュールとキャプチャユニットの対応関係
     __CAP_MOD_TO_UNITS = {
-        CaptureModule.U0 : [CaptureUnit.U2, CaptureUnit.U8],
-        CaptureModule.U2 : [CaptureUnit.U9, CaptureUnit.U7],
+        CaptureModule.U0 : [CaptureUnit.U0],
+        CaptureModule.U1 : [CaptureUnit.U4],
+        CaptureModule.U2 : [CaptureUnit.U8],
+        CaptureModule.U3 : [CaptureUnit.U9]
     }
 
     def __init__(self, res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad):
@@ -33,17 +37,17 @@ class ResponsiveFeedbackTest(object):
         self.__server_ip_addr = server_ip_addr
         self.__use_labrad = use_labrad
         self.__res_dir = res_dir
-        self.__awgs = [AWG.U2, AWG.U3]
+        self.__awgs = [AWG.U2, AWG.U15, AWG.U3, AWG.U4]
 
-        # 高速フィードバック処理で使用する四値を算出するキャプチャユニット
+        # 四値を算出するキャプチャユニット
         self.__cap_units_with_cls = [
-            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][0], # U2
-            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][0]  # U9
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][0], # U0
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U1][0], # U4
         ]
         # AWG の出力波形を検証するために使用するキャプチャユニット
         self.__cap_units_plain = [
-            self.__CAP_MOD_TO_UNITS[CaptureModule.U0][1], # U8
-            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][1]  # U7
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U2][0], # U8
+            self.__CAP_MOD_TO_UNITS[CaptureModule.U3][0]  # U9
         ]
         self.__cap_units = self.__cap_units_with_cls + self.__cap_units_plain
         self.__awg_ctrl = self.__create_awg_ctrl()
@@ -155,46 +159,38 @@ class ResponsiveFeedbackTest(object):
         first_wave_seq_key_1,
         second_wave_seq_keys_1,
         cap_param_key):
-        time = 2500 # 20 [us]
-        cls_ch_list = [
-            FourClassifierChannel.of(self.__cap_units_with_cls[0]),
-            FourClassifierChannel.of(self.__cap_units_with_cls[1])
-        ]
+        timeout = 100000 # 800 [us]
+        four_cls_ch_0 = FourClassifierChannel.U0
+        four_cls_ch_1 = FourClassifierChannel.U4
         cmds = [
             CaptureAddrSetCmd(1, self.__cap_units, 0),
             CaptureParamSetCmd(2, self.__cap_units_with_cls, cap_param_key),
             WaveSequenceSetCmd(3, self.__awgs[0], first_wave_seq_key_0),
             WaveSequenceSetCmd(4, self.__awgs[1], first_wave_seq_key_1),
-            WaveSequenceSelectionCmd(5, self.__awgs[0], second_wave_seq_keys_0, cls_ch_list[0]),
-            WaveSequenceSelectionCmd(6, self.__awgs[1], second_wave_seq_keys_1, cls_ch_list[1]),
-            ResponsiveFeedbackCmd(7, self.__awgs, time, wait = True, stop_seq = True)
+            # AWG 3 の波形シーケンスは, 外部トリガ用四値チャネル 0 の値に応じて設定する
+            WaveSequenceSelectionCmd(
+                5, self.__awgs[2], second_wave_seq_keys_0, four_cls_ch_0, ext_trig_flag = True),
+            # AWG 4 の波形シーケンスは, 四値チャネル 4 の値に応じて設定する
+            WaveSequenceSelectionCmd(
+                6, self.__awgs[3], second_wave_seq_keys_1, four_cls_ch_1, ext_trig_flag = False),
+            AwgStartCmd(7, self.__awgs[0:2], AwgStartCmd.IMMEDIATE),
+            AwgStartWithExtTrigAndClsValCmd(
+                8, self.__awgs[2:4], timeout, wait = True, stop_seq = True)
         ]
         return cmds
 
 
     def __gen_expected_data(
         self,
-        first_wave_seq_0,
         second_wave_seqs_0,
         four_cls_val_0,
-        first_wave_seq_1,
         second_wave_seqs_1,
         four_cls_val_1):
-        exp_data_0 = \
-            first_wave_seq_0.all_samples(False) + \
-            second_wave_seqs_0[four_cls_val_0].all_samples(False)
-        exp_data_1 = \
-            first_wave_seq_1.all_samples(False) + \
-            second_wave_seqs_1[four_cls_val_1].all_samples(False)
+        exp_data_0 = second_wave_seqs_0[four_cls_val_0].all_samples(False)
+        exp_data_1 = second_wave_seqs_1[four_cls_val_1].all_samples(False)
         return [
             list(map(lambda s : (np.float32(s[0]), np.float32(s[1])), exp_data_0)),
             list(map(lambda s : (np.float32(s[0]), np.float32(s[1])), exp_data_1))]
-
-
-    def __remove_zeros(self, cap_data_list):
-        return [
-            list(filter(lambda s : s[0] != 0 or s[1] != 0, cap_data))
-            for cap_data in cap_data_list]
 
 
     def __save_wave_data(
@@ -202,9 +198,9 @@ class ResponsiveFeedbackTest(object):
         cap_unit_to_cap_data = dict(zip(cap_units, cap_data_list))
         cap_unit_to_exp_cap_data = dict(zip(cap_units, exp_data_list))
         self.__save_wave_samples(
-            cap_unit_to_cap_data, test_name, 'resp_fb_{}_captured'.format(test_no))
+            cap_unit_to_cap_data, test_name, 'ext_trig_awg_start_{}_captured'.format(test_no))
         self.__save_wave_samples(
-            cap_unit_to_exp_cap_data, test_name, 'resp_fb_{}_expected'.format(test_no))
+            cap_unit_to_exp_cap_data, test_name, 'ext_trig_awg_start_{}_expected'.format(test_no))
 
 
     def __save_wave_samples(self, cap_unit_to_cap_data, test_name, filename):
@@ -228,7 +224,7 @@ class ResponsiveFeedbackTest(object):
         for cap_unit, wave_0, wave_1 in list(zip(cap_units, data_0, data_1)):
             if wave_0 != wave_1:
                 all_match = False
-                print('resp fb {}, cap_unit {} error'.format(test_no, cap_unit))
+                print('ext trig awg start {}, cap_unit {} error'.format(test_no, cap_unit))
         return all_match
 
 
@@ -245,27 +241,33 @@ class ResponsiveFeedbackTest(object):
     def run_test(self, test_name):
         """
         テスト項目
-        ・高速フィードバック処理で AWG に設定する波形シーケンスが, 四値化結果に応じて適切に切り替わる
-        
-          +-------------------------------------------------------------+
-          |                    ___________                              |
-          |               +-> | capture 8 |     _____________________   |
-          |               |   +-----------+    |      Sequencer      |  |
-          |     _______   |    ___________     |                     |  |
-          +--> | AWG 2 | -+-> | capture 2 | -> |-four cls ch 2       | -+
-               +-------+      +-----------+    |                     |
-                _______        ___________     |                     |
-          +--> | AWG 3 | -+-> | capture 9 | -> |-four cls ch 9       | -+
-          |    +-------+  |   +-----------+    +---------------------+  |
-          |               |    ___________                              |
-          |               +-> | capture 7 |                             |
-          |                   +-----------+                             |
-          +-------------------------------------------------------------+
+        ・四値付き外部トリガ待ち AWG スタートコマンドで AWG に設定する波形シーケンスが, 四値化結果に応じて適切に切り替わる
 
-        高速フィードバック処理で 2 回出力される波形を, 同処理中に 1 回実行されるキャプチャ (DSP は全て無効) でまとめて取得する.
-        このとき, [1回目の波形]-[0 データ]-[2回目の波形]-[0データ] という順番で波形がキャプチャされる.
-        このキャプチャデータから 0 データを取り除き, [1回目の波形]-[2回目の波形] となったキャプチャデータと
-        高速フィードバック処理で AWG から出力される 2 つの波形をつなげたデータが一致するかを確認する.
+        テスト概要
+                                        _______________________
+                                       |      Sequencer        |
+                       ___________     |                       |
+         _______      | capture 0 | -> |-ext awg start trig    |     _______      ___________
+        | AWG 2 |  -> |           | -> |-ext four cls ch 0     | -> | AWG 3 | -> | Capture 8 |
+        +-------+     +-----------+    |                       |    +-------+    +-----------+
+         ________      ___________     |                       |     _______      ___________
+        | AWG 15 | -> | capture 4 | -> |-four cls ch 4         | -> | AWG 4 | -> | Capture 9 |
+        +--------+    +-----------+    +-----------------------+    +-------+    +-----------+
+
+        シーケンサは, AWG 2 と 15 から波形を出力し, 波形の出力完了を待たずに「四値付き外部トリガ待ち AWG スタートコマンド」を実行する.
+        
+        AWG 2 が出力した波形をキャプチャユニット 0 が取得し,「四値」とその「valid 信号」を出力する.
+        キャプチャユニット 0 が出力した「四値」とその「valid 信号」は, それぞれ, 
+        シーケンサの「外部トリガ用四値チャネル 0」と「外部 AWG スタートトリガ」に入力される.
+        (※ loopback デザインでは キャプチャユニット 0 の四値チャネルが, 外部トリガ用四値チャネルにも接続されている)
+
+        AWG 15 が出力した波形をキャプチャユニット 4 が取得し,「四値」とその「valid 信号」を出力する.
+        この 2 つの信号は, シーケンサの「四値チャネル 4」に入力される.
+
+        これにより, 外部トリガの入力と四値の更新を待っていた「四値付き外部トリガ待ち AWG スタートコマンド」の処理が進んで,
+        AWG 3 と AWG 4 から波形が出力される.
+        AWG 3 と AWG 4 から出力された波形は, それぞれ, キャプチャユニット 8 とキャプチャユニット 9 によりキャプチャされる.
+        キャプチャユニット 8 とキャプチャユニット 9 のキャプチャしたデータが期待値と一致するか確認する.
         """
         # 期待値と比較する波形データを取得するためのキャプチャパラメータを設定
         plain_cap_param = gen_plain_capture_param()
@@ -315,16 +317,14 @@ class ResponsiveFeedbackTest(object):
             is_err_detected = self.__check_err()
             # キャプチャパラメータ保存
             self.__save_capture_params(
-                cap_params[i], test_name, 'resp_fb_{}_cap_param.txt'.format(i))
+                cap_params[i], test_name, 'ext_trig_awg_start_{}_cap_param.txt'.format(i))
             # 期待値データ算出
             exp_data_list = self.__gen_expected_data(
-                first_wave_seq_0, second_wave_seqs_0, exp_four_cls_vals_0[i],
-                first_wave_seq_1, second_wave_seqs_1, exp_four_cls_vals_1[i])
+                second_wave_seqs_0, exp_four_cls_vals_0[i],
+                second_wave_seqs_1, exp_four_cls_vals_1[i])
             # キャプチャデータ取得
             cap_data_list = self.__get_capture_data(
                 plain_cap_param.calc_capture_samples(), self.__cap_units_plain)
-            # (I, Q) = (0, 0) を除去
-            cap_data_list = self.__remove_zeros(cap_data_list)
             # 結果比較
             all_match = self.__compare_cap_data(
                 self.__cap_units_plain, exp_data_list, cap_data_list, i)
@@ -366,7 +366,7 @@ def gen_cls_capture_params():
 def gen_plain_capture_param():
     param = CaptureParam()
     param.num_integ_sections = 1
-    param.add_sum_section(340, 1)
+    param.add_sum_section(16, 1)
     return param
 
 
@@ -374,8 +374,6 @@ def gen_random_iq_words(num_words):
     num_samples = WaveSequence.NUM_SAMPLES_IN_AWG_WORD * num_words
     i_data = testutil.gen_random_int_list(num_samples, -10000, 10000)
     q_data = testutil.gen_random_int_list(num_samples, -10000, 10000)
-    i_data = list(map(lambda x : x * 2 + 1, i_data)) # サンプル値を 0 以外にしたい
-    q_data = list(map(lambda x : x * 2 + 1, q_data))
     return list(zip(i_data, q_data))
 
 

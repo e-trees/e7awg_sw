@@ -4,11 +4,11 @@ from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, \
     CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, \
     WaveGenEndFenceCmd, WaveSequenceSelectionCmd, ResponsiveFeedbackCmd, \
-    BranchByFlagCmd
+    BranchByFlagCmd, AwgStartWithExtTrigAndClsValCmd
 from e7awgsw import \
     AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
-    WaveGenEndFenceCmdErr, BranchByFlagCmdErr
+    WaveGenEndFenceCmdErr, BranchByFlagCmdErr, AwgStartWithExtTrigAndClsValCmdErr
 from e7awgsw import AwgCtrl, CaptureCtrl, SequencerCtrl, DspUnit
 from e7awgsw.labrad import RemoteAwgCtrl, RemoteCaptureCtrl, RemoteSequencerCtrl
 from e7awgsw.hwdefs import FourClassifierChannel
@@ -278,6 +278,20 @@ class WaitFlagTest(object):
         return success
 
 
+    def test_10(self):
+        self.__cap_ctrl.disable_start_trigger(*self.__capture_units)
+        success = self.exec_cmds(gen_cmds_10())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 1,
+            isinstance(reports[0], AwgStartWithExtTrigAndClsValCmdErr),
+            reports[0].awg_id_list == [AWG.U1, AWG.U10],
+            reports[0].timeout_err,
+            reports[0].cmd_no == 42,
+            not reports[0].is_terminated])
+        return success
+
+
     def run_test(self):
         """
         テスト項目
@@ -302,7 +316,8 @@ class WaitFlagTest(object):
             self.test_6(),
             self.test_7(),
             self.test_8(),
-            self.test_9()])
+            self.test_9(),
+            self.test_10()])
 
 
 def gen_capture_param(num_sum_section_words, enable_classification):
@@ -458,3 +473,11 @@ def gen_cmds_8():
 
 def gen_cmds_9():
     return [ BranchByFlagCmd(41, 1025) ] # 範囲外分岐でエラーになるのを期待
+
+
+def gen_cmds_10():
+    cmds = [
+        AwgStartWithExtTrigAndClsValCmd(
+            42, [AWG.U1, AWG.U10], 8000, wait = True, stop_seq = True), # エラーになるのを期待 (タイムアウトフラグが立つ)
+    ]
+    return cmds

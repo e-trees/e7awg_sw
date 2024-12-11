@@ -9,6 +9,7 @@ from feedbackvaltest import FeedbackValTest
 from waitflagtest import WaitFlagTest
 from responsivefeedbacktest import ResponsiveFeedbackTest
 from branchtest import BranchTest
+from awgstartwithexttrigtest import AwgStartWithExtTrigTest
 from e7awgsw import CaptureModule, WaveSequence, CaptureParam, DspUnit, DecisionFunc, CaptureParamElem
 
 
@@ -318,13 +319,23 @@ def main(
             print('failure responsive feedback test')
             failed_tests.append('{} - responsive feedback'.format(test_id))
 
-        print('\n-- branch test --\n')
+        print('\n-- branch test --')
         test = BranchTest(res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
         result = test.run_test('branch_test')
         test.close()
         if not result:
             print('failure branch test')
             failed_tests.append('{} - branch'.format(test_id))
+
+        print('\n-- awg start with external trigger test --')
+        test = AwgStartWithExtTrigTest(
+            res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
+        result = test.run_test('awg_start_with_ext_trig_test')
+        test.close()
+        if not result:
+            print('failure awg start with external trigger test')
+            failed_tests.append('{} - awg start with external trigger'.format(test_id))
+        print()
 
     if failed_tests:
         for test_id in failed_tests:

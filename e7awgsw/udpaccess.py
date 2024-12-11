@@ -9,12 +9,13 @@ from .logger import log_error
 from .sequencercmd import \
     SequencerCmd, AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, CaptureParamSetCmd, \
     CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, WaveGenEndFenceCmd, \
-    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd, BranchByFlagCmd
+    ResponsiveFeedbackCmd, WaveSequenceSelectionCmd, BranchByFlagCmd, \
+    AwgStartWithExtTrigAndClsValCmd
 from .sequencercmd import \
     SequencerCmdErr, AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
     WaveGenEndFenceCmdErr, ResponsiveFeedbackCmdErr, WaveSequenceSelectionCmdErr, \
-    BranchByFlagCmdErr
+    BranchByFlagCmdErr, AwgStartWithExtTrigAndClsValCmdErr
 from .hwparam import CMD_ERR_REPORT_SIZE
 from .hwdefs import AWG, CaptureUnit
 
@@ -283,6 +284,7 @@ class CmdErrReceiver(threading.Thread):
             lambda cap_unit_id: cap_unit_id_bits & (1 << cap_unit_id), CaptureUnit.all()))
         out_of_range_err = bool((bit_field >> 24) & 0x1)
         cmd_counter = cls.__to_int32(bit_field >> 32)
+        timeout_err = bool((bit_field >> 42) & 0x1)
 
         if cmd_id == AwgStartCmd.ID:
             return AwgStartCmdErr(cmd_no, is_terminated, awg_id_list)
@@ -305,13 +307,17 @@ class CmdErrReceiver(threading.Thread):
             return WaveSequenceSelectionCmdErr(cmd_no, is_terminated)
         elif cmd_id == BranchByFlagCmd.ID:
             return BranchByFlagCmdErr(cmd_no, is_terminated, out_of_range_err, cmd_counter)
+        elif cmd_id == AwgStartWithExtTrigAndClsValCmd.ID:
+            return AwgStartWithExtTrigAndClsValCmdErr(
+                cmd_no, is_terminated, awg_id_list, read_err, write_err, timeout_err)
 
         assert False, ('Invalid cmd err.  cmd_id = {}'.format(cmd_id))
 
 
     @classmethod
     def __get_read_err(cls, bit_field: int, cmd_id: int) -> bool:
-        if cmd_id == ResponsiveFeedbackCmd.ID:
+        if (cmd_id == ResponsiveFeedbackCmd.ID or
+            cmd_id == AwgStartWithExtTrigAndClsValCmd.ID):
             return bool((bit_field >> 40) & 0x1)
 
         return bool((bit_field >> 24) & 0x1)
@@ -319,7 +325,8 @@ class CmdErrReceiver(threading.Thread):
 
     @classmethod
     def __get_write_err(cls, bit_field: int, cmd_id: int) -> bool:
-        if cmd_id == ResponsiveFeedbackCmd.ID:
+        if (cmd_id == ResponsiveFeedbackCmd.ID or
+            cmd_id == AwgStartWithExtTrigAndClsValCmd.ID):
             return bool((bit_field >> 41) & 0x1)
 
         return bool((bit_field >> 25) & 0x1)
