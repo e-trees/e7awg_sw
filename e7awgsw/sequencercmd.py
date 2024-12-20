@@ -920,8 +920,8 @@ class WaveSequenceSelectionCmd(SequencerCmd):
                 | シーケンサ停止フラグ.
                 | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
             ext_trig_flag (bool):
-                | true の場合, 外部トリガ用の四値チャネルセットから, four_cls_channel_id で指定した四値チャネルを参照する.
-                | false の場合, e7awg_hw 内部のキャプチャユニットに対応する四値チャネルセットを参照する.
+                | true の場合, 外部四値チャネルの中から, four_cls_channel_id で指定した四値チャネルを参照する.
+                | false の場合, 内部四値チャネルの中から, four_cls_channel_id で指定した四値チャネルを参照する.
         """
         super().__init__(self.ID, cmd_no, stop_seq)
         awg_id_list = self._to_list(awg_id_list)

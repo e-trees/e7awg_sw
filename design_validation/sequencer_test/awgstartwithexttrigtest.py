@@ -167,10 +167,10 @@ class AwgStartWithExtTrigTest(object):
             CaptureParamSetCmd(2, self.__cap_units_with_cls, cap_param_key),
             WaveSequenceSetCmd(3, self.__awgs[0], first_wave_seq_key_0),
             WaveSequenceSetCmd(4, self.__awgs[1], first_wave_seq_key_1),
-            # AWG 3 の波形シーケンスは, 外部トリガ用四値チャネル 0 の値に応じて設定する
+            # AWG 3 の波形シーケンスは, 外部四値チャネル 0 の値に応じて設定する
             WaveSequenceSelectionCmd(
                 5, self.__awgs[2], second_wave_seq_keys_0, four_cls_ch_0, ext_trig_flag = True),
-            # AWG 4 の波形シーケンスは, 四値チャネル 4 の値に応じて設定する
+            # AWG 4 の波形シーケンスは, 内部四値チャネル 4 の値に応じて設定する
             WaveSequenceSelectionCmd(
                 6, self.__awgs[3], second_wave_seq_keys_1, four_cls_ch_1, ext_trig_flag = False),
             AwgStartCmd(7, self.__awgs[0:2], AwgStartCmd.IMMEDIATE),
@@ -258,11 +258,11 @@ class AwgStartWithExtTrigTest(object):
         
         AWG 2 が出力した波形をキャプチャユニット 0 が取得し,「四値」とその「valid 信号」を出力する.
         キャプチャユニット 0 が出力した「四値」とその「valid 信号」は, それぞれ, 
-        シーケンサの「外部トリガ用四値チャネル 0」と「外部 AWG スタートトリガ」に入力される.
-        (※ loopback デザインでは キャプチャユニット 0 の四値チャネルが, 外部トリガ用四値チャネルにも接続されている)
+        シーケンサの「外部四値チャネル 0」と「外部 AWG スタートトリガ」に入力される.
+        (※ loopback デザインでは キャプチャユニット 0 の内部四値チャネルが, 外部四値チャネルにも接続されている)
 
         AWG 15 が出力した波形をキャプチャユニット 4 が取得し,「四値」とその「valid 信号」を出力する.
-        この 2 つの信号は, シーケンサの「四値チャネル 4」に入力される.
+        この 2 つの信号は, シーケンサの「内部四値チャネル 4」に入力される.
 
         これにより, 外部トリガの入力と四値の更新を待っていた「四値付き外部トリガ待ち AWG スタートコマンド」の処理が進んで,
         AWG 3 と AWG 4 から波形が出力される.
