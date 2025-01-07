@@ -54,6 +54,9 @@ class AwgParams(object, metaclass = ABCMeta):
         if design_type == E7AwgHwType.ZCU111:
             return cast(Self, AwgParamsZcu111())
         
+        if design_type == E7AwgHwType.ZCU111_DAC_6G:
+            return cast(Self, AwgParamsZcu111Dac6G())
+
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
     @abstractmethod
@@ -153,7 +156,7 @@ class AwgParamsKr260(AwgParams):
 
 
 class AwgParamsZcu111(AwgParams):
-    """ZCU111 デザインの AWG のパラメータを保持するクラス"""
+    """DAC 1Gsps 版 ZCU111 デザインの AWG のパラメータを保持するクラス"""
 
     def sample_size(self) -> int:
         # I = 16 bits,  Q = 16 bits
@@ -178,6 +181,32 @@ class AwgParamsZcu111(AwgParams):
         return 0x4001
 
 
+class AwgParamsZcu111Dac6G(AwgParams):
+    """DAC 6Gsps 版 ZCU111 デザインの AWG のパラメータを保持するクラス"""
+
+    def sample_size(self) -> int:
+        # I = 16 bits,  Q = 16 bits
+        return 4
+
+    def word_size(self) -> int:
+        return 32
+    
+    def num_samples_in_word(self) -> int:
+        return self.word_size() // self.sample_size()
+    
+    def num_sample_in_wave_block(self) -> int:
+        return self.num_samples_in_word() * 16
+
+    def smallest_unit_of_wave_len(self) -> int:
+        return 512
+
+    def sampling_rate(self) -> int:
+        return 3_256_320_000
+
+    def udp_port(self) -> int:
+        return 0x4001
+
+
 class WaveRamParams(object, metaclass = ABCMeta):
     """各種デザインの波形データ RAM のパラメータを取得するためのインタフェースを規定するクラス."""
 
@@ -192,6 +221,9 @@ class WaveRamParams(object, metaclass = ABCMeta):
         if design_type == E7AwgHwType.ZCU111:
             return cast(Self, WaveRamParamsZcu111())
         
+        if design_type == E7AwgHwType.ZCU111_DAC_6G:
+            return cast(Self, WaveRamParamsZcu111Dac6G())
+
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
     @abstractmethod
@@ -269,7 +301,31 @@ class WaveRamParamsKr260(WaveRamParams):
 
 
 class WaveRamParamsZcu111(WaveRamParams):
-    """ZCU111 デザインの波形データ RAM のパラメータを保持するクラス"""
+    """DAC 1Gsps 版 ZCU111 デザインの波形データ RAM のパラメータを保持するクラス"""
+
+    def __init__(self) -> None:
+        self.__wave_src_addrs: Final = [
+            0x0,           0x0_2000_0000, 0x0_4000_0000, 0x0_6000_0000,
+            0x0_8000_0000, 0x0_A000_0000, 0x0_C000_0000, 0x0_E000_0000,
+            0x1_0000_0000, 0x1_2000_0000, 0x1_4000_0000, 0x1_6000_0000, 
+            0x1_8000_0000, 0x1_A000_0000, 0x1_C000_0000, 0x1_E000_0000
+        ]
+
+    def word_size(self) -> int:
+        return 64
+
+    def wave_data_addr(self, awg_id: int) -> int:
+        return self.__wave_src_addrs[awg_id]
+
+    def max_size_for_wave_seq(self) -> int:
+        return 512 * 1024 * 1024
+
+    def udp_port(self) -> int:
+        return 0x4000
+
+
+class WaveRamParamsZcu111Dac6G(WaveRamParams):
+    """DAC 6Gsps 版 ZCU111 デザインの波形データ RAM のパラメータを保持するクラス"""
 
     def __init__(self) -> None:
         self.__wave_src_addrs: Final = [

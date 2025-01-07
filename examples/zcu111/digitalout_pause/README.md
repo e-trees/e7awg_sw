@@ -28,7 +28,11 @@ DAC, PMOD とオシロスコープを接続します．
 以下のコマンドを実行します．
 
 ```
+# DAC 1Gsps デザインを使用する場合
 python dout_pause.py
+
+# DAC 6Gsps デザインを使用する場合
+python dout_pause.py --design-type=dac6g
 ```
 
 PMOD 0 からディジタル出力値がオシロスコープで観察できます．

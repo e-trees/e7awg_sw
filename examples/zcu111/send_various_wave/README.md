@@ -2,6 +2,9 @@
 
 [send_various_wave.py](./send_various_wave.py) は，8 つの AWG (Arbitrary Waveform Generator) から異なるパターンの波形を出力するスクリプトです．
 
+本スクリプトは，DAC 1Gsps の FPGA デザインにのみ対応しています．
+DAC 6Gsps の FPGA デザインで複数のパターンの波形を出力するスクリプトは，[send_various_wave_dac_6g.py](../send_various_wave_dac_6g/send_various_wave_dac_6g.py) を参照してください．
+
 | AWG ID | I/Q 波形 | I/Q ミキシング |
 | --- | --- | --- |
 | 0 | 定数値  | なし |
@@ -24,7 +27,7 @@ amplitude に設定可能な値は，[rfdcdefs.py](../../../e7awgsw/zcu111/rfdcd
 
 DAC, PMOD とオシロスコープを接続します．
 
-![セットアップ](./images/awg_x8_send_setup.png)
+![セットアップ](./images/awg_x8_setup.png)
 
 <br>
 

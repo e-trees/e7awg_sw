@@ -50,7 +50,9 @@ class DigitalOutputDataList:
             time (int):
                 | bits の出力時間.  2 以上を指定すること.
                 | 出力時間の単位
-                |    - ZCU111 : 14.4676 [ns]
+                |    - ZCU111 (DAC 1Gsps): 14.4676 [ns]
+                |    - ZCU111 (DAC 6Gsps): 2.45676 [ns]
+
         """
         if (len(self.__patterns) == self.__dout_params.max_patterns()):
             raise ValueError('No more output patterns can be added. (max="{}")'
@@ -82,7 +84,8 @@ class DigitalOutputDataList:
 
 
     def __validate_design_type(self, design_type: E7AwgHwType) -> None:
-        if design_type != E7AwgHwType.ZCU111:
+        if design_type != E7AwgHwType.ZCU111 and \
+           design_type != E7AwgHwType.ZCU111_DAC_6G:
             raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
 

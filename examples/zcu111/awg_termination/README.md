@@ -8,7 +8,13 @@ DAC, PMOD とオシロスコープを接続します．
 
 ![セットアップ](./images/awg_x2_setup.png)
 
+<br>
+
+![PMOD](./images/pmod_ports.png)
+
 ## 実行手順と結果
+
+### DAC 1Gsps デザインを使用する場合
 
 以下のコマンドを実行します．
 
@@ -21,8 +27,33 @@ PMOD は 全てのポートが Hi になります．
 「press Enter to stop AWGs.」と表示されたら Enter を押してください．
 DAC の波形出力と PMOD からのディジタル値の出力が止まります．
 
-AWG 0, AWG 1 の波形  (上から順に AWG 0, AWG 1)
+| 色 | 信号 |
+| --- | --- |
+| 黄色 | AWG 0 |
+| 水色 | AWG 1 |
 
 ![AWG 0, AWG 1 の波形](images/awg_0_1.jpg)
+
+<br>
+
+### DAC 6Gsps デザインを使用する場合
+
+以下のコマンドを実行します．
+
+```
+python awg_termination.py --design-type=dac6g
+```
+
+DAC から下図のような波形が連続的に出力されます．
+PMOD は 全てのポートが Hi になります．
+「press Enter to stop AWGs.」と表示されたら Enter を押してください．
+DAC の波形出力と PMOD からのディジタル値の出力が止まります．
+
+| 色 | 信号 |
+| --- | --- |
+| 黄色 | AWG 0 |
+| ピンク | PMOD 0 P0 |
+
+![AWG 0, AWG 1 の波形](images/awg_0_pmod_0.jpg)
 
 <br>

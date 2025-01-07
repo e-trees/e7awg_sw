@@ -29,11 +29,11 @@ def gen_cos_wave(num_cycles, freq, amp, hw_specs):
     return samples
 
 
-def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
+def gen_cos_wave_seq(num_wait_words, num_chunks, design_type, hw_specs):
     wave_seq = e7s.WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1,
-        design_type = e7s.E7AwgHwType.ZCU111)
+        design_type = design_type)
     i_samples = gen_cos_wave(NUM_CYCLES, NUM_FREQ, AMPLITUDE, hw_specs)
     q_samples = [0] * len(i_samples)
     for _ in range(num_chunks):
@@ -44,10 +44,10 @@ def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words, design_type, hw_specs):
     awg_to_wave_sequence = {}
     for awg_id in awgs:
-        wave_seq = gen_cos_wave_seq(num_wait_words, 1, hw_specs)
+        wave_seq = gen_cos_wave_seq(num_wait_words, 1, design_type, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -109,21 +109,22 @@ def output_rfdc_interrupt_details(dac_to_interrupts):
                 print('  ', e7sz.RfdcInterrupt.to_msg(interrupt))
 
 
-def main(awgs, num_wait_words, timeout):
+def main(design_type, awgs, num_wait_words, timeout):
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = IP_ADDR
-    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.ZCU111)
-    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-          e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+    hw_specs = e7s.E7AwgHwSpecs(design_type)
+    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
+          e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
+          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl):
         # FPGA コンフィギュレーション
-        e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
-        # DAC のセットアップ
+        e7sz.configure_fpga(transceiver, design_type)
+        # # DAC のセットアップ
         setup_dacs(rfdc_ctrl)
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
+        awg_to_wave_sequence = set_wave_sequence(
+            awg_ctrl, awgs, num_wait_words, design_type, hw_specs)
         # 波形送信スタート
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
@@ -144,17 +145,28 @@ if __name__ == "__main__":
     parser.add_argument('--awgs')
     parser.add_argument('--num-wait-words', default=0, type=int)
     parser.add_argument('--timeout', default=5, type=int)
+    parser.add_argument('--design-type', default="dac1g", type=str)
     args = parser.parse_args()
 
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.ZCU111))
+    if args.design_type == "dac1g":
+        design_type = e7s.E7AwgHwType.ZCU111
+    elif args.design_type == "dac6g":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
+
+    awgs = sorted(e7s.AWG.on(design_type))    
+    # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
+    # DAC 1Gsps 版デザイン : 5 個,   DAC 1Gsps 版デザイン : 1 個
+    if design_type == e7s.E7AwgHwType.ZCU111:
+        awgs = awgs[0:5]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
+        awgs = awgs[0:1]
+
     if args.awgs is not None:
         awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
-    
-    # AWG は最大 5 つまで同時に動作可能.
-    # 5 つを超えると DRAM からの波形データ読み出しが間に合わなくなるので, 動作させる AWG を最大 5 つに制限する.
-    awgs = awgs[0:5]
 
-    main(awgs, args.num_wait_words, timeout=args.timeout)
+    main(design_type, awgs, args.num_wait_words, timeout=args.timeout)

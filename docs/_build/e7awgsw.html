@@ -478,6 +478,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -933,6 +934,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1186,9 +1188,11 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.initialize_capture_units"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.initialize_capture_units()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.name"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.num_captured_samples"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.num_captured_samples()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.pause_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.pause_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.prepare_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.prepare_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.reset_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.reset_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.reset_capture_units"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.reset_capture_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.resume_awgs"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.resume_awgs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.select_trigger_awg"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.select_trigger_awg()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.set_capture_params"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.set_capture_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.labrad.html#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.set_wave_sequence"><code class="docutils literal notranslate"><span class="pre">AwgCaptureServer.set_wave_sequence()</span></code></a></li>
@@ -1474,9 +1478,10 @@
 <div class="line">value =  波形を送信可能なタイミング</div>
 <div class="line">単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)</div>
 <div class="line-block">
-<div class="line">simple multi : 64 サンプル</div>
-<div class="line">KR260 : 16 サンプル</div>
-<div class="line">ZCU111 : 128 サンプル</div>
+<div class="line">simple multi       : 64 サンプル</div>
+<div class="line">KR260              : 16 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 128 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 128 サンプル</div>
 </div>
 </div>
 </p>
@@ -1574,9 +1579,10 @@
 <div class="line">この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.</div>
 <div class="line">単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)</div>
 <div class="line-block">
-<div class="line">simple multi : 64 サンプル</div>
-<div class="line">KR260 : 16 サンプル</div>
-<div class="line">ZCU111 : 128 サンプル</div>
+<div class="line">simple multi       : 64 サンプル</div>
+<div class="line">KR260              : 16 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 128 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 128 サンプル</div>
 </div>
 </div>
 </p></li>
@@ -3468,6 +3474,11 @@
 <span class="sig-name descname"><span class="pre">ZCU111</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G">
+<span class="sig-name descname"><span class="pre">ZCU111_DAC_6G</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -3580,9 +3591,10 @@
 <div class="line-block">
 <div class="line">e7awg_hw の種類によって異なる. (I/Q データの場合は 2 相まとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -3871,9 +3883,10 @@
 <div class="line-block">
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -3935,9 +3948,10 @@
 <div class="line-block">
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -3957,9 +3971,10 @@
 <div class="line-block">
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -4131,9 +4146,10 @@
 <div class="line">単位は AWG ワード.</div>
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 </p></li>
@@ -4173,9 +4189,10 @@
 <div class="line">単位は AWG ワード.</div>
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 </p></li>
@@ -4301,9 +4318,10 @@
 <div class="line-block">
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -4366,9 +4384,10 @@
 <div class="line">単位は AWG ワード.</div>
 <div class="line">1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</div>
 <div class="line-block">
-<div class="line">simple multi : 4 サンプル</div>
-<div class="line">KR260        : 1 サンプル</div>
-<div class="line">ZCU111       : 8 サンプル</div>
+<div class="line">simple multi       : 4 サンプル</div>
+<div class="line">KR260              : 1 サンプル</div>
+<div class="line">ZCU111 (DAC 1Gsps) : 8 サンプル</div>
+<div class="line">ZCU111 (DAC 6Gsps) : 8 サンプル</div>
 </div>
 </div>
 <dl class="field-list simple">
@@ -4413,7 +4432,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-14" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-01-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

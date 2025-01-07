@@ -10,6 +10,8 @@
 
 ## 実行手順と結果
 
+### DAC 1Gsps デザインを使用する場合
+
 以下のコマンドを実行します．
 
 ```
@@ -36,11 +38,25 @@ AWG が動作を開始するとオシロスコープで下図の波形が観測�
 
 <br>
 
+### DAC 6Gsps デザインを使用する場合
+
+```
+python send_wave.py  --design-type=dac6g
+```
+AWG が動作を開始するとオシロスコープで下図の波形が観測できます．
+
+| 色 | 信号 |
+| --- | --- |
+| 黄色 | AWG 0 |
+
+![awg_0_1](images/awg_0_dac_6g.jpg)
+
 ## ミキサの設定値の詳細
 
 RF Data Converter の I/Q ミキサの処理は以下の式で表されます．
 
 ![mixer_formula.png](images/mixer_formula.png)
+
 <!--
 $$
 \begin{align*}

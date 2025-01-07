@@ -12,7 +12,9 @@ class RfdcParams(object, metaclass = ABCMeta):
     def of(self, design_type: E7AwgHwType) -> Self:
         if design_type == E7AwgHwType.ZCU111:
             return cast(Self, RfdcParamsZcu111())
-               
+        if design_type == E7AwgHwType.ZCU111_DAC_6G:
+            return cast(Self, RfdcParamsZcu111Dac6G())
+
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
     @abstractmethod
@@ -37,7 +39,23 @@ class RfdcParams(object, metaclass = ABCMeta):
 
 
 class RfdcParamsZcu111(RfdcParams):
-    """ZCU111 デザインの RF Data Converter のパラメータを保持するクラス"""
+    """DAC 1Gsps 版 ZCU111 デザインの RF Data Converter のパラメータを保持するクラス"""
+
+    def inf_mixer_phase(self) -> float:
+        return -180
+    
+    def sup_mixer_phase(self) -> float:
+        return 180
+    
+    def min_mixer_freq(self) -> float:
+        return -10000
+
+    def max_mixer_freq(self) -> float:
+        return 10000
+
+
+class RfdcParamsZcu111Dac6G(RfdcParams):
+    """DAC 6Gsps 版 ZCU111 デザインの RF Data Converter のパラメータを保持するクラス"""
 
     def inf_mixer_phase(self) -> float:
         return -180

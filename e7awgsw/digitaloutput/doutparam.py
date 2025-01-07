@@ -12,6 +12,8 @@ class DigitalOutParams(object, metaclass = ABCMeta):
     def of(self, design_type: E7AwgHwType) -> Self:
         if design_type == E7AwgHwType.ZCU111:
             return cast(Self, DigitalOutParamsZcu111())
+        if design_type == E7AwgHwType.ZCU111_DAC_6G:
+            return cast(Self, DigitalOutParamsZcu111Dac6G())
                
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
@@ -37,6 +39,22 @@ class DigitalOutParams(object, metaclass = ABCMeta):
 
 
 class DigitalOutParamsZcu111(DigitalOutParams):
+    """ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス"""
+    
+    def max_patterns(self) -> int:
+        return 512
+
+    def min_time(self) -> int:
+        return 2
+
+    def max_time(self) -> int:
+        return 0xFFFF_FFFF
+
+    def udp_port(self) -> int:
+        return 0x4001
+
+
+class DigitalOutParamsZcu111Dac6G(DigitalOutParams):
     """ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス"""
     
     def max_patterns(self) -> int:

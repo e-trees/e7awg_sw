@@ -10,8 +10,16 @@ python プログラム上でディジタル値を生成して, ZCU111 上のデ�
 
 このファイルのあるディレクトリに移動して，以下のコマンドを実行します．
 
+**DAC 1Gsps デザインをテストする場合**
 ```
 python digital_out_x34_test.py
+```
+
+<br>
+
+**DAC 6Gsps デザインをテストする場合**
+```
+python digital_out_x34_test.py --design-type=dac6g
 ```
 
 Vivado を起動して, bitfile/zcu111_rfsoc_trd_wrapper.ltx を使用して ZCU111 版 e7awg_hw の ILA の値を見られるようにします．

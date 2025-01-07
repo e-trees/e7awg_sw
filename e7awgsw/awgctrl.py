@@ -228,9 +228,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             interval (int):
                 | この値の波形ブロック数ごとに波形を送信可能なタイミングが来る.
                 | 単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)
-                |     simple multi : 64 サンプル
-                |     KR260 : 16 サンプル
-                |     ZCU111 : 128 サンプル
+                |     simple multi       : 64 サンプル
+                |     KR260              : 16 サンプル
+                |     ZCU111 (DAC 1Gsps) : 128 サンプル
+                |     ZCU111 (DAC 6Gsps) : 128 サンプル
             *awg_id_list (list of AWG): 波形を送信可能なタイミングを設定する AWG の ID
         """
         if self._validate_args:
@@ -255,9 +256,10 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
                 | key = AWG ID
                 | value =  波形を送信可能なタイミング
                 | 単位は波形ブロック. (1 波形ブロックのサンプル数は e7awg_hw のバージョンによって異なる)
-                |     simple multi : 64 サンプル
-                |     KR260 : 16 サンプル
-                |     ZCU111 : 128 サンプル
+                |     simple multi       : 64 サンプル
+                |     KR260              : 16 サンプル
+                |     ZCU111 (DAC 1Gsps) : 128 サンプル
+                |     ZCU111 (DAC 6Gsps) : 128 サンプル
         """
         if self._validate_args:
             try:
@@ -346,7 +348,8 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
         if design_type != E7AwgHwType.SIMPLE_MULTI and \
            design_type != E7AwgHwType.KR260 and \
-           design_type != E7AwgHwType.ZCU111:
+           design_type != E7AwgHwType.ZCU111 and \
+           design_type != E7AwgHwType.ZCU111_DAC_6G:
             raise ValueError("e7awg_hw ({}) doesn't have any AWGs.".format(design_type))
 
 

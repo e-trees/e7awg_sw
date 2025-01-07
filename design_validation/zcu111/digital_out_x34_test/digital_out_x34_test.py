@@ -1,12 +1,13 @@
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
+import argparse
 
 digital_out_list = list(e7s.DigitalOut)
 
-def set_digital_out_data(digital_out_ctrl):
+def set_digital_out_data(design_type, digital_out_ctrl):
     # ディジタル出力データの作成
     for dout_id in digital_out_list:
-        dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111)
+        dout_data_list = e7s.DigitalOutputDataList(design_type)
         for i in range(10):
             bits = (dout_id << 8) + (i + 1)
             dout_data_list.add(bits, 2)
@@ -21,26 +22,25 @@ def set_default_digital_out_data(digital_out_ctrl):
         digital_out_ctrl.set_default_output_data(bit_pattern, dout_id)
 
 
-def setup_digital_output_modules(digital_out_ctrl):
+def setup_digital_output_modules(design_type, digital_out_ctrl):
     """ディジタル出力に必要な設定を行う"""
     # ディジタル出力モジュール初期化
     digital_out_ctrl.initialize(*digital_out_list)
     # デフォルトのディジタル出力データの設定
     set_default_digital_out_data(digital_out_ctrl)
     # ディジタル出力データの設定
-    set_digital_out_data(digital_out_ctrl)
+    set_digital_out_data(design_type, digital_out_ctrl)
 
 
-def main():
+def main(design_type):
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = '10.0.0.16'
-    design_type = e7s.E7AwgHwType.ZCU111
     with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
           e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         e7sz.configure_fpga(trasnceiver, design_type)
         # ディジタル出力モジュールのセットアップ
-        setup_digital_output_modules(digital_out_ctrl)
+        setup_digital_output_modules(design_type, digital_out_ctrl)
         # ディジタル出力スタート
         digital_out_ctrl.start_douts(*digital_out_list)
         # ディジタル出力モジュール動作完了待ち
@@ -50,4 +50,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--design-type', default="dac1g", type=str)
+    args = parser.parse_args()
+
+    if args.design_type == "dac1g":
+        design_type = e7s.E7AwgHwType.ZCU111
+    elif args.design_type == "dac6g":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
+
+    main(design_type)

@@ -1,4 +1,5 @@
 import time
+import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
 
@@ -45,10 +46,10 @@ def gen_wave_samples(freq, num_cycles, sampling_rate, hw_specs):
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_waves(awg_ctrl, sampling_rate, hw_specs):
+def set_waves(awg_ctrl, sampling_rate, design_type, hw_specs):
     awg_to_wave_seq = {}
     for awg_id in awg_list:
-        wave_seq = e7s.WaveSequence(0, 1, e7s.E7AwgHwType.ZCU111)
+        wave_seq = e7s.WaveSequence(0, 1, design_type)
         samples = gen_wave_samples(wave_freq * 1e6, 3, sampling_rate, hw_specs)
         wave_seq.add_chunk(samples, 0, 1)
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
@@ -57,25 +58,31 @@ def set_waves(awg_ctrl, sampling_rate, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, sampling_rate, hw_specs):
+def setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_waves(awg_ctrl, sampling_rate, hw_specs)
+    return set_waves(awg_ctrl, sampling_rate, design_type, hw_specs)
 
 
-def set_digital_out_data(digital_out_ctrl, bit_patterns):
+def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
     # ディジタル出力データの作成
-    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111)
+    dout_data_list = e7s.DigitalOutputDataList(design_type)
+    output_time = 0
+    if design_type == e7s.E7AwgHwType.ZCU111:
+        output_time = 276480000  # 4 [sec]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
+        output_time = 1628160667 # 4 [sec]
+
     for bit_pattern in bit_patterns:
-        dout_data_list.add(bit_pattern, 276480000) # 4 [sec]
+        dout_data_list.add(bit_pattern, output_time)
 
     # 出力データをディジタル出力モジュールに設定
     digital_out_ctrl.set_output_data(dout_data_list, e7s.DigitalOut.U0)
 
 
-def setup_digital_output_modules(digital_out_ctrl):
+def setup_digital_output_modules(digital_out_ctrl, design_type):
     """ディジタル出力に必要な設定を行う"""
     # ディジタル出力モジュール初期化
     digital_out_ctrl.initialize(e7s.DigitalOut.U0)
@@ -83,7 +90,7 @@ def setup_digital_output_modules(digital_out_ctrl):
     digital_out_ctrl.set_default_output_data(0, e7s.DigitalOut.U0)
     # ディジタル出力データの設定
     bit_patterns = [1, 2]
-    set_digital_out_data(digital_out_ctrl, bit_patterns)
+    set_digital_out_data(digital_out_ctrl, bit_patterns, design_type)
     # AWG からのリスタートトリガを受け付けるように設定.
     # このリスタートトリガは, いずれかの AWG の波形出力開始と同時にアサートされる.
     digital_out_ctrl.enable_trigger(e7s.DigitalOutTrigger.RESTART, e7s.DigitalOut.U0)
@@ -122,27 +129,27 @@ def restart_douts(mode, awg_ctrl, digital_out_ctrl):
         awg_ctrl.wait_for_awgs_to_stop(5, *awg_list)
 
 
-def main():
+def main(design_type):
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = '10.0.0.16'
-    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.ZCU111)
-    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-          e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl,
-          e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+    hw_specs = e7s.E7AwgHwSpecs(design_type)
+    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
+          e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
+          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl,
+          e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         print('configure fpga')
-        e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
+        e7sz.configure_fpga(transceiver, design_type)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl)
         # AWG のセットアップ
         print('setup AWGs')
         sampling_rate = rfdc_ctrl.get_dac_sampling_rate(e7sz.DacTile.T0) * 1e6 # Hz
-        setup_awgs(awg_ctrl, sampling_rate, hw_specs)
+        setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
-        setup_digital_output_modules(digital_out_ctrl)
+        setup_digital_output_modules(digital_out_ctrl, design_type)
         # ディジタル出力スタート
         print('start a digital output modules')
         digital_out_ctrl.start_douts(e7s.DigitalOut.U0)
@@ -157,7 +164,7 @@ def main():
         else:
             # ディジタル出力データを変更
             bit_patterns = [3, 2, 1]
-            set_digital_out_data(digital_out_ctrl, bit_patterns)
+            set_digital_out_data(digital_out_ctrl, bit_patterns, design_type)
             # 再スタート
             restart_douts(int(ctrl_sel), awg_ctrl, digital_out_ctrl)
 
@@ -177,4 +184,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--design-type', default="dac1g", type=str)
+    args = parser.parse_args()
+
+    if args.design_type == "dac1g":
+        design_type = e7s.E7AwgHwType.ZCU111
+    elif args.design_type == "dac6g":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
+
+    main(design_type)

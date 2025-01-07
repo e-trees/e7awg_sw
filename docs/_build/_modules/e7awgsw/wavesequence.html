@@ -456,6 +456,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -911,6 +912,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1079,9 +1081,10 @@
 <span class="sd">                | ユーザ定義波形の先頭に付く 0 データの長さ.</span>
 <span class="sd">                | 単位は AWG ワード.</span>
 <span class="sd">                | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">                |     simple multi : 4 サンプル</span>
-<span class="sd">                |     KR260        : 1 サンプル</span>
-<span class="sd">                |     ZCU111       : 8 サンプル</span>
+<span class="sd">                |     simple multi       : 4 サンプル</span>
+<span class="sd">                |     KR260              : 1 サンプル</span>
+<span class="sd">                |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">                |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 <span class="sd">            num_repeats (int): 波形シーケンスを繰り返す回数</span>
 <span class="sd">            design_type (E7AwgHwType):</span>
 <span class="sd">                | このオブジェクトで定義したユーザ定義波形を出力する AWG が含まれる e7awg_hw の種類</span>
@@ -1149,9 +1152,10 @@
 <span class="sd">                | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.</span>
 <span class="sd">                | 単位は AWG ワード.</span>
 <span class="sd">                | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">                |     simple multi : 4 サンプル</span>
-<span class="sd">                |     KR260        : 1 サンプル</span>
-<span class="sd">                |     ZCU111       : 8 サンプル</span>
+<span class="sd">                |     simple multi       : 4 サンプル</span>
+<span class="sd">                |     KR260              : 1 サンプル</span>
+<span class="sd">                |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">                |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 <span class="sd">            num_repeats (int): 追加する波形チャンクを繰り返す回数</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1261,9 +1265,10 @@
 <span class="sd">        </span>
 <span class="sd">        | 単位は AWG ワード.</span>
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
+<span class="sd">        |     simple multi       : 4 サンプル</span>
+<span class="sd">        |     KR260              : 1 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: ユーザ定義波形の先頭に付く 0 データの長さ</span>
@@ -1306,9 +1311,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;このユーザ定義波形の全 AWG ワード数 (wait words も繰り返しも含む)</span>
 <span class="sd">        </span>
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
+<span class="sd">        |     simple multi       : 4 サンプル</span>
+<span class="sd">        |     KR260              : 1 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: このユーザ定義波形の全 AWG ワード数</span>
@@ -1450,7 +1456,8 @@
     <span class="k">def</span> <span class="nf">__validate_design_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design_type</span><span class="p">:</span> <span class="n">E7AwgHwType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">SIMPLE_MULTI</span> <span class="ow">and</span> \
            <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">KR260</span> <span class="ow">and</span> \
-           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span><span class="p">:</span>
+           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">and</span> \
+           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid e7awg_hw type.  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">design_type</span><span class="p">))</span>
 
 
@@ -1653,9 +1660,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクのポストブランクの AWG ワード数</span>
 <span class="sd">        </span>
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
+<span class="sd">        |     simple multi       : 4 サンプル</span>
+<span class="sd">        |     KR260              : 1 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: この波形チャンクのポストブランクの AWG ワード数</span>
@@ -1678,9 +1686,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクの有波形部の AWG ワード数</span>
 
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
+<span class="sd">        |     simple multi       : 4 サンプル</span>
+<span class="sd">        |     KR260              : 1 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: この波形チャンクの有波形部の AWG ワード数</span>
@@ -1713,9 +1722,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;この波形チャンクの AWG ワード数.</span>
 
 <span class="sd">        | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)</span>
-<span class="sd">        |     simple multi : 4 サンプル</span>
-<span class="sd">        |     KR260        : 1 サンプル</span>
-<span class="sd">        |     ZCU111       : 8 サンプル</span>
+<span class="sd">        |     simple multi       : 4 サンプル</span>
+<span class="sd">        |     KR260              : 1 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 1Gsps) : 8 サンプル</span>
+<span class="sd">        |     ZCU111 (DAC 6Gsps) : 8 サンプル</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: この波形チャンクの AWG ワード数.</span>
@@ -1855,7 +1865,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-14" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-01-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

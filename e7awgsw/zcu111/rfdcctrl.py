@@ -291,7 +291,8 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
-        if design_type != E7AwgHwType.ZCU111:
+        if design_type != E7AwgHwType.ZCU111 and \
+           design_type != E7AwgHwType.ZCU111_DAC_6G:
             raise ValueError("e7awg_hw ({}) doesn't have any RF Data Converters.".format(design_type))
 
     @abstractmethod
@@ -583,10 +584,12 @@ class RfdcCtrl(RfdcCtrlBase):
 
 def configure_fpga(transceiver: RftoolTransceiver, design_type: E7AwgHwType):
     """FPGA をコンフィギュレーションする"""
-    if (design_type != E7AwgHwType.ZCU111):
+    if design_type != E7AwgHwType.ZCU111 and \
+       design_type != E7AwgHwType.ZCU111_DAC_6G:
         raise ValueError('Invalid e7awg_hw type. {}'.format(design_type))
 
     type_to_id = {
         E7AwgHwType.ZCU111 : 15,
+        E7AwgHwType.ZCU111_DAC_6G : 16
     }
-    RftoolCommand(transceiver.ctrl_if).ConfigFpga(type_to_id[design_type], 15)
+    RftoolCommand(transceiver.ctrl_if).ConfigFpga(type_to_id[design_type], 25)

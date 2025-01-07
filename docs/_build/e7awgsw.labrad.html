@@ -478,6 +478,7 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -933,6 +934,7 @@
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1276,6 +1278,11 @@ which maxes out at 10 threads.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.pause_awgs">
+<span class="sig-name descname"><span class="pre">pause_awgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.pause_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.pause_awgs" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.prepare_awgs">
 <span class="sig-name descname"><span class="pre">prepare_awgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.prepare_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.prepare_awgs" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1288,6 +1295,11 @@ which maxes out at 10 threads.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.reset_capture_units">
 <span class="sig-name descname"><span class="pre">reset_capture_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_unit_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.reset_capture_units"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.reset_capture_units" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="e7awgsw.labrad.awgcapture_server.AwgCaptureServer.resume_awgs">
+<span class="sig-name descname"><span class="pre">resume_awgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">awg_id_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/labrad/awgcapture_server.html#AwgCaptureServer.resume_awgs"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.labrad.awgcapture_server.AwgCaptureServer.resume_awgs" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1432,7 +1444,7 @@ which maxes out at 10 threads.</p>
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-14" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-01-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

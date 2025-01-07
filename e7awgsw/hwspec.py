@@ -96,9 +96,10 @@ class AwgSpecs:
         """ 1 AWG ワード当たりのサンプル数
         
         | e7awg_hw の種類によって異なる. (I/Q データの場合は 2 相まとめて 1 サンプルとカウント)
-        |     simple multi : 4 サンプル
-        |     KR260        : 1 サンプル
-        |     ZCU111       : 8 サンプル
+        |     simple multi       : 4 サンプル
+        |     KR260              : 1 サンプル
+        |     ZCU111 (DAC 1Gsps) : 8 サンプル
+        |     ZCU111 (DAC 6Gsps) : 8 サンプル
 
         Returns:
             int: 1 AWG ワード当たりのサンプル数
@@ -230,11 +231,13 @@ class E7AwgHwSpecs:
                 CaptureRamParams.of(design_type))
 
         self.__dout_specs: Optional[DigitalOutSpecs] = None
-        if design_type == E7AwgHwType.ZCU111:
+        if design_type == E7AwgHwType.ZCU111 or\
+           design_type == E7AwgHwType.ZCU111_DAC_6G:
             self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
 
         self.__rfdc_specs: Optional[RfdcSpecs] = None
-        if design_type == E7AwgHwType.ZCU111:
+        if design_type == E7AwgHwType.ZCU111 or \
+           design_type == E7AwgHwType.ZCU111_DAC_6G:
             self.__rfdc_specs = RfdcSpecs(RfdcParams.of(design_type))
 
 

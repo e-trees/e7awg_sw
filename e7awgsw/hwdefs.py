@@ -6,9 +6,10 @@ from enum import IntEnum, Enum
 
 class E7AwgHwType(Enum):
     """e7awg_hw の種類"""
-    SIMPLE_MULTI = 0
-    ZCU111       = 1
-    KR260        = 2
+    SIMPLE_MULTI  = 0
+    ZCU111        = 1  # DAC sampling rate = 1Gsps
+    KR260         = 2
+    ZCU111_DAC_6G = 3  # DAC sampling rate = 6Gsps
 
 
 class DspUnit(IntEnum):
@@ -199,6 +200,10 @@ class AWG(IntEnum):
                 AWG.U8, AWG.U9, AWG.U10, AWG.U11, AWG.U12, AWG.U13, AWG.U14, AWG.U15 }
         
         if design_type == E7AwgHwType.ZCU111:
+            awgs = {
+                AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
+
+        if design_type == E7AwgHwType.ZCU111_DAC_6G:
             awgs = {
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
 

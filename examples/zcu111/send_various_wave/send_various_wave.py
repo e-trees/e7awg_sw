@@ -286,13 +286,13 @@ def main():
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = '10.0.0.16'
     hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.ZCU111)
-    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-          e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
+    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
+          e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
           e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl,
           e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         print('configure fpga')
-        e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
+        e7sz.configure_fpga(transceiver, e7s.E7AwgHwType.ZCU111)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl)

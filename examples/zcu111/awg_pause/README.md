@@ -6,14 +6,18 @@
 
 DAC, PMOD とオシロスコープを接続します．
 
-![セットアップ](./images/awg_x2_setup.png)
+![セットアップ](./images/awg_x1_setup.png)
 
 ## 実行手順と結果
 
 以下のコマンドを実行します．
 
 ```
+# DAC 1Gsps デザインを使用する場合
 python awg_pause.py
+
+# DAC 6Gsps デザインを使用する場合
+python awg_pause.py --design-type=dac6g
 ```
 
 AWG とディジタル出力モジュールが動作を開始すると DAC と PMOD から下図の波形が観測できます．

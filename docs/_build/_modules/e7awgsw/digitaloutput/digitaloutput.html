@@ -456,6 +456,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -911,6 +912,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1088,7 +1090,9 @@
 <span class="sd">            time (int):</span>
 <span class="sd">                | bits の出力時間.  2 以上を指定すること.</span>
 <span class="sd">                | 出力時間の単位</span>
-<span class="sd">                |    - ZCU111 : 14.4676 [ns]</span>
+<span class="sd">                |    - ZCU111 (DAC 1Gsps): 14.4676 [ns]</span>
+<span class="sd">                |    - ZCU111 (DAC 6Gsps): 2.45676 [ns]</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__patterns</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dout_params</span><span class="o">.</span><span class="n">max_patterns</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No more output patterns can be added. (max=&quot;</span><span class="si">{}</span><span class="s1">&quot;)&#39;</span>
@@ -1121,7 +1125,8 @@
 
 
     <span class="k">def</span> <span class="nf">__validate_design_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design_type</span><span class="p">:</span> <span class="n">E7AwgHwType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">and</span> \
+           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid e7awg_hw type.  (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">design_type</span><span class="p">))</span>
 
 
@@ -1144,7 +1149,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2024-11-14" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-01-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 
