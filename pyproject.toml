@@ -20,7 +20,7 @@ classifiers = [
 dependencies = [
   "numpy==1.26.0",
   "matplotlib==3.8.0",
-  "pylabrad==0.98.2",
+  "pylabrad==0.98.3",
 ]
 
 [tool.setuptools]
