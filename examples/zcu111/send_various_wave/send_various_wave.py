@@ -1,6 +1,7 @@
 import sys
 import os
 import math
+import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
 from collections import namedtuple
@@ -8,14 +9,7 @@ from collections import namedtuple
 WAVE_FREQ_0 = 4 # MHz
 WAVE_FREQ_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
 
-# AWG は最大 5 つまで同時に動作可能.  5 つを超えると DRAM からの波形データ読み出しが間に合わなくなる.
-awg_list = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3]
-
-try:
-    if sys.argv[1] == "1":
-        awg_list = [e7s.AWG.U4, e7s.AWG.U5, e7s.AWG.U6, e7s.AWG.U7]
-except Exception:
-    pass
+awg_list = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4]
 
 wave_params = namedtuple(
     'wave_params',
@@ -201,7 +195,7 @@ def set_waves(awg_ctrl, sampling_rate, hw_specs):
     awg_to_wave_seq = {}
     for awg_id, params in awg_to_params.items():
         wave_seq = e7s.WaveSequence(
-            params.num_wait_words, params.num_seq_repeats, e7s.E7AwgHwType.ZCU111)
+            params.num_wait_words, params.num_seq_repeats, hw_specs.design_type)
         for waveform, num_cycles in params.chunk_waves:
             wave_seq.add_chunk(
                 gen_wave_samples(waveform, params.freq * 1e6, num_cycles, sampling_rate, hw_specs),
@@ -242,9 +236,9 @@ def setup_dacs(rfdc_ctrl):
     rfdc_ctrl.sync_dac_tiles()
 
 
-def set_digital_out_data(digital_out_ctrl):
+def set_digital_out_data(digital_out_ctrl, design_type):
     # ディジタル出力データの作成
-    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111)
+    dout_data_list = e7s.DigitalOutputDataList(design_type)
     (dout_data_list
         .add(0x01, 69)
         .add(0x02, 69)
@@ -258,14 +252,14 @@ def set_digital_out_data(digital_out_ctrl):
     digital_out_ctrl.set_output_data(dout_data_list, e7s.DigitalOut.U0)
 
 
-def setup_digital_output_modules(digital_out_ctrl):
+def setup_digital_output_modules(digital_out_ctrl, design_type):
     """ディジタル出力に必要な設定を行う"""
     # ディジタル出力モジュール初期化
     digital_out_ctrl.initialize(e7s.DigitalOut.U0)
     # デフォルトのディジタル出力データの設定
     digital_out_ctrl.set_default_output_data(0x36, e7s.DigitalOut.U0)
     # ディジタル出力データの設定
-    set_digital_out_data(digital_out_ctrl)
+    set_digital_out_data(digital_out_ctrl, design_type)
     # AWG からのスタートトリガを受け付けるように設定.
     # このスタートトリガは, いずれかの AWG の波形出力開始と同時にアサートされる.
     # なお, AwgCtrl.awgstart_awgs で複数の AWG をスタートしてもスタートトリガは一度しかアサートされない.
@@ -282,17 +276,17 @@ def output_graph(awg_to_wave_seq):
         q_samples = [iq_sample[1] for iq_sample in iq_samples]
         e7s.plot_samples(q_samples, 'Q waveform', dirpath + "q_samples.png")
 
-def main():
+def main(design_type):
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = '10.0.0.16'
-    hw_specs = e7s.E7AwgHwSpecs(e7s.E7AwgHwType.ZCU111)
+    hw_specs = e7s.E7AwgHwSpecs(design_type)
     with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
-          e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl,
-          e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+          e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
+          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl,
+          e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         print('configure fpga')
-        e7sz.configure_fpga(transceiver, e7s.E7AwgHwType.ZCU111)
+        e7sz.configure_fpga(transceiver, design_type)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl)
@@ -302,7 +296,7 @@ def main():
         awg_to_wave_seq = setup_awgs(awg_ctrl, sampling_rate, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
-        setup_digital_output_modules(digital_out_ctrl)
+        setup_digital_output_modules(digital_out_ctrl, design_type)
         # 波形出力スタート
         print('start AWGs')
         awg_ctrl.start_awgs(*awg_list)
@@ -330,4 +324,19 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--awgs')
+    parser.add_argument('--design-type', default="dac1g", type=str)
+    args = parser.parse_args()
+
+    if args.design_type == "dac1g":
+        design_type = e7s.E7AwgHwType.ZCU111
+    elif args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
+
+    if args.awgs is not None:
+        awg_list = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
+
+    main(design_type)

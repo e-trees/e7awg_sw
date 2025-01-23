@@ -1,21 +1,38 @@
 # AWG から余弦波を出力する
 
 [send_wave.py](./send_wave.py) は AWG (Arbitrary Waveform Generator) から余弦波を出力するスクリプトです．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 2` に対応しています．
+各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
+
+本スクリプトで動作する AWG と上述のデザインの対応関係は以下の表の通りです．
+
+| デザイン ID | AWG |
+| --- | --- |
+| 0 | 0 ~ 4 |
+| 1 | 0 |
+| 2 | 0 ~ 4，6 ~ 7 |
 
 ## セットアップ
 
 以下の図のように DAC とオシロスコープを接続します．
 
-![セットアップ](./images/awg_x4_setup.png)
+![セットアップ](./images/awg_x8_setup.png)
 
 ## 実行手順と結果
 
-### DAC 1Gsps デザインを使用する場合
+### デザイン 0 を使用する場合
 
 以下のコマンドを実行します．
 
 ```
+# デザイン 0 を使用する場合
 python send_wave.py
+
+# デザイン 1 を使用する場合
+python send_wave.py  --design-type=dac6g
+
+# デザイン 2 を使用する場合
+python send_wave.py  --design-type=dac1g-uram2
 ```
 
 AWG が動作を開始するとオシロスコープで下図の波形が観測できます．
@@ -38,18 +55,16 @@ AWG が動作を開始するとオシロスコープで下図の波形が観測�
 
 <br>
 
-### DAC 6Gsps デザインを使用する場合
-
-```
-python send_wave.py  --design-type=dac6g
-```
-AWG が動作を開始するとオシロスコープで下図の波形が観測できます．
-
 | 色 | 信号 |
 | --- | --- |
-| 黄色 | AWG 0 |
+| 黄色 | AWG 6 |
+| 水色 | AWG 7 |
 
-![awg_0_1](images/awg_0_dac_6g.jpg)
+![awg_6_7](images/awg_6_7.jpg)
+
+※ ZCU111 付属のバランの回路の特性により変位が反転しています．
+
+<br>
 
 ## ミキサの設定値の詳細
 

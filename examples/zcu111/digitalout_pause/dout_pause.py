@@ -46,10 +46,10 @@ def gen_wave_samples(freq, num_cycles, sampling_rate, hw_specs):
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_waves(awg_ctrl, sampling_rate, design_type, hw_specs):
+def set_waves(awg_ctrl, sampling_rate, hw_specs):
     awg_to_wave_seq = {}
     for awg_id in awg_list:
-        wave_seq = e7s.WaveSequence(0, 1, design_type)
+        wave_seq = e7s.WaveSequence(0, 1, hw_specs.design_type)
         samples = gen_wave_samples(wave_freq * 1e6, 3, sampling_rate, hw_specs)
         wave_seq.add_chunk(samples, 0, 1)
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
@@ -58,19 +58,19 @@ def set_waves(awg_ctrl, sampling_rate, design_type, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs):
+def setup_awgs(awg_ctrl, sampling_rate, hw_specs):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_waves(awg_ctrl, sampling_rate, design_type, hw_specs)
+    return set_waves(awg_ctrl, sampling_rate, hw_specs)
 
 
 def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
     output_time = 0
-    if design_type == e7s.E7AwgHwType.ZCU111:
+    if design_type == e7s.E7AwgHwType.ZCU111 or design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         output_time = 276480000  # 4 [sec]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
         output_time = 1628160667 # 4 [sec]
@@ -146,7 +146,7 @@ def main(design_type):
         # AWG のセットアップ
         print('setup AWGs')
         sampling_rate = rfdc_ctrl.get_dac_sampling_rate(e7sz.DacTile.T0) * 1e6 # Hz
-        setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs)
+        setup_awgs(awg_ctrl, sampling_rate, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
         setup_digital_output_modules(digital_out_ctrl, design_type)
@@ -192,6 +192,8 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111
     elif args.design_type == "dac6g":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    elif args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 

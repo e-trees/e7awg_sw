@@ -1,9 +1,10 @@
 # AWG とディジタル出力モジュールから波形を出力する
 
 [send_various_wave.py](./send_various_wave.py) は，8 つの AWG (Arbitrary Waveform Generator) から異なるパターンの波形を出力するスクリプトです．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 と 2` に対応しています．
+各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
-本スクリプトは，DAC 1Gsps の FPGA デザインにのみ対応しています．
-DAC 6Gsps の FPGA デザインで複数のパターンの波形を出力するスクリプトは，[send_various_wave_dac_6g.py](../send_various_wave_dac_6g/send_various_wave_dac_6g.py) を参照してください．
+本スクリプトで，各 AWG の出力する波形と I/Q ミキサの設定は以下の通りです．
 
 | AWG ID | I/Q 波形 | I/Q ミキシング |
 | --- | --- | --- |
@@ -37,13 +38,24 @@ DAC, PMOD とオシロスコープを接続します．
 
 以下のコマンドを実行します．
 
-```
-# AWG 0 ~ 3 を動作させる場合
-python send_various_wave.py 0
+**デザイン 0 を使用する場合**
 
-# AWG 4 ~ 7 を動作させる場合
-python send_various_wave.py 1
+デザイン 0 は AWG 0 ~ 7 の中から同時に 5 つまで動作させることが可能です．
 ```
+# AWG 0 ~ 4 を動作させる場合
+python send_various_wave.py --awgs=0,1,2,3,4
+```
+<br>
+
+**デザイン 2 を使用する場合**
+
+デザイン 2 は AWG 0 ~ 5 の中の 5 つに加えて，AWG 6 と 7 を同時に動作させることが可能です．
+```
+# AWG 0, 1, 2, 3, 4, 6, 7 を動作させる場合
+python send_various_wave.py --design-type=dac1g-uram2 --awgs=0,1,2,3,4,6,7
+```
+
+<br>
 
 DAC と PMOD からの出力がオシロスコープで観察できます．
 

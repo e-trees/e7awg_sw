@@ -1,9 +1,8 @@
 # AWG とディジタル出力モジュールから波形を出力する
 
 [send_various_wave.py](./send_various_wave.py) は，AWG (Arbitrary Waveform Generator) から異なるパターンの波形を出力するスクリプトです．
-
-本スクリプトは，DAC 6Gsps の FPGA デザインにのみ対応しています．
-DAC 1Gsps の FPGA デザインで複数のパターンの波形を出力するスクリプトは，[send_various_wave.py](../send_various_wave/send_various_wave.py) を参照してください．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 1` に対応しています．
+各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 本スクリプトは，プログラム引数で AWG が出力する波形とミキサのパラメータが以下の表のように変わります．
 

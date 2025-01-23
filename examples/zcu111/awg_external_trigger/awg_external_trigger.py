@@ -2,7 +2,7 @@ import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
 
-wave_freq = 1 # MHz
+wave_freq = 1.08 # MHz
 mixer_freq = 10 # MHz
 
 def get_dac_interrupts(rfdc_ctrl):
@@ -44,7 +44,7 @@ def gen_wave_samples(freq, num_cycles, sampling_rate, hw_specs):
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_waves(awg_ctrl, sampling_rate, design_type, hw_specs):
+def set_waves(awg_list, awg_ctrl, sampling_rate, design_type, hw_specs):
     awg_to_wave_seq = {}
     for awg_id in awg_list:
         wave_seq = e7s.WaveSequence(0, 1, design_type)
@@ -56,18 +56,18 @@ def set_waves(awg_ctrl, sampling_rate, design_type, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs):
+def setup_awgs(awg_list, awg_ctrl, sampling_rate, design_type, hw_specs):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_waves(awg_ctrl, sampling_rate, design_type, hw_specs)
+    return set_waves(awg_list, awg_ctrl, sampling_rate, design_type, hw_specs)
 
 
 def set_digital_out_data(digital_out_ctrl, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
-    if design_type == e7s.E7AwgHwType.ZCU111:
+    if design_type == e7s.E7AwgHwType.ZCU111 or design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         output_time = 69 # 1 [usec]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
         output_time = 407 # 1 [usec]
@@ -123,7 +123,7 @@ def main(design_type, awg_list):
         # AWG のセットアップ
         print('setup AWGs')
         sampling_rate = rfdc_ctrl.get_dac_sampling_rate(e7sz.DacTile.T0) * 1e6 # Hz
-        setup_awgs(awg_ctrl, sampling_rate, design_type, hw_specs)
+        setup_awgs(awg_list, awg_ctrl, sampling_rate, design_type, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
         setup_digital_output_modules(digital_out_ctrl, design_type)
@@ -167,14 +167,21 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111
     elif args.design_type == "dac6g":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    elif args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
+    awgs = sorted(e7s.AWG.on(design_type))    
     # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
-    # DAC 1Gsps 版デザイン : 5 個,   DAC 1Gsps 版デザイン : 1 個
+    # DAC 1Gsps, URAM x0 デザイン : 5 個
+    # DAC 6Gsps, URAM x0 デザイン : 1 個
+    # DAC 1Gsps, URAM x2 デザイン : 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
     if design_type == e7s.E7AwgHwType.ZCU111:
-        awg_list = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4]
+        awgs = awgs[0:5]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
-        awg_list = [e7s.AWG.U0]
+        awgs = awgs[0:1]
+    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
 
-    main(design_type, awg_list)
+    main(design_type, awgs)

@@ -457,6 +457,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -913,6 +914,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1360,7 +1362,8 @@
 
     <span class="k">def</span> <span class="nf">_validate_design_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design_type</span><span class="p">:</span> <span class="n">E7AwgHwType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">and</span> \
-           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span><span class="p">:</span>
+           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="ow">and</span> \
+           <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;e7awg_hw (</span><span class="si">{}</span><span class="s2">) doesn&#39;t have any RF Data Converters.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">design_type</span><span class="p">))</span>
 
     <span class="nd">@abstractmethod</span>
@@ -1665,12 +1668,14 @@
 <span class="k">def</span> <span class="nf">configure_fpga</span><span class="p">(</span><span class="n">transceiver</span><span class="p">:</span> <span class="n">RftoolTransceiver</span><span class="p">,</span> <span class="n">design_type</span><span class="p">:</span> <span class="n">E7AwgHwType</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;FPGA をコンフィギュレーションする&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">and</span> \
-       <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span><span class="p">:</span>
+       <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="ow">and</span> \
+       <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid e7awg_hw type. </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">design_type</span><span class="p">))</span>
 
     <span class="n">type_to_id</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
-        <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="p">:</span> <span class="mi">16</span>
+        <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">RftoolCommand</span><span class="p">(</span><span class="n">transceiver</span><span class="o">.</span><span class="n">ctrl_if</span><span class="p">)</span><span class="o">.</span><span class="n">ConfigFpga</span><span class="p">(</span><span class="n">type_to_id</span><span class="p">[</span><span class="n">design_type</span><span class="p">],</span> <span class="mi">25</span><span class="p">)</span></div>
 
@@ -1684,7 +1689,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2025-01-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-01-23" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

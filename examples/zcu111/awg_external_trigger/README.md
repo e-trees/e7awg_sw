@@ -1,6 +1,16 @@
 # AWG を外部トリガでスタートする
 
 [awg_external_trigger.py](./awg_external_trigger.py) は AWG (Arbitrary Waveform Generator) を PMOD 1 のポート 0 に割り当てられた外部トリガからスタートするスクリプトです．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 2` に対応しています．
+各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
+
+本スクリプトで動作する AWG と上述のデザインの対応関係は以下の表の通りです．
+
+| デザイン ID | AWG |
+| --- | --- |
+| 0 | 0 ~ 4 |
+| 1 | 0 |
+| 2 | 0 ~ 4，6 ~ 7 |
 
 ## セットアップ
 
@@ -16,7 +26,14 @@ DAC, PMOD とオシロスコープを接続します．
 以下のコマンドを実行します．
 
 ```
+# デザイン 0 を使用する場合
 python awg_external_trigger.py
+
+# デザイン 1 を使用する場合
+python awg_external_trigger.py --design-type=dac6g
+
+# デザイン 2 を使用する場合
+python awg_external_trigger.py --design-type=dac1g-uram2
 ```
 
 コンソールに `Connect PMOD 0 port 0 to PMOD 1 port 1 and press 'Enter'` と表示されたら，下図の PMOD 0 の P0 と PMOD 1 の P0 を接続してから Enter を押します．
@@ -33,29 +50,14 @@ python awg_external_trigger.py
 | 水色 | AWG 1 |
 | ピンク | PMOD 0 P0 |
 
+**デザイン 0, 2**
+
 ![awg_external_trig](./images/awg_external_trig.jpg)
 
 <br>
 
-### DAC 6Gsps デザインを使用する場合
-
-以下のコマンドを実行します．
-
-```
-python awg_external_trigger.py --design-type=dac6g
-```
-
-コンソールに `Connect PMOD 0 port 0 to PMOD 1 port 1 and press 'Enter'` と表示されたら，下図の PMOD 0 の P0 と PMOD 1 の P0 を接続してから Enter を押します．
-
-![PMOD](./images/pmod_ports.png)
-
-ディジタル出力モジュール 0 からディジタル値が出力されると PMOD 0 のポート 0 の電圧が Lo から Hi に変わり，接続されている PMOD 1 の P0 を通して AWG のスタートトリガがかかります．
-
-ディジタル出力モジュール と AWG が動作すると AWG と PMOD から下図の波形が観測できます．
-
-| 色 | 信号 |
-| --- | --- |
-| 黄色 | AWG 0 |
-| ピンク | PMOD 0 P0 |
+**デザイン 1**
 
 ![awg_external_trig_dac_6g](./images/awg_external_trig_dac_6g.jpg)
+
+<br>

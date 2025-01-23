@@ -29,11 +29,11 @@ def gen_cos_wave(num_cycles, freq, amp, hw_specs):
     return samples
 
 
-def gen_cos_wave_seq(num_wait_words, num_chunks, design_type, hw_specs):
+def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
     wave_seq = e7s.WaveSequence(
         num_wait_words = num_wait_words,
         num_repeats = 1,
-        design_type = design_type)
+        design_type = hw_specs.design_type)
     i_samples = gen_cos_wave(NUM_CYCLES, NUM_FREQ, AMPLITUDE, hw_specs)
     q_samples = [0] * len(i_samples)
     for _ in range(num_chunks):
@@ -44,10 +44,10 @@ def gen_cos_wave_seq(num_wait_words, num_chunks, design_type, hw_specs):
     return wave_seq
 
 
-def set_wave_sequence(awg_ctrl, awgs, num_wait_words, design_type, hw_specs):
+def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
     awg_to_wave_sequence = {}
     for awg_id in awgs:
-        wave_seq = gen_cos_wave_seq(num_wait_words, 1, design_type, hw_specs)
+        wave_seq = gen_cos_wave_seq(num_wait_words, 1, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
@@ -123,8 +123,7 @@ def main(design_type, awgs, num_wait_words, timeout):
         # 初期化
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
-        awg_to_wave_sequence = set_wave_sequence(
-            awg_ctrl, awgs, num_wait_words, design_type, hw_specs)
+        awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
         # 波形送信スタート
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
@@ -155,16 +154,22 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111
     elif args.design_type == "dac6g":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
+    elif args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
     awgs = sorted(e7s.AWG.on(design_type))    
     # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
-    # DAC 1Gsps 版デザイン : 5 個,   DAC 1Gsps 版デザイン : 1 個
+    # DAC 1Gsps, URAM x0 デザイン : 5 個
+    # DAC 6Gsps, URAM x0 デザイン : 1 個
+    # DAC 1Gsps, URAM x2 デザイン : 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
     if design_type == e7s.E7AwgHwType.ZCU111:
         awgs = awgs[0:5]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
         awgs = awgs[0:1]
+    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
 
     if args.awgs is not None:
         awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]

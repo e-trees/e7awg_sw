@@ -44,10 +44,9 @@ class WaveSequence(object):
                 | ユーザ定義波形の先頭に付く 0 データの長さ.
                 | 単位は AWG ワード.
                 | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-                |     simple multi       : 4 サンプル
-                |     KR260              : 1 サンプル
-                |     ZCU111 (DAC 1Gsps) : 8 サンプル
-                |     ZCU111 (DAC 6Gsps) : 8 サンプル
+                |     simple multi : 4 サンプル
+                |     KR260        : 1 サンプル
+                |     ZCU111       : 8 サンプル
             num_repeats (int): 波形シーケンスを繰り返す回数
             design_type (E7AwgHwType):
                 | このオブジェクトで定義したユーザ定義波形を出力する AWG が含まれる e7awg_hw の種類
@@ -109,10 +108,9 @@ class WaveSequence(object):
                 | 追加する波形チャンク内で iq_samples に続く 0 データ (ポストブランク) の長さ.
                 | 単位は AWG ワード.
                 | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-                |     simple multi       : 4 サンプル
-                |     KR260              : 1 サンプル
-                |     ZCU111 (DAC 1Gsps) : 8 サンプル
-                |     ZCU111 (DAC 6Gsps) : 8 サンプル
+                |     simple multi : 4 サンプル
+                |     KR260        : 1 サンプル
+                |     ZCU111       : 8 サンプル
             num_repeats (int): 追加する波形チャンクを繰り返す回数
         """
         try:
@@ -218,10 +216,9 @@ class WaveSequence(object):
         
         | 単位は AWG ワード.
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi       : 4 サンプル
-        |     KR260              : 1 サンプル
-        |     ZCU111 (DAC 1Gsps) : 8 サンプル
-        |     ZCU111 (DAC 6Gsps) : 8 サンプル
+        |     simple multi : 4 サンプル
+        |     KR260        : 1 サンプル
+        |     ZCU111       : 8 サンプル
 
         Returns:
             int: ユーザ定義波形の先頭に付く 0 データの長さ
@@ -264,10 +261,9 @@ class WaveSequence(object):
         """このユーザ定義波形の全 AWG ワード数 (wait words も繰り返しも含む)
         
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi       : 4 サンプル
-        |     KR260              : 1 サンプル
-        |     ZCU111 (DAC 1Gsps) : 8 サンプル
-        |     ZCU111 (DAC 6Gsps) : 8 サンプル
+        |     simple multi : 4 サンプル
+        |     KR260        : 1 サンプル
+        |     ZCU111       : 8 サンプル
 
         Returns:
             int: このユーザ定義波形の全 AWG ワード数
@@ -401,7 +397,8 @@ class WaveSequence(object):
         if design_type != E7AwgHwType.SIMPLE_MULTI and \
            design_type != E7AwgHwType.KR260 and \
            design_type != E7AwgHwType.ZCU111 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G:
+           design_type != E7AwgHwType.ZCU111_DAC_6G and \
+           design_type != E7AwgHwType.ZCU111_URAM_X2:
             raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
 
@@ -598,10 +595,9 @@ class WaveChunk(object):
         """この波形チャンクのポストブランクの AWG ワード数
         
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi       : 4 サンプル
-        |     KR260              : 1 サンプル
-        |     ZCU111 (DAC 1Gsps) : 8 サンプル
-        |     ZCU111 (DAC 6Gsps) : 8 サンプル
+        |     simple multi : 4 サンプル
+        |     KR260        : 1 サンプル
+        |     ZCU111       : 8 サンプル
 
         Returns:
             int: この波形チャンクのポストブランクの AWG ワード数
@@ -624,10 +620,9 @@ class WaveChunk(object):
         """この波形チャンクの有波形部の AWG ワード数
 
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi       : 4 サンプル
-        |     KR260              : 1 サンプル
-        |     ZCU111 (DAC 1Gsps) : 8 サンプル
-        |     ZCU111 (DAC 6Gsps) : 8 サンプル
+        |     simple multi : 4 サンプル
+        |     KR260        : 1 サンプル
+        |     ZCU111       : 8 サンプル
 
         Returns:
             int: この波形チャンクの有波形部の AWG ワード数
@@ -660,10 +655,9 @@ class WaveChunk(object):
         """この波形チャンクの AWG ワード数.
 
         | 1 AWG ワード当たりのサンプル数は e7awg_hw の種類によって異なる. (I データと Q データはまとめて 1 サンプルとカウント)
-        |     simple multi       : 4 サンプル
-        |     KR260              : 1 サンプル
-        |     ZCU111 (DAC 1Gsps) : 8 サンプル
-        |     ZCU111 (DAC 6Gsps) : 8 サンプル
+        |     simple multi : 4 サンプル
+        |     KR260        : 1 サンプル
+        |     ZCU111       : 8 サンプル
 
         Returns:
             int: この波形チャンクの AWG ワード数.

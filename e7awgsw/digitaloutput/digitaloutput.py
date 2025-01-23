@@ -85,7 +85,8 @@ class DigitalOutputDataList:
 
     def __validate_design_type(self, design_type: E7AwgHwType) -> None:
         if design_type != E7AwgHwType.ZCU111 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G:
+           design_type != E7AwgHwType.ZCU111_DAC_6G and \
+           design_type != E7AwgHwType.ZCU111_URAM_X2:
             raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
 
