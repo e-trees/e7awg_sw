@@ -342,7 +342,8 @@ class DigitalOutCtrllBase(object, metaclass = ABCMeta):
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
         if design_type != E7AwgHwType.ZCU111 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G and \
-           design_type != E7AwgHwType.ZCU111_URAM_X2:
+           design_type != E7AwgHwType.ZCU111_URAM_X2 and \
+           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             raise ValueError(
                 "e7awg_hw ({}) doesn't have any digital output modules.".format(design_type))
 

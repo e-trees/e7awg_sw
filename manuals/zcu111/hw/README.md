@@ -15,6 +15,7 @@ ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザイ
 | 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
 | 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
 | 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
+| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
 
 ## 2. 機能概要
 e7awg_hw は，ユーザが定義した波形データとディジタル値を出力する機能を備えた FPGA デザインです．
@@ -83,7 +84,7 @@ e7awg_hw の波形データ RAM にアクセスするためには，波形デー
 
 <br>
 
-**デザイン 2**
+**デザイン 2, 3**
 
 ![波形データRAMデータレイアウト1](./figures/wave_ram_data_layout_1.png)
 
@@ -148,17 +149,31 @@ e7awg_hw の波形データ RAM にアクセスするためには，波形デー
 また，**波形パート**のサンプル数は，以下の制約も満たさなければなりません．
 ![wave_part_constraint](./figures/wave_part_constraint.png)
 
-<!--
+<!-- 
 $$
 \begin{align*}
+S_u &\stackrel{\mathrm{def}}{=} \rm{AWG}\,u\, が出力する波形シーケンス \\[1ex]
+N_u &: S_u で定義された波形チャンクの数  \\[1ex]
+W_u(i) &: S_u の波形チャンク \; i \;の波形パートのサンプル数 \\[1ex]
+L_u &: \rm{AWG}\,u\, の波形データ格納領域に格納可能な総サンプル数 \\[1ex]
+[制約] \;\; &\displaystyle \sum_{i=0}^{N_u-1} W_u(i) \leqq L_u \\[5ex]
 
-N &: 波形チャンク数  \\[1ex]
-W(i) &: 波形チャンク \; i \;の波形パートのサンプル数 \\[1ex]
-&\displaystyle \sum_{i=0}^{N-1} W(i) \leqq 67108864
+\langle デザイン 0, 1 \rangle \\[1ex]
+L_u &= 134217728 \;\; (u \in \{0, 1, 2, 3, 4, 5, 6, 7\}) \\[1ex]
+
+\\
+
+\langle デザイン 2, 3 \rangle \\[1ex]
+L_u &= \left\{
+\begin{array}{ll}
+  134217728\;\; & (u \in \{0, 1, 2, 3, 4, 5\}) \\[1ex]
+  1310720\;\; & (u \in \{6, 7\}) \\[1ex]
+\end{array} \\
+\right.\\
+
 \end{align*}
 $$
 -->
-
 **ポストブランク**は値が 0 のサンプルが並んだ波形で，最大長は 4294967295 **AWG ワード**となります．
 
 ![post_blank](./figures/post_blank.png)

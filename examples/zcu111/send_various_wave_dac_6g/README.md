@@ -1,7 +1,7 @@
 # AWG とディジタル出力モジュールから波形を出力する
 
 [send_various_wave.py](./send_various_wave.py) は，AWG (Arbitrary Waveform Generator) から異なるパターンの波形を出力するスクリプトです．
-本スクリプトは ZCU111 版 e7awg_hw の `デザイン 1` に対応しています．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 1 と 3` に対応しています．
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 本スクリプトは，プログラム引数で AWG が出力する波形とミキサのパラメータが以下の表のように変わります．
@@ -34,14 +34,20 @@ DAC, PMOD とオシロスコープを接続します．
 ## 実行手順と結果
 
 以下のコマンドを実行します．
+waveform オプションで出力される波形が変わります．
 
 ```
-python send_various_wave_dac_6g.py [オプション (0 ~ 4)]
+# デザイン 1 を使用する場合
+python send_various_wave_dac_6g.py  --design-type=dac6g  --waveform=[0,1,2,3,4]
+
+# デザイン 3 を使用する場合
+python send_various_wave_dac_6g.py  --design-type=dac6g-uram2  --waveform=[0,1,2,3,4]
 ```
+
 
 DAC と PMOD からの出力がオシロスコープで観察できます．
 
-オプション: 0
+waveform オプション: 0
 
 | 色 | 信号 |
 | --- | --- |
@@ -51,7 +57,7 @@ DAC と PMOD からの出力がオシロスコープで観察できます．
 
 <br>
 
-オプション: 1
+waveform オプション: 1
 
 | 色 | 信号 |
 | --- | --- |
@@ -61,7 +67,7 @@ DAC と PMOD からの出力がオシロスコープで観察できます．
 
 <br>
 
-オプション: 2
+waveform オプション: 2
 
 | 色 | 信号 |
 | --- | --- |
@@ -71,7 +77,7 @@ DAC と PMOD からの出力がオシロスコープで観察できます．
 
 <br>
 
-オプション: 3
+waveform オプション: 3
 
 | 色 | 信号 |
 | --- | --- |
@@ -81,7 +87,7 @@ DAC と PMOD からの出力がオシロスコープで観察できます．
 
 <br>
 
-オプション: 4
+waveform オプション: 4
 
 | 色 | 信号 |
 | --- | --- |

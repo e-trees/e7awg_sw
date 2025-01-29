@@ -11,7 +11,7 @@
 | 0 | 0 ~ 4 |
 | 1 | 0 |
 | 2 | 0 ~ 4，6 ~ 7 |
-
+| 3 | 0, 6, 7 |
 
 ## セットアップ
 
@@ -32,6 +32,9 @@ python awg_pause.py --design-type=dac6g
 
 # デザイン 2 を使用する場合
 python awg_pause.py --design-type=dac1g-uram2
+
+# デザイン 3 を使用する場合
+python awg_pause.py --design-type=dac6g-uram2
 ```
 
 AWG とディジタル出力モジュールが動作を開始すると DAC と PMOD から下図の波形が観測できます．

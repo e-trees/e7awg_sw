@@ -69,9 +69,11 @@ def setup_awgs(awg_list, awg_ctrl, sampling_rate, hw_specs):
 def set_digital_out_data(digital_out_ctrl, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
-    if design_type == e7s.E7AwgHwType.ZCU111 or design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111 or \
+       design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         output_time = 345600000  # 5 [sec]
-    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G or \
+         design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         output_time = 2035200000 # 5 [sec]
 
     dout_data_list.add(3, output_time)
@@ -176,6 +178,8 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
     elif args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dac6g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
@@ -184,11 +188,14 @@ if __name__ == "__main__":
     # DAC 1Gsps, URAM x0 デザイン : 5 個
     # DAC 6Gsps, URAM x0 デザイン : 1 個
     # DAC 1Gsps, URAM x2 デザイン : 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
+    # DAC 6Gsps, URAM x2 デザイン : 3 個  (AWG 0 ~ 5 の中からは 1 つまで)
     if design_type == e7s.E7AwgHwType.ZCU111:
         awgs = awgs[0:5]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
         awgs = awgs[0:1]
     elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        awgs = [e7s.AWG.U0, e7s.AWG.U6, e7s.AWG.U7]
 
     main(design_type, awgs)

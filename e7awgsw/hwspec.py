@@ -232,13 +232,15 @@ class E7AwgHwSpecs:
         self.__dout_specs: Optional[DigitalOutSpecs] = None
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
-           design_type == E7AwgHwType.ZCU111_URAM_X2:
+           design_type == E7AwgHwType.ZCU111_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
 
         self.__rfdc_specs: Optional[RfdcSpecs] = None
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
-           design_type == E7AwgHwType.ZCU111_URAM_X2:
+           design_type == E7AwgHwType.ZCU111_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             self.__rfdc_specs = RfdcSpecs(RfdcParams.of(design_type))
 
 

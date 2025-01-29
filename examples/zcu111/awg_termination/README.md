@@ -11,6 +11,7 @@
 | 0 | 0, 1 |
 | 1 | 0 |
 | 2 | 0, 1 |
+| 3 | 0 |
 
 ## セットアップ
 
@@ -35,6 +36,9 @@ python awg_termination.py  --design-type=dac6g
 
 # デザイン 2 を使用する場合
 python awg_termination.py  --design-type=dac1g-uram2
+
+# デザイン 3 を使用する場合
+python awg_termination.py  --design-type=dac6g-uram2
 ```
 
 DAC から下図のような波形が連続的に出力されます．

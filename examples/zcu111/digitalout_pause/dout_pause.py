@@ -70,9 +70,11 @@ def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
     output_time = 0
-    if design_type == e7s.E7AwgHwType.ZCU111 or design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111 or \
+       design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         output_time = 276480000  # 4 [sec]
-    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G or \
+         design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         output_time = 1628160667 # 4 [sec]
 
     for bit_pattern in bit_patterns:
@@ -194,6 +196,8 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
     elif args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dac6g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 

@@ -12,6 +12,7 @@ ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザイ
 | 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
 | 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
 | 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
+| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
 
 ## 2. システム構成
 
@@ -33,6 +34,7 @@ AWG の制御には専用の Python API を用います．
 | 0 | AWG 0 ~ 7 の中から最大 5 つ |
 | 1 | AWG 0 ~ 7 の中から 1 つ |
 | 2 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
+| 3 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
 
 <br>
 
@@ -87,7 +89,8 @@ AWG が出力可能な波形の構造と制約について説明します．
 
 ![wave part constraint](figures/wave_part_constraint.png)
 
-<!-- $$
+<!-- 
+$$
 \begin{align*}
 S_u &\stackrel{\mathrm{def}}{=} \rm{AWG}\,u\, が出力する波形シーケンス \\[1ex]
 N_u &: S_u で定義された波形チャンクの数  \\[1ex]
@@ -100,7 +103,7 @@ L_u &= 134217728 \;\; (u \in \{0, 1, 2, 3, 4, 5, 6, 7\}) \\[1ex]
 
 \\
 
-\langle デザイン 2 \rangle \\[1ex]
+\langle デザイン 2, 3 \rangle \\[1ex]
 L_u &= \left\{
 \begin{array}{ll}
   134217728\;\; & (u \in \{0, 1, 2, 3, 4, 5\}) \\[1ex]
@@ -109,7 +112,9 @@ L_u &= \left\{
 \right.\\
 
 \end{align*}
-$$ -->
+$$
+-->
+
 
 <br>
 
@@ -130,7 +135,7 @@ RF Data Converter の DAC は以下のパラメータで固定となっており
 
 <br>
 
-**デザイン 1**
+**デザイン 1, 3**
 - サンプリングレート : 6512.64 [Msps]
 - I/Q ミキサ : 有効
 - インタポレーション : 2倍

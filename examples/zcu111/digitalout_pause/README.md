@@ -1,6 +1,6 @@
 # ディジタル出力モジュールの「一時停止」,「再開」,「再スタート」を行う
 
-[dout_pause.py](./dout_pause.py) はディジタル出力モジュールの「一時停止」,「再開」,「再スタート」機能を確認するためのスクリプトです．本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 2` に対応しています．
+[dout_pause.py](./dout_pause.py) はディジタル出力モジュールの「一時停止」,「再開」,「再スタート」機能を確認するためのスクリプトです．本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 3` に対応しています．
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 ## セットアップ
@@ -37,6 +37,9 @@ python dout_pause.py --design-type=dac6g
 
 # デザイン 2 を使用する場合
 python dout_pause.py --design-type=dac1g-uram2
+
+# デザイン 3 を使用する場合
+python dout_pause.py --design-type=dac6g-uram2
 ```
 
 PMOD 0 からディジタル出力値がオシロスコープで観察できます．
