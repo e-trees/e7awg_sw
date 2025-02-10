@@ -161,7 +161,7 @@ if __name__ == "__main__":
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    awgs = sorted(e7s.AWG.on(design_type))    
+    awgs = sorted(e7s.AWG.on(design_type))
     # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
     # DAC 1Gsps, URAM x0 デザイン : 5 個
     # DAC 6Gsps, URAM x0 デザイン : 1 個
@@ -175,7 +175,7 @@ if __name__ == "__main__":
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U6, e7s.AWG.U7]
-
+        
     if args.awgs is not None:
         awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
 
