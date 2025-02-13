@@ -19,6 +19,9 @@ python digital_out_x34_test.py --design-type=dac6g
 
 # デザイン 2 を使用する場合
 python send_wave.py  --design-type=dac1g-uram2
+
+# デザイン 3 を使用する場合
+python send_wave.py  --design-type=dac6g-uram2
 ```
 
 Vivado を起動して, bitfile/zcu111_rfsoc_trd_wrapper.ltx を使用して ZCU111 版 e7awg_hw の ILA の値を見られるようにします．
