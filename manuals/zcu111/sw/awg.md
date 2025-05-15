@@ -150,7 +150,19 @@ AWG から出力される **ユーザ定義波形** は，DAC 内部でサンプ
 本章では AWG の操作に必要な Python API を手順ごとに説明します．
 各 API の詳細は, 関数ヘッダコメントを参照してください.
 
-### 6.1. AWG と DAC の初期化
+### 6.1. RF Data Converter の DAC タイルと DAC タイル ID の対応関係
+
+本 API には RF Data Convnerter の DAC タイルを指定して実行するメソッドがあります．
+各タイルに対応する ID は e7awgsw.zcu111 パッケージの DacTile クラスに列挙子として定義されており，その対応関係は以下の通りです．
+
+| DAC タイル | DAC タイル ID | 列挙子の値 |
+| -- | -- | -- |
+| Tile 228 | T0 | 0 |
+| Tile 229 | T1 | 1 |
+
+<br>
+
+### 6.2. AWG と DAC の初期化
 
 AWG と DAC は，次節以降で述べる操作を行う前に必ず初期化しなければなりません．
 DAC の初期化には RfdcCtrl クラスの set_dac_mixer_settings, sync_dac_tiles メソッドを使用します.
@@ -190,10 +202,10 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     awg_ctrl.initialize(e7s.AWG.U0, e7s.AWG.U4)
 ```
 
-### 6.2. 波形データの設定
+### 6.3. 波形データの設定
 
 AWG に設定する波形データは，e7awgsw パッケージの WaveSequence クラスを用いて作成します．
-3 章で説明したユーザ定義波形の
+4 章で説明したユーザ定義波形の
 
 - 波形シーケンスの繰り返し回数
 - wait word の長さ
@@ -260,7 +272,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     awg_ctrl.set_wave_sequence(e7s.AWG.U4, wave_seq)
 ```
 
-### 6.3. 波形の出力開始と完了待ち
+### 6.4. 波形の出力開始と完了待ち
 
 AWG の波形出力を開始するには AwgCtrl クラスの start_awgs メソッドを使用します．
 このメソッドで指定した全ての AWG は同時にユーザ定義波形の出力を開始します．
@@ -292,7 +304,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     awg_ctrl.wait_for_awgs_to_stop(5, e7s.AWG.U0, e7s.AWG.U4)
 ```
 
-### 6.4. 波形出力の一時停止
+### 6.5. 波形出力の一時停止
 
 ユーザ定義波形の出力を一時停止するには AwgCtrl クラスの pause_awgs メソッドを使用します．
 このメソッドで指定した全ての AWG は同時にユーザ定義波形の出力を一時停止します．
@@ -320,7 +332,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     awg_ctrl.pause_awgs(e7s.AWG.U0, e7s.AWG.U4)
 ```
 
-### 6.5. 波形出力の再開
+### 6.6. 波形出力の再開
 
 ユーザ定義波形の出力を再開するには AwgCtrl クラスの resume_awgs メソッドを使用します．
 このメソッドで指定した全ての AWG は同時にユーザ定義波形の出力を再開します．
@@ -353,7 +365,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     awg_ctrl.resume_awgs(e7s.AWG.U0, e7s.AWG.U4)
 ```
 
-### 6.6 外部トリガの有効化
+### 6.7. 外部トリガの有効化
 
 AWG が外部スタートトリガを受け付ける状態にした後で，PMOD 1 の P0 を Lo から Hi にすると AWG の波形出力を開始することができます.
 

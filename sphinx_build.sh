@@ -18,9 +18,10 @@ sphinx-apidoc --module-first -f  --implicit-namespaces -o ./docs ./e7awgsw/ \
     ./e7awgsw/digitaloutput/memorymap.py \
     ./e7awgsw/digitaloutput/doutparam.py \
     ./e7awgsw/zcu111/__init__.py \
-    ./e7awgsw/zcu111/rftcmd.py \
-    ./e7awgsw/zcu111/rftinterface.py \
-    ./e7awgsw/zcu111/rfdcparam.py
+    ./e7awgsw/zcu216/__init__.py \
+    ./e7awgsw/rfdccommon/rftcmd.py \
+    ./e7awgsw/rfdccommon/rftinterface.py \
+    ./e7awgsw/rfdccommon/rfdcparam.py \
+    ./e7awgsw/rfdccommon/validator.py
     
-
 sphinx-build ./docs ./docs/_build

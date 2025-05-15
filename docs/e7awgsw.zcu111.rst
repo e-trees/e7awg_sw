@@ -21,19 +21,3 @@ e7awgsw.zcu111.rfdcdefs module
    :members:
    :undoc-members:
    :show-inheritance:
-
-e7awgsw.zcu111.rfterr module
-----------------------------
-
-.. automodule:: e7awgsw.zcu111.rfterr
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-e7awgsw.zcu111.rftooltransceiver module
----------------------------------------
-
-.. automodule:: e7awgsw.zcu111.rftooltransceiver
-   :members:
-   :undoc-members:
-   :show-inheritance:

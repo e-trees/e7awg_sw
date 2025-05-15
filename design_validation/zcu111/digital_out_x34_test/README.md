@@ -24,7 +24,7 @@ python send_wave.py  --design-type=dac1g-uram2
 python send_wave.py  --design-type=dac6g-uram2
 ```
 
-Vivado を起動して, bitfile/zcu111_rfsoc_trd_wrapper.ltx を使用して ZCU111 版 e7awg_hw の ILA の値を見られるようにします．
+Vivado を起動して, e7awg_hw の合成時に出力される zcu111_rfsoc_trd_wrapper.ltx を使用して ZCU111 版 e7awg_hw の ILA の値を見られるようにします．
 ディジタル出力モジュールの出力値を入力された ILA を探し，その値が変化したときにキャプチャするように設定します.
 
 上記のコマンドをもう一度実行し，ILA のキャプチャ結果が以下の図のようになることを確認します．

@@ -1,7 +1,7 @@
 from typing import Optional
 from .hwdefs import E7AwgHwType
 from .hwparam import AwgParams, CaptureUnitParams, CaptureRamParams
-from .zcu111.rfdcparam import RfdcParams
+from .rfdccommon.rfdcparam import RfdcParams
 from .digitaloutput.doutparam import DigitalOutParams
 
 class AwgSpecs:
@@ -233,14 +233,16 @@ class E7AwgHwSpecs:
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
            design_type == E7AwgHwType.ZCU111_URAM_X2 or \
-           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU216:
             self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
 
         self.__rfdc_specs: Optional[RfdcSpecs] = None
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
            design_type == E7AwgHwType.ZCU111_URAM_X2 or \
-           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+           design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU216:
             self.__rfdc_specs = RfdcSpecs(RfdcParams.of(design_type))
 
 

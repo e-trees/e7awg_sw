@@ -344,12 +344,15 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
-        if design_type != E7AwgHwType.SIMPLE_MULTI and \
-           design_type != E7AwgHwType.KR260 and \
-           design_type != E7AwgHwType.ZCU111 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G and \
-           design_type != E7AwgHwType.ZCU111_URAM_X2 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        designs_with_awgs = [
+            E7AwgHwType.SIMPLE_MULTI,
+            E7AwgHwType.KR260,
+            E7AwgHwType.ZCU111,
+            E7AwgHwType.ZCU111_DAC_6G,
+            E7AwgHwType.ZCU111_URAM_X2,
+            E7AwgHwType.ZCU111_DAC_6G_URAM_X2,
+            E7AwgHwType.ZCU216]
+        if not design_type in designs_with_awgs:
             raise ValueError("e7awg_hw ({}) doesn't have any AWGs.".format(design_type))
 
 

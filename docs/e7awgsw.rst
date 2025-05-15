@@ -11,7 +11,9 @@ Subpackages
 
    e7awgsw.digitaloutput
    e7awgsw.labrad
+   e7awgsw.rfdccommon
    e7awgsw.zcu111
+   e7awgsw.zcu216
 
 Submodules
 ----------

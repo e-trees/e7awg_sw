@@ -18,6 +18,8 @@ class RfdcParams(object, metaclass = ABCMeta):
             return cast(Self, RfdcParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(Self, RfdcParamsZcu111Dac6gUramX2())
+        if design_type == E7AwgHwType.ZCU216:
+            return cast(Self, RfdcParamsZcu216())
 
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
@@ -107,6 +109,25 @@ class RfdcParamsZcu111Dac6gUramX2(RfdcParams):
     
     | DAC : 6.51264 Gsps
     | 波形データ RAM : DRAM x1, URAM x2
+
+    """
+    def inf_mixer_phase(self) -> float:
+        return -180
+    
+    def sup_mixer_phase(self) -> float:
+        return 180
+    
+    def min_mixer_freq(self) -> float:
+        return -10000
+
+    def max_mixer_freq(self) -> float:
+        return 10000
+
+class RfdcParamsZcu216(RfdcParams):
+    """以下の構成の ZCU216 デザインの RF Data Converter のパラメータを保持するクラス
+    
+    | DAC : 9.8304 Gsps
+    | 波形データ RAM : BRAM x6, URAMx10
 
     """
     def inf_mixer_phase(self) -> float:

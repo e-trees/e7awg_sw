@@ -18,7 +18,9 @@ class DigitalOutParams(object, metaclass = ABCMeta):
             return cast(Self, DigitalOutParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(Self, DigitalOutParamsZcu111Dac6gUramX2())
-               
+        if design_type == E7AwgHwType.ZCU216:
+            return cast(Self, DigitalOutParamsZcu216())
+
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
     @abstractmethod
@@ -107,6 +109,25 @@ class DigitalOutParamsZcu111Dac6gUramX2(DigitalOutParams):
     
     | DAC : 6.51264 Gsps
     | 波形データ RAM : DRAM x1, URAM x2
+
+    """
+    def max_patterns(self) -> int:
+        return 512
+
+    def min_time(self) -> int:
+        return 2
+
+    def max_time(self) -> int:
+        return 0xFFFF_FFFF
+
+    def udp_port(self) -> int:
+        return 0x4001
+
+class DigitalOutParamsZcu216(DigitalOutParams):
+    """以下の構成の ZCU216 デザインのディジタル出力モジュールのパラメータを保持するクラス
+    
+    | DAC : 9.8304 Gsps
+    | 波形データ RAM : BRAM x6, URAMx10
 
     """
     def max_patterns(self) -> int:

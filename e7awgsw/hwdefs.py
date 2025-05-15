@@ -7,11 +7,12 @@ from enum import IntEnum, Enum
 class E7AwgHwType(Enum):
     """e7awg_hw の種類"""
     SIMPLE_MULTI          = 0
-    ZCU111                = 1  #: DAC sampling rate = 1Gsps, 波形データ RAM = DRAM x1, URAM x0
+    ZCU111                = 1  #: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x0
     KR260                 = 2
-    ZCU111_DAC_6G         = 3  #: DAC sampling rate = 6Gsps, 波形データ RAM = DRAM x1, URAM x0
-    ZCU111_URAM_X2        = 4  #: DAC sampling rate = 1Gsps, 波形データ RAM = DRAM x1, URAM x2
-    ZCU111_DAC_6G_URAM_X2 = 5  #: DAC sampling rate = 6Gsps, 波形データ RAM = DRAM x1, URAM x2
+    ZCU111_DAC_6G         = 3  #: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x0
+    ZCU111_URAM_X2        = 4  #: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x2
+    ZCU111_DAC_6G_URAM_X2 = 5  #: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x2
+    ZCU216                = 6  #: DAC sampling rate = 10Gsps, 波形データ RAM = BRAM x6  URAM x10
 
 
 class DspUnit(IntEnum):
@@ -216,6 +217,11 @@ class AWG(IntEnum):
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             awgs = {
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
+        
+        if design_type == E7AwgHwType.ZCU216:
+            awgs = {
+                AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7,
+                AWG.U8, AWG.U9, AWG.U10, AWG.U11, AWG.U12, AWG.U13, AWG.U14, AWG.U15 }
 
         return cast(set[Self], awgs)
 

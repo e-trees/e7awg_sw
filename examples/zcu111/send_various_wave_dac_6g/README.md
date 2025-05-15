@@ -18,7 +18,7 @@
 そのために，I/Q ミキサの設定値のうち，周波数 `freq` を 0，初期位相 `phase_offset` を 0 にセットしています．
 このことにより，出力される信号は，`I * amplitude + Q * 0` なる信号が出力されます．
 このサンプルでは，amplitude に 0.7 に相当する `e7sz.MixerScale.V0P7` を設定しています．
-amplitude に設定可能な値は，[rfdcdefs.py](../../../e7awgsw/zcu111/rfdcdefs.py) の MixerScale を参照してください．
+amplitude に設定可能な値は，[rfdcdefs.py](../../../e7awgsw/rfdccommon/rfdcdefs.py) の MixerScale を参照してください．
 
 
 ## セットアップ

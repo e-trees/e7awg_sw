@@ -3,21 +3,20 @@ from __future__ import annotations
 import socket
 import os
 import stat
-from typing import Final
 from typing_extensions import Self
 from types import TracebackType
 from logging import Logger
 from abc import ABCMeta, abstractmethod
-from .rftcmd import RftoolCommand
-from .rfterr import RfdcCommandError
-from .rfdcdefs import RfConverter, DacTile, DacChannel, \
-                      MixerScale, RfdcIntrpMask, RfdcInterrupt
-from .rftooltransceiver import RftoolTransceiver
+from .rfdcdefs import DacTile, RfdcInterrupt, DacChannel
 from ..logger import get_file_logger, get_null_logger, log_error
 from ..lock import ReentrantFileLock
 from ..hwdefs import E7AwgHwType
-from .rfdcparam import RfdcParams
-
+from ..rfdccommon.rfterr import RfdcCommandError
+from ..rfdccommon.rfdcparam import RfdcParams
+from ..rfdccommon.validator import RfdcValidator
+from ..rfdccommon.rftcmd import RftoolCommand
+from ..rfdccommon.rfdcdefs import RfConverter, RfdcIntrpMask, MixerScale
+from ..rfdccommon.rftooltransceiver import RftoolTransceiver
 
 class RfdcCtrlBase(object, metaclass = ABCMeta):
 
@@ -35,11 +34,12 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
             self._loggers.append(get_file_logger())
 
         try:
-            if self._validate_args:
-                self._validate_transceiver(transceiver)
-                self._validate_design_type(design_type)
-
             self._rfdc_params = RfdcParams.of(design_type)
+            if self._validate_args:
+                self._validator = RfdcValidator(
+                    set(DacTile), set(DacChannel), self._rfdc_params, set(RfdcInterrupt))
+                self._validator.validate_transceiver(transceiver)
+                self._validate_design_type(design_type)
         except Exception as e:
             log_error(e, *self._loggers)
             raise
@@ -64,11 +64,11 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
-                self._validate_mixer_freq(freq)
-                self._validate_mixer_phase(phase)
-                self._validate_mixer_scale(scale)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
+                self._validator.validate_mixer_freq(freq)
+                self._validator.validate_mixer_phase(phase)
+                self._validator.validate_mixer_scale(scale)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -92,8 +92,8 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -122,8 +122,8 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -142,9 +142,9 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
-                self._validate_rfdc_interrupts(*flags)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
+                self._validator.validate_rfdc_interrupts(*set(flags))
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -163,9 +163,9 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
-                self._validate_rfdc_interrupts(*flags)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
+                self._validator.validate_rfdc_interrupts(*set(flags))
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -184,9 +184,9 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
-                self._validate_dac_channel(channel)
-                self._validate_rfdc_interrupts(*flags)
+                self._validator.validate_dac_tile(tile)
+                self._validator.validate_dac_channel(channel)
+                self._validator.validate_rfdc_interrupts(*set(flags))
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -207,7 +207,7 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
+                self._validator.validate_dac_tile(tile)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -223,7 +223,7 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
+                self._validator.validate_dac_tile(tile)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -239,7 +239,7 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         """
         if self._validate_args:
             try:
-                self._validate_dac_tile(tile)
+                self._validator.validate_dac_tile(tile)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -247,55 +247,12 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         return self._disable_dac_fifo(tile)
 
 
-    def _validate_transceiver(self, transceiver: RftoolTransceiver) -> None:
-        if not isinstance(transceiver, RftoolTransceiver):
-            raise ValueError('Invalid rftool transceiver {}'.format(transceiver))
-
-
-    def _validate_dac_tile(self, tile: DacTile) -> None:
-        if not tile in set(DacTile):
-            raise ValueError('Invalid DAC tile {}'.format(tile))
-
-
-    def _validate_dac_channel(self, channel: DacChannel) -> None:
-        if not channel in set(DacChannel):
-            raise ValueError('Invalid DAC channel {}'.format(channel))
-        
-
-    def _validate_mixer_freq(self, freq: float) -> None:
-        min_freq = self._rfdc_params.min_mixer_freq()
-        max_freq = self._rfdc_params.max_mixer_freq()
-        if not (isinstance(freq, (float, int)) and (min_freq <= freq and freq <= max_freq)):
-            raise ValueError(
-                "A mixer frequency must be between {} and {} inclusive.  '{}' was set."
-                .format(min_freq, max_freq, freq))
-
-
-    def _validate_mixer_phase(self, phase: float) -> None:
-        inf_phase = self._rfdc_params.inf_mixer_phase()
-        sup_phase = self._rfdc_params.sup_mixer_phase()
-        if not (isinstance(phase, (float, int)) and (inf_phase < phase and phase < sup_phase)):
-            raise ValueError(
-                "A mixer phase must be greater than {} and less than {}.  '{}' was set."
-                .format(inf_phase, sup_phase, phase))
-
-
-    def _validate_mixer_scale(self, scale: MixerScale) -> None:
-        if not scale in set(MixerScale):
-            raise ValueError('Invalid mixer scale {}'.format(scale))
-
-
-    def _validate_rfdc_interrupts(self, *flags: RfdcInterrupt) -> None:
-        if not set(RfdcInterrupt).issuperset(flags):
-            raise ValueError('Invalid rfdc interrupt {}'.format(flags))
-
-
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
         if design_type != E7AwgHwType.ZCU111 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G and \
            design_type != E7AwgHwType.ZCU111_URAM_X2 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
-            raise ValueError("e7awg_hw ({}) doesn't have any RF Data Converters.".format(design_type))
+            raise ValueError("Cannot control the RF Data Converter in {}.".format(design_type))
 
     @abstractmethod
     def _set_dac_mixer_settings(

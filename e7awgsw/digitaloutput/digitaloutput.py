@@ -52,6 +52,7 @@ class DigitalOutputDataList:
                 | 出力時間の単位
                 |    - ZCU111 (DAC 1Gsps): 14.4676 [ns]
                 |    - ZCU111 (DAC 6Gsps): 2.45676 [ns]
+                |    - ZCU216 (DAC 10Gsps): 3.25521 [ns]
 
         """
         if (len(self.__patterns) == self.__dout_params.max_patterns()):
@@ -87,7 +88,8 @@ class DigitalOutputDataList:
         if design_type != E7AwgHwType.ZCU111 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G and \
            design_type != E7AwgHwType.ZCU111_URAM_X2 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+           design_type != E7AwgHwType.ZCU216:
             raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
 

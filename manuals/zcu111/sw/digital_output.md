@@ -87,10 +87,10 @@ Active 状態の出力データは，e7awgsw パッケージの DigitalOutputDat
 設定する出力時間の単位は，FPGA デザインによって変わります．詳細は下の表を参照してください．
 出力データをディジタル出力モジュールに設定するには DigitalOutCtrl クラスの set_output_data メソッドを使用します．
 
-| FPGA デザイン | 出力時間の単位 |
+| デザイン ID | 出力時間の単位 |
 | ---- | ---- |
-| DAC 1Gsps デザイン | 14.4676 [ns] |
-| DAC 6Gsps デザイン | 2.45676 [ns] |
+| 0, 2 | 14.4676 [ns] |
+| 1, 3 | 2.45676 [ns] |
 
 ディジタル出力データを設定するコード例を以下に示します．
 
@@ -120,11 +120,11 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
 
 このコードで定義される出力データは以下のようになります．
 
-#### DAC 1Gsps デザイン
+#### FPGA デザイン 0, 2
 
 ![ディジタル出力例](figures/dout_result.png)
 
-#### DAC 6Gsps デザイン
+#### FPGA デザイン 1, 3
 
 ![ディジタル出力例](figures/dout_result_dac_6g.png)
 

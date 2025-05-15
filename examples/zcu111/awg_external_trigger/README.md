@@ -1,7 +1,7 @@
 # AWG を外部トリガでスタートする
 
 [awg_external_trigger.py](./awg_external_trigger.py) は AWG (Arbitrary Waveform Generator) を PMOD 1 のポート 0 に割り当てられた外部トリガからスタートするスクリプトです．
-本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 2` に対応しています．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 3` に対応しています．
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 本スクリプトで動作する AWG と上述のデザインの対応関係は以下の表の通りです．
