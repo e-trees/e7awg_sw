@@ -1886,6 +1886,22 @@ class RftoolCommand(object):
         command = self._joinargs("SyncMultiTiles", [0, 1])
         self.rft_if.put(command)
 
+    def SyncAdcTiles(self):
+        """
+        全ての ADC タイルを同期させる.
+        このメソッドを呼ぶ前に, ADC データパスの設定 (I/Q ミキサ, 間引きなど) の設定を完了させておくこと.
+        """
+        command = self._joinargs("SyncMultiTiles", [1, 0])
+        self.rft_if.put(command)
+
+    def SyncDacAdcTiles(self):
+        """
+        全ての DAC および ADC タイルを同期させる.
+        このメソッドを呼ぶ前に, DAC と ADC データパスの設定の設定を完了させておくこと.
+        """
+        command = self._joinargs("SyncMultiTiles", [1, 1])
+        self.rft_if.put(command)
+
     def GetDacTileConfig(self, tile_id):
         """
         DAC タイルの設定を取得する.
@@ -1909,6 +1925,58 @@ class RftoolCommand(object):
         res = self.rft_if.put(command)
         return tuple(self._splitargs(res))
 
+    def GetAdcTileConfig(self, tile_id):
+        """
+        ADC タイルの設定を取得する.
+
+        Args:
+            tile_id (int): 設定を取得する ADC タイルの ID
+
+        Returns:
+            tuple[int, int, float, float, float, int, int, int, int]:
+                [0] -> タイルの有効/無効
+                [1] -> PLL の有効/無効
+                [2] -> サンプリングレート [Gsps]
+                [3] -> Reference clock の周波数 [MHz]
+                [4] -> Fabric clock の周波数 [MHz]
+                [5] -> PLL の Feedback Divider の値   pg269(v2.6)  p.164
+                [6] -> PLL の Output Divider の値
+                [7] -> PLL の Reference Divider の値
+                [8] -> Converter Band Mode の設定
+        """
+        command = self._joinargs("GetAdcTileConfig", [tile_id])
+        res = self.rft_if.put(command)
+        return tuple(self._splitargs(res))
+
+    def ConfigureAdcCalibration(self, tile_id, block_id, disable_freeze_pin, freeze_calibration):
+        """ADC キャリブレーションの設定を行う
+
+        Args:
+            tile_id (int): ADC キャリブレーションの設定を行う ADC タイルの ID
+            block_id (int): ADC キャリブレーションの設定を行う ADC ブロックの ID
+            disable_freeze_pin (int):  0: キャリブレーションフリーズピンを有効化する, 1: キャリブレーションフリーズピンを無効化する
+            freeze_calibration (int): 0: キャリブレーションパラメータの更新を有効化する, 1: キャリブレーションパラメータの更新を無効化する
+        """
+        command = self._joinargs(
+            "ConfigureAdcCalibration", [tile_id, block_id, disable_freeze_pin, freeze_calibration])
+        self.rft_if.put(command)
+
+    def GetAdcCalibirationStatus(self, tile_id, block_id):
+        """ADC キャリブレーションの状態を取得する
+
+        Args:
+            tile_id (int): ADC キャリブレーションの設定を取得する ADC タイルの ID
+            block_id (int): ADC キャリブレーションの設定を取得する ブロックの ID
+
+        Returns:
+            tuple[int, int, int]:
+                [0] -> 0: キャリブレーションパラメータの更新が有効である, 1: キャリブレーションパラメータの更新が無効である
+                [1] -> 0: キャリブレーションフリーズピンが有効化されている, 1: キャリブレーションフリーズピンが無効化されている
+                [2] -> 0: キャリブレーションパラメータの更新が有効化されている, 1: キャリブレーションパラメータの更新を無効化する
+        """
+        command = self._joinargs("GetAdcCalibirationStatus", [tile_id, block_id])
+        res = self.rft_if.put(command)
+        return tuple(self._splitargs(res))
 
     def ConfigFpga(self, design_id, timeout):
         """指定されたデザインで FPGA をコンフィギュレーションする

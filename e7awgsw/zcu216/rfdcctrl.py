@@ -7,7 +7,7 @@ from typing_extensions import Self
 from types import TracebackType
 from logging import Logger
 from abc import ABCMeta, abstractmethod
-from .rfdcdefs import DacTile, RfdcInterrupt, DacChannel
+from .rfdcdefs import DacTile, RfdcInterrupt, DacChannel, AdcTile, AdcChannel
 from ..logger import get_file_logger, get_null_logger, log_error
 from ..lock import ReentrantFileLock
 from ..hwdefs import E7AwgHwType
@@ -37,7 +37,12 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
             self._rfdc_params = RfdcParams.of(design_type)
             if self._validate_args:
                 self._validator = RfdcValidator(
-                    set(DacTile), set(DacChannel), self._rfdc_params, set(RfdcInterrupt))
+                    set(DacTile),
+                    set(DacChannel),
+                    set(AdcTile),
+                    set(AdcChannel),
+                    self._rfdc_params,
+                    set(RfdcInterrupt))
                 self._validator.validate_transceiver(transceiver)
                 self._validate_design_type(design_type)
         except Exception as e:

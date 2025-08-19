@@ -22,6 +22,9 @@ sphinx-apidoc --module-first -f  --implicit-namespaces -o ./docs ./e7awgsw/ \
     ./e7awgsw/rfdccommon/rftcmd.py \
     ./e7awgsw/rfdccommon/rftinterface.py \
     ./e7awgsw/rfdccommon/rfdcparam.py \
-    ./e7awgsw/rfdccommon/validator.py
-    
+    ./e7awgsw/rfdccommon/validator.py \
+    ./e7awgsw/basiccapture/__init__.py \
+    ./e7awgsw/basiccapturecore/hwparam.py \
+    ./e7awgsw/basiccapturecore/memorymap.py
+
 sphinx-build ./docs ./docs/_build

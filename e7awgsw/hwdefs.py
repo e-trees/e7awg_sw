@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final, cast
+from typing import cast
 from typing_extensions import Self, deprecated
 from enum import IntEnum, Enum
 
@@ -81,6 +81,10 @@ class CaptureUnit(IntEnum):
             units = {
                 CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3, CaptureUnit.U4,
                 CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7, CaptureUnit.U8, CaptureUnit.U9 }
+        elif design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+            units = {
+                CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3,
+                CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7 }
 
         return cast(set[Self], units)
 
@@ -276,3 +280,9 @@ class CaptureErr(Enum):
     def includes(cls, *vals: int) -> bool:
         errs = cls.all()
         return all([val in errs for val in vals])
+
+
+class SampleDataType(IntEnum):
+    """サンプルデータの種類"""
+    REAL = 0 #: Real データ
+    IQ   = 1 #: I/Q データ

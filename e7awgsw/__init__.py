@@ -1,9 +1,10 @@
-from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, AWG, AwgErr, CaptureErr, E7AwgHwType
+from .hwdefs import DspUnit, CaptureUnit, CaptureModule, DecisionFunc, \
+    AWG, AwgErr, CaptureErr, E7AwgHwType, SampleDataType
 from .awgctrl import AwgCtrl
 from .capturectrl import CaptureCtrl
 from .wavesequence import WaveSequence
 from .captureparam import CaptureParam
-from .utiltool import plot_graph, plot_samples
+from .utiltool import plot_graph, plot_samples, plot_spectrum, plot_stems
 from .awgwave import SinWave, SawtoothWave, SquareWave, GaussianPulse, IqWave
 from .exception import AwgTimeoutError, CaptureUnitTimeoutError
 from .dspmodule import dsp
@@ -24,6 +25,7 @@ __all__ = [
     'AwgErr',
     'CaptureErr',
     'E7AwgHwType',
+    'SampleDataType',
     'AwgTimeoutError',
     'CaptureUnitTimeoutError',
     'SinWave',
@@ -33,6 +35,8 @@ __all__ = [
     'IqWave',
     'plot_graph',
     'plot_samples',
+    'plot_spectrum',
+    'plot_stems',
     'dsp',
     'E7AwgHwSpecs',
     'DigitalOutCtrl',

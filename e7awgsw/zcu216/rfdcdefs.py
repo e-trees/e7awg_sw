@@ -9,6 +9,12 @@ class DacTile(IntEnum):
     T2 = 2 #: Tile 230
     T3 = 3 #: Tile 231
 
+class AdcTile(IntEnum):
+    """ADC タイルの ID"""
+    T0 = 0 #: Tile 224
+    T1 = 1 #: Tile 225
+    T2 = 2 #: Tile 226
+    T3 = 3 #: Tile 227
 
 class DacChannel(IntEnum):
     """DAC チャネルの ID"""
@@ -17,6 +23,13 @@ class DacChannel(IntEnum):
     C2 = 2
     C3 = 3
 
+
+class AdcChannel(IntEnum):
+    """ADC チャネルの ID"""
+    C0 = 0
+    C1 = 1
+    C2 = 2
+    C3 = 3
 
 class RfdcInterrupt(IntEnum):
     """Rfdc 割り込み一覧"""

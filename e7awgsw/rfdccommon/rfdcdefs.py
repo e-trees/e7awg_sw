@@ -16,7 +16,7 @@ class MixerScale(IntEnum):
     V1P0 = 1
     # x0.7
     V0P7 = 2
-
+    
 
 class RfdcIntrpMask(IntEnum):
     """Rfdc 割り込みマスク一覧"""

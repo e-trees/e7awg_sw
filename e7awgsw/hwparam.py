@@ -653,6 +653,8 @@ class CaptureRamParams(object, metaclass = ABCMeta):
     def of(self, design_type: E7AwgHwType) -> Self:
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             return cast(Self, CaptureRamParamsSimpleMulti())
+        if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+            return cast(Self, CaptureRamParamsZcu111Dac6gUramX2())
                
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
@@ -700,6 +702,28 @@ class CaptureRamParamsSimpleMulti(CaptureRamParams):
 
     def max_size_for_capture_data(self) -> int:
         return 256 * 1024 * 1024
+
+    def udp_port(self) -> int:
+        return 0x4000
+
+
+class CaptureRamParamsZcu111Dac6gUramX2(CaptureRamParams):
+    """Simple Multi デザインのキャプチャデータ RAM のパラメータを保持するクラス"""
+
+    def __init__(self) -> None:
+        self.__capture_addrs: Final = [
+            0x1_0000_0000, 0x1_2000_0000, 0x1_4000_0000, 0x1_6000_0000,
+            0x1_8000_0000, 0x1_A000_0000, 0x1_C000_0000, 0x1_E000_0000
+        ]
+
+    def word_size(self) -> int:
+        return 64
+
+    def capture_data_addr(self, cap_id: int) -> int:
+        return self.__capture_addrs[cap_id]
+
+    def max_size_for_capture_data(self) -> int:
+        return 327680
 
     def udp_port(self) -> int:
         return 0x4000

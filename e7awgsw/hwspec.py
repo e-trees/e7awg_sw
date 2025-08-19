@@ -1,8 +1,13 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, Any, cast
+from typing_extensions import Self, deprecated
 from .hwdefs import E7AwgHwType
 from .hwparam import AwgParams, CaptureUnitParams, CaptureRamParams
 from .rfdccommon.rfdcparam import RfdcParams
 from .digitaloutput.doutparam import DigitalOutParams
+from .hwdefs import CaptureUnit
+from .basiccapturecore.hwspec import CaptureUnitSpecs as BasicCaptureUnitSpecs
 
 class AwgSpecs:
     
@@ -14,6 +19,10 @@ class AwgSpecs:
     @property
     def sampling_rate(self) -> int:
         """AWG のサンプリングレート.
+
+        | DAC のサンプリングレートではない点に注意.
+        | 例えば, AWG が出力したサンプルデータを DAC に入力する前に HW 内部で補間する場合, 
+        | DAC のサンプリングレートはこの値より高くなる.
 
         Returns:
             AWG のサンプリングレート (単位: サンプル数/秒)
@@ -120,12 +129,24 @@ class AwgSpecs:
 
 
 class CaptureUnitSpecs:
+    """キャプチャユニットの性能値をまとめたクラス"""
 
-    def __init__(self, cap_unit_params: CaptureUnitParams, cap_ram_params: CaptureRamParams) -> None:
-        """キャプチャユニットの性能値をまとめたクラス"""
+    @classmethod
+    def _create(self, design_type: E7AwgHwType) -> Self:
+        if design_type == E7AwgHwType.SIMPLE_MULTI:
+            specs = CaptureUnitSpecs(
+                CaptureUnitParams.of(design_type),
+                CaptureRamParams.of(design_type))
+            return cast(Self, specs)
+               
+        raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
+
+    def __init__(
+        self,
+        cap_unit_params: CaptureUnitParams,
+        cap_ram_params: CaptureRamParams) -> None:
         self.__cap_unit_params = cap_unit_params
         self.__cap_ram_params = cap_ram_params
-
 
     @property
     def max_capture_samples(self) -> int:
@@ -137,7 +158,6 @@ class CaptureUnitSpecs:
         return self.__cap_ram_params.max_size_for_capture_data() \
             // self.__cap_unit_params.output_sample_size()
 
-
     @property
     def max_classification_results(self) -> int:
         """ 1 キャプチャユニットが保存可能な四値化結果の数.
@@ -147,7 +167,6 @@ class CaptureUnitSpecs:
         """
         return self.__cap_ram_params.max_size_for_capture_data() * 8 \
             // self.__cap_unit_params.classification_result_size()
-
 
     @property
     def sampling_rate(self) -> int:
@@ -225,10 +244,21 @@ class E7AwgHwSpecs:
 
         self.__cap_unit_specs: Optional[CaptureUnitSpecs] = None
         if design_type == E7AwgHwType.SIMPLE_MULTI:
-            self.__cap_unit_specs = CaptureUnitSpecs(
-                CaptureUnitParams.of(design_type),
-                CaptureRamParams.of(design_type))
+            self.__cap_unit_specs = CaptureUnitSpecs._create(design_type)
 
+        # 1つのデザインに異なる種類のキャプチャユニットがある場合に対応するため,
+        # デザインとキャプチャユニット ID を指定してキャプチャユニットの性能値を参照できるようにする.
+        self.__cap_unit_to_cap_specs: dict[CaptureUnit, CaptureUnitSpecs | BasicCaptureUnitSpecs] = {}
+        spec: Any = None
+        if design_type == E7AwgHwType.SIMPLE_MULTI:
+            spec = CaptureUnitSpecs._create(design_type)
+        elif design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+            spec = BasicCaptureUnitSpecs._create(design_type)
+
+        if spec is not None:
+            self.__cap_unit_to_cap_specs = \
+                {cap_unit : spec for cap_unit in CaptureUnit.on(design_type)}
+        
         self.__dout_specs: Optional[DigitalOutSpecs] = None
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
@@ -236,7 +266,6 @@ class E7AwgHwSpecs:
            design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
            design_type == E7AwgHwType.ZCU216:
             self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
-
         self.__rfdc_specs: Optional[RfdcSpecs] = None
         if design_type == E7AwgHwType.ZCU111 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
@@ -258,9 +287,21 @@ class E7AwgHwSpecs:
 
 
     @property
+    @deprecated("Use 'cap_units' instead")
     def cap_unit(self) -> Optional[CaptureUnitSpecs]:
         """キャプチャユニットの性能値をまとめたオブジェクト"""
         return self.__cap_unit_specs
+
+
+    @property
+    def cap_units(self) -> dict[CaptureUnit, CaptureUnitSpecs | BasicCaptureUnitSpecs]:
+        """特定のデザインに含まれる個々のキャプチャユニットの性能値を格納した dict
+        
+        | dict のインデックスは, キャプチャユニットの ID と一致する.
+        | キャプチャユニットを含まないデザインの場合, 空の dict を返す.
+        
+        """
+        return self.__cap_unit_to_cap_specs.copy()
 
 
     @property
@@ -270,6 +311,6 @@ class E7AwgHwSpecs:
 
 
     @property
-    def rfdf(self) -> Optional[RfdcSpecs]:
+    def rfdc(self) -> Optional[RfdcSpecs]:
         """RF Data Converter のパラメータを保持するクラス"""
         return self.__rfdc_specs

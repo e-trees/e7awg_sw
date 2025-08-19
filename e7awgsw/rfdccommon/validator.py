@@ -8,10 +8,14 @@ class RfdcValidator:
         self,
         dac_tiles: set[int],
         dac_channels: set[int],
+        adc_tiles: set[int],
+        adc_channels: set[int],
         rfdc_params: RfdcParams,
         interrupts: set[int]):
         self._dac_tiles = set(dac_tiles)
         self._dac_channels = set(dac_channels)
+        self._adc_tiles = set(adc_tiles)
+        self._adc_channels = set(adc_channels)
         self._rfdc_params = rfdc_params
         self._interrupts = interrupts
     
@@ -28,7 +32,17 @@ class RfdcValidator:
     def validate_dac_channel(self, channel: int) -> None:
         if not channel in self._dac_channels:
             raise ValueError('Invalid DAC channel {}'.format(channel))
-        
+
+
+    def validate_adc_tile(self, tile: int) -> None:
+        if not tile in self._adc_tiles:
+            raise ValueError('Invalid ADC tile {}'.format(tile))
+
+
+    def validate_adc_channel(self, channel: int) -> None:
+        if not channel in self._adc_channels:
+            raise ValueError('Invalid ADC channel {}'.format(channel))
+
 
     def validate_mixer_freq(self, freq: float) -> None:
         min_freq = self._rfdc_params.min_mixer_freq()

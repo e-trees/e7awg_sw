@@ -54,7 +54,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
                 self._validate_design_type(design_type)
 
             self._design_type = design_type
-            self._cap_specs: CaptureUnitSpecs = E7AwgHwSpecs(self._design_type).cap_unit # type: ignore
+            self._cap_specs: CaptureUnitSpecs = E7AwgHwSpecs(self._design_type).cap_units[0] # type: ignore
             self._unit_params = CaptureUnitParams.of(self._design_type)
             self._ram_params = CaptureRamParams.of(self._design_type)
         except Exception as e:
@@ -495,7 +495,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
         if design_type != E7AwgHwType.SIMPLE_MULTI:
-            raise ValueError("e7awg_hw ({}) doesn't have any capture units.".format(design_type))
+            raise ValueError("Invalid design type ({}).".format(design_type))
 
 
     @abstractmethod
