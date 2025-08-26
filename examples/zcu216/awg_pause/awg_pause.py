@@ -118,7 +118,7 @@ def main(design_type, awg_list):
           e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl,
           e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
-        print('configure fpga')
+        print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
         # DAC のセットアップ
         print('setup DACs')
