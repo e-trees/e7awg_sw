@@ -2,19 +2,7 @@
 
 本資料は，ZCU111 を利用した Arbitrary Waveform Generator (以下 AWG) の利用者向けマニュアルです．
 
-## 1. ZCU111 版 e7awg_hw の種類
-
-ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザインがあります．
-デザイン間で異なる部分は DAC のサンプリングレートおよび波形データ RAM（波形のサンプルデータを格納する RAM）の構成です．
-
-| デザイン ID | DAC のサンプリングレート [Gsps] | 波形データ RAM の構成 |
-| --- | --- | --- |
-| 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
-| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
-
-## 2. システム構成
+## 1. システム構成
 
 AWG は ZCU111 の FPGA 上に実装されており，そのシステム構成は以下のようになります．
 AWG の制御には専用の Python API を用います．
@@ -23,7 +11,16 @@ AWG の制御には専用の Python API を用います．
 
 <br>
 
-![システムオーバービュー](figures/awg_system_overview.png)
+**デザイン 0 ~ 2**
+
+![システムオーバービュー0](figures/awg_system_overview_0.png)
+
+<br>
+
+**デザイン 3**
+
+![システムオーバービュー1](figures/awg_system_overview_1.png)
+
 
 <br>
 
@@ -34,7 +31,30 @@ AWG の制御には専用の Python API を用います．
 | 0 | AWG 0 ~ 7 の中から最大 5 つ |
 | 1 | AWG 0 ~ 7 の中から 1 つ |
 | 2 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
-| 3 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
+| 3 | AWG 0 ~ 5 の中から最大 1 つに加えて，AWG 6 と 7 の 2 つ |
+
+<br>
+
+## 2. ZCU111 版 e7awg_hw の種類
+
+ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザインがあります．
+デザイン間で異なる部分は以下の通りです．
+
+ - DAC のサンプリングレート
+ - データ RAM の構成
+ - キャプチャデータ RAM の構成
+ - キャプチャユニットの有無
+
+データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
+
+ <br>
+
+| デザイン ID | DAC のサンプリングレート [Gsps] | データ RAM の構成 | キャプチャユニット |
+| --- | --- | --- | --- |
+| 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
+| 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
+| 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） | 無し |
+| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) | 有り |
 
 <br>
 
@@ -165,7 +185,8 @@ AWG から出力される **ユーザ定義波形** は，DAC 内部でサンプ
 ### 6.2. AWG と DAC の初期化
 
 AWG と DAC は，次節以降で述べる操作を行う前に必ず初期化しなければなりません．
-DAC の初期化には RfdcCtrl クラスの set_dac_mixer_settings, sync_dac_tiles メソッドを使用します.
+DAC の初期化は，最初に RfdcCtrl クラスの set_dac_mixer_settings で I/Q ミキサの設定を行った後，
+同クラスのの sync_dac_tiles または sync_dac_adc_tiles メソッドでタイルの同期を行います．
 AWG の初期化には AwgCtrl クラスの initialize メソッドを使用します．
 
 初期化のコード例を以下に示します
@@ -177,13 +198,13 @@ import e7awgsw.zcu111 as e7sz
 zcu111_ip_addr = '192.168.1.3' # ZCU111 の 10/100/1000 Mb Ethernet ポートの IP アドレス
 fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP アドレス
 
-# DAC/AWG 制御用オブジェクトを作成する
+# DAC/AWG 制御用オブジェクトを作成する    
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr) as awg_ctrl):
-    
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+
     # FPGA コンフィギュレーション
-    e7sz.configure_fpga(trasnceiver)
+    e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
 
     for tile_id in list(e7sz.DacTile):
         for channel_id in list(e7sz.DacChannel):

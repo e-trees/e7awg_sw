@@ -10,7 +10,18 @@
 
 ディジタル出力モジュールは本デザインに含まれる [Arbitrary Waveform Generator](awg.md) (以下 AWG) と連動して動作させることが可能です．
 
-![システムオーバービュー](figures/awg_system_overview.png)
+<br>
+
+**デザイン 0 ~ 2**
+
+![システムオーバービュー0](figures/awg_system_overview_0.png)
+
+<br>
+
+**デザイン 3**
+
+![システムオーバービュー1](figures/awg_system_overview_1.png)
+
 
 ## 2. ディジタル出力モジュールの状態
 
