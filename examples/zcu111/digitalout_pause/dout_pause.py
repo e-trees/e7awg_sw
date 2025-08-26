@@ -37,20 +37,19 @@ def output_awg_err_details(awg_to_errs):
         print()
 
 
-def gen_wave_samples(freq, num_cycles, sampling_rate, hw_specs):
+def gen_wave_samples(freq, num_cycles, hw_specs):
     """出力波形を構成するサンプルデータを作成する"""
     wave = e7s.SinWave(num_cycles, freq, 25000)
-    # DAC の I/Q ミキサが有効な場合, RF Data Converter 内部で波形データが補間されるので, あらかじめ 1/2 に間引いておく.
-    samples = wave.gen_samples(sampling_rate)[0::2]
+    samples = wave.gen_samples(hw_specs.awg.sampling_rate)
     return e7s.IqWave.convert_to_iq_format(
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_waves(awg_ctrl, sampling_rate, hw_specs):
+def set_wave_sequence(awg_ctrl, hw_specs):
     awg_to_wave_seq = {}
     for awg_id in awg_list:
         wave_seq = e7s.WaveSequence(0, 1, hw_specs.design_type)
-        samples = gen_wave_samples(wave_freq * 1e6, 3, sampling_rate, hw_specs)
+        samples = gen_wave_samples(wave_freq * 1e6, 3, hw_specs)
         wave_seq.add_chunk(samples, 0, 1)
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
         awg_to_wave_seq[awg_id] = wave_seq
@@ -58,12 +57,12 @@ def set_waves(awg_ctrl, sampling_rate, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, sampling_rate, hw_specs):
+def setup_awgs(awg_ctrl, hw_specs):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_waves(awg_ctrl, sampling_rate, hw_specs)
+    return set_wave_sequence(awg_ctrl, hw_specs)
 
 
 def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
@@ -147,8 +146,7 @@ def main(design_type):
         setup_dacs(rfdc_ctrl)
         # AWG のセットアップ
         print('setup AWGs')
-        sampling_rate = rfdc_ctrl.get_dac_sampling_rate(e7sz.DacTile.T0) * 1e6 # Hz
-        setup_awgs(awg_ctrl, sampling_rate, hw_specs)
+        setup_awgs(awg_ctrl, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
         setup_digital_output_modules(digital_out_ctrl, design_type)

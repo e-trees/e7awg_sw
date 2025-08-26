@@ -310,7 +310,7 @@ def output_awg_err_details(awg_to_errs):
         print()
 
 
-def gen_wave_samples(waveform, amplitude, freq, num_cycles, sampling_rate, hw_specs):
+def gen_wave_samples(waveform, amplitude, freq, num_cycles, hw_specs):
     """引数に応じて「正弦波」「ノコギリ波」「矩形波」のいずれかを作る"""
     if waveform == 'sin':
         wave = e7s.SinWave(num_cycles, freq, amplitude)
@@ -325,12 +325,12 @@ def gen_wave_samples(waveform, amplitude, freq, num_cycles, sampling_rate, hw_sp
         wave = e7s.SquareWave(num_cycles, freq, amplitude, duty_cycle = 1)
 
     # DAC の I/Q ミキサが有効な場合, RF Data Converter 内部で波形データが補間されるので, あらかじめ 1/4 に間引いておく.
-    samples = wave.gen_samples(sampling_rate)[0::4]
+    samples = wave.gen_samples(hw_specs.awg.sampling_rate)
     return e7s.IqWave.convert_to_iq_format(
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_waves(awg_ctrl, sampling_rate, hw_specs):
+def set_wave_sequence(awg_ctrl, hw_specs):
     awg_to_wave_seq = {}
     for awg_id, params in awg_to_params.items():
         wave_seq = e7s.WaveSequence(
@@ -341,7 +341,6 @@ def set_waves(awg_ctrl, sampling_rate, hw_specs):
                 params.amplitude,
                 params.freq * 1e6,
                 num_cycles,
-                sampling_rate,
                 hw_specs)
             wave_seq.add_chunk(samples, params.num_blank_words, params.num_chunk_repeats)
             
@@ -351,12 +350,12 @@ def set_waves(awg_ctrl, sampling_rate, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, sampling_rate, hw_specs, awg_list):
+def setup_awgs(awg_ctrl, hw_specs, awg_list):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_waves(awg_ctrl, sampling_rate, hw_specs)
+    return set_wave_sequence(awg_ctrl, hw_specs)
 
 
 def setup_dacs(rfdc_ctrl):
@@ -435,8 +434,7 @@ def main(design_type, awg_list):
         setup_dacs(rfdc_ctrl)
         # AWG のセットアップ
         print('setup AWGs')
-        sampling_rate = rfdc_ctrl.get_dac_sampling_rate(e7sz.DacTile.T0) * 1e6 # Hz
-        awg_to_wave_seq = setup_awgs(awg_ctrl, sampling_rate, hw_specs, awg_list)
+        awg_to_wave_seq = setup_awgs(awg_ctrl, hw_specs, awg_list)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
         setup_digital_output_modules(digital_out_ctrl, design_type)
