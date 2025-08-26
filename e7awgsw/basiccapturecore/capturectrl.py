@@ -158,6 +158,22 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
         self._start_capture_units(*capture_unit_id_list)
 
 
+    def terminate_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
+        """引数で指定したキャプチャユニットを強制停止させる.
+
+        Args:
+            *capture_unit_id_list (list of CaptureUnit): 強制停止させるキャプチャユニットの ID
+        """
+        if self._validate_args:
+            try:
+                self._validate_capture_unit_id(*capture_unit_id_list)
+            except Exception as e:
+                log_error(e, *self._loggers)
+                raise
+        
+        self._terminate_capture_units(*capture_unit_id_list)
+
+
     def reset_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
         """引数で指定したキャプチャユニットをリセットする
 
@@ -382,6 +398,10 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
     @abstractmethod
     def _start_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
+        pass
+
+    @abstractmethod
+    def _terminate_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
         pass
 
     @abstractmethod
@@ -712,6 +732,23 @@ class CaptureCtrl(CaptureCtrlBase):
                     1,
                     val)
             self.__deselect_ctrl_target(*capture_unit_id_list)
+
+
+    def _terminate_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
+        for capture_unit_id in capture_unit_id_list:
+            self.__reg_access.write_bits(
+                CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                CaptureCtrlRegs.Offset.CTRL, 
+                CaptureCtrlRegs.Bit.CTRL_TERMINATE, 
+                1, 
+                1)
+            self._wait_for_capture_units_idle(3, capture_unit_id)
+            self.__reg_access.write_bits(
+                CaptureCtrlRegs.Addr.capture(capture_unit_id),
+                CaptureCtrlRegs.Offset.CTRL, 
+                CaptureCtrlRegs.Bit.CTRL_TERMINATE, 
+                1, 
+                0)
 
 
     def _reset_capture_units(self, *capture_unit_id_list: CaptureUnit) -> None:
