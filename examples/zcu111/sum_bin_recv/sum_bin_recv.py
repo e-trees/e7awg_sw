@@ -415,7 +415,7 @@ if __name__ == "__main__":
     }
     
     sum_len = (1 / 6) * 1e-6 # second
-    bin_threshold = int(0.8e6)
+    bin_threshold = int(0.6e6)
     
     cap_unit_to_dsp_param = {
         e7s.CaptureUnit.U0: DspParam(program_args.capture_delay, sum_len, bin_threshold),

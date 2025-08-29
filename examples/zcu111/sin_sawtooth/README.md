@@ -1,4 +1,4 @@
-# AWG から余弦波を出力する
+# AWG から正弦波とノコギリ波を出力する
 
 [sin_sawtooth.py](./sin_sawtooth.py) は AWG (Arbitrary Waveform Generator) から正弦波とノコギリ波を出力するスクリプトです．
 本スクリプトは ZCU111 版 e7awg_hw の `デザイン 3` に対応しています．

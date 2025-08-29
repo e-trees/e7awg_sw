@@ -65,8 +65,11 @@ def output_graph(awg_to_wave_seq):
     for awg_id, wave_seq in awg_to_wave_seq.items():
         dirpath = 'plot_send_wave/AWG_{}/'.format(awg_id)
         os.makedirs(dirpath, exist_ok=True)
-        samples = wave_seq.all_samples(True)
-        e7s.plot_samples(samples, 'waveform', dirpath + "waveform.png")
+        iq_samples = wave_seq.all_samples(True)
+        i_samples = [iq_sample[0] for iq_sample in iq_samples]
+        e7s.plot_samples(i_samples, 'I waveform', dirpath + "i_samples.png")
+        q_samples = [iq_sample[1] for iq_sample in iq_samples]
+        e7s.plot_samples(q_samples, 'Q waveform', dirpath + "q_samples.png")
 
 
 def setup_dacs(rfdc_ctrl):
@@ -117,23 +120,31 @@ def main(design_type, awgs, num_wait_words, timeout):
           e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
           e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl):
         # FPGA コンフィギュレーション
+        print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
         # # DAC のセットアップ
+        print('setup DACs')
         setup_dacs(rfdc_ctrl)
         # 初期化
+        print('setup AWGs')
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
         awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
         # 波形送信スタート
+        print('start AWGs')
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
+        print('wait for AWGs to stop')
         awg_ctrl.wait_for_awgs_to_stop(timeout, *awgs)
         # DAC 割り込みチェック
+        print('check DAC interrupts')
         dac_to_interrupts = get_dac_interrupts(rfdc_ctrl)
         output_rfdc_interrupt_details(dac_to_interrupts)
         # エラーチェック
+        print('check AWG errors')
         check_err(awg_ctrl, awgs)
         # 波形保存
+        print('output AWG waveforms')
         output_graph(awg_to_wave_sequence)
         print('end')
 

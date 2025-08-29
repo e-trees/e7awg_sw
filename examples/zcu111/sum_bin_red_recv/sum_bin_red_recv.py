@@ -436,7 +436,7 @@ if __name__ == "__main__":
     sum_len = (1 / 6) * 1e-6 # second
     reduction_op = \
         bc.ReductionOperation.ALL if program_args.reduction == 'all' else bc.ReductionOperation.ANY
-    bin_threshold = int(-2.2e6) if reduction_op == bc.ReductionOperation.ALL else int(2e6)
+    bin_threshold = int(-1.4e6) if reduction_op == bc.ReductionOperation.ALL else int(1.2e6)
 
     cap_unit_to_dsp_param = {
         e7s.CaptureUnit.U0: DspParam(
