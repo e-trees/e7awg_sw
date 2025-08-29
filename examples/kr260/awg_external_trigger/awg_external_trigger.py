@@ -48,7 +48,7 @@ def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
     for awg_id in awgs:
         wave_seq = gen_cos_wave_seq(num_wait_words, 1, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
-        awg_ctrl.set_wave_sequence(awg_id, wave_seq)
+        # awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
 
 
@@ -64,8 +64,9 @@ def output_graph(awg_to_wave_seq):
     for awg_id, wave_seq in awg_to_wave_seq.items():
         dirpath = 'plot_send_wave/AWG_{}/'.format(awg_id)
         os.makedirs(dirpath, exist_ok=True)
-        samples = wave_seq.all_samples(True)
-        e7s.plot_samples(samples, 'waveform', dirpath + "waveform.png")
+        iq_samples = wave_seq.all_samples(True)
+        i_samples = [iq_sample[0] for iq_sample in iq_samples]
+        e7s.plot_samples(i_samples, 'waveform', dirpath + "waveform.png")
 
 
 def main(awgs, num_wait_words, timeout):

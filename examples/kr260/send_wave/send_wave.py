@@ -64,8 +64,9 @@ def output_graph(awg_to_wave_seq):
     for awg_id, wave_seq in awg_to_wave_seq.items():
         dirpath = 'plot_send_wave/AWG_{}/'.format(awg_id)
         os.makedirs(dirpath, exist_ok=True)
-        samples = wave_seq.all_samples(True)
-        e7s.plot_samples(samples, 'waveform', dirpath + "waveform.png")
+        iq_samples = wave_seq.all_samples(True)
+        i_samples = [iq_sample[0] for iq_sample in iq_samples]
+        e7s.plot_samples(i_samples, 'waveform', dirpath + "waveform.png")
 
 
 def main(awgs, num_wait_words, timeout):
