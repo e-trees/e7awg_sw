@@ -12,21 +12,15 @@ import e7awgsw.zcu216 as e7sz
 IP_ADDR = '10.0.0.16'
 
 # AWG から出力する余弦波のパラメータ
-NUM_FREQ = 50 # MHz
 AMPLITUDE = 25000
 
 
 def gen_sawtooth_50M(amp, hw_specs):
-    arr = np.linspace(-1, 1, 196)
+    arr = np.linspace(-1, 1, 49) # 49 samples for 2457.6MSPS (cf. e7awgsw/hwparam.py)
     int_arr = np.round(arr * amp).astype(int)
-    repeated = np.tile(int_arr, 128)
+    repeated = np.tile(int_arr, 512)
     samples = repeated.tolist()
     
-    reminder = len(samples) % hw_specs.awg.smallest_unit_of_wave_len
-    if reminder != 0:
-        zeros = [0] * (hw_specs.awg.smallest_unit_of_wave_len - reminder)
-        samples.extend(zeros)
-
     print('length=', len(samples))
     print('hw_specs.awg.smallest_unit_of_wave_len=',hw_specs.awg.smallest_unit_of_wave_len)
     assert len(samples) % 512 == 0, f"Length {len(samples)} is not a multiple of 512"
