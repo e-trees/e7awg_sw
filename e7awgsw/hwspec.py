@@ -252,7 +252,8 @@ class E7AwgHwSpecs:
         spec: Any = None
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             spec = CaptureUnitSpecs._create(design_type)
-        elif design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        elif design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
+            design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             spec = BasicCaptureUnitSpecs._create(design_type)
 
         if spec is not None:
@@ -264,6 +265,7 @@ class E7AwgHwSpecs:
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
            design_type == E7AwgHwType.ZCU111_URAM_X2 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT or \
            design_type == E7AwgHwType.ZCU216:
             self.__dout_specs = DigitalOutSpecs(DigitalOutParams.of(design_type))
         self.__rfdc_specs: Optional[RfdcSpecs] = None
@@ -271,6 +273,7 @@ class E7AwgHwSpecs:
            design_type == E7AwgHwType.ZCU111_DAC_6G or \
            design_type == E7AwgHwType.ZCU111_URAM_X2 or \
            design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
+           design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT or \
            design_type == E7AwgHwType.ZCU216:
             self.__rfdc_specs = RfdcSpecs(RfdcParams.of(design_type))
 

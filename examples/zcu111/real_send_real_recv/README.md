@@ -13,31 +13,57 @@
 
 <br>
 
-## 実行手順と結果
+## 実行手順
 
 以下のコマンドを実行します．
 
 ```
-python real_send_real_recv.py
+# デザイン 3 を使用する場合
+python real_send_real_recv.py --design-type=dac6g-uram2
+
+# デザイン 4 を使用する場合
+python real_send_real_recv.py --design-type=dqd
 ```
+
+<br>
+
+## デザイン 3 を使用したときの実行結果
 
 キャプチャユニット 0, 1, 4 がキャプチャした波形が，カレントディレクトリの下の `plot_capture_data` ディレクトリ以下にキャプチャユニットごとに作成されます．
 
 #### キャプチャユニット 0
 
-![キャプチャデータ0](./images/capture_data_0.png)
+![キャプチャデータ0](./images/design_3/capture_data_0.png)
 
 ※ キャプチャユニット 0 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
 
 #### キャプチャユニット 1
 
-![キャプチャデータ1](./images/capture_data_1.png)
+![キャプチャデータ1](./images/design_3/capture_data_1.png)
 
 ※ キャプチャユニット 1 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
 
 #### キャプチャユニット 4
 
-![キャプチャデータ4](./images/capture_data_4.png)
+![キャプチャデータ4](./images/design_3/capture_data_4.png)
+
+<br>
+
+## デザイン ４ を使用したときの実行結果
+
+キャプチャユニット 0 と 1 がキャプチャした波形が，カレントディレクトリの下の `plot_capture_data` ディレクトリ以下にキャプチャユニットごとに作成されます．
+
+#### キャプチャユニット 0
+
+![キャプチャデータ0](./images/design_4/capture_data_0.png)
+
+※ キャプチャユニット 0 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
+
+#### キャプチャユニット 1
+
+![キャプチャデータ1](./images/design_4/capture_data_1.png)
+
+※ キャプチャユニット 1 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
 
 <br>
 
@@ -110,5 +136,5 @@ $$
 キャプチャステップのキャプチャターゲットとポストブランクを上記のように設定することで，ユーザ定義波形の波形パートだけがキャプチャされます．
 具体的なユーザ定義波形とキャプチャデータの対応関係を以下の図に示します．
 
-![waveform_correspondence](images/waveform_correspondence.png)
+![waveform_correspondence](images/waveform_correspondence.jpg)
 

@@ -18,6 +18,8 @@ class RfdcParams(object, metaclass = ABCMeta):
             return cast(Self, RfdcParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(Self, RfdcParamsZcu111Dac6gUramX2())
+        if design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+            return cast(Self, RfdcParamsZcu111DoubleQuantumDot())
         if design_type == E7AwgHwType.ZCU216:
             return cast(Self, RfdcParamsZcu216())
 
@@ -45,12 +47,7 @@ class RfdcParams(object, metaclass = ABCMeta):
 
 
 class RfdcParamsZcu111(RfdcParams):
-    """以下の構成の ZCU111 デザインの RF Data Converter のパラメータを保持するクラス
-    
-    | DAC : 1.10592 Gsps
-    | 波形データ RAM : DRAM x1
-
-    """
+    """ZCU111 デザイン 0 の RF Data Converter のパラメータを保持するクラス"""
     def inf_mixer_phase(self) -> float:
         return -180
     
@@ -65,12 +62,7 @@ class RfdcParamsZcu111(RfdcParams):
 
 
 class RfdcParamsZcu111Dac6G(RfdcParams):
-    """以下の構成の ZCU111 デザインの RF Data Converter のパラメータを保持するクラス
-    
-    | DAC : 6.51264 Gsps
-    | 波形データ RAM : DRAM x1
-
-    """
+    """ZCU111 デザイン 1 の RF Data Converter のパラメータを保持するクラス"""
     def inf_mixer_phase(self) -> float:
         return -180
     
@@ -85,12 +77,7 @@ class RfdcParamsZcu111Dac6G(RfdcParams):
 
 
 class RfdcParamsZcu111UramX2(RfdcParams):
-    """以下の構成の ZCU111 デザインの RF Data Converter のパラメータを保持するクラス
-    
-    | DAC : 1.10592 Gsps
-    | 波形データ RAM : DRAM x1, URAM x2
-
-    """
+    """ZCU111 デザイン 2 の RF Data Converter のパラメータを保持するクラス"""
     def inf_mixer_phase(self) -> float:
         return -180
     
@@ -105,12 +92,7 @@ class RfdcParamsZcu111UramX2(RfdcParams):
 
 
 class RfdcParamsZcu111Dac6gUramX2(RfdcParams):
-    """以下の構成の ZCU111 デザインの RF Data Converter のパラメータを保持するクラス
-    
-    | DAC : 6.51264 Gsps
-    | 波形データ RAM : DRAM x1, URAM x2
-
-    """
+    """ZCU111 デザイン 3 の RF Data Converter のパラメータを保持するクラス"""
     def inf_mixer_phase(self) -> float:
         return -180
     
@@ -123,13 +105,24 @@ class RfdcParamsZcu111Dac6gUramX2(RfdcParams):
     def max_mixer_freq(self) -> float:
         return 10000
 
-class RfdcParamsZcu216(RfdcParams):
-    """以下の構成の ZCU216 デザインの RF Data Converter のパラメータを保持するクラス
-    
-    | DAC : 9.8304 Gsps
-    | 波形データ RAM : BRAM x6, URAMx10
 
-    """
+class RfdcParamsZcu111DoubleQuantumDot(RfdcParams):
+    """ZCU111 デザイン 4 の RF Data Converter のパラメータを保持するクラス"""
+    def inf_mixer_phase(self) -> float:
+        return -180
+    
+    def sup_mixer_phase(self) -> float:
+        return 180
+    
+    def min_mixer_freq(self) -> float:
+        return -10000
+
+    def max_mixer_freq(self) -> float:
+        return 10000
+
+
+class RfdcParamsZcu216(RfdcParams):
+    """ZCU216 デザインの RF Data Converter のパラメータを保持するクラス"""
     def inf_mixer_phase(self) -> float:
         return -180
     

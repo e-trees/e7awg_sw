@@ -6,9 +6,9 @@ e7awg_sw（e7awg_hw の制御用ライブラリ）を使ったアプリケーシ
 [example/zcu111](../../../examples/zcu111) ディレクトリ以下にあるサンプルスクリプトを参考にしてください．
 
 ## 1. 機能概要
-ZCU111 向けの e7awg_hw には 4 種類の FPGA デザインがあります．
+ZCU111 向けの e7awg_hw には 5 種類の FPGA デザインがあります．
 デザイン 0, 1, 2 は，ユーザが定義した波形データとディジタル値を出力する機能を備えています．
-デザイン 3 はそれらの機能に加え，FPGA に入力された波形データに信号処理を適用してメモリに保存する機能を備えています．
+デザイン 3 と 4 はそれらの機能に加え，FPGA に入力された波形データに信号処理を適用してメモリに保存する機能を備えています．
 FPGA 内部の各モジュールは，10Gb Ethernet で送られる UDP/IP パケットで制御可能になっています．
 以下に e7awg_hw の概略図を示します．
 
@@ -23,6 +23,12 @@ FPGA 内部の各モジュールは，10Gb Ethernet で送られる UDP/IP パ�
 **デザイン 3**
 
 ![FPGA ブロック図](./figures/fpga_block_diagram_1.png)
+
+<br>
+
+**デザイン 4**
+
+![FPGA ブロック図](./figures/fpga_block_diagram_2.png)
 
 ### 各モジュールとその機能
 |  モジュール  |  機能  |
@@ -41,25 +47,27 @@ FPGA 内部の各モジュールは，10Gb Ethernet で送られる UDP/IP パ�
 
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 4 種類の FPGA デザインがあります．
+ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
 デザイン間で異なる部分は以下の通りです。
 
  - DAC のサンプリングレート
+ - ADC のサンプリングレート
  - データ RAM の構成
  - キャプチャデータ RAM の構成
- - キャプチャユニットの有無
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC のサンプリングレート [Gsps] | データ RAM の構成 | キャプチャユニット |
-| --- | --- | --- | --- |
-| 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） | 無し |
-| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) | 有り |
+| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| --- | --- | --- | --- | 
+| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
+| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
 
+<br>
 
 ## 3. データ RAM ソフトウェアインタフェース仕様
 
@@ -120,6 +128,12 @@ e7awg_hw のデータ RAM にアクセスするためには，データ RAM ア�
 
 <br>
 
+**デザイン 4**
+
+![データRAMデータレイアウト3](./figures/data_ram_data_layout_3.png)
+
+<br>
+
 ## 4. AWG ソフトウェアインタフェース仕様
 
 ### 4.1 状態遷移図
@@ -174,15 +188,17 @@ e7awg_hw のデータ RAM にアクセスするためには，データ RAM ア�
 
 ![wave_chunk](./figures/wave_chunk.png)
 
-**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数は 512 の倍数でなければなりません．
+**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 0 ~ 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
 
 ![wave_part](./figures/wave_part.png)
 
 また，**波形パート**のサンプル数は，以下の制約も満たさなければなりません．
 ![wave_part_constraint](./figures/wave_part_constraint.png)
 
-<!-- 
-$$
+<br>
+
+
+<!-- $$
 \begin{align*}
 S_u &\stackrel{\mathrm{def}}{=} \rm{AWG}\,u\, が出力する波形シーケンス \\[1ex]
 N_u &: S_u で定義された波形チャンクの数  \\[1ex]
@@ -199,13 +215,23 @@ L_u &= 134217728 \;\; (u \in \{0, 1, 2, 3, 4, 5, 6, 7\}) \\[1ex]
 L_u &= \left\{
 \begin{array}{ll}
   134217728\;\; & (u \in \{0, 1, 2, 3, 4, 5\}) \\[1ex]
-  1310720\;\; & (u \in \{6, 7\}) \\[1ex]
+  327680\;\; & (u \in \{6, 7\}) \\[1ex]
+\end{array} \\
+\right.\\
+
+\\
+
+\langle デザイン 4 \rangle \\[1ex]
+L_u &= \left\{
+\begin{array}{ll}
+  134217728\;\; & (u \in \{0, 1, 2, 3, 6\}) \\[1ex]
+  655360\;\; & (u \in \{7\}) \\[1ex]
 \end{array} \\
 \right.\\
 
 \end{align*}
-$$
--->
+$$ -->
+
 **ポストブランク**は値が 0 のサンプルが並んだ波形で，最大長は 4294967295 **AWG ワード**となります．
 
 ![post_blank](./figures/post_blank.png)
@@ -407,9 +433,25 @@ AWG の動作と，それに同期するディジタル出力モジュールの�
 
 ![信号処理回路](./figures/dsp_unit.png)
 
-となっており，処理ごとに有効/無効を切り替えることができます．
-各モジュールは無効になった場合，入力 I<sub>x</sub>，Q<sub>x</sub> をそのまま I<sub>x+1</sub> ，Q<sub>x+1</sub> として出力します．
+各処理は有効 / 無効を切り替えることができます．
+処理が無効になった場合，入力 I<sub>x</sub>，Q<sub>x</sub> をそのまま I<sub>x+1</sub> ，Q<sub>x+1</sub> として出力します．
 それぞれの処理の詳細は以下の通りです．
+
+<br>
+
+#### 間引き (デザイン 4 のみ)
+キャプチャターゲットのサンプル数を減らします．
+キャプチャターゲットのサンプル数を n，間引き後のサンプル数を m としたとき以下の式が成り立ちます．
+
+![間引き](./figures/decimation_equation.png)
+
+キャプチャターゲットのサンプル数が 128 で割り切れないとき，余ったサンプルはどの信号処理の対象にもなりません．
+
+<!-- $$
+m = 8 * \left\lfloor \frac{n}{128} \right\rfloor
+$$ -->
+
+![間引き](./figures/decimation.png)
 
 <br>
 
@@ -452,19 +494,15 @@ AWG の動作と，それに同期するディジタル出力モジュールの�
 <br>
 
 ### 6.5 キャプチャパラメータの制約
-キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．
+キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 3 では，間引きは常に無効扱いとなります．
 
-**有効にする信号処理の組み合わせと対応するパターン**
-| 総和 | 二値化 | リダクション | パターン |
-| -- | -- | -- | -- |
-| 無効 | 無効 | 無効 | A |
-| 有効 | 無効 | 無効 | B |
-| 無効 | 有効 | 無効 | C |
-| 無効 | 無効 | 有効 | D |
-| 有効 | 有効 | 無効 | E |
-| 有効 | 無効 | 有効 | D |
-| 無効 | 有効 | 有効 | D |
-| 有効 | 有効 | 有効 | D |
+**総和と二値化の有効 / 無効の組み合わせと対応するパターン**
+| 総和 | 二値化 | パターン |
+| -- | -- | -- |
+| 無効 | 無効 | A |
+| 有効 | 無効 | B |
+| 無効 | 有効 | C |
+| 有効 | 有効 | D |
 
 <br>
 
@@ -479,32 +517,52 @@ S(i) &: キャプチャステップ \; i \;のキャプチャターゲットの�
 
 S'(i) &= \left\{
 \begin{array}{ll}
-  128 \, S(i) & (パターン = A)\\ & \\
-  32 \, \lfloor \frac{S(i)}{M} \rfloor & (パターン = B)\\ && \\
-  8 \, S(i) & (パターン = C)\\ && \\
-  1 & (パターン = D)\\ && \\
-  \lfloor \frac{S(i)}{M} \rfloor & (パターン = E)\\
+  S(i) & (間引き無効)\\ & \\
+  8 \, \left\lfloor \frac{S(i)}{128} \right\rfloor & (間引き有効)\\
+\end{array}
+\right. \\[6ex]
+
+S''(i) &= \left\{
+\begin{array}{ll}
+  128 \, S'(i) & (パターン = A)\\ & \\
+  32 \, \left\lfloor \frac{S'(i)}{M} \right\rfloor & (パターン = B)\\ && \\
+  8 \, S'(i) & (パターン = C)\\ && \\
+  \left\lfloor \frac{S'(i)}{M} \right\rfloor & (パターン = D)\\  
 \end{array}
 \right. \\[14ex]
 
+S'''(i) &= \left\{
+\begin{array}{ll}
+  S''(i) & (リダクション無効)\\[2ex]
+  1 & (リダクション有効)\\
+\end{array}
+\right. \\[6ex]
+
 A &= \left\{
 \begin{array}{ll}
-  1 & (キャプチャデータ = \rm{Real} \, データ)\\
-  2 & (キャプチャデータ = \rm{I/Q} \, データ)\\
+  1 & (キャプチャデータ = \rm{Real} \, データ) \\[2ex]
+  2 & (キャプチャデータ = \rm{I/Q} \, データ) \\
 \end{array}
 \right. \\[3ex]
 
-B &= \displaystyle\sum_{i=0}^{N-1}S'(i)
+B &= \displaystyle\sum_{i=0}^{N-1}S'''(i) \\[3ex]
+
+C &= \left\{
+\begin{array}{ll}
+  2621440 & (デザイン 3) \\[2ex]
+  2097152 & (デザイン 4) \\
+\end{array}
+\right. \\[3ex]
 
 \end{align*}
-$$
+$$ -->
 
-$$
+<!-- $$
 \begin{align*}
 1 &\leqq M \leqq 8192 &\cdots \text{\textcircled 1} \\[1ex]
 1 &\leqq N \leqq 1024 &\cdots \text{\textcircled 2} \\[1ex]
 1 &\leqq S\lparen i \rparen \leqq 4294967295 , \; \forall i \;(0 \leqq i \leqq N - 1) &\cdots \text{\textcircled 3} \\[1ex]
-AB &\leqq 2621440 &\cdots \text{\textcircled 4} \\[1ex]
+AB &\leqq C &\cdots \text{\textcircled 4} \\[1ex]
 \end{align*}
 $$ -->
 
@@ -551,7 +609,7 @@ $$ -->
 ### 6.7 キャプチャデータ RAM に格納されたキャプチャデータの並び
 キャプチャデータ RAM に格納されたキャプチャデータの並びは以下の通りです．
 キャプチャデータの先頭アドレス A は，キャプチャアドレスレジスタの値 * 32 となります．
-データの並びは，キャプチャデータタイプと有効にする信号処理の組み合わせによって変わります．
+データの並びは，キャプチャデータタイプと有効にする信号処理 (間引きは除く) の組み合わせによって変わります．
 
 | キャプチャデータタイプ | 総和 | 二値化 | リダクション | データ配置パターン |
 | -- | -- | -- | -- | -- |

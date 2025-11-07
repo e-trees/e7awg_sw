@@ -1,8 +1,8 @@
 # I/Q ミキシングした波形を送受信する
 
 [iq_send_iq_recv.py](./iq_send_iq_recv.py) は DAC と ADC の I/Q ミキサを有効にして波形を送受信するスクリプトです．
-本スクリプトは ZCU111 版 e7awg_hw の `デザイン 3` に対応しています．
-`デザイン 3` のモジュール構成は，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 3 と 4` に対応しています．
+各デザインのモジュール構成は，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 ## セットアップ
 
@@ -11,64 +11,112 @@
 ![セットアップ](./images/awg_x3_capture_x3_setup.png)
 
 
-## 実行手順と結果
+## 実行手順
 
 以下のコマンドを実行します．
 
 ```
-python iq_send_iq_recv.py
+# デザイン 3 を使用する場合
+python iq_send_iq_recv.py  --design-type=dac6g-uram2
+
+# デザイン 4 を使用する場合
+python iq_send_iq_recv.py  --design-type=dqd
 ```
+
+<br>
+
+## デザイン 3 を使用したときの実行結果
 
 キャプチャユニット 0, 1, 5 がキャプチャした波形とスペクトルが，カレントディレクトリの下の `plot_capture_data` ディレクトリ以下にキャプチャユニットごとに作成されます．
 
 #### キャプチャユニット 0 がキャプチャした I データの先頭部分
 
-![cap_0_i](./images/cap_0/capture_data_i.png)
+![cap_0_i](./images/design_3/cap_0/capture_data_i.png)
 
 #### キャプチャユニット 0 がキャプチャした Q データの先頭部分
 
-![cap_0_q](./images/cap_0/capture_data_q.png)
+![cap_0_q](./images/design_3/cap_0/capture_data_q.png)
 
 #### キャプチャユニット 0 がキャプチャした I データのスペクトル
 
-![cap_0_i_spectrum](./images/cap_0/i_spectrum.png)
+![cap_0_i_spectrum](./images/design_3/cap_0/i_spectrum.png)
 
 #### キャプチャユニット 0 がキャプチャした Q データのスペクトル
 
-![cap_0_i_spectrum](./images/cap_0/q_spectrum.png)
+![cap_0_i_spectrum](./images/design_3/cap_0/q_spectrum.png)
 
 #### キャプチャユニット 1 がキャプチャした I データの先頭部分
 
-![cap_1_i](./images/cap_1/capture_data_i.png)
+![cap_1_i](./images/design_3/cap_1/capture_data_i.png)
 
 #### キャプチャユニット 1 がキャプチャした Q データの先頭部分
 
-![cap_1_q](./images/cap_1/capture_data_q.png)
+![cap_1_q](./images/design_3/cap_1/capture_data_q.png)
 
 #### キャプチャユニット 1 がキャプチャした I データのスペクトル
 
-![cap_1_i_spectrum](./images/cap_1/i_spectrum.png)
+![cap_1_i_spectrum](./images/design_3/cap_1/i_spectrum.png)
 
 #### キャプチャユニット 1 がキャプチャした Q データのスペクトル
 
-![cap_1_i_spectrum](./images/cap_1/q_spectrum.png)
+![cap_1_i_spectrum](./images/design_3/cap_1/q_spectrum.png)
 
 #### キャプチャユニット 5 がキャプチャした I データの先頭部分
 
-![cap_5_i](./images/cap_5/capture_data_i.png)
+![cap_5_i](./images/design_3/cap_5/capture_data_i.png)
 
 #### キャプチャユニット 5 がキャプチャした Q データの先頭部分
 
-![cap_5_q](./images/cap_5/capture_data_q.png)
+![cap_5_q](./images/design_3/cap_5/capture_data_q.png)
 
 #### キャプチャユニット 5 がキャプチャした I データのスペクトル
 
-![cap_5_i_spectrum](./images/cap_5/i_spectrum.png)
+![cap_5_i_spectrum](./images/design_3/cap_5/i_spectrum.png)
 
 #### キャプチャユニット 5 がキャプチャした Q データのスペクトル
 
-![cap_5_i_spectrum](./images/cap_5/q_spectrum.png)
+![cap_5_i_spectrum](./images/design_3/cap_5/q_spectrum.png)
 
+<br>
+
+## デザイン 4 を使用したときの実行結果
+
+キャプチャユニット 0 と 1 がキャプチャした波形とスペクトルが，カレントディレクトリの下の `plot_capture_data` ディレクトリ以下にキャプチャユニットごとに作成されます．
+
+
+#### キャプチャユニット 0 がキャプチャした I データの先頭部分
+
+![cap_0_i](./images/design_4/cap_0/capture_data_i.png)
+
+#### キャプチャユニット 0 がキャプチャした Q データの先頭部分
+
+![cap_0_q](./images/design_4/cap_0/capture_data_q.png)
+
+#### キャプチャユニット 0 がキャプチャした I データのスペクトル
+
+![cap_0_i_spectrum](./images/design_4/cap_0/i_spectrum.png)
+
+#### キャプチャユニット 0 がキャプチャした Q データのスペクトル
+
+![cap_0_i_spectrum](./images/design_4/cap_0/q_spectrum.png)
+
+#### キャプチャユニット 1 がキャプチャした I データの先頭部分
+
+![cap_1_i](./images/design_4/cap_1/capture_data_i.png)
+
+#### キャプチャユニット 1 がキャプチャした Q データの先頭部分
+
+![cap_1_q](./images/design_4/cap_1/capture_data_q.png)
+
+#### キャプチャユニット 1 がキャプチャした I データのスペクトル
+
+![cap_1_i_spectrum](./images/design_4/cap_1/i_spectrum.png)
+
+#### キャプチャユニット 1 がキャプチャした Q データのスペクトル
+
+![cap_1_i_spectrum](./images/design_4/cap_1/q_spectrum.png)
+
+<br>
 
 ## 出力およびキャプチャされる波形についての詳細
 
@@ -226,7 +274,9 @@ $$ -->
 
 よって，キャプチャデータの周波数成分のピークは，I データも Q データも (f<sub>u</sub> + f<sub>d</sub> + f<sub>a</sub>) と (f<sub>u</sub> + f<sub>d</sub> - f<sub>a</sub>) に表れることが分かります．
 
-本スクリプトでは，I/Q ミキサおよびユーザ定義波形の周波数は
+本スクリプトでは，I/Q ミキサおよびユーザ定義波形の周波数とキャプチャデータのピーク周波数は以下のようになります．
+
+**デザイン3**
 
 ![formula_8](./images/formula_8.png)
 
@@ -245,9 +295,32 @@ f_u &= \left\{
 \end{align*}
 $$ -->
 
-であるので，各キャプチャユニットのキャプチャデータの周波数のピーク値は以下の表の通りとなります．
-
-|| キャプチャユニット 0 | キャプチャユニット 1 | キャプチャユニット 4 |
+|| キャプチャユニット 0 | キャプチャユニット 1 | キャプチャユニット 5 |
 | -- | -- | -- | -- |
 | 対応する AWG | AWG 6 | AWG 7 | AWG 0 |
 | ピーク周波数 [MHz]| 12.72 <br> 89.04 | 25.44 <br> 101.76 | 0 (= 直流成分) <br> 76.32 |
+
+<br>
+
+**デザイン4**
+
+![formula_9](./images/formula_9.png)
+
+<!-- $$
+\begin{align*}
+f_d &= 6.24 \; \rm{MHz} \\[1ex]
+f_a &= 10.53 \; \rm{MHz} \\[1ex]
+f_u &= \left\{
+\begin{array}{ll}
+  4.29 \; \rm{MHz} \;\;(AWG 6)\\[1ex]
+  15.21 \; \rm{MHz} \;\;(AWG 7)\\
+\end{array} \\
+\right. \\
+
+\end{align*}
+$$ -->
+
+|| キャプチャユニット 0 | キャプチャユニット 1 |
+| -- | -- | -- |
+| 対応する AWG | AWG 6 | AWG 7 | 
+| ピーク周波数 [MHz]| 0 (= 直流成分) <br> 21.06 | 10.92 <br> 31.98 |

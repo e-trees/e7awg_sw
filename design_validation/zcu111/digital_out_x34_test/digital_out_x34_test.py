@@ -62,6 +62,8 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 

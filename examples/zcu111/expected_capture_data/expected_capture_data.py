@@ -2,7 +2,7 @@ import e7awgsw.basiccapture as bc
 
 
 def calc_real_expected_data(
-    cap_param: bc.CaptureParam, cap_data: list[int], num_samples_in_cap_word: int) -> None:
+    cap_param: bc.CaptureParam, cap_data: list[int], num_samples_in_cap_word: int) -> list[int]:
     """cap_data に cap_param を適用してキャプチャした場合の期待値を算出する.
 
     | cap_data には, キャプチャターゲットのサンプルだけを集めたリストを渡すこと.
@@ -14,6 +14,9 @@ def calc_real_expected_data(
     for cap_step in cap_param.capture_steps:
         num_samples_in_cap_target = cap_step[0] * num_samples_in_cap_word
         target_samples = cap_data[start_of_cap_step : start_of_cap_step + num_samples_in_cap_target]
+        if bc.DspUnit.DECIMATION in cap_param.dsp_list:
+            target_samples = _decimation(target_samples)
+
         if bc.DspUnit.SUM in cap_param.dsp_list:
             target_samples = _sum(target_samples, num_sum_samples)
 
@@ -29,7 +32,16 @@ def calc_real_expected_data(
     return expected
 
 
-def _sum(samples: list[int], num_sum_samples: int):
+def _decimation(samples: list[int]) -> list[int]:
+    expected = []
+    output_len = len(samples) // 128 * 8
+    for i in range(output_len):
+        expected.append(samples[i * 16])
+    
+    return expected
+
+
+def _sum(samples: list[int], num_sum_samples: int) -> list[int]:
     expected = []
     num_sums = len(samples) // num_sum_samples
     for i in range(num_sums):
@@ -38,7 +50,7 @@ def _sum(samples: list[int], num_sum_samples: int):
     return expected
 
 
-def _binarization(samples: list[int], threshold: int):
+def _binarization(samples: list[int], threshold: int) -> list[int]:
     expected = []
     for sample in samples:
         result = 1 if sample >= threshold else 0
@@ -47,7 +59,7 @@ def _binarization(samples: list[int], threshold: int):
     return expected
 
 
-def _reduction(samples: list[int], op: bc.ReductionOperation):
+def _reduction(samples: list[int], op: bc.ReductionOperation) -> list[int]:
     # reduction は 1 以上のサンプルの個数によって結果が変わる
     binarized = _binarization(samples, 1)
 

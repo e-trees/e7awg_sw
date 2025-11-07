@@ -344,6 +344,7 @@ class DigitalOutCtrllBase(object, metaclass = ABCMeta):
            design_type != E7AwgHwType.ZCU111_DAC_6G and \
            design_type != E7AwgHwType.ZCU111_URAM_X2 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+           design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT and \
            design_type != E7AwgHwType.ZCU216:
             raise ValueError(
                 "e7awg_hw ({}) doesn't have any digital output modules.".format(design_type))

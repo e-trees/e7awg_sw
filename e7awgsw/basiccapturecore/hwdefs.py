@@ -5,6 +5,7 @@ class DspUnit(IntEnum):
     SUM            = 0 #: 総和
     BINARIZATION   = 1 #: 二値化
     REDUCTION      = 2 #: リダクション
+    DECIMATION     = 3 #: 間引き
 
 
 class ReductionOperation(IntEnum):

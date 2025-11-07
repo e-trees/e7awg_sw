@@ -12,12 +12,13 @@ class CaptureUnitSpecs:
 
     @classmethod
     def _create(self, design_type: E7AwgHwType) -> Self:
-        if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or\
+            design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             specs = CaptureUnitSpecs(
                 CaptureUnitParams.of(design_type),
                 CaptureRamParams.of(design_type))
             return cast(Self, specs)
-               
+
         raise ValueError('Invalid e7awg_hw type.  ({})'.format(design_type))
 
 
@@ -70,6 +71,11 @@ class CaptureUnitSpecs:
         num_cap_samples_list = [
             num_cap_samples * self.num_samples_in_capture_word
             for num_cap_samples, _ in param.capture_steps]
+
+        if DspUnit.DECIMATION in dsp_list:
+            # decimation モジュールは 16 サンプル入力されて初めて 8 サンプルを出力する.
+            num_cap_samples_list = [
+                num_cap_samples // 128 * 8 for num_cap_samples in num_cap_samples_list]
 
         if DspUnit.SUM in dsp_list:
             num_sum_samples = param.num_sum_words * self.num_samples_in_capture_word

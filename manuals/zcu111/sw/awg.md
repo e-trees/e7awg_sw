@@ -21,10 +21,15 @@ AWG の制御には専用の Python API を用います．
 
 ![システムオーバービュー1](figures/awg_system_overview_1.png)
 
+<br>
+
+**デザイン 4**
+
+![システムオーバービュー2](figures/awg_system_overview_2.png)
 
 <br>
 
-本システムには 8 つの AWG が含まれていますが，波形データ RAM の帯域の都合上，同時に動作可能な AWG の組み合わせには以下の制限があります．
+本システムには複数の AWG が含まれていますが，波形データ RAM の帯域の都合上，同時に動作可能な AWG の組み合わせには以下の制限があります．
 
 | デザイン ID | 同時に動作可能な AWG の組み合わせ |
 | --- | --- |
@@ -32,29 +37,31 @@ AWG の制御には専用の Python API を用います．
 | 1 | AWG 0 ~ 7 の中から 1 つ |
 | 2 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
 | 3 | AWG 0 ~ 5 の中から最大 1 つに加えて，AWG 6 と 7 の 2 つ |
+| 4 | AWG 0 ~ 3, 6, 7 の全て |
 
 <br>
 
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザインがあります．
+ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
 デザイン間で異なる部分は以下の通りです．
 
  - DAC のサンプリングレート
+ - ADC のサンプリングレート
  - データ RAM の構成
  - キャプチャデータ RAM の構成
- - キャプチャユニットの有無
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC のサンプリングレート [Gsps] | データ RAM の構成 | キャプチャユニット |
-| --- | --- | --- | --- |
-| 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） | 無し |
-| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) | 有り |
+| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| --- | --- | --- | --- | 
+| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
+| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
 
 <br>
 
@@ -84,30 +91,31 @@ AWG が出力可能な波形の構造と制約について説明します．
 **波形シーケンス**は，最大 4294967295 回繰り返すことが可能です．
 **wait word** は無くても問題ありません．
 
-![user_def_wave](./figures/user_def_wave.png)
+![user_def_wave](../hw/figures/user_def_wave.png)
 
 **wait word** は, I，Q 共に値が 0 のサンプルが並んだ波形です．
 8 サンプルを 1 つの単位とする **AWG ワード**単位で指定可能で，最大長は 4294967295 **AWG ワード**となります
 
-![wait_word](./figures/wait_word.png)
+![wait_word](../hw/figures/wait_word.png)
 
 **波形シーケンス**は**波形チャンク**の繰り返しを並べたもので構成されます．
 **波形チャンク**は最大 16 個まで定義でき，各チャンクは 4294967295 回まで繰り返すことが可能です．
 
-![wave_seq](./figures/wave_seq.png)
+![wave_seq](../hw/figures/wave_seq.png)
 
 **波形チャンク**は**波形パート**と**ポストブランク**で構成されます．
 **ポストブランク**は無くても問題ありません．
 
-![wave_chunk](./figures/wave_chunk.png)
+![wave_chunk](../hw/figures/wave_chunk.png)
 
-**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数は 512 の倍数でなければなりません．
 
-![wave_chunk](./figures/wave_part.png)
+**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 0 ~ 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
+
+![wave_part](../hw/figures/wave_part.png)
 
 また，波形パートのサンプル数は波形データ RAM の容量の都合上，以下の制約も満たさなければなりません． 
 
-![wave part constraint](figures/wave_part_constraint.png)
+![wave part constraint](../hw/figures/wave_part_constraint.png)
 
 <!-- 
 $$
@@ -141,7 +149,7 @@ $$
 ポストブランクは値が 0 のサンプルが並んだ波形です．
 8 サンプルを 1 つの単位とする AWG ワード単位で指定可能で，最大長は 4294967295 AWG ワードとなります．
 
-![post blank](figures/post_blank.png)
+![post blank](../hw/figures/post_blank.png)
 
 
 ## 5. DAC パラメータ
@@ -157,6 +165,13 @@ RF Data Converter の DAC は以下のパラメータで固定となっており
 
 **デザイン 1, 3**
 - サンプリングレート : 6512.64 [Msps]
+- I/Q ミキサ : 有効
+- インタポレーション : 2倍
+
+<br>
+
+**デザイン 4**
+- サンプリングレート : 1597.44 [Msps]
 - I/Q ミキサ : 有効
 - インタポレーション : 2倍
 
@@ -219,8 +234,8 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     # DAC タイルを同期させる.
     rfdc_ctrl.sync_dac_tiles()
 
-    # AWG 0 , AWG 4 を初期化
-    awg_ctrl.initialize(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 , AWG 3 を初期化
+    awg_ctrl.initialize(e7s.AWG.U0, e7s.AWG.U3)
 ```
 
 ### 6.3. 波形データの設定
@@ -288,9 +303,9 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###
 
-    # AWG 0 , AWG 4 に波形データを設定
+    # AWG 0 , AWG 3 に波形データを設定
     awg_ctrl.set_wave_sequence(e7s.AWG.U0, wave_seq)
-    awg_ctrl.set_wave_sequence(e7s.AWG.U4, wave_seq)
+    awg_ctrl.set_wave_sequence(e7s.AWG.U3, wave_seq)
 ```
 
 ### 6.4. 波形の出力開始と完了待ち
@@ -318,11 +333,11 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### 波形データの定義 (省略) ###
     ### 波形データの設定 (省略) ###
     
-    # AWG 0 と AWG 4 のユーザ定義波形出力スタート
-    awg_ctrl.start_awgs(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 と AWG 3 のユーザ定義波形出力スタート
+    awg_ctrl.start_awgs(e7s.AWG.U0, e7s.AWG.U3)
     
-    # タイムアウト 5 秒で AWG 0 と AWG 4 の波形出力完了待ち
-    awg_ctrl.wait_for_awgs_to_stop(5, e7s.AWG.U0, e7s.AWG.U4)
+    # タイムアウト 5 秒で AWG 0 と AWG 3 の波形出力完了待ち
+    awg_ctrl.wait_for_awgs_to_stop(5, e7s.AWG.U0, e7s.AWG.U3)
 ```
 
 ### 6.5. 波形出力の一時停止
@@ -349,8 +364,8 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### 波形データの設定 (省略) ###
     ### AWG の波形出力スタート (省略) ###
     
-    # AWG 0 と AWG 4 のユーザ定義波形の出力を一時停止
-    awg_ctrl.pause_awgs(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 と AWG 3 のユーザ定義波形の出力を一時停止
+    awg_ctrl.pause_awgs(e7s.AWG.U0, e7s.AWG.U3)
 ```
 
 ### 6.6. 波形出力の再開
@@ -377,13 +392,13 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### 波形データの設定 (省略) ###
     ### AWG の波形出力スタート (省略) ###
 
-    # AWG 0 と AWG 4 のユーザ定義波形の出力を一時停止
-    awg_ctrl.pause_awgs(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 と AWG 3 のユーザ定義波形の出力を一時停止
+    awg_ctrl.pause_awgs(e7s.AWG.U0, e7s.AWG.U3)
 
     time.sleep(2)
 
-    # AWG 0 と AWG 4 のユーザ定義波形の出力を再開
-    awg_ctrl.resume_awgs(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 と AWG 3 のユーザ定義波形の出力を再開
+    awg_ctrl.resume_awgs(e7s.AWG.U0, e7s.AWG.U3)
 ```
 
 ### 6.7. 外部トリガの有効化
@@ -410,8 +425,8 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### 波形データの定義 (省略) ###
     ### 波形データの設定 (省略) ###
 
-    # AWG 0 と AWG 4 を外部トリガを受け付ける状態にする.
-    awg_ctrl.prepare_awgs(e7s.AWG.U0, e7s.AWG.U4)
+    # AWG 0 と AWG 3 を外部トリガを受け付ける状態にする.
+    awg_ctrl.prepare_awgs(e7s.AWG.U0, e7s.AWG.U3)
 
-    # 以降 PMOD 1 の P0 が Lo から Hi に変化すると AWG 0 と AWG 4 は波形の出力を開始する.
+    # 以降 PMOD 1 の P0 が Lo から Hi に変化すると AWG 0 と AWG 3 は波形の出力を開始する.
 ```

@@ -511,6 +511,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU216"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU216</span></code></a></li>
 </ul>
@@ -1031,6 +1032,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU216"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU216</span></code></a></li>
 </ul>
@@ -1232,6 +1234,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_unit_id</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_validate_capture_param</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_dsp_list</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">dsp_list</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">log_error</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
                 <span class="k">raise</span>
@@ -1563,6 +1566,15 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid capture param  </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
+    <span class="k">def</span> <span class="nf">_validate_dsp_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dsp_list</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">DspUnit</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span> <span class="ow">and</span> \
+            <span class="n">DspUnit</span><span class="o">.</span><span class="n">DECIMATION</span> <span class="ow">in</span> <span class="n">dsp_list</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Only the design &#39;</span><span class="si">{</span><span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span><span class="si">}</span><span class="s2">&#39; has the Decimation function.  </span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;The design &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_design_type</span><span class="si">}</span><span class="s2">&#39; doesn&#39;t.&quot;</span>
+            <span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_loggers</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="p">)</span>
+
+
     <span class="k">def</span> <span class="nf">_validate_addr_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr_offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addr_offset</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The address offset must be an integer.  &#39;</span><span class="si">{</span><span class="n">addr_offset</span><span class="si">}</span><span class="s2">&#39; was set.&quot;</span><span class="p">)</span>
@@ -1585,7 +1597,8 @@
 
 
     <span class="k">def</span> <span class="nf">_validate_design_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">design_type</span><span class="p">:</span> <span class="n">E7AwgHwType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="ow">and</span> \
+            <span class="n">design_type</span> <span class="o">!=</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid design type  </span><span class="si">{</span><span class="n">design_type</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
 
@@ -1961,16 +1974,20 @@
 
 
     <span class="k">def</span> <span class="nf">_terminate_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__flock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__select_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
-                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">ADDR</span><span class="p">,</span>
-                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span>
-                    <span class="n">CaptureMasterCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_TERMINATE</span><span class="p">,</span>
-                    <span class="mi">1</span><span class="p">,</span>
-                    <span class="n">val</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__deselect_ctrl_target</span><span class="p">(</span><span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">capture_unit_id</span> <span class="ow">in</span> <span class="n">capture_unit_id_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> 
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_TERMINATE</span><span class="p">,</span> 
+                <span class="mi">1</span><span class="p">,</span> 
+                <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_capture_units_idle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">capture_unit_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reg_access</span><span class="o">.</span><span class="n">write_bits</span><span class="p">(</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Addr</span><span class="o">.</span><span class="n">capture</span><span class="p">(</span><span class="n">capture_unit_id</span><span class="p">),</span>
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Offset</span><span class="o">.</span><span class="n">CTRL</span><span class="p">,</span> 
+                <span class="n">CaptureCtrlRegs</span><span class="o">.</span><span class="n">Bit</span><span class="o">.</span><span class="n">CTRL_TERMINATE</span><span class="p">,</span> 
+                <span class="mi">1</span><span class="p">,</span> 
+                <span class="mi">0</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_reset_capture_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">capture_unit_id_list</span><span class="p">:</span> <span class="n">CaptureUnit</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2283,7 +2300,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2025-08-26" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-11-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

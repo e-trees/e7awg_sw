@@ -5,14 +5,75 @@ from typing_extensions import Self, deprecated
 from enum import IntEnum, Enum
 
 class E7AwgHwType(Enum):
-    """e7awg_hw の種類"""
-    SIMPLE_MULTI          = 0
-    ZCU111                = 1  #: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x0
-    KR260                 = 2
-    ZCU111_DAC_6G         = 3  #: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x0
-    ZCU111_URAM_X2        = 4  #: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x2
-    ZCU111_DAC_6G_URAM_X2 = 5  #: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x2
-    ZCU216                = 6  #: DAC sampling rate = 10Gsps, 波形データ RAM = BRAM x6  URAM x10
+    """e7awg_hw の種類
+
+    | 各デザインの説明
+    |
+    | SIMPLE_MULTI:
+    |   ターゲットボード         : Alveo U50
+    |   AWG sampling rate     : 500 Msps
+    |   Capture sampling rate : 500 Msps
+    |   波形 RAM               : HBM
+    |   キャプチャ RAM          : HBM
+    |
+    | KR260:
+    |   ターゲットボード         : Kria KR260
+    |   AWG sampling rate     : 50 Msps
+    |   Capture sampling rate : キャプチャ機能なし
+    |   波形 RAM               : PS-DRAM
+    |   キャプチャ RAM          : キャプチャ機能なし
+    |
+    | ZCU111:  (ZCU111 デザイン 0)
+    |   ターゲットボード         : ZCU111
+    |   AWG sampling rate     : 552.96 Msps
+    |   Capture sampling rate : キャプチャ機能なし
+    |   波形 RAM               : PL-DRAM
+    |   キャプチャ RAM          : キャプチャ機能なし
+    |
+    | ZCU111_DAC_6G:  (ZCU111 デザイン 1)
+    |   ターゲットボード         : ZCU111
+    |   AWG sampling rate     : 3256.32 Msps
+    |   Capture sampling rate : キャプチャ機能なし
+    |   波形 RAM               : PL-DRAM
+    |   キャプチャ RAM          : キャプチャ機能なし
+    |
+    | ZCU111_URAM_X2:  (ZCU111 デザイン 2)
+    |   ターゲットボード         : ZCU111
+    |   AWG sampling rate     : 552.96 Msps
+    |   Capture sampling rate : キャプチャ機能なし
+    |   波形 RAM               : PL-DRAM, URAM
+    |   キャプチャ RAM          : キャプチャ機能なし
+    |
+    | ZCU111_DAC_6G_URAM_X2:  (ZCU111 デザイン 3)
+    |   ターゲットボード         : ZCU111
+    |   AWG sampling rate     : 3256.32 Msps
+    |   Capture sampling rate : 3256.32 Msps
+    |   波形 RAM               : PL-DRAM, URAM
+    |   キャプチャ RAM          : BRAM
+    |
+    | ZCU111_DOUBLE_QUANTUM_DOT:  (ZCU111 デザイン 4)
+    |   ターゲットボード         : ZCU111
+    |   AWG sampling rate     : 798.72 Msps
+    |   Capture sampling rate : 798.72 Msps
+    |   波形 RAM               : PL-DRAM, URAM
+    |   キャプチャ RAM          : BRAM
+    |
+    | ZCU216:
+    |   ターゲットボード         : ZCU216
+    |   AWG sampling rate     : 798.72 Msps
+    |   Capture sampling rate : キャプチャ機能なし
+    |   波形 RAM               : BRAM
+    |   キャプチャ RAM          : キャプチャ機能なし
+
+    """
+    SIMPLE_MULTI              = 0
+    ZCU111                    = 1 
+    KR260                     = 2
+    ZCU111_DAC_6G             = 3
+    ZCU111_URAM_X2            = 4
+    ZCU111_DAC_6G_URAM_X2     = 5
+    ZCU216                    = 6
+    ZCU111_DOUBLE_QUANTUM_DOT = 7
 
 
 class DspUnit(IntEnum):
@@ -85,7 +146,9 @@ class CaptureUnit(IntEnum):
             units = {
                 CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3,
                 CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7 }
-
+        elif design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+            units = {
+                CaptureUnit.U0, CaptureUnit.U1 }
         return cast(set[Self], units)
 
 
@@ -222,11 +285,15 @@ class AWG(IntEnum):
             awgs = {
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
         
+        if design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+            awgs = {
+                AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U6, AWG.U7 }
+
         if design_type == E7AwgHwType.ZCU216:
             awgs = {
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7,
                 AWG.U8, AWG.U9, AWG.U10, AWG.U11, AWG.U12, AWG.U13, AWG.U14, AWG.U15 }
-
+        
         return cast(set[Self], awgs)
 
 

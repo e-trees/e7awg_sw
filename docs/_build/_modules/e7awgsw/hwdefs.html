@@ -511,6 +511,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU216"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU216</span></code></a></li>
 </ul>
@@ -1031,6 +1032,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU216"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU216</span></code></a></li>
 </ul>
@@ -1168,14 +1170,75 @@
 <div class="viewcode-block" id="E7AwgHwType">
 <a class="viewcode-back" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType">[ドキュメント]</a>
 <span class="k">class</span> <span class="nc">E7AwgHwType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;e7awg_hw の種類&quot;&quot;&quot;</span>
-    <span class="n">SIMPLE_MULTI</span>          <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">ZCU111</span>                <span class="o">=</span> <span class="mi">1</span>  <span class="c1">#: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x0</span>
-    <span class="n">KR260</span>                 <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">ZCU111_DAC_6G</span>         <span class="o">=</span> <span class="mi">3</span>  <span class="c1">#: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x0</span>
-    <span class="n">ZCU111_URAM_X2</span>        <span class="o">=</span> <span class="mi">4</span>  <span class="c1">#: DAC sampling rate = 1Gsps,  波形データ RAM = DRAM x1, URAM x2</span>
-    <span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1">#: DAC sampling rate = 6Gsps,  波形データ RAM = DRAM x1, URAM x2</span>
-    <span class="n">ZCU216</span>                <span class="o">=</span> <span class="mi">6</span>  <span class="c1">#: DAC sampling rate = 10Gsps, 波形データ RAM = BRAM x6  URAM x10</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;e7awg_hw の種類</span>
+
+<span class="sd">    | 各デザインの説明</span>
+<span class="sd">    |</span>
+<span class="sd">    | SIMPLE_MULTI:</span>
+<span class="sd">    |   ターゲットボード         : Alveo U50</span>
+<span class="sd">    |   AWG sampling rate     : 500 Msps</span>
+<span class="sd">    |   Capture sampling rate : 500 Msps</span>
+<span class="sd">    |   波形 RAM               : HBM</span>
+<span class="sd">    |   キャプチャ RAM          : HBM</span>
+<span class="sd">    |</span>
+<span class="sd">    | KR260:</span>
+<span class="sd">    |   ターゲットボード         : Kria KR260</span>
+<span class="sd">    |   AWG sampling rate     : 50 Msps</span>
+<span class="sd">    |   Capture sampling rate : キャプチャ機能なし</span>
+<span class="sd">    |   波形 RAM               : PS-DRAM</span>
+<span class="sd">    |   キャプチャ RAM          : キャプチャ機能なし</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU111:  (ZCU111 デザイン 0)</span>
+<span class="sd">    |   ターゲットボード         : ZCU111</span>
+<span class="sd">    |   AWG sampling rate     : 552.96 Msps</span>
+<span class="sd">    |   Capture sampling rate : キャプチャ機能なし</span>
+<span class="sd">    |   波形 RAM               : PL-DRAM</span>
+<span class="sd">    |   キャプチャ RAM          : キャプチャ機能なし</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU111_DAC_6G:  (ZCU111 デザイン 1)</span>
+<span class="sd">    |   ターゲットボード         : ZCU111</span>
+<span class="sd">    |   AWG sampling rate     : 3256.32 Msps</span>
+<span class="sd">    |   Capture sampling rate : キャプチャ機能なし</span>
+<span class="sd">    |   波形 RAM               : PL-DRAM</span>
+<span class="sd">    |   キャプチャ RAM          : キャプチャ機能なし</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU111_URAM_X2:  (ZCU111 デザイン 2)</span>
+<span class="sd">    |   ターゲットボード         : ZCU111</span>
+<span class="sd">    |   AWG sampling rate     : 552.96 Msps</span>
+<span class="sd">    |   Capture sampling rate : キャプチャ機能なし</span>
+<span class="sd">    |   波形 RAM               : PL-DRAM, URAM</span>
+<span class="sd">    |   キャプチャ RAM          : キャプチャ機能なし</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU111_DAC_6G_URAM_X2:  (ZCU111 デザイン 3)</span>
+<span class="sd">    |   ターゲットボード         : ZCU111</span>
+<span class="sd">    |   AWG sampling rate     : 3256.32 Msps</span>
+<span class="sd">    |   Capture sampling rate : 3256.32 Msps</span>
+<span class="sd">    |   波形 RAM               : PL-DRAM, URAM</span>
+<span class="sd">    |   キャプチャ RAM          : BRAM</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU111_DOUBLE_QUANTUM_DOT:  (ZCU111 デザイン 4)</span>
+<span class="sd">    |   ターゲットボード         : ZCU111</span>
+<span class="sd">    |   AWG sampling rate     : 798.72 Msps</span>
+<span class="sd">    |   Capture sampling rate : 798.72 Msps</span>
+<span class="sd">    |   波形 RAM               : PL-DRAM, URAM</span>
+<span class="sd">    |   キャプチャ RAM          : BRAM</span>
+<span class="sd">    |</span>
+<span class="sd">    | ZCU216:</span>
+<span class="sd">    |   ターゲットボード         : ZCU216</span>
+<span class="sd">    |   AWG sampling rate     : 798.72 Msps</span>
+<span class="sd">    |   Capture sampling rate : キャプチャ機能なし</span>
+<span class="sd">    |   波形 RAM               : BRAM</span>
+<span class="sd">    |   キャプチャ RAM          : キャプチャ機能なし</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SIMPLE_MULTI</span>              <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ZCU111</span>                    <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">KR260</span>                     <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">ZCU111_DAC_6G</span>             <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">ZCU111_URAM_X2</span>            <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">ZCU111_DAC_6G_URAM_X2</span>     <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">ZCU216</span>                    <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span> <span class="o">=</span> <span class="mi">7</span></div>
 
 
 
@@ -1271,7 +1334,9 @@
             <span class="n">units</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U3</span><span class="p">,</span>
                 <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U4</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U5</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U6</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U7</span> <span class="p">}</span>
-
+        <span class="k">elif</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">U1</span> <span class="p">}</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">set</span><span class="p">[</span><span class="n">Self</span><span class="p">],</span> <span class="n">units</span><span class="p">)</span></div>
 </div>
 
@@ -1450,11 +1515,15 @@
             <span class="n">awgs</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U3</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U4</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U5</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U6</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U7</span> <span class="p">}</span>
         
+        <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span><span class="p">:</span>
+            <span class="n">awgs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U3</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U6</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U7</span> <span class="p">}</span>
+
         <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU216</span><span class="p">:</span>
             <span class="n">awgs</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">AWG</span><span class="o">.</span><span class="n">U0</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U1</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U2</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U3</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U4</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U5</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U6</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U7</span><span class="p">,</span>
                 <span class="n">AWG</span><span class="o">.</span><span class="n">U8</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U9</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U10</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U11</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U12</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U13</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U14</span><span class="p">,</span> <span class="n">AWG</span><span class="o">.</span><span class="n">U15</span> <span class="p">}</span>
-
+        
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">set</span><span class="p">[</span><span class="n">Self</span><span class="p">],</span> <span class="n">awgs</span><span class="p">)</span></div>
 </div>
 
@@ -1553,7 +1622,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2025-08-26" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-11-07" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

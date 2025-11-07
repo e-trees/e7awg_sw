@@ -22,6 +22,12 @@
 
 ![システムオーバービュー1](figures/awg_system_overview_1.png)
 
+**デザイン 4**
+
+![システムオーバービュー2](figures/awg_system_overview_2.png)
+
+<br>
+
 
 ## 2. ディジタル出力モジュールの状態
 

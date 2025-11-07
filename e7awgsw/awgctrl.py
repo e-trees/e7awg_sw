@@ -351,6 +351,7 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
             E7AwgHwType.ZCU111_DAC_6G,
             E7AwgHwType.ZCU111_URAM_X2,
             E7AwgHwType.ZCU111_DAC_6G_URAM_X2,
+            E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT,
             E7AwgHwType.ZCU216]
         if not design_type in designs_with_awgs:
             raise ValueError("e7awg_hw ({}) doesn't have any AWGs.".format(design_type))

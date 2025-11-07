@@ -72,3 +72,90 @@ AWG の「強制停止」が可能か検証します．
 [examples/zcu111/digitalout_pause/README.md](../../examples/zcu111/digitalout_pause/README.md) を参照してください．
 
 <br>
+
+## real_send_real_recv
+
+**テストの内容**
+
+Real データの送受信が可能か検証します．
+
+**実行方法**
+
+[examples/zcu111/real_send_real_recv/README.md](../../examples/zcu111/real_send_real_recv/README.md) を参照してください．
+
+<br>
+
+## iq_send_real_iq
+
+**テストの内容**
+
+I/Q データの送受信が可能か検証します．
+
+**実行方法**
+
+[examples/zcu111/iq_send_iq_recv/README.md](../../examples/zcu111/iq_send_iq_recv/README.md) を参照してください．
+
+<br>
+
+## decimation_recv
+
+**テストの内容**
+
+キャプチャユニットの「間引き」を有効にしたときのキャプチャデータが適切か検証します．
+
+**実行方法**
+
+[examples/zcu111/decimation_recv/README.md](../../examples/zcu111/decimation_recv/README.md) を参照してください．
+
+<br>
+
+## sum_recv
+
+**テストの内容**
+
+キャプチャユニットの「総和」を有効にしたときのキャプチャデータが適切か検証します．
+
+**実行方法**
+
+[examples/zcu111/sum_recv/README.md](../../examples/zcu111/sum_recv/README.md) を参照してください．
+
+<br>
+
+## sum_bin_recv
+
+**テストの内容**
+
+キャプチャユニットの「総和」と「二値化」を有効にしたときのキャプチャデータが適切か検証します．
+
+**実行方法**
+
+[examples/zcu111/sum_bin_recv/README.md](../../examples/zcu111/sum_bin_recv/README.md) を参照してください．
+
+<br>
+
+## sum_bin_red_recv
+
+**テストの内容**
+
+キャプチャユニットの「総和」「二値化」「リダクション」を有効にしたときのキャプチャデータが適切か検証します．
+
+**実行方法**
+
+[examples/zcu111/sum_bin_red_recv/README.md](../../examples/zcu111/sum_bin_red_recv/README.md) を参照してください．
+
+<br>
+
+
+## dec_sum_bin_red_recv
+
+**テストの内容**
+
+キャプチャユニットの「間引き」「総和」「二値化」「リダクション」を有効にしたときのキャプチャデータが適切か検証します．
+
+**実行方法**
+
+[examples/zcu111/dec_sum_bin_red_recv/README.md](../../examples/zcu111/dec_sum_bin_red_recv/README.md) を参照してください．
+
+<br>
+
+

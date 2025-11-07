@@ -18,6 +18,8 @@ class DigitalOutParams(object, metaclass = ABCMeta):
             return cast(Self, DigitalOutParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(Self, DigitalOutParamsZcu111Dac6gUramX2())
+        if design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+            return cast(Self, DigitalOutParamsZcu111DoubleQuantumDot())
         if design_type == E7AwgHwType.ZCU216:
             return cast(Self, DigitalOutParamsZcu216())
 
@@ -45,12 +47,7 @@ class DigitalOutParams(object, metaclass = ABCMeta):
 
 
 class DigitalOutParamsZcu111(DigitalOutParams):
-    """以下の構成の ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス
-    
-    | DAC : 1.10592 Gsps
-    | 波形データ RAM : DRAM x1
-
-    """    
+    """ZCU111 デザイン 0 のディジタル出力モジュールのパラメータを保持するクラス"""    
     def max_patterns(self) -> int:
         return 512
 
@@ -65,12 +62,8 @@ class DigitalOutParamsZcu111(DigitalOutParams):
 
 
 class DigitalOutParamsZcu111Dac6G(DigitalOutParams):
-    """以下の構成の ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス
+    """ZCU111 デザイン 1 のディジタル出力モジュールのパラメータを保持するクラス"""    
     
-    | DAC : 6.51264 Gsps
-    | 波形データ RAM : DRAM x1
-
-    """
     def max_patterns(self) -> int:
         return 512
 
@@ -85,12 +78,8 @@ class DigitalOutParamsZcu111Dac6G(DigitalOutParams):
 
 
 class DigitalOutParamsZcu111UramX2(DigitalOutParams):
-    """以下の構成の ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス
-    
-    | DAC : 1.10592 Gsps
-    | 波形データ RAM : DRAM x1, URAM x2
+    """ZCU111 デザイン 2 のディジタル出力モジュールのパラメータを保持するクラス"""    
 
-    """
     def max_patterns(self) -> int:
         return 512
 
@@ -105,12 +94,8 @@ class DigitalOutParamsZcu111UramX2(DigitalOutParams):
 
 
 class DigitalOutParamsZcu111Dac6gUramX2(DigitalOutParams):
-    """以下の構成の ZCU111 デザインのディジタル出力モジュールのパラメータを保持するクラス
-    
-    | DAC : 6.51264 Gsps
-    | 波形データ RAM : DRAM x1, URAM x2
+    """ZCU111 デザイン 3 のディジタル出力モジュールのパラメータを保持するクラス"""    
 
-    """
     def max_patterns(self) -> int:
         return 512
 
@@ -123,13 +108,26 @@ class DigitalOutParamsZcu111Dac6gUramX2(DigitalOutParams):
     def udp_port(self) -> int:
         return 0x4001
 
-class DigitalOutParamsZcu216(DigitalOutParams):
-    """以下の構成の ZCU216 デザインのディジタル出力モジュールのパラメータを保持するクラス
-    
-    | DAC : 9.8304 Gsps
-    | 波形データ RAM : BRAM x6, URAMx10
 
-    """
+class DigitalOutParamsZcu111DoubleQuantumDot(DigitalOutParams):
+    """ZCU111 デザイン 4 のディジタル出力モジュールのパラメータを保持するクラス"""
+
+    def max_patterns(self) -> int:
+        return 512
+
+    def min_time(self) -> int:
+        return 2
+
+    def max_time(self) -> int:
+        return 0xFFFF_FFFF
+
+    def udp_port(self) -> int:
+        return 0x4001
+
+
+class DigitalOutParamsZcu216(DigitalOutParams):
+    """以下の構成の ZCU216 デザインのディジタル出力モジュールのパラメータを保持するクラス"""
+
     def max_patterns(self) -> int:
         return 512
 

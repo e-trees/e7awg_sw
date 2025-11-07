@@ -41,8 +41,9 @@ def gen_wave_seq(freq, hw_specs):
         design_type = hw_specs.design_type)
     amplitude = 28000
     # pg269 v2.6 p.87 にある ADC キャリブレーションにかかる時間 (サンプリング周期の 2^20 ~ 2^22 倍) と
-    # ADC の最低サンプリング周波数 (1 [Gsps]) から, キャリブレーション用の波形を周波数ごとに 4 [ms] 程度出力すれば十分と考える.
-    wave_len = 4e-3 # second
+    # ADC の最低サンプリング周波数 (1 Gsps) から, キャリブレーション用の波形を周波数ごとに 4 ms 程度出力すれば十分と考えたが, 
+    # デザイン 4 ではノイズの少ない波形をキャプチャするのに 1 波形当たり 200 ms 程度キャリブレーション時間を要したので, この値を使用する.
+    wave_len = 0.2 # second
     num_cycles_in_chunk = 10
     num_cycles = max(int(freq * wave_len), num_cycles_in_chunk)
     num_chunk_repeats = num_cycles // num_cycles_in_chunk

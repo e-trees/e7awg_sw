@@ -1,5 +1,5 @@
 """
-総和処理と二値化処理を有効にして波形データをキャプチャする
+総和, 二値化, リダクション処理を有効にして波形データをキャプチャする
 """
 import os
 import argparse
@@ -421,42 +421,62 @@ def get_program_args():
     parser.add_argument('--num-wait-words', default=0, type=int)
     parser.add_argument('--capture-delay', default=7e-8, type=float) # second
     parser.add_argument('--reduction', default="all", choices=['all', 'any'], type=str) # second
+    parser.add_argument('--design-type', default="dac6g-uram2", type=str)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    program_args = get_program_args()
-    ip_addr = IpAddr(program_args.ipaddr, '10.0.0.16')
+    args = get_program_args()
+    ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
+
+    if args.design_type == "dac6g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
+
+    if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        wave_chunks = [
+            WaveChunk(1e6, 1, 28000, 1),
+            WaveChunk(1e6, 1, 14000, 1),
+            WaveChunk(1e6, 1, 7000, 1)
+        ]
+        reduction_op = \
+            bc.ReductionOperation.ALL if args.reduction == 'all' else bc.ReductionOperation.ANY
+        bin_threshold = int(-1.4e6) if reduction_op == bc.ReductionOperation.ALL else int(1.2e6)
+        sum_len = (1 / 6) * 1e-6 # second
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        wave_chunks = [
+            WaveChunk(0.4e6, 1, 28000, 1),
+            WaveChunk(0.4e6, 1, 14000, 1),
+            WaveChunk(0.4e6, 1, 7000, 1)
+        ]
+        reduction_op = \
+            bc.ReductionOperation.ALL if args.reduction == 'all' else bc.ReductionOperation.ANY
+        bin_threshold = int(-0.9e6) if reduction_op == bc.ReductionOperation.ALL else int(0.6e6)
+        sum_len = (1 / 6) * 2.5e-6 # second
 
     cap_unit_to_awg = {
         e7s.CaptureUnit.U0: e7s.AWG.U6,
         e7s.CaptureUnit.U1: e7s.AWG.U7
     }
-    
-    sum_len = (1 / 6) * 1e-6 # second
-    reduction_op = \
-        bc.ReductionOperation.ALL if program_args.reduction == 'all' else bc.ReductionOperation.ANY
-    bin_threshold = int(-1.4e6) if reduction_op == bc.ReductionOperation.ALL else int(1.2e6)
 
     cap_unit_to_dsp_param = {
         e7s.CaptureUnit.U0: DspParam(
-            program_args.capture_delay, sum_len, bin_threshold, reduction_op),
-        e7s.CaptureUnit.U1: DspParam(program_args.capture_delay, None, None, None)
+            args.capture_delay, sum_len, bin_threshold, reduction_op),
+        e7s.CaptureUnit.U1: DspParam(args.capture_delay, None, None, None)
     }
-    wave_chunks = [
-        WaveChunk(1e6, 1, 28000, 1),
-        WaveChunk(1e6, 1, 14000, 1),
-        WaveChunk(1e6, 1, 7000, 1)
-    ]
+
     awg_to_wave_chunks = {
         e7s.AWG.U6: wave_chunks,
         e7s.AWG.U7: wave_chunks
     }
+
     raw_cap_unit = e7s.CaptureUnit.U1 # 生データをキャプチャするキャプチャユニットの ID
     dsp_cap_unit = e7s.CaptureUnit.U0 # 総和データをキャプチャするキャプチャユニットの ID
-    design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
-    num_wait_words = program_args.num_wait_words
-    timeout = program_args.timeout # second
+    num_wait_words = args.num_wait_words
+    timeout = args.timeout # second
 
     main(
         ip_addr,

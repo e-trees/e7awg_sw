@@ -5,11 +5,6 @@ import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
 from collections import namedtuple
 
-WAVE_FREQ_0 = 4 # MHz
-WAVE_FREQ_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
-
-awg_list = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4]
-
 wave_params = namedtuple(
     'wave_params',
     ('freq', 'num_wait_words', 'num_seq_repeats', 'num_chunk_repeats', 'num_blank_words', 'chunk_waves'))
@@ -17,82 +12,83 @@ wave_params = namedtuple(
 mixer_settings = namedtuple(
     'mixer_settings', ('freq', 'phase_offset', 'amplitude'))
 
-awg_to_params = {
+# 出力波形のパラメータを作成する.
+def gen_wave_params(freq_0, freq_1, num_wait_words):
+    return {
+        # const  const  const  const  const  _  const  const  const  const  const  _  (出力パターン)
+        e7s.AWG.U0 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 2,
+            num_blank_words = 0,
+            # chunk_waves = [ (チャンク 0 波形パターン), (チャンク 1 波形パターン), ... ]
+            # (チャンク N 波形パターン) = (波形タイプ, サイクル数)
+            chunk_waves = [('const', 5)]),
 
-    # const  const  const  const  const  _  const  const  const  const  const  _  (出力パターン)
-    e7s.AWG.U0 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 2,
-        num_blank_words = 0,
-        # chunk_waves = [ (チャンク 0 波形パターン), (チャンク 1 波形パターン), ... ]
-        # (チャンク N 波形パターン) = (波形タイプ, サイクル数)
-        chunk_waves = [('const', 5)]),
+        # const  const  const  const  const  _  const  const  const  const  const  _
+        e7s.AWG.U1 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 2,
+            num_blank_words = 0,
+            chunk_waves = [('const', 5)]),
 
-    # const  const  const  const  const  _  const  const  const  const  const  _
-    e7s.AWG.U1 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 2,
-        num_blank_words = 0,
-        chunk_waves = [('const', 5)]),
+        # squ  squ  squ  saw  saw  saw  squ  squ  squ  saw  saw  saw
+        e7s.AWG.U2 : wave_params(
+            freq = freq_1,
+            num_wait_words = 0,
+            num_seq_repeats = 2,
+            num_chunk_repeats = 3,
+            num_blank_words = 0,
+            chunk_waves = [('squ', 1), ('saw', 1)]),
 
-    # squ  squ  squ  saw  saw  saw  squ  squ  squ  saw  saw  saw
-    e7s.AWG.U2 : wave_params(
-        freq = WAVE_FREQ_1,
-        num_wait_words = 0,
-        num_seq_repeats = 2,
-        num_chunk_repeats = 3,
-        num_blank_words = 0,
-        chunk_waves = [('squ', 1), ('saw', 1)]),
+        # _  squ  squ  saw  saw  squ  squ  saw  saw  squ  squ  saw  saw
+        e7s.AWG.U3 : wave_params(
+            freq = freq_1,
+            num_wait_words = num_wait_words,
+            num_seq_repeats = 3,
+            num_chunk_repeats = 2,
+            num_blank_words = 0,
+            chunk_waves = [('squ', 1), ('saw', 1)]),
 
-    # _  squ  squ  saw  saw  squ  squ  saw  saw  squ  squ  saw  saw
-    e7s.AWG.U3 : wave_params(
-        freq = WAVE_FREQ_1,
-        num_wait_words = 69,
-        num_seq_repeats = 3,
-        num_chunk_repeats = 2,
-        num_blank_words = 0,
-        chunk_waves = [('squ', 1), ('saw', 1)]),
+        # sin  sin  sin  sin  sin  sin  sin  sin
+        e7s.AWG.U4 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 1,
+            num_blank_words = 0,
+            chunk_waves = [('sin', 8)]),
 
-    # sin  sin  sin  sin  sin  sin  sin  sin
-    e7s.AWG.U4 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 1,
-        num_blank_words = 0,
-        chunk_waves = [('sin', 8)]),
+        # sin  sin  sin  sin  sin  sin  sin  sin
+        e7s.AWG.U5 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 1,
+            num_blank_words = 0,
+            chunk_waves = [('sin', 8)]),
 
-    # sin  sin  sin  sin  sin  sin  sin  sin
-    e7s.AWG.U5 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 1,
-        num_blank_words = 0,
-        chunk_waves = [('sin', 8)]),
+        # sin  sin  sin  sin  sin  sin  sin  sin
+        e7s.AWG.U6 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 1,
+            num_blank_words = 0,
+            chunk_waves = [('sin', 8)]),
 
-    # sin  sin  sin  sin  sin  sin  sin  sin
-    e7s.AWG.U6 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 1,
-        num_blank_words = 0,
-        chunk_waves = [('sin', 8)]),
-
-    # sin  sin  sin  sin  sin  sin  sin  sin
-    e7s.AWG.U7 : wave_params(
-        freq = WAVE_FREQ_0,
-        num_wait_words = 0,
-        num_seq_repeats = 1,
-        num_chunk_repeats = 1,
-        num_blank_words = 0,
-        chunk_waves = [('sin', 8)])
-}
+        # sin  sin  sin  sin  sin  sin  sin  sin
+        e7s.AWG.U7 : wave_params(
+            freq = freq_0,
+            num_wait_words = 0,
+            num_seq_repeats = 1,
+            num_chunk_repeats = 1,
+            num_blank_words = 0,
+            chunk_waves = [('sin', 8)])
+    }
 
 
 mixer_settings = {
@@ -189,16 +185,17 @@ def gen_wave_samples(waveform, freq, num_cycles, hw_specs):
         samples, samples, hw_specs.awg.smallest_unit_of_wave_len)
 
 
-def set_wave_sequence(awg_ctrl, hw_specs):
+def set_wave_sequence(awg_ctrl, awg_list, awg_to_wave_params, hw_specs):
     awg_to_wave_seq = {}
-    for awg_id, params in awg_to_params.items():
+    for awg_id in awg_list:
+        wave_params = awg_to_wave_params[awg_id]
         wave_seq = e7s.WaveSequence(
-            params.num_wait_words, params.num_seq_repeats, hw_specs.design_type)
-        for waveform, num_cycles in params.chunk_waves:
+            wave_params.num_wait_words, wave_params.num_seq_repeats, hw_specs.design_type)
+        for waveform, num_cycles in wave_params.chunk_waves:
             wave_seq.add_chunk(
-                gen_wave_samples(waveform, params.freq * 1e6, num_cycles, hw_specs),
-                params.num_blank_words,
-                params.num_chunk_repeats)
+                gen_wave_samples(waveform, wave_params.freq * 1e6, num_cycles, hw_specs),
+                wave_params.num_blank_words,
+                wave_params.num_chunk_repeats)
             
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
         awg_to_wave_seq[awg_id] = wave_seq
@@ -206,12 +203,12 @@ def set_wave_sequence(awg_ctrl, hw_specs):
     return awg_to_wave_seq
 
 
-def setup_awgs(awg_ctrl, hw_specs):
+def setup_awgs(awg_ctrl, awg_list, awg_to_wave_params, hw_specs):
     """AWG の波形出力に必要な設定を行う"""
     # AWG 初期化
     awg_ctrl.initialize(*awg_list)
     # 波形データを AWG に設定
-    return set_wave_sequence(awg_ctrl, hw_specs)
+    return set_wave_sequence(awg_ctrl, awg_list, awg_to_wave_params, hw_specs)
 
 
 def setup_dacs(rfdc_ctrl):
@@ -234,30 +231,30 @@ def setup_dacs(rfdc_ctrl):
     rfdc_ctrl.sync_dac_tiles()
 
 
-def set_digital_out_data(digital_out_ctrl, design_type):
+def set_digital_out_data(digital_out_ctrl, digital_out_time, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
     (dout_data_list
-        .add(0x01, 69)
-        .add(0x02, 69)
-        .add(0x04, 69)
-        .add(0x08, 69)
-        .add(0x10, 69)
-        .add(0x20, 69)
-        .add(0x40, 69)
-        .add(0x80, 69))
+        .add(0x01, digital_out_time)
+        .add(0x02, digital_out_time)
+        .add(0x04, digital_out_time)
+        .add(0x08, digital_out_time)
+        .add(0x10, digital_out_time)
+        .add(0x20, digital_out_time)
+        .add(0x40, digital_out_time)
+        .add(0x80, digital_out_time))
     # 出力データをディジタル出力モジュールに設定
     digital_out_ctrl.set_output_data(dout_data_list, e7s.DigitalOut.U0)
 
 
-def setup_digital_output_modules(digital_out_ctrl, design_type):
+def setup_digital_output_modules(digital_out_ctrl, digital_out_time, design_type):
     """ディジタル出力に必要な設定を行う"""
     # ディジタル出力モジュール初期化
     digital_out_ctrl.initialize(e7s.DigitalOut.U0)
     # デフォルトのディジタル出力データの設定
     digital_out_ctrl.set_default_output_data(0x36, e7s.DigitalOut.U0)
     # ディジタル出力データの設定
-    set_digital_out_data(digital_out_ctrl, design_type)
+    set_digital_out_data(digital_out_ctrl, digital_out_time, design_type)
     # AWG からのスタートトリガを受け付けるように設定.
     # このスタートトリガは, いずれかの AWG の波形出力開始と同時にアサートされる.
     # なお, AwgCtrl.awgstart_awgs で複数の AWG をスタートしてもスタートトリガは一度しかアサートされない.
@@ -274,7 +271,11 @@ def output_graph(awg_to_wave_seq):
         q_samples = [iq_sample[1] for iq_sample in iq_samples]
         e7s.plot_samples(q_samples, 'Q waveform', dirpath + "q_samples.png")
 
-def main(design_type):
+def main(
+    design_type, 
+    awg_list, 
+    awg_to_wave_params,
+    digital_out_time):
     zcu111_ip_addr = '192.168.1.3'
     fpga_ip_addr = '10.0.0.16'
     hw_specs = e7s.E7AwgHwSpecs(design_type)
@@ -290,10 +291,10 @@ def main(design_type):
         setup_dacs(rfdc_ctrl)
         # AWG のセットアップ
         print('setup AWGs')
-        awg_to_wave_seq = setup_awgs(awg_ctrl, hw_specs)
+        awg_to_wave_seq = setup_awgs(awg_ctrl, awg_list, awg_to_wave_params, hw_specs)
         # ディジタル出力モジュールのセットアップ
         print('setup digital output modules')
-        setup_digital_output_modules(digital_out_ctrl, design_type)
+        setup_digital_output_modules(digital_out_ctrl, digital_out_time, design_type)
         # 波形出力スタート
         print('start AWGs')
         awg_ctrl.start_awgs(*awg_list)
@@ -330,10 +331,39 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111
     elif args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
     if args.awgs is not None:
         awg_list = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
+    elif design_type == e7s.E7AwgHwType.ZCU111:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4]
+    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U6, e7s.AWG.U7]
 
-    main(design_type)
+    if design_type == e7s.E7AwgHwType.ZCU111:
+        freq_0 = 4    # MHz
+        freq_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
+        num_wait_words = 69
+        digital_out_time = 69
+    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        freq_0 = 4    # MHz
+        freq_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
+        num_wait_words = 69
+        digital_out_time = 69
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        freq_0 = 4    # MHz
+        freq_1 = 0.39 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
+        num_wait_words = 250
+        digital_out_time = 100
+    
+    awg_to_wave_params = gen_wave_params(freq_0, freq_1, num_wait_words)
+    main(
+        design_type, 
+        awg_list, 
+        awg_to_wave_params,
+        digital_out_time)

@@ -15,13 +15,16 @@ python プログラム上でディジタル値を生成して, ZCU111 上のデ�
 python digital_out_x34_test.py
 
 # デザイン 1 を使用する場合
-python digital_out_x34_test.py --design-type=dac6g
+python digital_out_x34_test.py  --design-type=dac6g
 
 # デザイン 2 を使用する場合
-python send_wave.py  --design-type=dac1g-uram2
+python digital_out_x34_test.py  --design-type=dac1g-uram2
 
 # デザイン 3 を使用する場合
-python send_wave.py  --design-type=dac6g-uram2
+python digital_out_x34_test.py  --design-type=dac6g-uram2
+
+# デザイン 4 を使用する場合
+python digital_out_x34_test.py  --design-type=dqd
 ```
 
 Vivado を起動して, e7awg_hw の合成時に出力される zcu111_rfsoc_trd_wrapper.ltx を使用して ZCU111 版 e7awg_hw の ILA の値を見られるようにします．

@@ -254,6 +254,7 @@ def main(
     num_fft_samples,
     num_output_wave_samples,
     num_output_capture_samples,
+    calibration_wave,
     timeout):
     hw_specs = e7s.E7AwgHwSpecs(design_type)
     awgs = list(cap_unit_to_awg.values())
@@ -267,7 +268,7 @@ def main(
         e7sz.configure_fpga(transceiver, design_type)
         # ADC キャリブレーション
         print('calibrate ADCs')
-        output_calibration_wave(rfdc_ctrl, awg_ctrl, awgs, hw_specs, [10e6, 25e6, 75e6, 90e6, 100e6])
+        output_calibration_wave(rfdc_ctrl, awg_ctrl, awgs, hw_specs, calibration_wave)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl, dac_mixer_freq)
@@ -332,34 +333,57 @@ def get_program_args():
     parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
     parser.add_argument('--timeout', default=5, type=int)
     parser.add_argument('--num-wait-words', default=0, type=int)
-    parser.add_argument('--capture-delay', default=1.23e-7, type=float) # second
+    parser.add_argument('--capture-delay', type=float) # second
+    parser.add_argument('--design-type', default="dac6g-uram2", type=str)
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    program_args = get_program_args()
-    ip_addr = IpAddr(program_args.ipaddr, '10.0.0.16')
+    args = get_program_args()
+    ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
+    num_wait_words = args.num_wait_words
 
-    cap_unit_to_awg = {
-        e7s.CaptureUnit.U5: e7s.AWG.U0,
-        e7s.CaptureUnit.U0: e7s.AWG.U6,
-        e7s.CaptureUnit.U1: e7s.AWG.U7
-    }
-    awg_to_wave_chunks = {
-        e7s.AWG.U0: [WaveChunk(25.44e6, 256, 28000, 1)],
-        e7s.AWG.U6: [WaveChunk(38.16e6, 256, 28000, 1)],
-        e7s.AWG.U7: [WaveChunk(50.88e6, 256, 28000, 1)]
-    }
+    if args.design_type == "dac6g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
+    else:
+        raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
-    num_wait_words = program_args.num_wait_words
-    capture_delay = program_args.capture_delay
-    dac_mixer_freq = 12.72 # MHz
-    adc_mixer_freq = 38.16 # MHz
+    if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        cap_unit_to_awg = {
+            e7s.CaptureUnit.U5: e7s.AWG.U0,
+            e7s.CaptureUnit.U0: e7s.AWG.U6,
+            e7s.CaptureUnit.U1: e7s.AWG.U7
+        }
+        awg_to_wave_chunks = {
+            e7s.AWG.U0: [WaveChunk(25.44e6, 256, 28000, 1)],
+            e7s.AWG.U6: [WaveChunk(38.16e6, 256, 28000, 1)],
+            e7s.AWG.U7: [WaveChunk(50.88e6, 256, 28000, 1)]
+        }
+        dac_mixer_freq = 12.72 # MHz
+        adc_mixer_freq = 38.16 # MHz
+        capture_delay = 1.23e-7 if args.capture_delay is None else args.capture_delay
+        calibration_wave = [10e6, 25e6, 75e6, 90e6, 100e6]
+
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        cap_unit_to_awg = {
+            e7s.CaptureUnit.U0: e7s.AWG.U6,
+            e7s.CaptureUnit.U1: e7s.AWG.U7
+        }
+        awg_to_wave_chunks = {
+            e7s.AWG.U6: [WaveChunk(4.29e6, 256, 28000, 1)],
+            e7s.AWG.U7: [WaveChunk(15.21e6, 256, 28000, 1)]
+        }
+        dac_mixer_freq = 6.24 # MHz
+        adc_mixer_freq = 10.53 # MHz
+        capture_delay = 3.8e-7 if args.capture_delay is None else args.capture_delay
+        calibration_wave = [2e6, 10e6, 20e6, 30e6]
+
     num_fft_samples = 16384
     num_output_wave_samples = 250 # グラフに出力するユーザ定義波形のサンプル数
-    num_output_capture_samples = 300 # グラフに出力するキャプチャデータのサンプル数
-    timeout = program_args.timeout # second
+    num_output_capture_samples = 300 # グラフに出力するキャプチャデータのサンプル数 
+    timeout = args.timeout # second
 
     main(
         design_type,
@@ -373,4 +397,5 @@ if __name__ == "__main__":
         num_fft_samples,
         num_output_wave_samples,
         num_output_capture_samples,
+        calibration_wave,
         timeout)

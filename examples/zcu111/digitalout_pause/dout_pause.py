@@ -3,7 +3,7 @@ import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
 
-awg_list = [e7s.AWG.U0, e7s.AWG.U1]
+awg_list = [e7s.AWG.U0]
 wave_freq = 1 # MHz
 mixer_freq = 0 # MHz
 
@@ -75,6 +75,8 @@ def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G or \
          design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         output_time = 1628160667 # 4 [sec]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        output_time = 399360000  # 4 [sec]
 
     for bit_pattern in bit_patterns:
         dout_data_list.add(bit_pattern, output_time)
@@ -196,6 +198,8 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 

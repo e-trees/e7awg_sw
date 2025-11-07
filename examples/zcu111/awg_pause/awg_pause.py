@@ -74,6 +74,8 @@ def set_digital_out_data(digital_out_ctrl, design_type):
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G or \
          design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         output_time = 2035200000 # 5 [sec]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        output_time = 499200000
 
     dout_data_list.add(3, output_time)
     # 出力データをディジタル出力モジュールに設定
@@ -178,15 +180,18 @@ if __name__ == "__main__":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
+    elif args.design_type == "dqd":
+        design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
     awgs = sorted(e7s.AWG.on(design_type))    
     # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
-    # DAC 1Gsps, URAM x0 デザイン : 5 個
-    # DAC 6Gsps, URAM x0 デザイン : 1 個
-    # DAC 1Gsps, URAM x2 デザイン : 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
-    # DAC 6Gsps, URAM x2 デザイン : 3 個  (AWG 0 ~ 5 の中からは 1 つまで)
+    # デザイン 0: 5 個
+    # デザイン 1: 1 個
+    # デザイン 2: 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
+    # デザイン 3: 3 個  (AWG 0 ~ 5 の中からは 1 つまで)
+    # デザイン 4: 6 個
     if design_type == e7s.E7AwgHwType.ZCU111:
         awgs = awgs[0:5]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
@@ -195,5 +200,7 @@ if __name__ == "__main__":
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U6, e7s.AWG.U7]
+    elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U6, e7s.AWG.U7]
 
     main(design_type, awgs)

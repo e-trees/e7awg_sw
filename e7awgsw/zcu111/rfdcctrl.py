@@ -520,7 +520,8 @@ class RfdcCtrlBase(object, metaclass = ABCMeta):
         if design_type != E7AwgHwType.ZCU111 and \
            design_type != E7AwgHwType.ZCU111_DAC_6G and \
            design_type != E7AwgHwType.ZCU111_URAM_X2 and \
-           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+           design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             raise ValueError("Cannot control the RF Data Converter in {}.".format(design_type))
 
     @abstractmethod
@@ -1083,7 +1084,8 @@ def configure_fpga(transceiver: RftoolTransceiver, design_type: E7AwgHwType):
     if design_type != E7AwgHwType.ZCU111 and \
        design_type != E7AwgHwType.ZCU111_DAC_6G and \
        design_type != E7AwgHwType.ZCU111_URAM_X2 and \
-       design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+       design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+       design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
         raise ValueError('Invalid e7awg_hw type. {}'.format(design_type))
 
     type_to_id = {
@@ -1091,5 +1093,6 @@ def configure_fpga(transceiver: RftoolTransceiver, design_type: E7AwgHwType):
         E7AwgHwType.ZCU111_DAC_6G : 16,
         E7AwgHwType.ZCU111_URAM_X2 : 17,
         E7AwgHwType.ZCU111_DAC_6G_URAM_X2 : 18,
+        E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT : 19,
     }
     RftoolCommand(transceiver.ctrl_if).ConfigFpga(type_to_id[design_type], 25)

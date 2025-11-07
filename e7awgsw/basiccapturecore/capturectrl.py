@@ -64,6 +64,7 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             try:
                 self._validate_capture_unit_id(capture_unit_id)
                 self._validate_capture_param(param)
+                self._validate_dsp_list(param.dsp_list)
             except Exception as e:
                 log_error(e, *self._loggers)
                 raise
@@ -352,6 +353,15 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
             raise ValueError(f"Invalid capture param  {param}")
 
 
+    def _validate_dsp_list(self, dsp_list: set[DspUnit]) -> None:
+        if self._design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT and \
+            DspUnit.DECIMATION in dsp_list:
+            msg = f"Only the design '{E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT}' has the Decimation function.  \n" \
+                + f"The design '{self._design_type}' doesn't."
+            log_warning(msg, *self._loggers)
+            print('WARNING: ' + msg)
+
+
     def _validate_addr_offset(self, addr_offset: int) -> None:
         if not isinstance(addr_offset, int):
             raise ValueError(f"The address offset must be an integer.  '{addr_offset}' was set.")
@@ -374,7 +384,8 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
-        if design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+        if design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+            design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             raise ValueError(f"Invalid design type  {design_type}.")
 
 

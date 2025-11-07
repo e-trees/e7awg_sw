@@ -8,7 +8,7 @@
 キャプチャユニットの制御には専用の Python API を用います．
 この API にはキャプチャユニットが保存したデータを FPGA から読み出す機能や，キャプチャの完了を待つ機能などが含まれています．
 
-ZCU111 向けの e7awg_hw には 4 種類の FPGA デザインがありますが，キャプチャユニットが含まれているのはデザイン 3 のみになります．
+ZCU111 向けの e7awg_hw には 5 種類の FPGA デザインがありますが，キャプチャユニットが含まれているのはデザイン 3 と 4 のみになります．
 これらの FPGA デザイン間で異なる部分は 2 章を参照してください．
 
 <br>
@@ -25,26 +25,33 @@ ZCU111 向けの e7awg_hw には 4 種類の FPGA デザインがありますが
 
 <br>
 
+**デザイン 4**
+
+![システムオーバービュー2](figures/awg_system_overview_2.png)
+
+<br>
+
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザインがあります．
+ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
 デザイン間で異なる部分は以下の通りです．
 
  - DAC のサンプリングレート
+ - ADC のサンプリングレート
  - データ RAM の構成
  - キャプチャデータ RAM の構成
- - キャプチャユニットの有無
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC のサンプリングレート [Gsps] | データ RAM の構成 | キャプチャユニット |
-| --- | --- | --- | --- |
-| 0 | 1.10592 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 1 | 6.51264 | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）| 無し |
-| 2 | 1.10592 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） | 無し |
-| 3 | 6.51264 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) | 有り |
+| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| --- | --- | --- | --- | 
+| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
+| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
+| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
 
 <br>
 
@@ -87,9 +94,25 @@ ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザイ
 
 ![信号処理回路](../hw/figures/dsp_unit.png)
 
-となっており，処理ごとに有効/無効を切り替えることができます．
-各モジュールは無効になった場合，入力 I<sub>x</sub>，Q<sub>x</sub> をそのまま I<sub>x+1</sub> ，Q<sub>x+1</sub> として出力します．
+各処理は有効 / 無効を切り替えることができます．
+処理が無効になった場合，入力 I<sub>x</sub>，Q<sub>x</sub> をそのまま I<sub>x+1</sub> ，Q<sub>x+1</sub> として出力します．
 それぞれの処理の詳細は以下の通りです．
+
+<br>
+
+#### 間引き (デザイン 4 のみ)
+キャプチャターゲットのサンプル数を減らします．
+キャプチャターゲットのサンプル数を n，間引き後のサンプル数を m としたとき以下の式が成り立ちます．
+
+![間引き](../hw/figures/decimation_equation.png)
+
+キャプチャターゲットのサンプル数が 128 で割り切れないとき，余ったサンプルはどの信号処理の対象にもなりません．
+
+<!-- $$
+m = 8 * \left\lfloor \frac{n}{128} \right\rfloor
+$$ -->
+
+![間引き](../hw/figures/decimation.png)
 
 <br>
 
@@ -124,19 +147,15 @@ ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザイ
 <br>
 
 ## 6. キャプチャパラメータの制約
-キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．
+キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 3 では，間引きは常に無効扱いとなります．
 
-**有効にする信号処理の組み合わせと対応するパターン**
-| 総和 | 二値化 | リダクション | パターン |
-| -- | -- | -- | -- |
-| 無効 | 無効 | 無効 | A |
-| 有効 | 無効 | 無効 | B |
-| 無効 | 有効 | 無効 | C |
-| 無効 | 無効 | 有効 | D |
-| 有効 | 有効 | 無効 | E |
-| 有効 | 無効 | 有効 | D |
-| 無効 | 有効 | 有効 | D |
-| 有効 | 有効 | 有効 | D |
+**総和と二値化の有効 / 無効の組み合わせと対応するパターン**
+| 総和 | 二値化 | パターン |
+| -- | -- | -- |
+| 無効 | 無効 | A |
+| 有効 | 無効 | B |
+| 無効 | 有効 | C |
+| 有効 | 有効 | D |
 
 <br>
 
@@ -147,10 +166,20 @@ ZCU111 上で動作する e7awg_hw には，以下の 3 種類の FPGA デザイ
 ## 7. ADC パラメータ
 
 RF Data Converter の ADC の以下のパラメータは固定となっており，ユーザが変更することはできません．
-I/Q ミキサは有効，無効を切り替えることができ，有効にした場合，ミキシング周波数を変更できます．
+I/Q ミキサは有効 / 無効を切り替えることができ，有効にした場合，ミキシング周波数を変更できます．
+
+**デザイン 3**
 
 - サンプリングレート : 3256.32 [Msps]
 - 間引き : 無し
+
+<br>
+
+**デザイン 4**
+
+- サンプリングレート : 1597.44 [Msps]
+- 間引き : 1/2
+
 
 ## 8. キャプチャユニット制御用 API の詳細
 
@@ -211,8 +240,8 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
     # DAC タイルを同期させる.
     rfdc_ctrl.sync_adc_tiles()
 
-    # キャプチャユニット 0 , キャプチャユニット 6 を初期化
-    cap_ctrl.initialize(e7s.CaptureUnit.U0, e7s.CaptureUnit.U6)
+    # キャプチャユニット 0 , キャプチャユニット 1 を初期化
+    cap_ctrl.initialize(e7s.CaptureUnit.U0, e7s.CaptureUnit.U1)
 ```
 
 
@@ -228,7 +257,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
 
 5 章で説明した信号処理のパラメータとして以下の項目を指定できます．
 
-- 有効化する処理 (総和，二値化，リダクション)
+- 有効化する処理 (間引き，総和，二値化，リダクション) 　 ※ 間引きはデザイン 4 でのみ有効化可能です．
 - 総和サンプル数
 - 二値化閾値
 - リダクションの計算方法
@@ -243,8 +272,11 @@ import e7awgsw.basiccapture as bc
 cap_param = bc.CaptureParam()
 cap_param.capture_delay = 100                        # キャプチャディレイ
 cap_param.capture_data_type = e7s.SampleDataType.IQ  # キャプチャデータタイプ 
-cap_param.dsp_list = [
-    bc.DspUnit.SUM, bc.DspUnit.BINARIZATION, bc.DspUnit.REDUCTION]  # 有効化する信号処理
+cap_param.dsp_list = [                               # 有効化する信号処理
+    bc.DspUnit.DECIMATION,
+    bc.DspUnit.SUM,
+    bc.DspUnit.BINARIZATION,
+    bc.DspUnit.REDUCTION]
 
 cap_param.num_sum_words = 50                         # 総和するキャプチャワード数
 cap_param.i_bin_threshold = 10000                    # I データの二値化閾値
@@ -283,9 +315,9 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
     ### キャプチャユニット / ADC 初期化 (省略) ###
     ### キャプチャパラメータの定義 (省略) ###
 
-    # キャプチャユニット 0 , キャプチャユニット 6 にキャプチャパラメータを設定
+    # キャプチャユニット 0 , キャプチャユニット 1 にキャプチャパラメータを設定
     cap_ctrl.set_capture_params(e7s.CaptureUnit.U0, cap_param)
-    cap_ctrl.set_capture_params(e7s.CaptureUnit.U6, cap_param)
+    cap_ctrl.set_capture_params(e7s.CaptureUnit.U1, cap_param)
 ```
 
 <br>
@@ -317,8 +349,8 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
 
     # キャプチャユニット 0 が AWG 1 の波形出力に合わせてスタートするように設定する
     cap_ctrl.set_trigger_awgs(e7s.CaptureUnit.U0, e7s.AWG.U1) 
-    # キャプチャユニット 6 が AWG 2 の波形出力に合わせてスタートするように設定する
-    cap_ctrl.set_trigger_awgs(e7s.CaptureUnit.U6, e7s.AWG.U2)
+    # キャプチャユニット 1 が AWG 2 の波形出力に合わせてスタートするように設定する
+    cap_ctrl.set_trigger_awgs(e7s.CaptureUnit.U1, e7s.AWG.U2)
 ```
 
 ### 8.5. キャプチャの開始と完了待ち
@@ -350,11 +382,11 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
     ### DAC / AWG の設定 (省略) ###
     
     # AWG 1 と AWG 2 のユーザ定義波形出力スタート
-    # 連動してキャプチャユニット 0 とキャプチャユニット 6 も動作を開始する
+    # 連動してキャプチャユニット 0 とキャプチャユニット 1 も動作を開始する
     awg_ctrl.start_awgs(e7s.AWG.U1, e7s.AWG.U2)
     
-    # タイムアウト 5 秒でキャプチャユニット 0 とキャプチャユニット 6 の処理完了待ち
-    cap_ctrl.wait_for_capture_units_to_stop(5, e7s.CaptureUnit.U0, e7s.CaptureUnit.U6)
+    # タイムアウト 5 秒でキャプチャユニット 0 とキャプチャユニット 1 の処理完了待ち
+    cap_ctrl.wait_for_capture_units_to_stop(5, e7s.CaptureUnit.U0, e7s.CaptureUnit.U1)
 ```
 
 ### 8.6. キャプチャデータの取得
@@ -388,6 +420,6 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
 
     # キャプチャユニット 0 のキャプチャデータを読みだす
     capture_data_0 = cap_ctrl.get_capture_data(e7s.CaptureUnit.U0, cap_param)
-    # キャプチャユニット 6 のキャプチャデータを読みだす
-    capture_data_6 = cap_ctrl.get_capture_data(e7s.CaptureUnit.U6, cap_param)
+    # キャプチャユニット 1 のキャプチャデータを読みだす
+    capture_data_6 = cap_ctrl.get_capture_data(e7s.CaptureUnit.U1, cap_param)
 ```

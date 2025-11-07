@@ -78,6 +78,9 @@ class DigitalOut(IntEnum):
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(set[Self], set(DigitalOut))
 
+        if design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
+            return cast(set[Self], set(DigitalOut))
+
         if design_type == E7AwgHwType.ZCU216:
             return cast(set[Self], set(DigitalOut))
 

@@ -1,7 +1,7 @@
 # AWG から余弦波を出力する
 
 [send_wave.py](./send_wave.py) は AWG (Arbitrary Waveform Generator) から余弦波を出力するスクリプトです．
-本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 3` に対応しています．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 4` に対応しています．
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 本スクリプトで動作する AWG と上述のデザインの対応関係は以下の表の通りです．
@@ -12,6 +12,7 @@
 | 1 | 0 |
 | 2 | 0 ~ 4，6 ~ 7 |
 | 3 | 0, 6, 7 |
+| 4 | 0 ~ 3, 6 ~ 7 |
 
 ## セットアップ
 
@@ -35,6 +36,9 @@ python send_wave.py  --design-type=dac1g-uram2
 
 # デザイン 3 を使用する場合
 python send_wave.py  --design-type=dac6g-uram2
+
+# デザイン 4 を使用する場合
+python send_wave.py  --design-type=dqd
 ```
 
 AWG が動作を開始するとオシロスコープで下図の波形が観測できます．
