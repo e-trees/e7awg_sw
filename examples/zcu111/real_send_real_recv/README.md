@@ -1,8 +1,8 @@
 # Real データの波形を送受信する
 
 [real_send_real_recv.py](./real_send_real_recv.py) は AWG (Arbitrary Waveform Generator) から余弦波を出力し，キャプチャユニットでキャプチャするスクリプトです．
-本スクリプトは ZCU111 版 e7awg_hw の `デザイン 3` に対応しています．
-`デザイン 3` のモジュール構成は，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
+本スクリプトは ZCU111 版 e7awg_hw の `デザイン 3 と 4` に対応しています．
+各デザインのモジュール構成は，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 
 ## セットアップ
