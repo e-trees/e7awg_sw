@@ -12,8 +12,38 @@ import e7awgsw.zcu216 as e7sz
 IP_ADDR = '10.0.0.16'
 
 # AWG から出力する余弦波のパラメータ
-AMPLITUDE = 25000
+AMPLITUDE = 30000
+NUM_FREQ = 250
+NUM_CYCLES = 5000
 
+def gen_cos_wave(num_cycles, freq, amp, hw_specs):
+    """
+    freq : MHz
+    """
+    samples = e7s.SinWave(num_cycles, freq * 1e6, amp, phase = math.pi / 2) \
+        .gen_samples(hw_specs.awg.sampling_rate)
+    # 波形データに 0 データを足して, その長さを波形パートを構成可能なサンプル数の最小単位の倍数に合わせる.
+    reminder = len(samples) % hw_specs.awg.smallest_unit_of_wave_len
+    print('reminder=', reminder)
+    if reminder != 0:
+        zeros = [0] * (hw_specs.awg.smallest_unit_of_wave_len - reminder)
+        samples.extend(zeros)
+    return samples
+
+
+def gen_cos_wave_seq(num_wait_words, num_chunks, hw_specs):
+    wave_seq = e7s.WaveSequence(
+        num_wait_words = num_wait_words,
+        num_repeats = 0xFFFF_FFFF, # 事実上無限
+        design_type = hw_specs.design_type)
+    i_samples = gen_cos_wave(NUM_CYCLES, NUM_FREQ, AMPLITUDE, hw_specs)
+    q_samples = [0] * len(i_samples)
+    for _ in range(num_chunks):
+        wave_seq.add_chunk(
+            iq_samples = list(zip(i_samples, q_samples)),
+            num_blank_words = 0,
+            num_repeats = 1)
+    return wave_seq
 
 def gen_sawtooth_50M(amp, hw_specs):
     arr = np.linspace(-1, 1, 49) # 49 samples for 2457.6MSPS (cf. e7awgsw/hwparam.py)
@@ -42,8 +72,13 @@ def gen_sawtooth_50M_seq(num_wait_words, num_chunks, hw_specs):
 
 def set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs):
     awg_to_wave_sequence = {}
-    for awg_id in awgs:
-        wave_seq = gen_sawtooth_50M_seq(num_wait_words, 1, hw_specs)
+    for i, awg_id in enumerate(awgs):
+        if i % 2 == 1:
+            print('sawtooth')
+            wave_seq = gen_sawtooth_50M_seq(num_wait_words, 1, hw_specs)
+        else:
+            print('cos')
+            wave_seq = gen_cos_wave_seq(num_wait_words, 1, hw_specs)
         awg_to_wave_sequence[awg_id] = wave_seq
         awg_ctrl.set_wave_sequence(awg_id, wave_seq)
     return awg_to_wave_sequence
