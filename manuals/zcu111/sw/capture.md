@@ -220,7 +220,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 # DAC, ADC, AWG, キャプチャユニット 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
       e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as rfdc_ctrl,
-      e7s.AwgCtrl(ip_addr.fpga, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
       bc.CaptureCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as cap_ctrl):
     
     # FPGA コンフィギュレーション
@@ -309,7 +309,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 # DAC, ADC, AWG, キャプチャユニット 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
       e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as rfdc_ctrl,
-      e7s.AwgCtrl(ip_addr.fpga, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
       bc.CaptureCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as cap_ctrl):
 
     ### キャプチャユニット / ADC 初期化 (省略) ###
@@ -340,7 +340,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 # DAC, ADC, AWG, キャプチャユニット 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
       e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as rfdc_ctrl,
-      e7s.AwgCtrl(ip_addr.fpga, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
       bc.CaptureCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as cap_ctrl):
 
     ### キャプチャユニット / ADC 初期化 (省略) ###
@@ -372,7 +372,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 # DAC, ADC, AWG, キャプチャユニット 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
       e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as rfdc_ctrl,
-      e7s.AwgCtrl(ip_addr.fpga, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
       bc.CaptureCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as cap_ctrl):
     
     ### キャプチャユニット / ADC 初期化 (省略) ###
@@ -407,7 +407,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 # DAC, ADC, AWG, キャプチャユニット 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
       e7sz.RfdcCtrl(transceiver, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as rfdc_ctrl,
-      e7s.AwgCtrl(ip_addr.fpga, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as awg_ctrl,
       bc.CaptureCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2) as cap_ctrl):
     
     ### キャプチャユニット / ADC 初期化 (省略) ###

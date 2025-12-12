@@ -214,6 +214,7 @@ def main(
     num_wait_words,
     capture_delay,
     calibration_wave,
+    forward_packet,
     timeout):
     hw_specs = e7s.E7AwgHwSpecs(design_type)
     awgs = list(cap_unit_to_awg.values())
@@ -225,6 +226,10 @@ def main(
         # FPGA コンフィギュレーション
         print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
+        # パケットフォワーディング開始
+        if forward_packet:
+            print('enable packet forwarding')
+            e7sz.enable_packet_forwarding(transceiver, design_type)
         print('calibrate ADCs')
         output_calibration_wave(rfdc_ctrl, awg_ctrl, awgs, hw_specs, calibration_wave)
         # DAC のセットアップ
@@ -277,6 +282,10 @@ def main(
         print('output Capture Data')
         cap_sampling_rate = hw_specs.cap_units[e7s.CaptureUnit.U0].sampling_rate
         output_capture_data(cap_unit_to_cap_data, cap_sampling_rate)
+        # パケットフォワーディング終了
+        if forward_packet:
+            print('disable packet forwarding')
+            e7sz.disable_packet_forwarding(transceiver)
         print('end')
 
 
@@ -287,19 +296,22 @@ def get_program_args():
     parser.add_argument('--num-wait-words', default=0, type=int)
     parser.add_argument('--capture-delay', default=6.14e-8, type=float) # second
     parser.add_argument('--design-type', default="dac6g-uram2", type=str)
+    parser.add_argument('--forward-packet', action="store_true")
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = get_program_args()
-    ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
-
+    if args.forward_packet:
+        ip_addr = IpAddr(args.ipaddr, args.ipaddr)
+    else:
+        ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
+    
     if args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     elif args.design_type == "dqd":
         design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
-
 
     if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         cap_unit_to_awg = {
@@ -338,4 +350,5 @@ if __name__ == "__main__":
         num_wait_words,
         capture_delay,
         calibration_wave,
+        args.forward_packet,
         timeout)

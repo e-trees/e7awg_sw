@@ -2,10 +2,13 @@ import time
 import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu111 as e7sz
+from collections import namedtuple
 
 awg_list = [e7s.AWG.U0]
 wave_freq = 1 # MHz
 mixer_freq = 0 # MHz
+
+IpAddr = namedtuple('IpAddr', ['zcu111', 'fpga'])
 
 def get_dac_interrupts(rfdc_ctrl):
     """全ての DAC の割り込みを取得する"""
@@ -132,17 +135,19 @@ def restart_douts(mode, awg_ctrl, digital_out_ctrl):
         awg_ctrl.wait_for_awgs_to_stop(5, *awg_list)
 
 
-def main(design_type):
-    zcu111_ip_addr = '192.168.1.3'
-    fpga_ip_addr = '10.0.0.16'
+def main(design_type, ip_addr, forward_packet):
     hw_specs = e7s.E7AwgHwSpecs(design_type)
-    with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as transceiver,
+    with (e7sz.RftoolTransceiver(ip_addr.zcu111, 15) as transceiver,
           e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl,
-          e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
+          e7s.AwgCtrl(ip_addr.fpga, design_type) as awg_ctrl,
+          e7s.DigitalOutCtrl(ip_addr.fpga, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
+        # パケットフォワーディング開始
+        if forward_packet:
+            print('enable packet forwarding')
+            e7sz.enable_packet_forwarding(transceiver, design_type)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl)
@@ -183,12 +188,26 @@ def main(design_type):
         # AWG エラーチェック
         awg_to_errs = awg_ctrl.check_err(*awg_list)
         output_awg_err_details(awg_to_errs)
+        # パケットフォワーディング終了
+        if forward_packet:
+            print('disable packet forwarding')
+            e7sz.disable_packet_forwarding(transceiver)
+
+
+def get_program_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
+    parser.add_argument('--design-type', default="dac1g", type=str)
+    parser.add_argument('--forward-packet', action="store_true")
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--design-type', default="dac1g", type=str)
-    args = parser.parse_args()
+    args = get_program_args()
+    if args.forward_packet:
+        ip_addr = IpAddr(args.ipaddr, args.ipaddr)
+    else:
+        ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
 
     if args.design_type == "dac1g":
         design_type = e7s.E7AwgHwType.ZCU111
@@ -203,4 +222,4 @@ if __name__ == "__main__":
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    main(design_type)
+    main(design_type, ip_addr, args.forward_packet)

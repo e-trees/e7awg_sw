@@ -41,8 +41,8 @@ python dout_pause.py --design-type=dac1g-uram2
 # デザイン 3 を使用する場合
 python dout_pause.py --design-type=dac6g-uram2
 
-# デザイン 4 を使用する場合
-python dout_pause.py --design-type=dqd
+# デザイン 4 を使用する場合.  パケットフォワーディングを使用する場合, [ ] の中を追加します.
+python dout_pause.py --design-type=dqd  [--forward-packet]
 ```
 
 PMOD 0 からディジタル出力値がオシロスコープで観察できます．

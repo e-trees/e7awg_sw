@@ -1998,6 +1998,53 @@ class RftoolCommand(object):
                         'Failed to configure bitstream, please reboot ZCU111.')
                 time.sleep(0.5)
 
+    def StartUdpForwarding(self, timeout, ip_addr, ports):
+        """UDP 転送機能を有効化する
+        
+        Args:
+            ip_addr (int) : UDP データを待ち受ける IP アドレス
+            ports (list of int) :
+                | rftool が UDP データを待ち受ける UDP ポートのリスト.
+                | このリストの n 番目のポートで受け取った UDP データは, n 番目の転送モジュール (UPL Data Mover) に送られる.
+        """
+        command = self._joinargs("StartUdpForwarding", [ip_addr, ports[0], ports[1]])
+        self.rft_if.put(command)
+        start = time.time()
+        while True:
+            if self.IsUdpForwardingEnable() == 1:
+                return
+            elapsed_time = time.time() - start
+            if elapsed_time > timeout:
+                raise Exception('Failed to start udp forwarding, please reboot ZCU111.')
+            time.sleep(0.5)
+
+
+    def StopUdpForwarding(self, timeout):
+        """UDP 転送機能を無効化する"""
+        self.rft_if.put("StopUdpForwarding")
+        start = time.time()
+        while True:
+            if self.IsUdpForwardingEnable() == 0:
+                return
+            elapsed_time = time.time() - start
+            if elapsed_time > timeout:
+                raise Exception('Failed to stop udp forwarding, please reboot ZCU111.')
+            time.sleep(0.5)
+
+    def IsUdpForwardingEnable(self):
+        """UDP 転送機能が有効かどうか調べる
+
+        Returns
+        -------
+        enable : int
+            0 -> 無効
+            1 -> 有効
+        """
+        self.cmd = "IsUdpForwardingEnable"
+        self.res = self.rft_if.put(self.cmd)
+        [enable] = self._splitargs(self.res)
+        return enable
+
 
     def _joinargs(self, cmdstr, cmdargs):
         return " ".join([cmdstr, " ".join([str(arg) for arg in cmdargs])])

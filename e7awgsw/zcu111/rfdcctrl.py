@@ -657,7 +657,7 @@ class RfdcCtrl(RfdcCtrlBase):
         RF Data Converter を持つ e7awg_hw 専用
 
         Args:
-            transceiver (RftoolTransceiver): ZCU111 上で動作するプログラムとの通信インタフェースを提供するオブジェクト
+            transceiver (RftoolTransceiver): ZCU111 上で動作するプログラムとの通信機能を提供するオブジェクト
             design_type (E7AwgHwType):
                 | このオブジェクトで制御する RF Data Converter が含まれる e7awg_hw の種類
                 | RF Data Converter を持つデザインを指定すること.
@@ -1077,22 +1077,3 @@ class RfdcCtrl(RfdcCtrlBase):
             raise err
         
         return os.path.abspath(dirpath)
-
-
-def configure_fpga(transceiver: RftoolTransceiver, design_type: E7AwgHwType):
-    """FPGA をコンフィギュレーションする"""
-    if design_type != E7AwgHwType.ZCU111 and \
-       design_type != E7AwgHwType.ZCU111_DAC_6G and \
-       design_type != E7AwgHwType.ZCU111_URAM_X2 and \
-       design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
-       design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
-        raise ValueError('Invalid e7awg_hw type. {}'.format(design_type))
-
-    type_to_id = {
-        E7AwgHwType.ZCU111 : 15,
-        E7AwgHwType.ZCU111_DAC_6G : 16,
-        E7AwgHwType.ZCU111_URAM_X2 : 17,
-        E7AwgHwType.ZCU111_DAC_6G_URAM_X2 : 18,
-        E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT : 19,
-    }
-    RftoolCommand(transceiver.ctrl_if).ConfigFpga(type_to_id[design_type], 25)
