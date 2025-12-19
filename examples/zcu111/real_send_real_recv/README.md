@@ -16,14 +16,40 @@
 ## 実行手順
 
 以下のコマンドを実行します．
+パケットフォワーディングを使用する場合，[ ] の中を追加します．
 
 ```
-# デザイン 3 を使用する場合
-python real_send_real_recv.py --design-type=dac6g-uram2
+# デザイン 2 を使用する場合
+python real_send_real_recv.py --design-type=dac1g-uram2  [--forward-packet]
 
-# デザイン 4 を使用する場合.  パケットフォワーディングを使用する場合, [ ] の中を追加します.
+# デザイン 3 を使用する場合
+python real_send_real_recv.py --design-type=dac6g-uram2  [--forward-packet]
+
+# デザイン 4 を使用する場合.
 python real_send_real_recv.py --design-type=dqd  [--forward-packet]
 ```
+
+<br>
+
+## デザイン 2 を使用したときの実行結果
+
+キャプチャユニット 0, 1, 4 がキャプチャした波形が，カレントディレクトリの下の `plot_capture_data` ディレクトリ以下にキャプチャユニットごとに作成されます．
+
+#### キャプチャユニット 0
+
+![キャプチャデータ0](./images/design_2/capture_data_0.png)
+
+※ キャプチャユニット 0 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
+
+#### キャプチャユニット 1
+
+![キャプチャデータ1](./images/design_2/capture_data_1.png)
+
+※ キャプチャユニット 1 のキャプチャデータは ZCU111 付属のバランの回路の特性により変位が反転しています．
+
+#### キャプチャユニット 4
+
+![キャプチャデータ4](./images/design_2/capture_data_4.png)
 
 <br>
 

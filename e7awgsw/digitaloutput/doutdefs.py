@@ -65,13 +65,7 @@ class DigitalOut(IntEnum):
 
     @classmethod
     def on(cls, design_type: E7AwgHwType) -> set[Self]:
-        """引数で指定した e7awg_hw デザインに含まれる全ての AWG の ID をセットに格納して返す"""
-        if design_type == E7AwgHwType.ZCU111:
-            return cast(set[Self], set(DigitalOut))
-        
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            return cast(set[Self], set(DigitalOut))
-        
+        """引数で指定した e7awg_hw デザインに含まれる全ての AWG の ID をセットに格納して返す"""        
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             return cast(set[Self], set(DigitalOut))
 

@@ -280,13 +280,11 @@ def main(design_type, waveform):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--design-type', default="dac6g", type=str)
+    parser.add_argument('--design-type', default="dac6g-uram2", type=str)
     parser.add_argument('--waveform', default=0, type=int)
     args = parser.parse_args()
 
-    if args.design_type == "dac6g":
-        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
-    elif args.design_type == "dac6g-uram2":
+    if args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))

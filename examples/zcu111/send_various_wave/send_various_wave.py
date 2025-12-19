@@ -324,12 +324,10 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--awgs')
-    parser.add_argument('--design-type', default="dac1g", type=str)
+    parser.add_argument('--design-type', default="dac1g-uram2", type=str)
     args = parser.parse_args()
 
-    if args.design_type == "dac1g":
-        design_type = e7s.E7AwgHwType.ZCU111
-    elif args.design_type == "dac1g-uram2":
+    if args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dqd":
         design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
@@ -338,19 +336,12 @@ if __name__ == "__main__":
 
     if args.awgs is not None:
         awg_list = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
-    elif design_type == e7s.E7AwgHwType.ZCU111:
-        awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4]
     elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
     elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U6, e7s.AWG.U7]
 
-    if design_type == e7s.E7AwgHwType.ZCU111:
-        freq_0 = 4    # MHz
-        freq_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
-        num_wait_words = 69
-        digital_out_time = 69
-    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         freq_0 = 4    # MHz
         freq_1 = 1.08 # MHz  (波形チャンクに波形パートを追加するときに 0 パディングが必要ない周波数)
         num_wait_words = 69

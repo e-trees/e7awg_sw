@@ -10,10 +10,6 @@ class RfdcParams(object, metaclass = ABCMeta):
 
     @classmethod
     def of(self, design_type: E7AwgHwType) -> Self:
-        if design_type == E7AwgHwType.ZCU111:
-            return cast(Self, RfdcParamsZcu111())
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            return cast(Self, RfdcParamsZcu111Dac6G())
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             return cast(Self, RfdcParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
@@ -44,36 +40,6 @@ class RfdcParams(object, metaclass = ABCMeta):
     def max_mixer_freq(self) -> float:
         """ミキサ周波数の最大値 (MHz)"""
         pass
-
-
-class RfdcParamsZcu111(RfdcParams):
-    """ZCU111 デザイン 0 の RF Data Converter のパラメータを保持するクラス"""
-    def inf_mixer_phase(self) -> float:
-        return -180
-    
-    def sup_mixer_phase(self) -> float:
-        return 180
-    
-    def min_mixer_freq(self) -> float:
-        return -10000
-
-    def max_mixer_freq(self) -> float:
-        return 10000
-
-
-class RfdcParamsZcu111Dac6G(RfdcParams):
-    """ZCU111 デザイン 1 の RF Data Converter のパラメータを保持するクラス"""
-    def inf_mixer_phase(self) -> float:
-        return -180
-    
-    def sup_mixer_phase(self) -> float:
-        return 180
-    
-    def min_mixer_freq(self) -> float:
-        return -10000
-
-    def max_mixer_freq(self) -> float:
-        return 10000
 
 
 class RfdcParamsZcu111UramX2(RfdcParams):

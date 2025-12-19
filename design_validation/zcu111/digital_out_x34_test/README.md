@@ -11,12 +11,6 @@ python プログラム上でディジタル値を生成して, ZCU111 上のデ�
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 ```
-# デザイン 0 を使用する場合
-python digital_out_x34_test.py
-
-# デザイン 1 を使用する場合
-python digital_out_x34_test.py  --design-type=dac6g
-
 # デザイン 2 を使用する場合
 python digital_out_x34_test.py  --design-type=dac1g-uram2
 

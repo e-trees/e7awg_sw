@@ -12,7 +12,8 @@ class CaptureUnitSpecs:
 
     @classmethod
     def _create(self, design_type: E7AwgHwType) -> Self:
-        if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or\
+        if design_type == E7AwgHwType.ZCU111_URAM_X2 or \
+            design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2 or \
             design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             specs = CaptureUnitSpecs(
                 CaptureUnitParams.of(design_type),

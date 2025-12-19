@@ -10,10 +10,6 @@ class DigitalOutParams(object, metaclass = ABCMeta):
 
     @classmethod
     def of(self, design_type: E7AwgHwType) -> Self:
-        if design_type == E7AwgHwType.ZCU111:
-            return cast(Self, DigitalOutParamsZcu111())
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            return cast(Self, DigitalOutParamsZcu111Dac6G())
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             return cast(Self, DigitalOutParamsZcu111UramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
@@ -44,37 +40,6 @@ class DigitalOutParams(object, metaclass = ABCMeta):
     def udp_port(self) -> int:
         """ディジタル出力モジュール制御レジスタにアクセスする際に使用する UDP ポート番号"""
         pass
-
-
-class DigitalOutParamsZcu111(DigitalOutParams):
-    """ZCU111 デザイン 0 のディジタル出力モジュールのパラメータを保持するクラス"""    
-    def max_patterns(self) -> int:
-        return 512
-
-    def min_time(self) -> int:
-        return 2
-
-    def max_time(self) -> int:
-        return 0xFFFF_FFFF
-
-    def udp_port(self) -> int:
-        return 0x4001
-
-
-class DigitalOutParamsZcu111Dac6G(DigitalOutParams):
-    """ZCU111 デザイン 1 のディジタル出力モジュールのパラメータを保持するクラス"""    
-    
-    def max_patterns(self) -> int:
-        return 512
-
-    def min_time(self) -> int:
-        return 2
-
-    def max_time(self) -> int:
-        return 0xFFFF_FFFF
-
-    def udp_port(self) -> int:
-        return 0x4001
 
 
 class DigitalOutParamsZcu111UramX2(DigitalOutParams):

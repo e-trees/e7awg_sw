@@ -343,14 +343,34 @@ if __name__ == "__main__":
     ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
     num_wait_words = args.num_wait_words
 
-    if args.design_type == "dac6g-uram2":
+    if args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     elif args.design_type == "dqd":
         design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        cap_unit_to_awg = {
+            e7s.CaptureUnit.U5: e7s.AWG.U0,
+            e7s.CaptureUnit.U0: e7s.AWG.U6,
+            e7s.CaptureUnit.U1: e7s.AWG.U7
+        }
+        awg_to_wave_chunks = {
+            e7s.AWG.U0: [WaveChunk(12.96e6, 600, 28000, 1)],
+            e7s.AWG.U6: [WaveChunk(19.44e6, 600, 28000, 1)],
+            e7s.AWG.U7: [WaveChunk(6.48e6,  600, 28000, 1)]
+        }
+        dac_mixer_freq = 4.32 # MHz
+        adc_mixer_freq = 10.8 # MHz
+        capture_delay = 6e-7 if args.capture_delay is None else args.capture_delay
+        calibration_wave = [6e6, 13e6, 22e6, 28e6, 35e6]
+        num_output_wave_samples = 200 # グラフに出力するユーザ定義波形のサンプル数
+        num_output_capture_samples = 200 # グラフに出力するキャプチャデータのサンプル数 
+
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         cap_unit_to_awg = {
             e7s.CaptureUnit.U5: e7s.AWG.U0,
             e7s.CaptureUnit.U0: e7s.AWG.U6,
@@ -365,6 +385,8 @@ if __name__ == "__main__":
         adc_mixer_freq = 38.16 # MHz
         capture_delay = 1.23e-7 if args.capture_delay is None else args.capture_delay
         calibration_wave = [10e6, 25e6, 75e6, 90e6, 100e6]
+        num_output_wave_samples = 250 # グラフに出力するユーザ定義波形のサンプル数
+        num_output_capture_samples = 300 # グラフに出力するキャプチャデータのサンプル数 
 
     elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
         cap_unit_to_awg = {
@@ -372,17 +394,17 @@ if __name__ == "__main__":
             e7s.CaptureUnit.U1: e7s.AWG.U7
         }
         awg_to_wave_chunks = {
-            e7s.AWG.U6: [WaveChunk(4.29e6, 256, 28000, 1)],
-            e7s.AWG.U7: [WaveChunk(15.21e6, 256, 28000, 1)]
+            e7s.AWG.U6: [WaveChunk(4.29e6, 300, 28000, 1)],
+            e7s.AWG.U7: [WaveChunk(15.21e6, 300, 28000, 1)]
         }
         dac_mixer_freq = 6.24 # MHz
         adc_mixer_freq = 10.53 # MHz
         capture_delay = 3.8e-7 if args.capture_delay is None else args.capture_delay
         calibration_wave = [2e6, 10e6, 20e6, 30e6]
+        num_output_wave_samples = 250 # グラフに出力するユーザ定義波形のサンプル数
+        num_output_capture_samples = 300 # グラフに出力するキャプチャデータのサンプル数 
 
-    num_fft_samples = 16384
-    num_output_wave_samples = 250 # グラフに出力するユーザ定義波形のサンプル数
-    num_output_capture_samples = 300 # グラフに出力するキャプチャデータのサンプル数 
+    num_fft_samples = 16384    
     timeout = args.timeout # second
 
     main(

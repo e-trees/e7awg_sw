@@ -384,7 +384,8 @@ class CaptureCtrlBase(object, metaclass = ABCMeta):
 
 
     def _validate_design_type(self, design_type: E7AwgHwType) -> None:
-        if design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
+        if design_type != E7AwgHwType.ZCU111_URAM_X2 and \
+           design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
             design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
             raise ValueError(f"Invalid design type  {design_type}.")
 

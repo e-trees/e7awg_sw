@@ -1,6 +1,6 @@
 # ディジタル出力モジュールの「一時停止」,「再開」,「再スタート」を行う
 
-[dout_pause.py](./dout_pause.py) はディジタル出力モジュールの「一時停止」,「再開」,「再スタート」機能を確認するためのスクリプトです．本スクリプトは ZCU111 版 e7awg_hw の `デザイン 0 ~ 4` に対応しています．
+[dout_pause.py](./dout_pause.py) はディジタル出力モジュールの「一時停止」,「再開」,「再スタート」機能を確認するためのスクリプトです．本スクリプトは ZCU111 版 e7awg_hw の `デザイン 2 ~ 4` に対応しています．
 各デザインのモジュール構成については，[e7awg_hw ユーザマニュアル](../../../manuals/zcu111/hw/README.md) を参照してください．
 
 ## セットアップ
@@ -27,21 +27,16 @@ DAC, PMOD とオシロスコープを接続します．
 ## 実行手順と結果
 
 以下のコマンドを実行します．
+パケットフォワーディングを使用する場合，[ ] の中を追加します．
 
 ```
-# デザイン 0 を使用する場合
-python dout_pause.py
-
-# デザイン 1 を使用する場合
-python dout_pause.py --design-type=dac6g
-
 # デザイン 2 を使用する場合
-python dout_pause.py --design-type=dac1g-uram2
+python dout_pause.py --design-type=dac1g-uram2  [--forward-packet]
 
 # デザイン 3 を使用する場合
-python dout_pause.py --design-type=dac6g-uram2
+python dout_pause.py --design-type=dac6g-uram2  [--forward-packet]
 
-# デザイン 4 を使用する場合.  パケットフォワーディングを使用する場合, [ ] の中を追加します.
+# デザイン 4 を使用する場合
 python dout_pause.py --design-type=dqd  [--forward-packet]
 ```
 

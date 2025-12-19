@@ -240,7 +240,7 @@ def main(
         setup_adcs(rfdc_ctrl)
         # DAC / ADC タイルを同期させる.  ミキサの設定を行ってから実行する必要がある.
         print('synchronize DAC tiles and ADC tiles.')
-        rfdc_ctrl.sync_dac_adc_tiles()
+        rfdc_ctrl.sync_dac_adc_tiles()        
         # AWG のセットアップ
         print('setup AWGs')
         awg_to_wave_sequence = setup_awgs(awg_ctrl, awg_to_wave_chunks, num_wait_words, hw_specs)
@@ -294,7 +294,7 @@ def get_program_args():
     parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
     parser.add_argument('--timeout', default=5, type=int)
     parser.add_argument('--num-wait-words', default=0, type=int)
-    parser.add_argument('--capture-delay', default=6.14e-8, type=float) # second
+    parser.add_argument('--capture-delay', type=float) # second
     parser.add_argument('--design-type', default="dac6g-uram2", type=str)
     parser.add_argument('--forward-packet', action="store_true")
     return parser.parse_args()
@@ -306,14 +306,30 @@ if __name__ == "__main__":
     else:
         ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
     
-    if args.design_type == "dac6g-uram2":
+    if args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     elif args.design_type == "dqd":
         design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        cap_unit_to_awg = {
+            e7s.CaptureUnit.U4: e7s.AWG.U0,
+            e7s.CaptureUnit.U0: e7s.AWG.U6,
+            e7s.CaptureUnit.U1: e7s.AWG.U7
+        }
+        awg_to_wave_chunks = {
+            e7s.AWG.U0: [WaveChunk(1e6,   1, 28000, 500), WaveChunk(2e6,   2, 28000, 500)],
+            e7s.AWG.U6: [WaveChunk(1.5e6, 2, 28000, 500), WaveChunk(2.5e6, 4, 28000, 500)],
+            e7s.AWG.U7: [WaveChunk(3e6,   4, 28000, 500), WaveChunk(3.5e6, 6, 28000, 500)]
+        }
+        calibration_wave = [1e6, 2e6, 4e6, 6e6]
+        capture_delay = 3.114e-7 if args.capture_delay is None else args.capture_delay
+
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         cap_unit_to_awg = {
             e7s.CaptureUnit.U4: e7s.AWG.U0,
             e7s.CaptureUnit.U0: e7s.AWG.U6,

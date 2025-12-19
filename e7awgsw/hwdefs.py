@@ -23,20 +23,6 @@ class E7AwgHwType(Enum):
     |   波形 RAM               : PS-DRAM
     |   キャプチャ RAM          : キャプチャ機能なし
     |
-    | ZCU111:  (ZCU111 デザイン 0)
-    |   ターゲットボード         : ZCU111
-    |   AWG sampling rate     : 552.96 Msps
-    |   Capture sampling rate : キャプチャ機能なし
-    |   波形 RAM               : PL-DRAM
-    |   キャプチャ RAM          : キャプチャ機能なし
-    |
-    | ZCU111_DAC_6G:  (ZCU111 デザイン 1)
-    |   ターゲットボード         : ZCU111
-    |   AWG sampling rate     : 3256.32 Msps
-    |   Capture sampling rate : キャプチャ機能なし
-    |   波形 RAM               : PL-DRAM
-    |   キャプチャ RAM          : キャプチャ機能なし
-    |
     | ZCU111_URAM_X2:  (ZCU111 デザイン 2)
     |   ターゲットボード         : ZCU111
     |   AWG sampling rate     : 552.96 Msps
@@ -67,9 +53,7 @@ class E7AwgHwType(Enum):
 
     """
     SIMPLE_MULTI              = 0
-    ZCU111                    = 1 
     KR260                     = 2
-    ZCU111_DAC_6G             = 3
     ZCU111_URAM_X2            = 4
     ZCU111_DAC_6G_URAM_X2     = 5
     ZCU216                    = 6
@@ -142,6 +126,10 @@ class CaptureUnit(IntEnum):
             units = {
                 CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3, CaptureUnit.U4,
                 CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7, CaptureUnit.U8, CaptureUnit.U9 }
+        elif design_type == E7AwgHwType.ZCU111_URAM_X2:
+            units = {
+                CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3,
+                CaptureUnit.U4, CaptureUnit.U5, CaptureUnit.U6, CaptureUnit.U7 }
         elif design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             units = {
                 CaptureUnit.U0, CaptureUnit.U1, CaptureUnit.U2, CaptureUnit.U3,
@@ -269,14 +257,6 @@ class AWG(IntEnum):
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7,
                 AWG.U8, AWG.U9, AWG.U10, AWG.U11, AWG.U12, AWG.U13, AWG.U14, AWG.U15 }
         
-        if design_type == E7AwgHwType.ZCU111:
-            awgs = {
-                AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
-
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            awgs = {
-                AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }
-
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             awgs = {
                 AWG.U0, AWG.U1, AWG.U2, AWG.U3, AWG.U4, AWG.U5, AWG.U6, AWG.U7 }

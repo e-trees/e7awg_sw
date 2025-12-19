@@ -347,8 +347,6 @@ class AwgCtrlBase(object, metaclass = ABCMeta):
         designs_with_awgs = [
             E7AwgHwType.SIMPLE_MULTI,
             E7AwgHwType.KR260,
-            E7AwgHwType.ZCU111,
-            E7AwgHwType.ZCU111_DAC_6G,
             E7AwgHwType.ZCU111_URAM_X2,
             E7AwgHwType.ZCU111_DAC_6G_URAM_X2,
             E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT,

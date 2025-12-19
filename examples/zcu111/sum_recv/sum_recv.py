@@ -381,7 +381,7 @@ def get_program_args():
     parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
     parser.add_argument('--timeout', default=5, type=int)
     parser.add_argument('--num-wait-words', default=0, type=int)
-    parser.add_argument('--capture-delay', default=7e-8, type=float) # second
+    parser.add_argument('--capture-delay', type=float) # second
     parser.add_argument('--design-type', default="dac6g-uram2", type=str)
     return parser.parse_args()
 
@@ -390,20 +390,33 @@ if __name__ == "__main__":
     args = get_program_args()
     ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
 
-    if args.design_type == "dac6g-uram2":
+    if args.design_type == "dac1g-uram2":
+        design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
+    elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
     elif args.design_type == "dqd":
         design_type = e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT
     else:
         raise ValueError('Invalid FPGA design name  ({})'.format(args.design_type))
 
-    if design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+        wave_chunks = [
+            WaveChunk(1.15e6, 1, 28000, 1),
+            WaveChunk(1.15e6, 1, 14000, 1),
+            WaveChunk(1.15e6, 1, 7000, 1)
+        ]
+        sum_len = (1 / 6) * 0.87e-6 # second
+        capture_delay = 3.614e-7 if args.capture_delay is None else args.capture_delay
+
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         wave_chunks = [
             WaveChunk(1e6, 1, 28000, 1),
             WaveChunk(1e6, 1, 14000, 1),
             WaveChunk(1e6, 1, 7000, 1)
         ]
         sum_len = (1 / 6) * 1e-6 # second
+        capture_delay = 7e-8 if args.capture_delay is None else args.capture_delay
+
     elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
         wave_chunks = [
             WaveChunk(0.4e6, 1, 28000, 1),
@@ -411,6 +424,7 @@ if __name__ == "__main__":
             WaveChunk(0.4e6, 1, 7000, 1)
         ]
         sum_len = (1 / 6) * 2.5e-6 # second
+        capture_delay = 7e-8 if args.capture_delay is None else args.capture_delay
 
     cap_unit_to_awg = {
         e7s.CaptureUnit.U0: e7s.AWG.U6,
@@ -418,8 +432,8 @@ if __name__ == "__main__":
     }
 
     cap_unit_to_dsp_param = {
-        e7s.CaptureUnit.U0: DspParam(args.capture_delay, sum_len),
-        e7s.CaptureUnit.U1: DspParam(args.capture_delay, None)
+        e7s.CaptureUnit.U0: DspParam(capture_delay, sum_len),
+        e7s.CaptureUnit.U1: DspParam(capture_delay, None)
     }
 
     awg_to_wave_chunks = {

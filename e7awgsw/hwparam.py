@@ -51,12 +51,6 @@ class AwgParams(object, metaclass = ABCMeta):
         if design_type == E7AwgHwType.KR260:
             return cast(Self, AwgParamsKr260())
 
-        if design_type == E7AwgHwType.ZCU111:
-            return cast(Self, AwgParamsZcu111())
-        
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            return cast(Self, AwgParamsZcu111Dac6G())
-
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             return cast(Self, AwgParamsZcu111UramX2())
 
@@ -162,56 +156,6 @@ class AwgParamsKr260(AwgParams):
 
     def sampling_rate(self) -> int:
         return 50_000_000
-
-    def udp_port(self) -> int:
-        return 0x4001
-
-
-class AwgParamsZcu111(AwgParams):
-    """ZCU111 デザイン 0 の AWG のパラメータを保持するクラス"""
-    def sample_size(self) -> int:
-        # I = 16 bits,  Q = 16 bits
-        return 4
-
-    def word_size(self) -> int:
-        return 32
-    
-    def num_samples_in_word(self) -> int:
-        return self.word_size() // self.sample_size()
-    
-    def num_sample_in_wave_block(self) -> int:
-        return self.num_samples_in_word() * 16
-
-    def smallest_unit_of_wave_len(self) -> int:
-        return 512
-
-    def sampling_rate(self) -> int:
-        return 552_960_000
-
-    def udp_port(self) -> int:
-        return 0x4001
-
-
-class AwgParamsZcu111Dac6G(AwgParams):
-    """ZCU111 デザイン 1 の AWG のパラメータを保持するクラス"""
-    def sample_size(self) -> int:
-        # I = 16 bits,  Q = 16 bits
-        return 4
-
-    def word_size(self) -> int:
-        return 32
-    
-    def num_samples_in_word(self) -> int:
-        return self.word_size() // self.sample_size()
-    
-    def num_sample_in_wave_block(self) -> int:
-        return self.num_samples_in_word() * 16
-
-    def smallest_unit_of_wave_len(self) -> int:
-        return 512
-
-    def sampling_rate(self) -> int:
-        return 3_256_320_000
 
     def udp_port(self) -> int:
         return 0x4001
@@ -324,15 +268,9 @@ class WaveRamParams(object, metaclass = ABCMeta):
     def of(self, design_type: E7AwgHwType) -> Self:
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             return cast(Self, WaveRamParamsSimpleMulti())
-        
+
         if design_type == E7AwgHwType.KR260:
             return cast(Self, WaveRamParamsKr260())
-
-        if design_type == E7AwgHwType.ZCU111:
-            return cast(Self, WaveRamParamsZcu111())
-        
-        if design_type == E7AwgHwType.ZCU111_DAC_6G:
-            return cast(Self, WaveRamParamsZcu111Dac6G())
 
         if design_type == E7AwgHwType.ZCU111_URAM_X2:
             return cast(Self, WaveRamParamsZcu111UramX2())
@@ -422,48 +360,6 @@ class WaveRamParamsKr260(WaveRamParams):
 
     def max_size_for_wave_seq(self, awg_id: int) -> int:
         return 64 * 1024 * 1024
-
-    def udp_port(self) -> int:
-        return 0x4000
-
-
-class WaveRamParamsZcu111(WaveRamParams):
-    """ZCU111 デザイン 0 の波形データ RAM のパラメータを保持するクラス"""
-    def __init__(self) -> None:
-        self.__wave_src_addrs: Final = [
-            0x0,           0x0_2000_0000, 0x0_4000_0000, 0x0_6000_0000,
-            0x0_8000_0000, 0x0_A000_0000, 0x0_C000_0000, 0x0_E000_0000
-        ]
-
-    def word_size(self) -> int:
-        return 64
-
-    def wave_data_addr(self, awg_id: int) -> int:
-        return self.__wave_src_addrs[awg_id]
-
-    def max_size_for_wave_seq(self, awg_id: int) -> int:
-        return 512 * 1024 * 1024
-
-    def udp_port(self) -> int:
-        return 0x4000
-
-
-class WaveRamParamsZcu111Dac6G(WaveRamParams):
-    """ZCU111 デザイン 1 の波形データ RAM のパラメータを保持するクラス"""
-    def __init__(self) -> None:
-        self.__wave_src_addrs: Final = [
-            0x0,           0x0_2000_0000, 0x0_4000_0000, 0x0_6000_0000,
-            0x0_8000_0000, 0x0_A000_0000, 0x0_C000_0000, 0x0_E000_0000
-        ]
-
-    def word_size(self) -> int:
-        return 64
-
-    def wave_data_addr(self, awg_id: int) -> int:
-        return self.__wave_src_addrs[awg_id]
-
-    def max_size_for_wave_seq(self, awg_id: int) -> int:
-        return 512 * 1024 * 1024
 
     def udp_port(self) -> int:
         return 0x4000
@@ -660,6 +556,8 @@ class CaptureRamParams(object, metaclass = ABCMeta):
     def of(self, design_type: E7AwgHwType) -> Self:
         if design_type == E7AwgHwType.SIMPLE_MULTI:
             return cast(Self, CaptureRamParamsSimpleMulti())
+        if design_type == E7AwgHwType.ZCU111_URAM_X2:
+            return cast(Self, CaptureRamParamsZcu111Dac6gUramX2())
         if design_type == E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
             return cast(Self, CaptureRamParamsZcu111Dac6gUramX2())
         if design_type == E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
@@ -711,6 +609,28 @@ class CaptureRamParamsSimpleMulti(CaptureRamParams):
 
     def max_size_for_capture_data(self) -> int:
         return 256 * 1024 * 1024
+
+    def udp_port(self) -> int:
+        return 0x4000
+
+
+class CaptureRamParamsZcu111UramX2(CaptureRamParams):
+    """ZCU111 デザイン 2 のキャプチャデータ RAM のパラメータを保持するクラス"""
+
+    def __init__(self) -> None:
+        self.__capture_addrs: Final = [
+            0x1_0000_0000, 0x1_2000_0000, 0x1_4000_0000, 0x1_6000_0000,
+            0x1_8000_0000, 0x1_A000_0000, 0x1_C000_0000, 0x1_E000_0000
+        ]
+
+    def word_size(self) -> int:
+        return 64
+
+    def capture_data_addr(self, cap_id: int) -> int:
+        return self.__capture_addrs[cap_id]
+
+    def max_size_for_capture_data(self) -> int:
+        return 327680
 
     def udp_port(self) -> int:
         return 0x4000

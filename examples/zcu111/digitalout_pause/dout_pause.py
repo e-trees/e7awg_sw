@@ -72,11 +72,9 @@ def set_digital_out_data(digital_out_ctrl, bit_patterns, design_type):
     # ディジタル出力データの作成
     dout_data_list = e7s.DigitalOutputDataList(design_type)
     output_time = 0
-    if design_type == e7s.E7AwgHwType.ZCU111 or \
-       design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         output_time = 276480000  # 4 [sec]
-    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G or \
-         design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
+    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         output_time = 1628160667 # 4 [sec]
     elif design_type == e7s.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
         output_time = 399360000  # 4 [sec]
@@ -197,7 +195,7 @@ def main(design_type, ip_addr, forward_packet):
 def get_program_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
-    parser.add_argument('--design-type', default="dac1g", type=str)
+    parser.add_argument('--design-type', default="dac1g-uram2", type=str)
     parser.add_argument('--forward-packet', action="store_true")
     return parser.parse_args()
 
@@ -209,11 +207,7 @@ if __name__ == "__main__":
     else:
         ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
 
-    if args.design_type == "dac1g":
-        design_type = e7s.E7AwgHwType.ZCU111
-    elif args.design_type == "dac6g":
-        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
-    elif args.design_type == "dac1g-uram2":
+    if args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2

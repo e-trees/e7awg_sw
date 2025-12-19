@@ -155,17 +155,13 @@ if __name__ == "__main__":
     parser.add_argument('--awgs')
     parser.add_argument('--num-wait-words', default=0, type=int)
     parser.add_argument('--timeout', default=5, type=int)
-    parser.add_argument('--design-type', default="dac1g", type=str)
+    parser.add_argument('--design-type', default="dac1g-uram2", type=str)
     args = parser.parse_args()
 
     if args.ipaddr is not None:
         IP_ADDR = args.ipaddr
 
-    if args.design_type == "dac1g":
-        design_type = e7s.E7AwgHwType.ZCU111
-    elif args.design_type == "dac6g":
-        design_type = e7s.E7AwgHwType.ZCU111_DAC_6G
-    elif args.design_type == "dac1g-uram2":
+    if args.design_type == "dac1g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_URAM_X2
     elif args.design_type == "dac6g-uram2":
         design_type = e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2
@@ -176,16 +172,10 @@ if __name__ == "__main__":
 
     awgs = sorted(e7s.AWG.on(design_type))
     # デザインごとに同時に動作可能な AWG の個数が異なるので AWG の個数を制限する.
-    # デザイン 0: 5 個
-    # デザイン 1: 1 個
     # デザイン 2: 7 個  (AWG 0 ~ 5 の中からは 5 つまで)
     # デザイン 3: 3 個  (AWG 0 ~ 5 の中からは 1 つまで)
     # デザイン 4: 6 個
-    if design_type == e7s.E7AwgHwType.ZCU111:
-        awgs = awgs[0:5]
-    elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G:
-        awgs = awgs[0:1]
-    elif design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
+    if design_type == e7s.E7AwgHwType.ZCU111_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U1, e7s.AWG.U2, e7s.AWG.U3, e7s.AWG.U4, e7s.AWG.U6, e7s.AWG.U7]
     elif design_type == e7s.E7AwgHwType.ZCU111_DAC_6G_URAM_X2:
         awgs = [e7s.AWG.U0, e7s.AWG.U6, e7s.AWG.U7]
