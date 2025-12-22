@@ -6,21 +6,21 @@ e7awg_sw（e7awg_hw の制御用ライブラリ）を使ったアプリケーシ
 [example/zcu111](../../../examples/zcu111) ディレクトリ以下にあるサンプルスクリプトを参考にしてください．
 
 ## 1. 機能概要
-ZCU111 向けの e7awg_hw には 5 種類の FPGA デザインがあります．
-デザイン 0, 1, 2 は，ユーザが定義した波形データとディジタル値を出力する機能を備えています．
-デザイン 3 と 4 はそれらの機能に加え，FPGA に入力された波形データに信号処理を適用してメモリに保存する機能を備えています．
+ZCU111 向けの e7awg_hw には 3 種類の FPGA デザインがあります．
+各デザインは，ユーザが定義した波形データおよびディジタル値を出力する機能と FPGA に入力された波形データに信号処理を適用してメモリに保存する機能を備えています．
 FPGA 内部の各モジュールは，10Gb Ethernet で送られる UDP/IP パケットで制御可能になっています．
 以下に e7awg_hw の概略図を示します．
 
 <br>
 
-**デザイン 0 ~ 2**
+**デザイン 0 , 1**
 
-![FPGA ブロック図](./figures/fpga_block_diagram_0.png)
+廃止しました．
 
 <br>
 
-**デザイン 3**
+
+**デザイン 2, 3**
 
 ![FPGA ブロック図](./figures/fpga_block_diagram_1.png)
 
@@ -47,25 +47,24 @@ FPGA 内部の各モジュールは，10Gb Ethernet で送られる UDP/IP パ�
 
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
+ZCU111 上で動作する e7awg_hw には 3 種類の FPGA デザインがあります．
 デザイン間で異なる部分は以下の通りです。
 
- - DAC のサンプリングレート
- - ADC のサンプリングレート
+ - AWG のサンプリングレート
+ - キャプチャユニット のサンプリングレート
  - データ RAM の構成
- - キャプチャデータ RAM の構成
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| デザイン ID | AWG の<br>サンプリングレート [Msps] | キャプチャユニットの<br>サンプリングレート [Msps] | データ RAM の構成 |
 | --- | --- | --- | --- | 
-| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
-| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
-| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+| 2 | 552.96 | 552.96 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes)|
+| 3 | 3256.32 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 798.72 | 798.72 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+
+※ サンプリングレートは，I/Q データの場合 I データと Q データをまとめて 1 サンプルとして計算しています．
 
 <br>
 
@@ -110,19 +109,7 @@ e7awg_hw のデータ RAM にアクセスするためには，データ RAM ア�
 各 AWG およびキャプチャユニットは，以下の図で示す RAM の領域を使用しなければなりません．
 それぞれの領域での波形データおよびキャプチャデータの並びは，**4.5 波形データ RAM に格納された波形データの並び** と **6.7 キャプチャデータ RAM に格納されたキャプチャデータの並び** を参照してください．
 
-**デザイン 0, 1**
-
-![データRAMデータレイアウト0](./figures/data_ram_data_layout_0.png)
-
-<br>
-
-**デザイン 2**
-
-![データRAMデータレイアウト1](./figures/data_ram_data_layout_1.png)
-
-<br>
-
-**デザイン 3**
+**デザイン 2, 3**
 
 ![データRAMデータレイアウト2](./figures/data_ram_data_layout_2.png)
 
@@ -188,7 +175,7 @@ e7awg_hw のデータ RAM にアクセスするためには，データ RAM ア�
 
 ![wave_chunk](./figures/wave_chunk.png)
 
-**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 0 ~ 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
+**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 2 と 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
 
 ![wave_part](./figures/wave_part.png)
 
@@ -197,19 +184,14 @@ e7awg_hw のデータ RAM にアクセスするためには，データ RAM ア�
 
 <br>
 
-
-<!-- $$
+<!--
+$$
 \begin{align*}
 S_u &\stackrel{\mathrm{def}}{=} \rm{AWG}\,u\, が出力する波形シーケンス \\[1ex]
 N_u &: S_u で定義された波形チャンクの数  \\[1ex]
 W_u(i) &: S_u の波形チャンク \; i \;の波形パートのサンプル数 \\[1ex]
 L_u &: \rm{AWG}\,u\, の波形データ格納領域に格納可能な総サンプル数 \\[1ex]
 [制約] \;\; &\displaystyle \sum_{i=0}^{N_u-1} W_u(i) \leqq L_u \\[5ex]
-
-\langle デザイン 0, 1 \rangle \\[1ex]
-L_u &= 134217728 \;\; (u \in \{0, 1, 2, 3, 4, 5, 6, 7\}) \\[1ex]
-
-\\
 
 \langle デザイン 2, 3 \rangle \\[1ex]
 L_u &= \left\{
@@ -230,7 +212,8 @@ L_u &= \left\{
 \right.\\
 
 \end{align*}
-$$ -->
+$$
+-->
 
 **ポストブランク**は値が 0 のサンプルが並んだ波形で，最大長は 4294967295 **AWG ワード**となります．
 
@@ -494,7 +477,7 @@ $$ -->
 <br>
 
 ### 6.5 キャプチャパラメータの制約
-キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 3 では，間引きは常に無効扱いとなります．
+キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 2 と 3 では，間引きは常に無効扱いとなります．
 
 **総和と二値化の有効 / 無効の組み合わせと対応するパターン**
 | 総和 | 二値化 | パターン |
@@ -549,7 +532,7 @@ B &= \displaystyle\sum_{i=0}^{N-1}S'''(i) \\[3ex]
 
 C &= \left\{
 \begin{array}{ll}
-  2621440 & (デザイン 3) \\[2ex]
+  2621440 & (デザイン 2, 3) \\[2ex]
   2097152 & (デザイン 4) \\
 \end{array}
 \right. \\[3ex]

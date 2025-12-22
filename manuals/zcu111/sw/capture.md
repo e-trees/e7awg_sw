@@ -8,18 +8,9 @@
 キャプチャユニットの制御には専用の Python API を用います．
 この API にはキャプチャユニットが保存したデータを FPGA から読み出す機能や，キャプチャの完了を待つ機能などが含まれています．
 
-ZCU111 向けの e7awg_hw には 5 種類の FPGA デザインがありますが，キャプチャユニットが含まれているのはデザイン 3 と 4 のみになります．
-これらの FPGA デザイン間で異なる部分は 2 章を参照してください．
-
 <br>
 
-**デザイン 0 ~ 2**
-
-デザイン 0 ~ 2 にはキャプチャユニット搭載されていません．
-
-<br>
-
-**デザイン 3**
+**デザイン 2, 3**
 
 ![システムオーバービュー1](figures/awg_system_overview_1.png)
 
@@ -33,25 +24,24 @@ ZCU111 向けの e7awg_hw には 5 種類の FPGA デザインがありますが
 
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
+ZCU111 上で動作する e7awg_hw には 3 種類の FPGA デザインがあります．
 デザイン間で異なる部分は以下の通りです．
 
  - DAC のサンプリングレート
  - ADC のサンプリングレート
  - データ RAM の構成
- - キャプチャデータ RAM の構成
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| デザイン ID | AWG の<br>サンプリングレート [Msps] | キャプチャユニットの<br>サンプリングレート [Msps] | データ RAM の構成 |
 | --- | --- | --- | --- | 
-| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
-| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
-| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+| 2 | 552.96 | 552.96 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes)|
+| 3 | 3256.32 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 798.72 | 798.72 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+
+※ サンプリングレートは，I/Q データの場合 I データと Q データをまとめて 1 サンプルとして計算しています．
 
 <br>
 
@@ -147,7 +137,7 @@ $$ -->
 <br>
 
 ## 6. キャプチャパラメータの制約
-キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 3 では，間引きは常に無効扱いとなります．
+キャプチャデータタイプ，キャプチャステップ数，キャプチャターゲットの長さ，総和ワード数は，HW リソースの都合上，式 ①～④の制約を全て満たさなければなりません．デザイン 2 と 3 では，間引きは常に無効扱いとなります．
 
 **総和と二値化の有効 / 無効の組み合わせと対応するパターン**
 | 総和 | 二値化 | パターン |
@@ -168,6 +158,13 @@ $$ -->
 RF Data Converter の ADC の以下のパラメータは固定となっており，ユーザが変更することはできません．
 I/Q ミキサは有効 / 無効を切り替えることができ，有効にした場合，ミキシング周波数を変更できます．
 
+**デザイン 2**
+
+- サンプリングレート : 1105.92 [Msps]
+- 間引き : 1/2
+
+<br>
+
 **デザイン 3**
 
 - サンプリングレート : 3256.32 [Msps]
@@ -180,6 +177,7 @@ I/Q ミキサは有効 / 無効を切り替えることができ，有効にし�
 - サンプリングレート : 1597.44 [Msps]
 - 間引き : 1/2
 
+<br>
 
 ## 8. キャプチャユニット制御用 API の詳細
 
@@ -204,7 +202,7 @@ I/Q ミキサは有効 / 無効を切り替えることができ，有効にし�
 
 キャプチャユニットと ADC は，次節以降で述べる操作を行う前に必ず初期化しなければなりません．
 ADC の初期化は，最初に RfdcCtrl クラスの set_adc_mixer_settings で I/Q ミキサの設定を行った後，
-同クラスのの sync_adc_tiles または sync_dac_adc_tiles メソッドでタイルの同期を行います．
+同クラスの sync_adc_tiles または sync_dac_adc_tiles メソッドでタイルの同期を行います．
 キャプチャユニットの初期化には e7awgsw.basiccapture パッケージに含まれる CaptureCtrl クラスの initialize メソッドを使用します．
 
 初期化のコード例を以下に示します

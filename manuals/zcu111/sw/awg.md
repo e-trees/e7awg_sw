@@ -11,13 +11,13 @@ AWG の制御には専用の Python API を用います．
 
 <br>
 
-**デザイン 0 ~ 2**
+**デザイン 0 , 1**
 
-![システムオーバービュー0](figures/awg_system_overview_0.png)
+廃止しました．
 
 <br>
 
-**デザイン 3**
+**デザイン 2, 3**
 
 ![システムオーバービュー1](figures/awg_system_overview_1.png)
 
@@ -33,8 +33,6 @@ AWG の制御には専用の Python API を用います．
 
 | デザイン ID | 同時に動作可能な AWG の組み合わせ |
 | --- | --- |
-| 0 | AWG 0 ~ 7 の中から最大 5 つ |
-| 1 | AWG 0 ~ 7 の中から 1 つ |
 | 2 | AWG 0 ~ 5 の中から最大 5 つに加えて，AWG 6 と 7 の 2 つ |
 | 3 | AWG 0 ~ 5 の中から最大 1 つに加えて，AWG 6 と 7 の 2 つ |
 | 4 | AWG 0 ~ 3, 6, 7 の全て |
@@ -43,25 +41,24 @@ AWG の制御には専用の Python API を用います．
 
 ## 2. ZCU111 版 e7awg_hw の種類
 
-ZCU111 上で動作する e7awg_hw には，以下の 5 種類の FPGA デザインがあります．
-デザイン間で異なる部分は以下の通りです．
+ZCU111 上で動作する e7awg_hw には 3 種類の FPGA デザインがあります．
+デザイン間で異なる部分は以下の通りです。
 
- - DAC のサンプリングレート
- - ADC のサンプリングレート
+ - AWG のサンプリングレート
+ - キャプチャユニット のサンプリングレート
  - データ RAM の構成
- - キャプチャデータ RAM の構成
 
 データ RAM は，波形データ RAM とキャプチャデータ RAM を合わせた RAM の呼び方です．
 
  <br>
 
-| デザイン ID | DAC の<br>サンプリングレート [Gsps] | ADC の<br>サンプリングレート [Gsps] | データ RAM の構成 |
+| デザイン ID | AWG の<br>サンプリングレート [Msps] | キャプチャユニットの<br>サンプリングレート [Msps] | データ RAM の構成 |
 | --- | --- | --- | --- | 
-| 0 | 1.10592 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 1 | 6.51264 | ADC 無し | AWG 0 ~ 7 → DRAM x1（512 MBytes / AWG）|
-| 2 | 1.10592 | ADC 無し | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） |
-| 3 | 6.51264 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
-| 4 | 1.59744 | 1.59744 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+| 2 | 552.96 | 552.96 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes)|
+| 3 | 3256.32 | 3.25632 | AWG 0 ~ 5 → DRAM x1（512 MBytes / AWG） <br> AWG 6 → URAM x1（1280 KBytes） <br> AWG 7 → URAM x1（1280 KBytes） <br> キャプチャユニット 0 → BRAM x1 (320 KBytes) <br> キャプチャユニット 1 → BRAM x1 (320 KBytes) <br> キャプチャユニット 2 → BRAM x1 (320 KBytes) <br> キャプチャユニット 3 → BRAM x1 (320 KBytes) <br> キャプチャユニット 4 → BRAM x1 (320 KBytes) <br> キャプチャユニット 5 → BRAM x1 (320 KBytes) <br> キャプチャユニット 6 → BRAM x1 (320 KBytes) <br> キャプチャユニット 7 → BRAM x1 (320 KBytes) |
+| 4 | 798.72 | 798.72 | AWG 0 ~ 3, 6 → DRAM x1 (512MBytes / AWG) <br> AWG 7 → URAM x1 (2560 KBytes) <br> キャプチャユニット 0 → BRAM x1 (256 KBytes) <br> キャプチャユニット 1 → BRAM x1 (256 KBytes) |
+
+※ サンプリングレートは，I/Q データの場合 I データと Q データをまとめて 1 サンプルとして計算しています．
 
 <br>
 
@@ -109,7 +106,7 @@ AWG が出力可能な波形の構造と制約について説明します．
 ![wave_chunk](../hw/figures/wave_chunk.png)
 
 
-**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 0 ~ 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
+**波形パート**は任意の値のサンプルが並んでおり，そのサンプル数はデザイン 2 と 3 では **512**，デザイン 4 では **2048** の倍数でなければなりません．
 
 ![wave_part](../hw/figures/wave_part.png)
 
@@ -117,7 +114,7 @@ AWG が出力可能な波形の構造と制約について説明します．
 
 ![wave part constraint](../hw/figures/wave_part_constraint.png)
 
-<!-- 
+<!--
 $$
 \begin{align*}
 S_u &\stackrel{\mathrm{def}}{=} \rm{AWG}\,u\, が出力する波形シーケンス \\[1ex]
@@ -126,23 +123,27 @@ W_u(i) &: S_u の波形チャンク \; i \;の波形パートのサンプル数 
 L_u &: \rm{AWG}\,u\, の波形データ格納領域に格納可能な総サンプル数 \\[1ex]
 [制約] \;\; &\displaystyle \sum_{i=0}^{N_u-1} W_u(i) \leqq L_u \\[5ex]
 
-\langle デザイン 0, 1 \rangle \\[1ex]
-L_u &= 134217728 \;\; (u \in \{0, 1, 2, 3, 4, 5, 6, 7\}) \\[1ex]
-
-\\
-
 \langle デザイン 2, 3 \rangle \\[1ex]
 L_u &= \left\{
 \begin{array}{ll}
   134217728\;\; & (u \in \{0, 1, 2, 3, 4, 5\}) \\[1ex]
-  1310720\;\; & (u \in \{6, 7\}) \\[1ex]
+  327680\;\; & (u \in \{6, 7\}) \\[1ex]
+\end{array} \\
+\right.\\
+
+\\
+
+\langle デザイン 4 \rangle \\[1ex]
+L_u &= \left\{
+\begin{array}{ll}
+  134217728\;\; & (u \in \{0, 1, 2, 3, 6\}) \\[1ex]
+  655360\;\; & (u \in \{7\}) \\[1ex]
 \end{array} \\
 \right.\\
 
 \end{align*}
 $$
 -->
-
 
 <br>
 
@@ -156,14 +157,14 @@ $$
 
 RF Data Converter の DAC は以下のパラメータで固定となっており，ユーザが変更することはできません．
 
-**デザイン 0, 2**
+**デザイン 2**
 - サンプリングレート : 1105.92 [Msps]
 - I/Q ミキサ : 有効
 - インタポレーション : 2倍
 
 <br>
 
-**デザイン 1, 3**
+**デザイン 3**
 - サンプリングレート : 6512.64 [Msps]
 - I/Q ミキサ : 有効
 - インタポレーション : 2倍
@@ -178,7 +179,7 @@ RF Data Converter の DAC は以下のパラメータで固定となっており
 <br>
 
 AWG から出力される **ユーザ定義波形** は，DAC 内部でサンプル数が 2 倍になる様に補間された後，DAC のサンプリングレートで出力されます．
-よって，例えばデザイン 1 では，サンプル数が 512 * n 個 (n = 1, 2, 3, ... ) の **波形パート** は，長さが 157.233 * n [ns] (≒ 2 * 512 * n / 6512.64 * 1000) の波形となって出力されます．
+よって，例えばデザイン 3 では，サンプル数が 512 * n 個 (n = 1, 2, 3, ... ) の **波形パート** は，長さが 157.233 * n [ns] (≒ 2 * 512 * n / 6512.64 * 1000) の波形となって出力されます．
 
 ## 6. AWG 制御用 API の詳細
 
@@ -201,7 +202,7 @@ AWG から出力される **ユーザ定義波形** は，DAC 内部でサンプ
 
 AWG と DAC は，次節以降で述べる操作を行う前に必ず初期化しなければなりません．
 DAC の初期化は，最初に RfdcCtrl クラスの set_dac_mixer_settings で I/Q ミキサの設定を行った後，
-同クラスのの sync_dac_tiles または sync_dac_adc_tiles メソッドでタイルの同期を行います．
+同クラスの sync_dac_tiles または sync_dac_adc_tiles メソッドでタイルの同期を行います．
 AWG の初期化には AwgCtrl クラスの initialize メソッドを使用します．
 
 初期化のコード例を以下に示します
@@ -215,11 +216,11 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する    
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     # FPGA コンフィギュレーション
-    e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
+    e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2)
 
     for tile_id in list(e7sz.DacTile):
         for channel_id in list(e7sz.DacChannel):
@@ -262,7 +263,7 @@ import e7awgsw as e7s
 wave_seq = e7s.WaveSequence(
     num_wait_words = 10,  # wait word の AWG ワード数
     num_seq_repeats = 2,  # 波形シーケンスの繰り返し回数
-    e7s.E7AwgHwType.ZCU111)  
+    e7s.E7AwgHwType.ZCU111_URAM_X2)  
 
 
 # 波形チャンク 0 の定義
@@ -297,8 +298,8 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###
@@ -326,8 +327,8 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###
@@ -356,8 +357,8 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###
@@ -384,8 +385,8 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###
@@ -418,8 +419,8 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # DAC/AWG 制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111) as rfdc_ctrl,
-      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as awg_ctrl):
+      e7sz.RfdcCtrl(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2) as rfdc_ctrl,
+      e7s.AwgCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as awg_ctrl):
 
     ### AWG / DAC 初期化 (省略) ###
     ### 波形データの定義 (省略) ###

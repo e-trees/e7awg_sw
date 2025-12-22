@@ -513,8 +513,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
@@ -1039,8 +1037,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.KR260"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.KR260</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.SIMPLE_MULTI"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.SIMPLE_MULTI</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DAC_6G_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DAC_6G_URAM_X2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType.ZCU111_URAM_X2"><code class="docutils literal notranslate"><span class="pre">E7AwgHwType.ZCU111_URAM_X2</span></code></a></li>
@@ -1453,7 +1449,8 @@
         <span class="n">spec</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">SIMPLE_MULTI</span><span class="p">:</span>
             <span class="n">spec</span> <span class="o">=</span> <span class="n">CaptureUnitSpecs</span><span class="o">.</span><span class="n">_create</span><span class="p">(</span><span class="n">design_type</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="ow">or</span> \
+        <span class="k">elif</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="ow">or</span> \
+            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="ow">or</span> \
             <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span><span class="p">:</span>
             <span class="n">spec</span> <span class="o">=</span> <span class="n">BasicCaptureUnitSpecs</span><span class="o">.</span><span class="n">_create</span><span class="p">(</span><span class="n">design_type</span><span class="p">)</span>
 
@@ -1462,17 +1459,13 @@
                 <span class="p">{</span><span class="n">cap_unit</span> <span class="p">:</span> <span class="n">spec</span> <span class="k">for</span> <span class="n">cap_unit</span> <span class="ow">in</span> <span class="n">CaptureUnit</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="n">design_type</span><span class="p">)}</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">__dout_specs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DigitalOutSpecs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">or</span> \
-           <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="ow">or</span> \
-           <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="ow">or</span> \
+        <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU216</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dout_specs</span> <span class="o">=</span> <span class="n">DigitalOutSpecs</span><span class="p">(</span><span class="n">DigitalOutParams</span><span class="o">.</span><span class="n">of</span><span class="p">(</span><span class="n">design_type</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__rfdc_specs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RfdcSpecs</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111</span> <span class="ow">or</span> \
-           <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G</span> <span class="ow">or</span> \
-           <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="ow">or</span> \
+        <span class="k">if</span> <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_URAM_X2</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DAC_6G_URAM_X2</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU111_DOUBLE_QUANTUM_DOT</span> <span class="ow">or</span> \
            <span class="n">design_type</span> <span class="o">==</span> <span class="n">E7AwgHwType</span><span class="o">.</span><span class="n">ZCU216</span><span class="p">:</span>
@@ -1530,7 +1523,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2025-12-12" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-12-22" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

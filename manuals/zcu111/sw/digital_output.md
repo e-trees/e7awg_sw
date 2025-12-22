@@ -12,13 +12,7 @@
 
 <br>
 
-**デザイン 0 ~ 2**
-
-![システムオーバービュー0](figures/awg_system_overview_0.png)
-
-<br>
-
-**デザイン 3**
+**デザイン 2, 3**
 
 ![システムオーバービュー1](figures/awg_system_overview_1.png)
 
@@ -60,6 +54,7 @@
 | Active | ディジタル出力値リストの値. |
 | Pause | この状態に遷移する直前の出力値. |
 
+<br>
 
 ## 3. 出力ポート
 
@@ -88,10 +83,10 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
 
     # FPGA コンフィギュレーション
-    e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111)
+    e7sz.configure_fpga(trasnceiver, e7s.E7AwgHwType.ZCU111_URAM_X2)
     
     # ディジタル出力モジュール 0 の初期化
     digital_out_ctrl.initialize(e7s.DigitalOut.U0)
@@ -106,8 +101,9 @@ Active 状態の出力データは，e7awgsw パッケージの DigitalOutputDat
 
 | デザイン ID | 出力時間の単位 |
 | ---- | ---- |
-| 0, 2 | 14.4676 [ns] |
-| 1, 3 | 2.45676 [ns] |
+| 2 | 14.4676 [ns] |
+| 3 | 2.45676 [ns] |
+| 4 | 10.0160 [ns] |
 
 ディジタル出力データを設定するコード例を以下に示します．
 
@@ -120,12 +116,12 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
 
     ### ディジタル出力モジュールの初期化 (省略) ###
 
     # ディジタル出力データの作成
-    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111)
+    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111_URAM_X2)
     (dout_data_list
         .add(0x01, 100)
         .add(0x02, 150)
@@ -137,13 +133,19 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
 
 このコードで定義される出力データは以下のようになります．
 
-#### FPGA デザイン 0, 2
+#### FPGA デザイン 2
 
 ![ディジタル出力例](figures/dout_result.png)
 
-#### FPGA デザイン 1, 3
+#### FPGA デザイン 3
 
 ![ディジタル出力例](figures/dout_result_dac_6g.png)
+
+#### FPGA デザイン 4
+
+![ディジタル出力例](figures/dout_result_dqd.png)
+
+<br>
 
 ### 4.3. Idle 状態の出力データの設定
 
@@ -163,7 +165,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
 
@@ -186,7 +188,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -213,7 +215,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -240,7 +242,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -266,7 +268,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -274,7 +276,7 @@ with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
     ### ディジタル出力モジュールの一時停止 (省略) ###
 
     # ディジタル出力データの作成 (Option)
-    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111)
+    dout_data_list = e7s.DigitalOutputDataList(e7s.E7AwgHwType.ZCU111_URAM_X2)
     (dout_data_list
         .add(0x0A, 100)
         .add(0x06, 150))
@@ -303,7 +305,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -333,7 +335,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -360,7 +362,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
@@ -386,7 +388,7 @@ fpga_ip_addr = '10.0.0.16'     # ZCU111 の 10 Gb Ethernet ポートの IP ア�
 
 # ディジタル出力モジュール制御用オブジェクトを作成する
 with (e7sz.RftoolTransceiver(zcu111_ip_addr, 15) as trasnceiver,
-      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111) as digital_out_ctrl):
+      e7s.DigitalOutCtrl(fpga_ip_addr, e7s.E7AwgHwType.ZCU111_URAM_X2) as digital_out_ctrl):
     
     ### ディジタル出力モジュールの初期化 (省略) ###
     ### ディジタル出力データの設定 (省略) ###
