@@ -1,6 +1,10 @@
 import time
+import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu216 as e7sz
+from collections import namedtuple
+
+IpAddr = namedtuple('IpAddr', ['zcu216', 'fpga'])
 
 awg_list = [e7s.AWG.U0, e7s.AWG.U1]
 wave_freq = 1 # MHz
@@ -122,17 +126,19 @@ def restart_douts(mode, awg_ctrl, digital_out_ctrl):
         awg_ctrl.wait_for_awgs_to_stop(5, *awg_list)
 
 
-def main(design_type):
-    zcu216_ip_addr = '192.168.1.3'
-    fpga_ip_addr = '10.0.0.16'
+def main(design_type, ip_addr, forward_packet):
     hw_specs = e7s.E7AwgHwSpecs(design_type)
-    with (e7sz.RftoolTransceiver(zcu216_ip_addr, 15) as transceiver,
+    with (e7sz.RftoolTransceiver(ip_addr.zcu216, 15) as transceiver,
           e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl,
-          e7s.DigitalOutCtrl(fpga_ip_addr, design_type) as digital_out_ctrl):
+          e7s.AwgCtrl(ip_addr.fpga, design_type) as awg_ctrl,
+          e7s.DigitalOutCtrl(ip_addr.fpga, design_type) as digital_out_ctrl):
         # FPGA コンフィギュレーション
         print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
+        # パケットフォワーディング開始
+        if forward_packet:
+            print('enable packet forwarding')
+            e7sz.enable_packet_forwarding(transceiver, design_type)
         # DAC のセットアップ
         print('setup DACs')
         setup_dacs(rfdc_ctrl)
@@ -168,13 +174,32 @@ def main(design_type):
         # ディジタル出力モジュール動作完了フラグクリア
         digital_out_ctrl.clear_dout_stop_flags(e7s.DigitalOut.U0)
         # DAC 割り込みチェック
+        print('check DAC interrupts')
         dac_to_interrupts = get_dac_interrupts(rfdc_ctrl)
         output_rfdc_interrupt_details(dac_to_interrupts)
         # AWG エラーチェック
+        print('check AWG errors')
         awg_to_errs = awg_ctrl.check_err(*awg_list)
         output_awg_err_details(awg_to_errs)
+        # パケットフォワーディング終了
+        if forward_packet:
+            print('disable packet forwarding')
+            e7sz.disable_packet_forwarding(transceiver)
+        print('end')
 
+
+def get_program_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
+    parser.add_argument('--forward-packet', action="store_true")
+    return parser.parse_args()
 
 if __name__ == "__main__":
+    args = get_program_args()
+    if args.forward_packet:
+        ip_addr = IpAddr(args.ipaddr, args.ipaddr)
+    else:
+        ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
+
     design_type = e7s.E7AwgHwType.ZCU216
-    main(design_type)
+    main(design_type, ip_addr, args.forward_packet)

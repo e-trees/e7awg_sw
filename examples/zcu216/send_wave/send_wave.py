@@ -6,9 +6,9 @@ import math
 import argparse
 import e7awgsw as e7s
 import e7awgsw.zcu216 as e7sz
+from collections import namedtuple
 
-# AWG Controller の IP アドレス.
-IP_ADDR = '10.0.0.16'
+IpAddr = namedtuple('IpAddr', ['zcu216', 'fpga'])
 
 # AWG から出力する余弦波のパラメータ
 NUM_FREQ = 1 # MHz
@@ -112,48 +112,79 @@ def output_rfdc_interrupt_details(dac_to_interrupts):
                 print('  ', e7sz.RfdcInterrupt.to_msg(interrupt))
 
 
-def main(design_type, awgs, num_wait_words, timeout):
-    zcu216_ip_addr = '192.168.1.3'
-    fpga_ip_addr = IP_ADDR
+def main(
+    design_type,
+    ip_addr,
+    awgs,
+    num_wait_words,
+    forward_packet,
+    timeout):
     hw_specs = e7s.E7AwgHwSpecs(design_type)
-    with (e7sz.RftoolTransceiver(zcu216_ip_addr, 15) as transceiver,
+    with (e7sz.RftoolTransceiver(ip_addr.zcu216, 15) as transceiver,
           e7sz.RfdcCtrl(transceiver, design_type) as rfdc_ctrl,
-          e7s.AwgCtrl(fpga_ip_addr, design_type) as awg_ctrl):
+          e7s.AwgCtrl(ip_addr.fpga, design_type) as awg_ctrl):
         # FPGA コンフィギュレーション
+        print('configure FPGA')
         e7sz.configure_fpga(transceiver, design_type)
+        # パケットフォワーディング開始
+        if forward_packet:
+            print('enable packet forwarding')
+            e7sz.enable_packet_forwarding(transceiver, design_type)
         # DAC のセットアップ
+        print('setup DACs')
         setup_dacs(rfdc_ctrl)
         # 初期化
+        print('setup AWGs')
         awg_ctrl.initialize(*awgs)
         # 波形シーケンスの設定
         awg_to_wave_sequence = set_wave_sequence(awg_ctrl, awgs, num_wait_words, hw_specs)
         # 波形送信スタート
+        print('start AWGs')
         awg_ctrl.start_awgs(*awgs)
         # 波形送信完了待ち
+        print('wait for AWGs to stop')
         awg_ctrl.wait_for_awgs_to_stop(timeout, *awgs)
         # DAC 割り込みチェック
+        print('check DAC interrupts')
         dac_to_interrupts = get_dac_interrupts(rfdc_ctrl)
         output_rfdc_interrupt_details(dac_to_interrupts)
         # エラーチェック
+        print('check AWG errors')
         check_err(awg_ctrl, awgs)
         # 波形保存
+        print('output AWG waveforms')
         output_graph(awg_to_wave_sequence)
+        # パケットフォワーディング終了
+        if forward_packet:
+            print('disable packet forwarding')
+            e7sz.disable_packet_forwarding(transceiver)
         print('end')
 
 
-if __name__ == "__main__":
+def get_program_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ipaddr')
+    parser.add_argument('--ipaddr', default='192.168.1.3', type=str)
     parser.add_argument('--awgs')
     parser.add_argument('--num-wait-words', default=0, type=int)
     parser.add_argument('--timeout', default=5, type=int)
-    args = parser.parse_args()
+    parser.add_argument('--forward-packet', action="store_true")
+    return parser.parse_args()
 
-    if args.ipaddr is not None:
-        IP_ADDR = args.ipaddr
+if __name__ == "__main__":
+    args = get_program_args()
+    if args.forward_packet:
+        ip_addr = IpAddr(args.ipaddr, args.ipaddr)
+    else:
+        ip_addr = IpAddr(args.ipaddr, '10.0.0.16')
 
     awgs = sorted(e7s.AWG.on(e7s.E7AwgHwType.ZCU216))
     if args.awgs is not None:
         awgs = [e7s.AWG(int(x)) for x in args.awgs.split(',')]
 
-    main(e7s.E7AwgHwType.ZCU216, awgs, args.num_wait_words, timeout=args.timeout)
+    main(
+        e7s.E7AwgHwType.ZCU216, 
+        ip_addr,
+        awgs, 
+        args.num_wait_words, 
+        args.forward_packet,
+        args.timeout)

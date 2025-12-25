@@ -10,7 +10,7 @@ def configure_fpga(transceiver: RftoolTransceiver, design_type: E7AwgHwType):
     if design_type != E7AwgHwType.ZCU111_URAM_X2 and \
        design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
        design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
-        raise ValueError('Invalid e7awg_hw type. {}'.format(design_type))
+        raise ValueError(f"The HW type {design_type} is not for ZCU111.")
 
     type_to_id = {
         E7AwgHwType.ZCU111_URAM_X2 : 17,
@@ -28,14 +28,12 @@ def enable_packet_forwarding(transceiver: RftoolTransceiver, design_type: E7AwgH
 
     Args:
         transceiver (RftoolTransceiver): ZCU111 のファームウェアとの通信機能を提供するオブジェクト
-        design_type (E7AwgHwType): 
-            | e7awg_hw の種類.  
-            | 現状, パケットフォワーディングが可能なのは ZCU111_DOUBLE_QUANTUM_DOT デザインだけなので, これを指定すること.
+        design_type (E7AwgHwType): e7awg_hw の種類
     """
     if design_type != E7AwgHwType.ZCU111_URAM_X2 and \
        design_type != E7AwgHwType.ZCU111_DAC_6G_URAM_X2 and \
        design_type != E7AwgHwType.ZCU111_DOUBLE_QUANTUM_DOT:
-        raise ValueError(f"The design {design_type} does not support Packet Forwarding.")
+        raise ValueError(f"The HW type {design_type} is not for ZCU111.")
     
     ip_addr = struct.unpack(">L", socket.inet_aton(transceiver.ip_addr))[0]
     ports = [
