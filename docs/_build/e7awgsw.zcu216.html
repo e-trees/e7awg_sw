@@ -257,6 +257,12 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#module-e7awgsw.zcu216">e7awgsw.zcu216 namespace</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.zcu216.fwproxy">e7awgsw.zcu216.fwproxy module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.configure_fpga"><code class="docutils literal notranslate"><span class="pre">configure_fpga()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.disable_packet_forwarding"><code class="docutils literal notranslate"><span class="pre">disable_packet_forwarding()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.enable_packet_forwarding"><code class="docutils literal notranslate"><span class="pre">enable_packet_forwarding()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.zcu216.rfdcctrl">e7awgsw.zcu216.rfdcctrl module</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.rfdcctrl.RfdcCtrl"><code class="docutils literal notranslate"><span class="pre">RfdcCtrl</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.rfdcctrl.RfdcCtrlBase"><code class="docutils literal notranslate"><span class="pre">RfdcCtrlBase</span></code></a></li>
@@ -781,6 +787,12 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#module-e7awgsw.zcu216">e7awgsw.zcu216 namespace</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.zcu216.fwproxy">e7awgsw.zcu216.fwproxy module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.configure_fpga"><code class="docutils literal notranslate"><span class="pre">configure_fpga()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.disable_packet_forwarding"><code class="docutils literal notranslate"><span class="pre">disable_packet_forwarding()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.fwproxy.enable_packet_forwarding"><code class="docutils literal notranslate"><span class="pre">enable_packet_forwarding()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#module-e7awgsw.zcu216.rfdcctrl">e7awgsw.zcu216.rfdcctrl module</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.rfdcctrl.RfdcCtrl"><code class="docutils literal notranslate"><span class="pre">RfdcCtrl</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#e7awgsw.zcu216.rfdcctrl.RfdcCtrlBase"><code class="docutils literal notranslate"><span class="pre">RfdcCtrlBase</span></code></a></li>
@@ -1186,6 +1198,44 @@
 <span id="e7awgsw-zcu216-namespace"></span><h1>e7awgsw.zcu216 namespace<a class="headerlink" href="#module-e7awgsw.zcu216" title="Link to this heading">¶</a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-e7awgsw.zcu216.fwproxy">
+<span id="e7awgsw-zcu216-fwproxy-module"></span><h2>e7awgsw.zcu216.fwproxy module<a class="headerlink" href="#module-e7awgsw.zcu216.fwproxy" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="e7awgsw.zcu216.fwproxy.configure_fpga">
+<span class="sig-prename descclassname"><span class="pre">e7awgsw.zcu216.fwproxy.</span></span><span class="sig-name descname"><span class="pre">configure_fpga</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transceiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="e7awgsw.rfdccommon.html#e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver" title="e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver"><span class="pre">RftoolTransceiver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><span class="pre">E7AwgHwType</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/zcu216/fwproxy.html#configure_fpga"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.zcu216.fwproxy.configure_fpga" title="Link to this definition">¶</a></dt>
+<dd><p>FPGA をコンフィギュレーションする</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="e7awgsw.zcu216.fwproxy.disable_packet_forwarding">
+<span class="sig-prename descclassname"><span class="pre">e7awgsw.zcu216.fwproxy.</span></span><span class="sig-name descname"><span class="pre">disable_packet_forwarding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transceiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="e7awgsw.rfdccommon.html#e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver" title="e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver"><span class="pre">RftoolTransceiver</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/zcu216/fwproxy.html#disable_packet_forwarding"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.zcu216.fwproxy.disable_packet_forwarding" title="Link to this definition">¶</a></dt>
+<dd><p>ZCU216 のファームウェアのパケットフォワーディングを無効化する</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transceiver</strong> (<a class="reference internal" href="e7awgsw.rfdccommon.html#e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver" title="e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver"><em class="hover">RftoolTransceiver</em></a>) -- ZCU216 のファームウェアとの通信機能を提供するオブジェクト</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="e7awgsw.zcu216.fwproxy.enable_packet_forwarding">
+<span class="sig-prename descclassname"><span class="pre">e7awgsw.zcu216.fwproxy.</span></span><span class="sig-name descname"><span class="pre">enable_packet_forwarding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transceiver</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="e7awgsw.rfdccommon.html#e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver" title="e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver"><span class="pre">RftoolTransceiver</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><span class="pre">E7AwgHwType</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/e7awgsw/zcu216/fwproxy.html#enable_packet_forwarding"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#e7awgsw.zcu216.fwproxy.enable_packet_forwarding" title="Link to this definition">¶</a></dt>
+<dd><p>ZCU216 のファームウェアのパケットフォワーディングを有効化する</p>
+<div class="line-block">
+<div class="line">パケットフォワーディングを有効にすると, 本来 FPGA の IP アドレスを指定して FPGA と受け渡しするパケットを</div>
+<div class="line">ZCU216 の IP アドレスを指定して受け渡しできるようになる.</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transceiver</strong> (<a class="reference internal" href="e7awgsw.rfdccommon.html#e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver" title="e7awgsw.rfdccommon.rftooltransceiver.RftoolTransceiver"><em class="hover">RftoolTransceiver</em></a>) -- ZCU216 のファームウェアとの通信機能を提供するオブジェクト</p></li>
+<li><p><strong>design_type</strong> (<a class="reference internal" href="e7awgsw.html#e7awgsw.hwdefs.E7AwgHwType" title="e7awgsw.hwdefs.E7AwgHwType"><em class="hover">E7AwgHwType</em></a>) -- e7awg_hw の種類</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-e7awgsw.zcu216.rfdcctrl">
 <span id="e7awgsw-zcu216-rfdcctrl-module"></span><h2>e7awgsw.zcu216.rfdcctrl module<a class="headerlink" href="#module-e7awgsw.zcu216.rfdcctrl" title="Link to this heading">¶</a></h2>
@@ -1654,7 +1704,7 @@
   <div id="footer-row" class="row">
 
     <div class="col-md-12">
-        <span title="Built on 2025-12-22" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
+        <span title="Built on 2025-12-25" class="pull-right">&copy; Copyright 2021, e-trees.Japan.
         Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6 and the
         <a href="https://pypi.org/project/sphinx-sizzle-theme/"
 

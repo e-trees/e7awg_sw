@@ -6,6 +6,14 @@ e7awgsw.zcu216 namespace
 Submodules
 ----------
 
+e7awgsw.zcu216.fwproxy module
+-----------------------------
+
+.. automodule:: e7awgsw.zcu216.fwproxy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 e7awgsw.zcu216.rfdcctrl module
 ------------------------------
 
