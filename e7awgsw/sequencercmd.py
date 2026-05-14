@@ -129,6 +129,15 @@ class SequencerCmd(object, metaclass = ABCMeta):
             .format(min, max, offset))
 
 
+    def _validate_feedback_condition(self, fb_cond: int):
+        if isinstance(fb_cond, int) and self._is_in_range(0, 3, fb_cond):
+            return
+        
+        raise ValueError(
+            "The feedback condition must be integers between {} and {} inclusive. ({})"
+            .format(0, 3, fb_cond))
+
+
     def _to_bit_field(self, bit_pos_list: Iterable[int]) -> int:
         bit_field = 0
         for bit_pos in bit_pos_list:
@@ -182,9 +191,12 @@ class AwgStartCmd(SequencerCmd):
             start_time (int):
                 | AWG をスタートする時刻.
                 | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
-                | 負の値を入力した場合, AWG を即時スタートする．
-                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 
-                | awg_id_list で指定した全ての AWG の準備が完了するとスタートする.
+                |
+                | 負の値を入力した場合, コマンドの実行と同時に awg_id_list で指定した AWG の波形出力準備を行い, 
+                | 全ての AWG の準備が完了すると波形の出力を開始する.
+                | ただし, コマンドの実行時に対象の AWG の中に動作中のものがある場合, 
+                | 動作が停止するのを待ってから波形の出力準備と出力を行う.
+                | このとき, このコマンドは失敗扱いとなりエラーレポートが発行される.
             wait (bool):
                 | True -> AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
                 | False -> AWG をスタートした後, このコマンドを終了する.
@@ -827,9 +839,12 @@ class ResponsiveFeedbackCmd(SequencerCmd):
             start_time (int):
                 | 1 回目に AWG をスタートする時刻.
                 | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
-                | 負の値を入力した場合, AWG を即時スタートする．
-                | このとき, AWG はコマンドの実行と同時に波形出力準備を行い, 
-                | awg_id_list で指定した全ての AWG の準備が完了するとスタートする.
+                |
+                | 負の値を入力した場合, コマンドの実行と同時に awg_id_list で指定した AWG の波形出力準備を行い, 
+                | 全ての AWG の準備が完了すると波形の出力を開始する.
+                | ただし, コマンドの実行時に対象の AWG の中に動作中のものがある場合, 
+                | 動作が停止するのを待ってから波形の出力準備と出力を行う.
+                | このとき, このコマンドは失敗扱いとなりエラーレポートが発行される.
             wait (bool):
                 | True -> 2 回目に AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
                 | False -> 2 回目に AWG をスタートした後, このコマンドを終了する.
@@ -901,9 +916,10 @@ class WaveSequenceSelectionCmd(SequencerCmd):
         ext_trig_flag: bool = False,
         stop_seq: bool = False
     ) -> None:
-        """以下の 2 つのコマンドで AWG に設定する波形シーケンスを選択するコマンド.
+        """以下の 3 つのコマンドで AWG に設定する波形シーケンスを選択するコマンド.
             - 高速フィードバックコマンド
             - 四値付き外部トリガ待ち AWG スタートコマンド
+            - 条件付きフィードバックコマンド
 
         Args:
             cmd_no (int): コマンド番号
@@ -1122,6 +1138,122 @@ class AwgStartWithExtTrigAndClsValCmd(SequencerCmd):
             awg_id_list          << 24  |
             self.timeout         << 40  |
             self.wait            << 104)
+        return cmd.to_bytes(16, 'little')
+
+
+    def serialize(self) -> bytes:
+        return self.__cmd_bytes
+
+
+    def size(self) -> int:
+        return len(self.__cmd_bytes)
+
+
+class ConditionalFeedbackCmd(SequencerCmd):
+    #: コマンドの種類を表す ID
+    ID: Final = 12
+    #: 1 回目の AWG スタート時刻に指定可能な最大値
+    MAX_START_TIME: Final = 0x7FFFFFFF_FFFFFFFF
+    #: AWG を即時スタートする場合に start_time に指定する値．
+    IMMEDIATE: Final = -1
+
+    def __init__(
+        self,
+        cmd_no: int,
+        awg_id_list: Iterable[AWG] | AWG,
+        start_time: int,
+        feedback_flag: int,
+        wait: bool = False,
+        stop_seq: bool = False
+    ) -> None:
+        """条件付きフィードバック処理を行うコマンド
+
+        | 条件付きフィードバック処理は
+        |   1. AWG から波形を出力 (1 回目)
+        |   2. フィードバックフラグ (feedback_flag 引数) で設定した四値に対応する波形シーケンスを AWG に設定
+        |   3. キャプチャユニットで波形データを取得し四値化結果を算出
+        |   4. 四値化結果と feedback_flag の値が一致しない場合, AWG の出力波形が 0 データになるように設定
+        |   5. AWG から波形を出力 (2 回目)
+        | を行う.
+        |
+        | 条件付きフィードバック処理で参照する四値化結果のチャネルと波形シーケンスの ID は,
+        | WaveSequenceSelectionCmd オブジェクトで作れるシーケンサコマンドを使って指定する.
+
+        Args:
+            cmd_no (int): コマンド番号
+            awg_id_list (Iterable of AWG | AWG): 波形を出力する AWG のリスト
+            start_time (int):
+                | 1 回目に AWG をスタートする時刻.
+                | シーケンサが動作を開始した時点を 0 として, start_time * 8[ns] 後に AWG がスタートする.
+                |
+                | 負の値を入力した場合, コマンドの実行と同時に awg_id_list で指定した AWG の波形出力準備を行い, 
+                | 全ての AWG の準備が完了すると波形の出力を開始する.
+                | ただし, コマンドの実行時に対象の AWG の中に動作中のものがある場合, 
+                | 動作が停止するのを待ってから波形の出力準備と出力を行う.
+                | このとき, このコマンドは失敗扱いとなりエラーレポートが発行される.
+            feedback_flag (int):
+                | AWG から二回目に出力される波形を決めるための値.  0 ~ 3 の値を指定すること.
+                | この値 (n とする) と WaveSequenceSelectionCmd で指定した四値チャネルの四値化結果が一致した場合,
+                | 同コマンドで指定した四値化結果 (n) に対応する波形シーケンスが AWG から出力される.
+                | 一致しない場合, 0 データが出力される.
+                | 但し, 出力される波形の長さは一致した場合と変わらない.
+            wait (bool):
+                | True -> 2 回目に AWG をスタートした後, 波形の出力完了を待ってからこのコマンドを終了する
+                | False -> 2 回目に AWG をスタートした後, このコマンドを終了する.
+            stop_seq (bool): 
+                | シーケンサ停止フラグ.
+                | True の場合, このコマンドを実行後シーケンサはコマンドの処理を止める.
+        """
+        super().__init__(self.ID, cmd_no, stop_seq)
+        awg_id_list = self._to_list(awg_id_list)
+        self._validate_awg_id(awg_id_list)
+
+        if not (isinstance(start_time, int) and (start_time <= self.MAX_START_TIME)):
+            raise ValueError(
+                "'start_time' must be less than or equal to {}.  '{}' was set."
+                .format(self.MAX_START_TIME, start_time))
+        
+        if not (isinstance(feedback_flag, int) and self._is_in_range(0, 3, feedback_flag)):
+            raise ValueError(
+                "'feedback_flag' must be integers between {} and {} inclusive. ({})"
+                .format(0, 3, feedback_flag))
+
+        self.__awg_id_list: list[AWG] = awg_id_list
+        self.__start_time = start_time
+        self.__conditioin = feedback_flag
+        self.__wait = wait
+        self.__cmd_bytes = self.__gen_cmd_bytes()
+
+
+    @property
+    def awg_id_list(self) -> list[AWG]:
+        return list(self.__awg_id_list)
+
+
+    @property
+    def start_time(self) -> int:
+        return self.__start_time
+    
+    @property
+    def condition(self) -> int:
+        return self.__conditioin
+
+    @property
+    def wait(self) -> bool:
+        return self.__wait
+
+
+    def __gen_cmd_bytes(self) -> bytes:
+        awg_id_list = self._to_bit_field(self.__awg_id_list)
+        start_time = 0xFFFFFFFF_FFFFFFFF if self.start_time < 0 else self.start_time
+        cmd = (
+            int(self.stop_seq)          |
+            self.cmd_id          << 1   |
+            self.cmd_no          << 8   |
+            awg_id_list          << 24  |
+            start_time           << 40  |
+            self.wait            << 104 |
+            self.condition       << 105)
         return cmd.to_bytes(16, 'little')
 
 
@@ -1647,3 +1779,63 @@ class AwgStartWithExtTrigAndClsValCmdErr(SequencerCmdErr):
             '  - read error    : {}\n'.format(self.read_err) +
             '  - write error   : {}\n'.format(self.write_err) +
             '  - timeout error : {}'.format(self.timeout_err))
+
+
+class ConditionalFeedbackCmdErr(SequencerCmdErr):
+
+    def __init__(
+        self,
+        cmd_no: int,
+        is_terminated: bool,
+        awg_id_list: Iterable[AWG],
+        read_err: bool,
+        write_err: bool
+    ) -> None:
+        """条件付きフィードバックコマンドのエラー情報を保持するクラス"""
+        super().__init__(ConditionalFeedbackCmd.ID, cmd_no, is_terminated)
+        self.__awg_id_list = list(awg_id_list)
+        self.__read_err = read_err
+        self.__write_err = write_err
+
+
+    @property
+    def awg_id_list(self) -> list[AWG]:
+        """指定した時刻にスタートできなかった AWG の ID のリスト
+        
+        Returns:
+            list of AWG:
+                | 指定した時刻にスタートできなかった AWG の ID のリスト.
+        """
+        return list(self.__awg_id_list)
+
+
+    @property
+    def read_err(self) -> bool:
+        """読み出しエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの読み出しエラーが発生した場合 True
+        """
+        return self.__read_err
+
+
+    @property
+    def write_err(self) -> bool:
+        """書き込みエラーフラグ
+
+        Returns:
+            bool: コマンドの実行中に波形シーケンスの書き込みエラーが発生した場合 True
+        """
+        return self.__write_err
+
+
+    def __str__(self) -> str:
+        awg_id_list = [int(awg_id) for awg_id in self.__awg_id_list]
+        return (
+            'ConditionalFeedbackCmdErr\n' +
+            '  - command ID  : {}\n'.format(self.cmd_id) +
+            '  - command No  : {}\n'.format(self.cmd_no) +
+            '  - terminated  : {}\n'.format(self.is_terminated) +
+            '  - AWG IDs     : {}\n'.format(awg_id_list) +
+            '  - read error  : {}\n'.format(self.read_err) +
+            '  - write error : {}'.format(self.write_err))

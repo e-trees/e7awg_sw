@@ -10,6 +10,7 @@ from waitflagtest import WaitFlagTest
 from responsivefeedbacktest import ResponsiveFeedbackTest
 from branchtest import BranchTest
 from awgstartwithexttrigtest import AwgStartWithExtTrigTest
+from conditionalfeedbacktest import ConditionalFeedbackTest
 from e7awgsw import CaptureModule, WaveSequence, CaptureParam, DspUnit, DecisionFunc, CaptureParamElem
 
 
@@ -335,6 +336,15 @@ def main(
         if not result:
             print('failure awg start with external trigger test')
             failed_tests.append('{} - awg start with external trigger'.format(test_id))
+
+        print('\n-- conditional feedback test --')
+        test = ConditionalFeedbackTest(
+            res_dir, awg_cap_ip_addr, seq_ip_addr, server_ip_addr, use_labrad)
+        result = test.run_test('conditional_fb_test')
+        test.close()
+        if not result:
+            print('failure conditional feedback test')
+            failed_tests.append('{} - conditional feedback'.format(test_id))            
         print()
 
     if failed_tests:

@@ -4,7 +4,7 @@ from e7awgsw import \
     AwgStartCmd, CaptureEndFenceCmd, WaveSequenceSetCmd, \
     CaptureParamSetCmd, CaptureAddrSetCmd, FeedbackCalcOnClassificationCmd, \
     WaveGenEndFenceCmd, WaveSequenceSelectionCmd, ResponsiveFeedbackCmd, \
-    BranchByFlagCmd, AwgStartWithExtTrigAndClsValCmd
+    BranchByFlagCmd, AwgStartWithExtTrigAndClsValCmd, ConditionalFeedbackCmd
 from e7awgsw import \
     AwgStartCmdErr, CaptureEndFenceCmdErr, WaveSequenceSetCmdErr, \
     CaptureParamSetCmdErr, CaptureAddrSetCmdErr, FeedbackCalcOnClassificationCmdErr, \
@@ -189,7 +189,7 @@ class WaitFlagTest(object):
         success &= all([
             len(reports) == 1,
             isinstance(reports[0], AwgStartCmdErr),
-            reports[0].awg_id_list == [AWG.U3, AWG.U15],
+            reports[0].awg_id_list == [AWG.U3],
             reports[0].cmd_no == 20,
             not reports[0].is_terminated])
         return success
@@ -292,6 +292,26 @@ class WaitFlagTest(object):
         return success
 
 
+    def test_11(self):
+        self.__cap_ctrl.enable_start_trigger(*self.__capture_units)
+        success = self.exec_cmds(gen_cmds_11())
+        reports = self.__seq_ctrl.pop_cmd_err_reports()
+        success &= all([
+            len(reports) == 2,
+            isinstance(reports[0], CaptureEndFenceCmdErr),
+            reports[0].capture_unit_id_list == [CaptureUnit.U3],
+            reports[0].is_in_time,
+            reports[0].cmd_no == 47,
+            not reports[0].is_terminated,
+
+            isinstance(reports[1], WaveGenEndFenceCmdErr),
+            reports[1].awg_id_list == [AWG.U2],
+            reports[1].is_in_time,
+            reports[1].cmd_no == 49,
+            not reports[1].is_terminated])
+
+        return success
+
     def run_test(self):
         """
         テスト項目
@@ -317,7 +337,8 @@ class WaitFlagTest(object):
             self.test_7(),
             self.test_8(),
             self.test_9(),
-            self.test_10()])
+            self.test_10(),
+            self.test_11()])
 
 
 def gen_capture_param(num_sum_section_words, enable_classification):
@@ -404,7 +425,7 @@ def gen_cmds_4():
         WaveSequenceSetCmd(18, [AWG.U3, AWG.U15], key_table = 0),
         # AWG スタート
         AwgStartCmd(19, [AWG.U3, AWG.U15], AwgStartCmd.IMMEDIATE, wait = False),                 # エラーにならないのを期待
-        AwgStartCmd(20, [AWG.U3, AWG.U15], AwgStartCmd.IMMEDIATE, wait = True, stop_seq = True), # エラーになるのを期待
+        AwgStartCmd(20, [AWG.U3, AWG.U4], AwgStartCmd.IMMEDIATE, wait = True, stop_seq = True), # エラーになるのを期待
     ]
     return cmds
 
@@ -438,14 +459,14 @@ def gen_cmds_6():
 
 
 def gen_cmds_7():
-    #    波形パラメータ設定開始     波形パラメータ設定+プリロード開始    高速FBコマンド終了
-    #                  ↓                               ↓         ↓
-    # AWG 2          | [  972ns ][==== Wave 0 (8us) ====][ 1196ns ][======== Wave 1 (16us) ========]
-    # Capture Unit 3 | ↑        [ 256ns ][======== Capture 0 (17.47us) ========]
-    #                | ｜                 [ 952ns ]
-    #                  ｜                         ↑
-    #            高速FBコマンド開始             四値化結果算出
-    
+    #            波形パラメータ   波形出力        波形パラメータ設定 と
+    #            プリロード開始   スタート時刻     波形データプリロード開始     高速FBコマンド終了
+    #                  ↓          ↓                         ↓          ↓
+    # AWG 2          | [ --------- ][===== Wave 0 (8us) =====][  1184ns  ][======== Wave 1 (16us) ========]
+    # Capture Unit 3 | ↑           [ 312ns ][========= Capture 0 (17.47us) =========]
+    #                | ｜                    [ 952ns ]
+    #                  ｜                            ↑
+    #            高速FBコマンド開始               四値化結果算出
     time = 2250 # 18 [us]
     cmds = [
         # パラメータ更新
@@ -479,5 +500,32 @@ def gen_cmds_10():
     cmds = [
         AwgStartWithExtTrigAndClsValCmd(
             42, [AWG.U1, AWG.U10], 8000, wait = True, stop_seq = True), # エラーになるのを期待 (タイムアウトフラグが立つ)
+    ]
+    return cmds
+
+
+def gen_cmds_11():
+    #            波形パラメータ   波形出力        波形パラメータ設定 と
+    #            プリロード開始   スタート時刻     波形データプリロード開始     条件付きFBコマンド終了
+    #                  ↓          ↓                         ↓          ↓
+    # AWG 2          | [ --------- ][===== Wave 0 (8us) =====][  1184ns  ][======== Wave 1 (16us) ========]
+    # Capture Unit 3 | ↑           [ 312ns ][========= Capture 0 (17.47us) =========]
+    #                | ｜                    [ 952ns ]
+    #                  ｜                            ↑
+    #          条件付きFBコマンド開始               四値化結果算出
+    time = 2250 # 18 [us]
+    feedback_flag = 0
+    cmds = [
+        # パラメータ更新
+        WaveSequenceSelectionCmd(
+            43, [AWG.U2], key_table = 0, four_cls_channel_id = FourClassifierChannel.U3),
+        WaveSequenceSetCmd(44, [AWG.U2], key_table = 1),
+        CaptureParamSetCmd(45, [CaptureUnit.U3], key_table = 2),
+        # AWG スタートとキャプチャ停止待ち
+        ConditionalFeedbackCmd(46, [AWG.U2], time, feedback_flag, wait = False),
+        CaptureEndFenceCmd(47, [CaptureUnit.U3], time + 1375, wait = False),          # エラーになるのを期待 (キャプチャ中)
+        CaptureEndFenceCmd(48, [CaptureUnit.U3], time + 2400, wait = False),          # エラーにならないのを期待 (キャプチャ終了後)
+        WaveGenEndFenceCmd(49, [AWG.U2],  time + 2500, wait = False),                 # エラーになるのを期待 (2回目の波形出力を実行中)
+        WaveGenEndFenceCmd(50, [AWG.U2],  time + 3400, wait = True, stop_seq = True), # エラーにならないのを期待 (2回目の波形出力終了後)
     ]
     return cmds
