@@ -345,6 +345,11 @@ class WaveRamParamsKr260(WaveRamParams):
     """KR260 デザインの波形データ RAM のパラメータを保持するクラス"""
 
     def __init__(self) -> None:
+        # Use the 2GB-4GB address range, which is mapped to the 32GB-34GB
+        # memory space of the UltraScale+ MPSoC memory controller.
+        # cf. https://docs.amd.com/v/u/en-US/ug1085-zynq-ultrascale-trm (pp.211, 437)
+        # Therefore, when using the FW, Linux must be limited with the `mem=`
+        # parameter so that the memory space above 2GB is reserved for the FW.
         self.__wave_src_addrs: Final = [
             0x8_0000_0000, 0x8_0400_0000, 0x8_0800_0000, 0x8_0C00_0000,
             0x8_1000_0000, 0x8_1400_0000, 0x8_1800_0000, 0x8_1C00_0000,
